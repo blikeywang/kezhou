@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>刻舟求剑 · 历史K线概率引擎 / Kezhou</title><meta name="description" content="刻舟求剑 Kezhou · 基于历史K线相似度的涨跌概率工具。加密 / 美股 / 大宗,每日更新,全部免费。历史相似不代表未来,非投资建议。"><meta name="theme-color" content="#0f1620"><meta property="og:type" content="website"><meta property="og:site_name" content="刻舟求剑 Kezhou"><meta property="og:title" content="刻舟求剑 · 历史K线概率引擎 / Kezhou"><meta property="og:description" content="基于历史K线相似度的涨跌概率分析。加密 / 美股 / 大宗,每日更新,免费。"><meta property="og:url" content="https://blikeywang.github.io/kezhou/"><meta property="og:image" content="https://blikeywang.github.io/kezhou/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="刻舟求剑 / Kezhou"><meta name="twitter:description" content="历史K线相似度概率工具 · 每日更新 · 免费"><meta name="twitter:image" content="https://blikeywang.github.io/kezhou/og.png"><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%235b9bd5'/%3E%3Ctext%20x='32'%20y='45'%20font-size='38'%20text-anchor='middle'%20fill='white'%20font-family='sans-serif'%3E%E5%88%BB%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css"><style>
+<!doctype html><html lang="zh" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>刻舟求剑 · 历史K线概率引擎 / Kezhou</title><meta name="description" content="刻舟求剑 Kezhou · 基于历史K线相似度的涨跌概率工具。加密 / 美股 / 大宗,每日更新,全部免费。历史相似不代表未来,非投资建议。"><meta name="theme-color" content="#0f1620"><meta property="og:type" content="website"><meta property="og:site_name" content="刻舟求剑 Kezhou"><meta property="og:title" content="刻舟求剑 · 历史K线概率引擎 / Kezhou"><meta property="og:description" content="基于历史K线相似度的涨跌概率分析。加密 / 美股 / 大宗,每日更新,免费。"><meta property="og:url" content="https://traderhome-histroy.xyz/"><meta property="og:image" content="https://traderhome-histroy.xyz/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="刻舟求剑 / Kezhou"><meta name="twitter:description" content="历史K线相似度概率工具 · 每日更新 · 免费"><meta name="twitter:image" content="https://traderhome-histroy.xyz/og.png"><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%235b9bd5'/%3E%3Ctext%20x='32'%20y='45'%20font-size='38'%20text-anchor='middle'%20fill='white'%20font-family='sans-serif'%3E%E5%88%BB%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css"><style>
 *{box-sizing:border-box}
 :root{--maxw:1240px;--r:12px;
  --bg:#0f1620;--bg2:#141d2a;--pan:#17212f;--pan2:#131b27;--ink:#dce4f0;--ink2:#a9b6c9;--mut:#7e8ca3;
@@ -222,7 +222,7 @@ var T={
  bfc_h:{zh:"加密货币",en:"Crypto"},bfc_p:{zh:"BTC · ETH · SOL 及主流山寨,4小时线高频形态,历史最长、样本最多。",en:"BTC · ETH · SOL and majors, 4h intraday patterns — the deepest history and largest samples."},
  bfs_h:{zh:"美股 / 指数",en:"US stocks / indices"},bfs_p:{zh:"苹果、英伟达、标普、纳指、道琼斯……日线结构,复权价。",en:"Apple, NVIDIA, S&P, Nasdaq, Dow … daily structure, adjusted prices."},
  bfm_h:{zh:"大宗商品",en:"Commodities"},bfm_p:{zh:"黄金 · 原油 · 白银,避险与周期品的历史回声。",en:"Gold · Oil · Silver — the historical echoes of havens and cyclicals."},
- price_t:{zh:"价格",en:"Pricing"},price_s:{zh:"全部数据免费查看。进阶信号在 TradingView / Discord 频道。",en:"All data free to view. Premium signals live on our TradingView / Discord."},
+ price_t:{zh:"价格",en:"Pricing"},price_s:{zh:"全部数据免费查看。看更多、更全内容在 Discord / Telegram。",en:"All data free to view. See more and fuller content on Discord / Telegram."},
  plan_free:{zh:"免费 Free",en:"Free"},
  per_mo:{zh:"/月",en:"/mo"},
  cta_free:{zh:"免费开始",en:"Start free"},
@@ -260,7 +260,7 @@ var T={
  h_fwd:{zh:"前瞻",en:"Horizon"},h_pupc:{zh:"涨概率<br>corr",en:"P(up)<br>corr"},h_medc:{zh:"corr中位",en:"corr med"},h_pupd:{zh:"涨概率<br>DTW",en:"P(up)<br>DTW"},h_medd:{zh:"DTW中位",en:"DTW med"},h_base:{zh:"基准",en:"base"},h_basem:{zh:"基准中位",en:"base med"},h_iqr:{zh:"corr 25–75%",en:"corr 25–75%"},
  se_after:{zh:"此后",en:"After"},se_up:{zh:"上涨年%",en:"up-years%"},se_med:{zh:"中位",en:"median"},se_n:{zh:"样本",en:"n"},
  modal_t:{zh:"今日额度已用完",en:"Daily quota reached"},
- modal_p:{zh:"网站数据全部免费。想要实时提醒、更多标的与进阶解读,来 TradingView / Discord 频道。",en:"All site data is free. For real-time alerts, more symbols and premium notes, join our TradingView / Discord."},
+ modal_p:{zh:"本站每天免费更新这些精选标的的分析。想看更多标的、更全的信号与实时提醒,来 Discord / Telegram。",en:"This site updates free analysis on these picks daily. For more symbols, fuller signals and real-time alerts, join our Discord / Telegram."},
  modal_up:{zh:"立即升级 Pro(演示)",en:"Upgrade to Pro (demo)"},modal_later:{zh:"关闭",en:"Close"},
  back:{zh:"← 返回",en:"← Back"},
  foot:{zh:"刻舟求剑 · 历史K线概率引擎 &nbsp;|&nbsp; 数据:Binance / Yahoo Finance &nbsp;|&nbsp; 仅供研究,非投资建议",en:"Kezhou · Historical K-Line probability engine &nbsp;|&nbsp; Data: Binance / Yahoo Finance &nbsp;|&nbsp; Research only, not investment advice"},
@@ -308,7 +308,7 @@ var T={
  ad_empty:{zh:"本会话暂无事件——去逛逛再回来。",en:"No events yet this session — browse and come back."},ad_back:{zh:"← 返回",en:"← Back"},
  ad_time:{zh:"时间",en:"Time"},ad_ev:{zh:"事件",en:"Event"},ad_obj:{zh:"对象",en:"Object"},
  demo_free_back:{zh:"Pro · 演示切回免费",en:"Pro · demo → Free"},
- pay_title:{zh:"进阶信号 · 频道",en:"Premium signals · Channels"},ch_tv:{zh:"TradingView 频道",en:"TradingView channel"},ch_tv_desc:{zh:"实时脚本提醒、更多标的与进阶信号。",en:"Real-time script alerts, more symbols and premium signals."},ch_tv_btn:{zh:"前往 TradingView",en:"Open TradingView"},ch_dc:{zh:"Discord 社群",en:"Discord community"},ch_dc_desc:{zh:"每日解读、问答与讨论。",en:"Daily notes, Q&A and discussion."},ch_dc_btn:{zh:"加入 Discord",en:"Join Discord"},ch_note:{zh:"频道链接稍后开放;网站分析将始终免费。",en:"Channel links open soon; the site analytics stay free."},ch_pop:{zh:"进阶",en:"Premium"},ch_h:{zh:"频道进阶",en:"Channels"},ch_price:{zh:"TradingView / Discord",en:"TradingView / Discord"},
+ pay_title:{zh:"看更多 · 更全内容",en:"See more · fuller data"},ch_tv:{zh:"Discord 频道",en:"Discord channel"},ch_tv_desc:{zh:"更多标的、实时脚本提醒与更全信号。",en:"More symbols, real-time script alerts and fuller signals."},ch_tv_btn:{zh:"前往 Discord",en:"Open Discord"},ch_dc:{zh:"Telegram 频道",en:"Telegram channel"},ch_dc_desc:{zh:"更多标的、实时提醒与讨论。",en:"More symbols, real-time alerts and chat."},ch_dc_btn:{zh:"加入 Telegram",en:"Join Telegram"},ch_note:{zh:"频道链接稍后开放;网站分析将始终免费。",en:"Channel links open soon; the site analytics stay free."},ch_pop:{zh:"更多",en:"More"},more_btn:{zh:"看更多",en:"More"},ch_h:{zh:"看更多",en:"See more"},ch_price:{zh:"Discord / Telegram",en:"Discord / Telegram"},
  analog_cap:{zh:"当前形态 vs 3 个最像的历史片段之后的走势",en:"Current pattern vs what the 3 closest look-alikes did next"},
  now_label:{zh:"现在的形态",en:"Now"},then_label:{zh:"“当年”之后",en:"After analog"},
  yby_event:{zh:"当年大事",en:"That year"},
@@ -410,7 +410,7 @@ function scr_admin(){
  '<div class="card"><h2 style="font-size:16px;margin:0 0 8px">'+t('ad_events')+' <span class="mut" style="font-size:12px;font-weight:400">('+e.length+')</span></h2>'+evbody+'</div>'+
  '<div class="swap"><a onclick="show(\''+(S.auth?'dashboard':'landing')+'\')">'+t('ad_back')+'</a></div></div>'}
 
-function show(scr){S.screen=scr;if(scr==='dashboard'&&!S.cat)S.cat=null;window.scrollTo(0,0);track('page_view',{screen:scr});renderScreen()}
+function show(scr){if(scr==='auth'||scr==='onboarding'){S.auth=true;if(!S.bf)S.bf='crypto';scr='dashboard';}S.screen=scr;if(scr==='dashboard'&&!S.cat)S.cat=null;window.scrollTo(0,0);track('page_view',{screen:scr});renderScreen()}
 function renderScreen(){
  var h='';var s=S.screen;
  if(s==='dashboard')h=scr_dashboard();
@@ -422,7 +422,7 @@ function renderScreen(){
 }
 function langbtn(){return '<button class="iconbtn" onclick="setLang(S.lang===\'zh\'?\'en\':\'zh\')">'+(S.lang==='zh'?'EN':'中')+'</button>'}
 function explainBtn(){return '<button class="iconbtn expbtn'+(S.explain?'':' off')+'" onclick="toggleExplain()" title="'+t('explain_on')+'"><i class="ti ti-help-circle"></i>'+t('explain_on')+'</button>'}
-function memberBtn(){return (S.member==='pro')?'<button class="btn sm" onclick="setFreeDemo()" title="'+t('demo_free_back')+'"><i class="ti ti-check"></i>'+t('demo_free_back')+'</button>':'<button class="btn pri sm" onclick="showUpgrade(\'nav\')"><i class="ti ti-star"></i>'+t('upgrade')+'</button>'}
+function memberBtn(){return '<button class="btn ghost sm" onclick="showUpgrade(\'nav\')"><i class="ti ti-external-link"></i>'+t('more_btn')+'</button>';return (S.member==='pro')?'<button class="btn sm" onclick="setFreeDemo()" title="'+t('demo_free_back')+'"><i class="ti ti-check"></i>'+t('demo_free_back')+'</button>':'<button class="btn pri sm" onclick="showUpgrade(\'nav\')"><i class="ti ti-star"></i>'+t('upgrade')+'</button>'}
 function setFreeDemo(){S.member='free';save();renderDash()}
 function toggleExplain(){S.explain=!S.explain;save();toast(S.explain?t('explain_on'):t('explain_hide'));renderScreen()}
 function setExplain(v){S.explain=v;save();renderScreen()}
@@ -431,7 +431,7 @@ function themebtn(){return '<button class="iconbtn" onclick="setTheme(S.theme===
 
 function mnav(){return '<div class="mnav"><div class="mnav-in">'+
  '<div class="brand" onclick="show(\'landing\')"><span class="logo">刻</span><span>'+(S.lang==='zh'?'刻舟求剑':'Kezhou')+'<small>'+t('brand_sub')+'</small></span></div>'+
- '<div class="links"><a onclick="show(\'landing\')">'+t('nav_home')+'</a><a onclick="show(\'landing\');setTimeout(function(){scrollToId(\'how\')},60)">'+t('nav_how')+'</a><a onclick="show(\'landing\');setTimeout(function(){scrollToId(\'bf\')},60)">'+t('nav_bf')+'</a><a onclick="show(\'pricing\')">'+t('nav_pricing')+'</a></div>'+
+ '<div class="links"><a onclick="show(\'landing\')">'+t('nav_home')+'</a><a onclick="show(\'landing\');setTimeout(function(){scrollToId(\'how\')},60)">'+t('nav_how')+'</a><a onclick="show(\'landing\');setTimeout(function(){scrollToId(\'bf\')},60)">'+t('nav_bf')+'</a></div>'+
  '<div class="grow"></div>'+langbtn()+themebtn()+
  '<button class="btn ghost sm" onclick="S.authMode=\'login\';show(\'auth\')">'+t('login')+'</button>'+
  '<button class="btn pri sm" onclick="S.authMode=\'signup\';show(\'auth\')">'+t('start_free')+'</button></div></div>'}
@@ -445,8 +445,8 @@ function plans(){var cta="onclick=\"S.authMode='signup';show('auth')\"";
  return '<div class="plans">'+
  '<div class="plan"><h3>'+t('plan_free')+'</h3><div class="price">$0<small>'+t('per_mo')+'</small></div>'+ul(freeL)+'<button class="btn block" '+cta+'>'+t('cta_free')+'</button></div>'+
  '<div class="plan hi" data-pop="'+t('ch_pop')+'"><h3>'+t('ch_h')+'</h3><div class="price" style="font-size:21px;line-height:1.5">'+t('ch_price')+'</div>'+ul(proL)+
-   '<a class="btn pri block" href="'+TV_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'tv\',loc:\'pricing\'})">TradingView <i class="ti ti-external-link"></i></a>'+
-   '<a class="btn block" href="'+DC_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'dc\',loc:\'pricing\'})">Discord <i class="ti ti-external-link"></i></a></div></div>'}
+   '<a class="btn pri block" href="'+DC_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'dc\',loc:\'pricing\'})">Discord <i class="ti ti-external-link"></i></a>'+
+   '<a class="btn block" href="'+TG_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'tg\',loc:\'pricing\'})">Telegram <i class="ti ti-external-link"></i></a></div></div>'}
 
 function scr_landing(){return '<div class="wrap">'+
  '<section class="hero"><div>'+
@@ -464,7 +464,6 @@ function scr_landing(){return '<div class="wrap">'+
  '<div class="bfcard" onclick="show(\'onboarding\')"><div class="bi"><i class="ti ti-currency-bitcoin"></i></div><h3>'+t('bfc_h')+'</h3><p>'+t('bfc_p')+'</p></div>'+
  '<div class="bfcard" onclick="show(\'onboarding\')"><div class="bi"><i class="ti ti-chart-candle"></i></div><h3>'+t('bfs_h')+'</h3><p>'+t('bfs_p')+'</p></div>'+
  '<div class="bfcard" onclick="show(\'onboarding\')"><div class="bi"><i class="ti ti-barbell"></i></div><h3>'+t('bfm_h')+'</h3><p>'+t('bfm_p')+'</p></div></div></section>'+
- '<section class="section"><h2>'+t('price_t')+'</h2><p class="sub">'+t('price_s')+'</p>'+plans()+'</section>'+
  '</div><div class="foot">'+t('foot')+' &nbsp;·&nbsp; <a onclick="show(\'admin\')" style="cursor:pointer;color:var(--acc)">'+t('admin_nav')+'</a></div>'}
 
 function scr_auth(){var m=S.authMode;
@@ -488,7 +487,7 @@ function scr_pricing(){return '<div class="wrap"><section class="section"><h2>'+
 function scr_dashboard(){return '<div class="appbar"><div class="appbar-in">'+
  '<div class="brand" onclick="show(\'landing\')"><span class="logo">刻</span><span>'+(S.lang==='zh'?'刻舟求剑':'Kezhou')+'</span></div>'+
  '<div class="bfswitch"><button data-g="crypto"><i class="ti ti-currency-bitcoin"></i>'+t('g_crypto')+'</button><button data-g="stock"><i class="ti ti-chart-candle"></i>'+t('g_stock')+'</button><button data-g="commodity"><i class="ti ti-barbell"></i>'+t('g_commodity')+'</button></div>'+
- '<div class="grow"></div><div class="quota" id="quota"></div>'+
+ '<div class="grow"></div>'+
  memberBtn()+explainBtn()+langbtn()+themebtn()+
  '<button class="iconbtn" onclick="show(\'landing\')" title="'+t('logout')+'"><i class="ti ti-logout"></i></button></div></div>'+
  '<div class="dash"><aside class="side" id="side"></aside><main class="main" id="dmain"></main></div>'}
@@ -509,7 +508,7 @@ function renderDash(){
  if(!S.cat)renderEmpty(g);else{var c=allCats(g).find(function(x){return x.k===S.cat});if(c)renderAnalysis(c)}
  refreshCharts();
 }
-function updateQuota(){var u=usedCount();var q=document.getElementById('quota');
+function updateQuota(){var u=usedCount();var q=document.getElementById('quota');if(!q)return;
  q.innerHTML='<div class="ring" style="--p:6"></div><span>'+t('q_today')+' <b>'+u+'</b> '+t('q_syms')+' · '+t('q_free')+'</span>'}
 function legendHTML(){return '<div class="legend"><h4>'+t('leg_title')+'</h4>'+
  [['chart-line','leg_k1','leg_v1'],['chart-bar','leg_k2','leg_v2'],['calendar','leg_k3','leg_v3'],['grid-dots','leg_k4','leg_v4'],['','leg_k5','leg_v5'],['alert-triangle','leg_k6','leg_v6']].map(function(r){
@@ -578,14 +577,14 @@ function renderAnalysis(c){var a=catData(c),g=a.grp,ls=lset(g);
  refreshCharts();
 }
 function modalHTML(){return '<div id="mask" class="mask hidden"><div class="modal"><h3>'+t('pay_title')+'</h3><p style="font-size:12.5px;color:var(--mut);margin:0 0 8px">'+t('modal_p')+'</p>'+
- '<div class="paysec"><h4><i class="ti ti-chart-candle"></i>'+t('ch_tv')+'</h4><p>'+t('ch_tv_desc')+'</p>'+
-   '<a class="btn pri block" href="'+TV_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'tv\'})">'+t('ch_tv_btn')+' <i class="ti ti-external-link"></i></a></div>'+
- '<div class="paysec"><h4><i class="ti ti-brand-discord"></i>'+t('ch_dc')+'</h4><p>'+t('ch_dc_desc')+'</p>'+
-   '<a class="btn block" href="'+DC_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'dc\'})">'+t('ch_dc_btn')+' <i class="ti ti-external-link"></i></a></div>'+
+ '<div class="paysec"><h4><i class="ti ti-brand-discord"></i>'+t('ch_tv')+'</h4><p>'+t('ch_tv_desc')+'</p>'+
+   '<a class="btn pri block" href="'+DC_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'dc\'})">'+t('ch_tv_btn')+' <i class="ti ti-external-link"></i></a></div>'+
+ '<div class="paysec"><h4><i class="ti ti-brand-telegram"></i>'+t('ch_dc')+'</h4><p>'+t('ch_dc_desc')+'</p>'+
+   '<a class="btn block" href="'+TG_URL+'" target="_blank" rel="noopener" onclick="track(\'premium_click\',{ch:\'tg\'})">'+t('ch_dc_btn')+' <i class="ti ti-external-link"></i></a></div>'+
  '<p class="note">'+t('ch_note')+'</p>'+
  '<div class="row"><button class="btn ghost block" onclick="closeUpgrade()">'+t('modal_later')+'</button></div>'+
  '</div></div>'}
-var TV_URL="#",DC_URL="#";
+var DC_URL="#",TG_URL="#";
 function showUpgrade(ctx){S._upctx=ctx||'nav';track('upgrade_click',{context:S._upctx});var m=document.getElementById('mask');if(m)m.classList.remove('hidden')}
 function closeUpgrade(){var m=document.getElementById('mask');if(m)m.classList.add('hidden')}
 function doUpgrade(){S.member='pro';track('upgrade_success',{context:S._upctx||'nav',plan:'pro'});save();closeUpgrade();if(S.screen==='dashboard')renderDash()}
