@@ -1,0 +1,124 @@
+{
+ "cats": {
+  "crypto": [
+   {
+    "k": "BTC",
+    "nz": "比特币",
+    "ne": "Bitcoin",
+    "demo": false,
+    "tmpl": "BTC"
+   },
+   {
+    "k": "ETH",
+    "nz": "以太坊",
+    "ne": "Ethereum",
+    "demo": false,
+    "tmpl": "ETH"
+   },
+   {
+    "k": "SOL",
+    "nz": "Solana",
+    "ne": "Solana",
+    "demo": false,
+    "tmpl": "SOL"
+   }
+  ],
+  "stock": [
+   {
+    "k": "AAPL",
+    "nz": "苹果",
+    "ne": "Apple",
+    "demo": false,
+    "tmpl": "AAPL"
+   },
+   {
+    "k": "NVDA",
+    "nz": "英伟达",
+    "ne": "NVIDIA",
+    "demo": false,
+    "tmpl": "NVDA"
+   }
+  ],
+  "commodity": [
+   {
+    "k": "GLD",
+    "nz": "黄金 GLD",
+    "ne": "Gold (GLD)",
+    "demo": false,
+    "tmpl": "GLD"
+   },
+   {
+    "k": "USO",
+    "nz": "原油 USO",
+    "ne": "Oil (USO)",
+    "demo": false,
+    "tmpl": "USO"
+   }
+  ]
+ },
+ "icons": {
+  "BTC": "currency-bitcoin",
+  "ETH": "currency-ethereum",
+  "SOL": "sun",
+  "BNB": "hexagon",
+  "XRP": "circle",
+  "ADA": "triangle",
+  "DOGE": "dog",
+  "AVAX": "mountain",
+  "AAPL": "brand-apple",
+  "NVDA": "cpu",
+  "SPY": "chart-candle",
+  "QQQ": "chart-line",
+  "DJI": "building-bank",
+  "IXIC": "chart-histogram",
+  "MSFT": "brand-windows",
+  "TSLA": "car",
+  "AMZN": "brand-amazon",
+  "GOOGL": "brand-google",
+  "META": "brand-meta",
+  "GLD": "coin",
+  "USO": "droplet",
+  "SLV": "coin",
+  "HG": "flame",
+  "NG": "flame",
+  "ZC": "plant",
+  "KC": "coffee"
+ },
+ "names": {
+  "BTC": {
+   "nz": "比特币",
+   "ne": "Bitcoin",
+   "grp": "crypto"
+  },
+  "ETH": {
+   "nz": "以太坊",
+   "ne": "Ethereum",
+   "grp": "crypto"
+  },
+  "SOL": {
+   "nz": "Solana",
+   "ne": "Solana",
+   "grp": "crypto"
+  },
+  "AAPL": {
+   "nz": "苹果",
+   "ne": "Apple",
+   "grp": "stock"
+  },
+  "NVDA": {
+   "nz": "英伟达",
+   "ne": "NVIDIA",
+   "grp": "stock"
+  },
+  "GLD": {
+   "nz": "黄金 GLD",
+   "ne": "Gold (GLD)",
+   "grp": "commodity"
+  },
+  "USO": {
+   "nz": "原油 USO",
+   "ne": "Oil (USO)",
+   "grp": "commodity"
+  }
+ }
+}

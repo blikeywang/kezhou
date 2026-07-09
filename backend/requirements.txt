@@ -1,0 +1,8 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+numpy>=1.26
+pydantic[email]>=2.6
+stripe>=9.0            # Billing 订阅 / Checkout / Webhook
+# dev / test
+pytest>=8.0
+httpx>=0.27

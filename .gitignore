@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Regenerable intermediates (rebuild from pipeline/)
+appdata.json
+charts.json
+charts2.json
+charts_slate.json
+_*.js
+
+# Env / secrets — never commit
+.env
+.env.*
+*.pem
+*.key
+secrets*.json
+
+# Backups / temp
+*.bak
+
+# CI static-site build output
+_site/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+node_modules/
