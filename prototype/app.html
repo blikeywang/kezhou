@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>刻舟求剑 · 历史K线概率引擎 / Kezhou</title><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css"><style>
+<!doctype html><html lang="zh" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>刻舟求剑 · 历史K线概率引擎 / Kezhou</title><meta name="description" content="刻舟求剑 Kezhou · 基于历史K线相似度的涨跌概率工具。加密 / 美股 / 大宗,每日更新,全部免费。历史相似不代表未来,非投资建议。"><meta name="theme-color" content="#0f1620"><meta property="og:type" content="website"><meta property="og:site_name" content="刻舟求剑 Kezhou"><meta property="og:title" content="刻舟求剑 · 历史K线概率引擎 / Kezhou"><meta property="og:description" content="基于历史K线相似度的涨跌概率分析。加密 / 美股 / 大宗,每日更新,免费。"><meta property="og:url" content="https://blikeywang.github.io/kezhou/"><meta property="og:image" content="https://blikeywang.github.io/kezhou/og.png"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="刻舟求剑 / Kezhou"><meta name="twitter:description" content="历史K线相似度概率工具 · 每日更新 · 免费"><meta name="twitter:image" content="https://blikeywang.github.io/kezhou/og.png"><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%235b9bd5'/%3E%3Ctext%20x='32'%20y='45'%20font-size='38'%20text-anchor='middle'%20fill='white'%20font-family='sans-serif'%3E%E5%88%BB%3C/text%3E%3C/svg%3E"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css"><style>
 *{box-sizing:border-box}
 :root{--maxw:1240px;--r:12px;
  --bg:#0f1620;--bg2:#141d2a;--pan:#17212f;--pan2:#131b27;--ink:#dce4f0;--ink2:#a9b6c9;--mut:#7e8ca3;
@@ -381,7 +381,7 @@ function doRefresh(k,ev){if(ev)ev.stopPropagation();var now=Date.now();if(S.last
 
 function isPro(){return S.member==='pro'}
 function gate(inner,key){if(isPro())return inner;return '<div class="lockcard"><div class="li"><i class="ti ti-lock"></i></div><div><div class="lt">'+t(key)+'</div><div class="ls">'+t('lock_sub')+'</div></div><div class="lb"><button class="btn pri sm" onclick="showUpgrade(\'lock\')"><i class="ti ti-star"></i>'+t('lock_cta')+'</button></div></div>'}
-function track(ev,props){try{var a=JSON.parse(localStorage.getItem('kzqj_ev')||'[]');a.push(Object.assign({ts:Date.now(),ev:ev,plan:S.member},props||{}));if(a.length>600)a=a.slice(-600);localStorage.setItem('kzqj_ev',JSON.stringify(a))}catch(e){}}
+var GC_CODE="";function initAnalytics(){if(!GC_CODE||window._gcInit)return;window._gcInit=1;window.goatcounter={no_onload:true};var s=document.createElement('script');s.async=true;s.setAttribute('data-goatcounter','https://'+GC_CODE+'.goatcounter.com/count');s.src='https://gc.zgo.at/count.js';document.head.appendChild(s);s.onload=function(){try{window.goatcounter.count({path:location.pathname+location.hash,title:document.title})}catch(e){}}}function gcEvent(ev){if(GC_CODE&&window.goatcounter&&window.goatcounter.count){try{window.goatcounter.count({path:'evt/'+ev,title:ev,event:true})}catch(e){}}}function track(ev,props){try{var a=JSON.parse(localStorage.getItem('kzqj_ev')||'[]');a.push(Object.assign({ts:Date.now(),ev:ev,plan:S.member},props||{}));if(a.length>600)a=a.slice(-600);localStorage.setItem('kzqj_ev',JSON.stringify(a))}catch(e){}gcEvent(ev);}
 function evLoad(){try{return JSON.parse(localStorage.getItem('kzqj_ev')||'[]')}catch(e){return[]}}
 var SYN={visits:1284,signups:392,activated:311,paywall:198,upg:47,
  triggers:[['trg_lock',26],['trg_quota',14],['trg_nav',7]],
@@ -593,5 +593,5 @@ function goPricing(){closeUpgrade();show('pricing')}
 function scrollToId(id){var e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth'})}
 
 load();
-document.addEventListener('DOMContentLoaded',function(){document.documentElement.dataset.theme=S.theme;renderScreen()});
+document.addEventListener('DOMContentLoaded',function(){document.documentElement.dataset.theme=S.theme;renderScreen();initAnalytics();});
 </script></body></html>

@@ -44,7 +44,9 @@ jobs:
         run: |
           mkdir -p _site
           cp prototype/app.html _site/index.html
+          cp prototype/og.png   _site/og.png       2>/dev/null || true
           cp DISCLAIMER.md      _site/DISCLAIMER.md 2>/dev/null || true
+          cp CNAME              _site/CNAME         2>/dev/null || true
 
       - uses: actions/upload-pages-artifact@v3
         with:
