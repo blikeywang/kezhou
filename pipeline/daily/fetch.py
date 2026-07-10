@@ -22,6 +22,7 @@ BINANCE_BASES = (
     "https://api-gcp.binance.com",
     "https://api.binance.com",
 )
+LAST_ENDPOINT = {}
 
 
 def _get(url, timeout=25, retries=3):
@@ -68,7 +69,9 @@ def fetch_binance(pair, interval="4h", bars=12000):
     errors = []
     for base in BINANCE_BASES:
         try:
-            return _fetch_binance_from(base, pair, interval, bars)
+            data = _fetch_binance_from(base, pair, interval, bars)
+            globals()["LAST_BINANCE_BASE"] = base
+            return data
         except Exception as e:  # noqa: BLE001
             errors.append(f"{base}: {e}")
     raise RuntimeError("all Binance endpoints failed\n" + "\n".join(errors))
@@ -100,9 +103,13 @@ def fetch_yahoo(symbol, rng="15y", interval="1d"):
 
 def fetch_symbol(sym):
     if sym in CRYPTO:
-        return fetch_binance(CRYPTO[sym])
+        data = fetch_binance(CRYPTO[sym])
+        LAST_ENDPOINT[sym] = globals().get("LAST_BINANCE_BASE", "Binance")
+        return data
     if sym in YAHOO:
-        return fetch_yahoo(YAHOO[sym])
+        data = fetch_yahoo(YAHOO[sym])
+        LAST_ENDPOINT[sym] = "query1.finance.yahoo.com"
+        return data
     raise KeyError(f"unknown symbol {sym}")
 
 

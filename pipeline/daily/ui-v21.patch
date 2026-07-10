@@ -1,0 +1,60 @@
+diff --git a/prototype/app.html b/prototype/app.html
+index 2775381..958048f 100644
+--- a/prototype/app.html
++++ b/prototype/app.html
+@@ -183,0 +184,10 @@ h4.blk{font-size:13px;margin:16px 0 7px;font-weight:500}
++.runwarn{display:flex;gap:9px;align-items:flex-start;background:rgba(211,162,78,.10);border:1px solid var(--gold);border-radius:10px;padding:9px 12px;margin:0 0 12px;font-size:12px;color:var(--ink2)}
++.trustcard{background:linear-gradient(135deg,var(--pan),var(--bg2));border:1px solid var(--line2);border-left:4px solid var(--acc);border-radius:13px;padding:15px 16px;margin:12px 0;box-shadow:var(--sh)}
++.trustcard.strong{border-left-color:var(--up)}.trustcard.weak{border-left-color:var(--gold)}
++.trusttop{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}.trusttop h3{font-size:16px;margin:0 0 3px;font-weight:600}.trusttop p{font-size:12.5px;color:var(--ink2);margin:0;max-width:760px}
++.grade{font-size:12px;font-weight:600;border:1px solid var(--line2);border-radius:18px;padding:4px 10px}.grade.strong{color:var(--up);border-color:var(--up);background:var(--warm)}.grade.moderate{color:var(--acc);border-color:var(--acc)}.grade.weak{color:var(--gold);border-color:var(--gold)}
++.trustgrid{display:grid;grid-template-columns:repeat(5,minmax(115px,1fr));gap:8px;margin-top:12px}.trustmetric{background:var(--pan2);border:1px solid var(--line);border-radius:9px;padding:8px 10px}.trustmetric b{display:block;font-size:16px;font-variant-numeric:tabular-nums}.trustmetric span{display:block;color:var(--mut);font-size:10.5px;line-height:1.4}
++.changebar{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:11.5px;color:var(--mut)}.delta{border:1px solid var(--line);border-radius:14px;padding:2px 8px}.delta.up{color:var(--up)}.delta.dn{color:var(--dn)}
++.healthbadge{display:inline-flex;align-items:center;gap:5px;border-radius:15px;padding:3px 9px;font-size:11px;border:1px solid var(--line2)}.healthbadge.fresh{color:var(--up);border-color:var(--up)}.healthbadge.cached{color:var(--gold);border-color:var(--gold)}.healthbadge.stale{color:var(--dn);border-color:var(--dn)}
++.healthline{font-size:11px;color:var(--mut);margin-top:5px;word-break:break-word}
++.tw{position:relative;-webkit-overflow-scrolling:touch}.tw:after{content:'';position:sticky;right:0;display:block;width:14px;height:1px}
+@@ -208 +218,2 @@ h4.blk{font-size:13px;margin:16px 0 7px;font-weight:500}
+-@media(max-width:960px){.readcards{grid-template-columns:1fr}}
++@media(max-width:960px){.readcards{grid-template-columns:1fr}.trustgrid{grid-template-columns:repeat(2,1fr)}table.t{font-size:11.5px}table.t th,table.t td{padding:6px 7px}.main{padding:16px 12px 60px}}
++@media(max-width:520px){.trustgrid{grid-template-columns:1fr 1fr}.trustmetric:last-child{grid-column:1/-1}.trusttop h3{font-size:15px}.kpi{min-width:calc(50% - 5px);flex:1}}
+@@ -324,0 +336,15 @@ var T={
++	 trust_title:{zh:"五秒结论",en:"Five-second read"},
++	 trust_above:{zh:"相似历史的中期表现高于该标的日常基准",en:"Similar-history mid-horizon performance is above the symbol's normal baseline"},
++	 trust_below:{zh:"相似历史的中期表现低于该标的日常基准",en:"Similar-history mid-horizon performance is below the symbol's normal baseline"},
++	 trust_flat:{zh:"相似历史与日常基准差异不明显",en:"Similar history is not materially different from baseline"},
++	 use_strong:{zh:"证据相对完整,可作为方向过滤;仍不能单独决定进场。",en:"Evidence is comparatively complete; useful as a directional filter, not a standalone entry."},
++	 use_moderate:{zh:"存在一定历史优势,但方法或样本仍有分歧;建议与价格结构共同确认。",en:"Some historical edge exists, but method/sample uncertainty remains; confirm with price structure."},
++	 use_weak:{zh:"证据不足或不稳定;更适合作为观察项,不宜据此形成交易结论。",en:"Evidence is weak or unstable; treat as an observation, not a trading conclusion."},
++	 grade_strong:{zh:"证据较强",en:"Stronger evidence"},grade_moderate:{zh:"证据中等",en:"Moderate evidence"},grade_weak:{zh:"证据偏弱",en:"Weak evidence"},
++	 tm_consensus:{zh:"共识上涨率",en:"Consensus P(up)"},tm_edge:{zh:"相对基准 Edge",en:"Edge vs baseline"},tm_ci:{zh:"95% Wilson 区间",en:"95% Wilson interval"},tm_agree:{zh:"方法一致度",en:"Method agreement"},tm_robust:{zh:"Top-K 稳健性",en:"Top-K robustness"},
++	 agree_yes:{zh:"同向",en:"Aligned"},agree_no:{zh:"分歧",en:"Divergent"},
++	 health_fresh:{zh:"Fresh 新数据",en:"Fresh data"},health_cached:{zh:"Cached 沿用缓存",en:"Cached"},health_stale:{zh:"Stale 已陈旧",en:"Stale"},
++	 health_asof:{zh:"行情截至",en:"Market data through"},health_bars:{zh:"根K线",en:"bars"},health_source:{zh:"来源",en:"Source"},
++	 run_partial:{zh:"本次日更有标的抓取失败并沿用旧数据:",en:"Some symbols failed to refresh and kept prior data:"},
++	 change_t:{zh:"相比上一版",en:"Vs previous update"},change_p:{zh:"共识概率",en:"consensus"},change_edge:{zh:"Edge",en:"Edge"},change_sim:{zh:"相似度",en:"similarity"},change_verdict:{zh:"方向标签已变化",en:"direction label changed"},change_none:{zh:"暂无上一版可比数据",en:"No prior comparable snapshot"},
++	 trust_note:{zh:"Wilson 区间使用保守估计的有效样本量;Top-K 稳健性比较 20/30/全量案例。它们衡量不确定性,不代表未来保证。",en:"Wilson interval uses a conservative effective-sample estimate; Top-K robustness compares 20/30/full analog sets. These describe uncertainty, not future certainty."},
+@@ -459,0 +486,12 @@ function exp(key,first){if(!S.explain)return '';return '<div class="explainbox">
++function signed(x,suffix){return (x>0?'+':'')+x+(suffix||'')}
++function trustOf(a){if(a.trust)return a.trust;var r=a.cond[2],p=Math.round((r[0]+r[3])/2),base=r[6],edge=p-base,gap=Math.abs(r[0]-r[3]);return {p:p,pc:r[0],pd:r[3],base:base,edge:edge,gap:gap,ci:[0,100],n:0,neff:0,robust:0,agree:(r[0]-base)*(r[3]-base)>0,score:0,grade:'weak',direction:Math.abs(edge)<=2?'flat':(edge>0?'above':'below')}}
++function healthOf(a){return a.health||{status:'cached',asof:a.refRange[1],bars:'—',source:a.grp==='crypto'?'Binance':'Yahoo Finance',endpoint:''}}
++function healthHTML(a){var h=healthOf(a),st=h.status||'cached';return '<div><span class="healthbadge '+st+'"><i class="ti ti-'+(st==='fresh'?'circle-check':(st==='stale'?'alert-triangle':'database'))+'"></i>'+t('health_'+st)+'</span><div class="healthline">'+t('health_asof')+' '+(h.asof||'—')+' · '+(h.bars||'—')+' '+t('health_bars')+' · '+t('health_source')+' '+(h.source||'—')+(h.endpoint?' · '+h.endpoint:'')+'</div></div>'}
++function runWarningHTML(){var r=D.run||{};if(r.status!=='partial'||!r.failed||!r.failed.length)return '';return '<div class="runwarn"><i class="ti ti-alert-triangle" style="color:var(--gold);font-size:17px"></i><div>'+t('run_partial')+' <b>'+r.failed.join(', ')+'</b></div></div>'}
++function changeHTML(a){var c=a.change;if(!c||!c.available)return '<div class="changebar"><span>'+t('change_none')+'</span></div>';function d(v,label){var cl=v>0?'up':(v<0?'dn':'');return '<span class="delta '+cl+'">'+label+' '+signed(v,' pp')+'</span>'}return '<div class="changebar"><span>'+t('change_t')+(c.date?' ('+c.date+')':'')+':</span>'+d(c.p,t('change_p'))+d(c.edge,t('change_edge'))+d(c.sim,t('change_sim'))+(c.verdict?'<span class="delta">'+t('change_verdict')+'</span>':'')+'</div>'}
++function trustHTML(a){var q=trustOf(a),desc=t('trust_'+q.direction)+'。 '+t('use_'+q.grade);return '<section class="trustcard '+q.grade+'" data-trust-version="2.1"><div class="trusttop"><div><h3><i class="ti ti-shield-check" style="color:var(--acc)"></i> '+t('trust_title')+'</h3><p>'+desc+'</p></div><span class="grade '+q.grade+'">'+t('grade_'+q.grade)+' · '+q.score+'/100</span></div><div class="trustgrid">'+
++ '<div class="trustmetric"><b>'+q.p+'%</b><span>'+t('tm_consensus')+' · corr '+q.pc+'% / DTW '+q.pd+'%</span></div>'+
++ '<div class="trustmetric"><b class="'+(q.edge>0?'up':(q.edge<0?'dn':''))+'">'+signed(q.edge,' pp')+'</b><span>'+t('tm_edge')+' · base '+q.base+'%</span></div>'+
++ '<div class="trustmetric"><b>'+q.ci[0]+'–'+q.ci[1]+'%</b><span>'+t('tm_ci')+' · n≈'+q.neff+' / '+q.n+'</span></div>'+
++ '<div class="trustmetric"><b class="'+(q.agree?'up':'dn')+'">'+t(q.agree?'agree_yes':'agree_no')+'</b><span>'+t('tm_agree')+' · gap '+q.gap+' pp</span></div>'+
++ '<div class="trustmetric"><b>'+q.robust+'%</b><span>'+t('tm_robust')+'</span></div></div>'+changeHTML(a)+'<p class="note" style="margin-top:8px">'+t('trust_note')+'</p></section>'}
+@@ -558 +596 @@ function renderEmpty(g){var gm=t('gm_'+g);document.getElementById('dmain').inner
+- '<div class="empty-h">'+gm+' · '+t('ov_title')+'</div><p class="mut" style="font-size:13.5px;margin:2px 0 4px">'+t('ov_desc')+'</p>'+
++	 runWarningHTML()+'<div class="empty-h">'+gm+' · '+t('ov_title')+'</div><p class="mut" style="font-size:13.5px;margin:2px 0 4px">'+t('ov_desc')+'</p>'+
+@@ -603 +641 @@ function renderAnalysis(c){var a=catData(c),g=a.grp,ls=lset(g);
+- document.getElementById('dmain').innerHTML=
++	 document.getElementById('dmain').innerHTML=runWarningHTML()+
+@@ -606,2 +644,2 @@ function renderAnalysis(c){var a=catData(c),g=a.grp,ls=lset(g);
+- '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="fresh" onclick="doRefresh(\''+c.k+'\')"><i class="ti ti-refresh"></i>'+t('fresh_asof')+freshOf(c.k)+' · '+t('refresh')+'</span><i class="star ti ti-star'+(isFav(c.k)?' on':'')+'" onclick="toggleFavByKey(\''+c.k+'\')"></i><div class="verd '+a.vc+'">'+VERD[a.vk][L()]+'</div></div></div>'+demoN+exp('ex_intro',true)+
+- '<div class="kpis"><div class="kpi"><b class="'+a.vc+'">'+a.midp+'%</b><span>'+t('kpi_mid')+a.basmid+t('kpi_mid2')+'</span></div>'+
++	 '<div style="display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap">'+healthHTML(a)+'<i class="star ti ti-star'+(isFav(c.k)?' on':'')+'" onclick="toggleFavByKey(\''+c.k+'\')"></i><div class="verd '+a.vc+'">'+VERD[a.vk][L()]+'</div></div></div>'+demoN+trustHTML(a)+exp('ex_intro',true)+
++	 '<div class="kpis"><div class="kpi"><b class="'+a.vc+'">'+trustOf(a).p+'%</b><span>'+t('kpi_mid')+trustOf(a).base+t('kpi_mid2')+'</span></div>'+
+

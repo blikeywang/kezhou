@@ -36,6 +36,9 @@ jobs:
       - name: Install deps
         run: pip install -r pipeline/daily/requirements.txt
 
+      - name: Run V2.1 regression tests
+        run: python -m unittest pipeline.daily.test_v21
+
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py
 

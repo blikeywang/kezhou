@@ -14,10 +14,11 @@ META = os.path.join(os.path.dirname(__file__), "meta.json")
 _APPDATA_RE = re.compile(r'(<script id="APPDATA"[^>]*>)(.*?)(</script>)', re.S)
 
 
-def assemble(assets: dict, charts: dict) -> dict:
+def assemble(assets: dict, charts: dict, run_meta: dict | None = None) -> dict:
     """assets: {sym: asset_dict};charts: {'dark':{...},'light':{...}}。cats/icons 取静态 meta。"""
     meta = json.load(open(META, encoding="utf-8"))
     return {"assets": assets, "cats": meta["cats"], "icons": meta["icons"],
+            "run": run_meta or {},
             "charts": {"dark": charts["dark"], "light": charts["light"]}}
 
 

@@ -94,6 +94,20 @@ def build_prim(ts, close, low, grp):
         arr = np.array([C[e + h] / C[e] - 1 for e in range(W - 1, ref_start) if e + h <= n - 1])
         st = _stats(arr); bas.append([h, st["p_up"], st["median"]])
 
+    # Top-K 敏感性:观察 corr / DTW 在 20、30、全量案例下相对基准的方向是否稳定。
+    mid_h = H[2]; p0 = bas[2][1]
+    consensus_edge = (condC[2][1] + condD[2][1]) / 2 - p0
+    target_sign = 1 if consensus_edge > 0.01 else (-1 if consensus_edge < -0.01 else 0)
+    sensitivity = []
+    for chosen in (ch_corr, ch_dtw):
+        cuts = sorted(set(min(x, len(chosen)) for x in (20, 30, len(chosen)) if min(x, len(chosen)) > 0))
+        for cut in cuts:
+            vals = [C[e + mid_h] / C[e] - 1 for e in chosen[:cut]]
+            edge = float(np.mean(np.asarray(vals) > 0)) - p0
+            sign = 1 if edge > 0.01 else (-1 if edge < -0.01 else 0)
+            sensitivity.append(sign == target_sign)
+    robust = round(100 * sum(sensitivity) / len(sensitivity)) if sensitivity else 0
+
     nc = [round(float(C[i] / C[ref_start] * 100.0), 2) for i in range(ref_start, ref_end + 1)]
     dvals = sorted(dtw_by_end.values())
     return {
@@ -102,6 +116,7 @@ def build_prim(ts, close, low, grp):
         "corrRange": [round(float(corrs[order[-1]]), 3), round(float(corrs[order[0]]), 3)],
         "dtwRange": [round(dvals[0], 2), round(dvals[min(len(dvals) - 1, cfg["top_k"])], 2)],
         "condC": condC, "condD": condD, "bas": bas,
+        "nCorr": len(ch_corr), "nDtw": len(ch_dtw), "robust": robust,
         "nc": nc, "mpC": mpC, "mpD": mpD, "mC": mC[:6], "mD": mD[:6],
     }
 
@@ -154,6 +169,49 @@ def _sig(pup, n, p0):
     return "★★" if p < 0.05 else ("★" if p < 0.10 else "")
 
 
+def _wilson(p, n, z=1.96):
+    """Wilson score interval; n 为保守估计的有效样本量。"""
+    if n <= 0:
+        return 0.0, 1.0
+    den = 1 + z * z / n
+    center = (p + z * z / (2 * n)) / den
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / den
+    return max(0.0, center - half), min(1.0, center + half)
+
+
+def _trust(P, grp):
+    cfg = CFG[grp]; i = 2
+    pc, pd, p0 = P["condC"][i][1], P["condD"][i][1], P["bas"][i][1]
+    consensus = (pc + pd) / 2
+    edge = consensus - p0
+    gap = abs(pc - pd)
+    agree = (pc - p0) * (pd - p0) > 0 or (abs(pc - p0) <= .01 and abs(pd - p0) <= .01)
+    n = min(P.get("nCorr", cfg["top_k"]), P.get("nDtw", cfg["top_k"]))
+    # 最小间隔为半窗口;用该比例给出保守“约有效样本量”,不宣称样本完全独立。
+    neff = max(5, round(n * min(1.0, cfg["min_sep"] / cfg["window"])))
+    lo, hi = _wilson(consensus, neff)
+    robust = int(P.get("robust", 0))
+    sim = P["corrRange"][1]
+    score = 0
+    ae = abs(edge)
+    score += 30 if ae >= .10 else (20 if ae >= .05 else (8 if ae >= .02 else 0))
+    score += 20 if gap <= .05 else (12 if gap <= .10 else (4 if gap <= .15 else 0))
+    score += 20 if robust >= 80 else (12 if robust >= 60 else (5 if robust >= 40 else 0))
+    score += 15 if agree else 0
+    sim_hi = .90 if grp == "crypto" else .80
+    sim_mid = .75 if grp == "crypto" else .65
+    score += 10 if sim >= sim_hi else (6 if sim >= sim_mid else 2)
+    score += 5 if neff >= 20 else (3 if neff >= 12 else 1)
+    grade = "strong" if score >= 75 and agree else ("moderate" if score >= 50 else "weak")
+    direction = "above" if edge > .02 else ("below" if edge < -.02 else "flat")
+    return dict(
+        p=round(consensus * 100), pc=round(pc * 100), pd=round(pd * 100),
+        base=round(p0 * 100), edge=round(edge * 100), gap=round(gap * 100),
+        ci=[round(lo * 100), round(hi * 100)], n=n, neff=neff,
+        robust=robust, agree=agree, score=score, grade=grade, direction=direction,
+    )
+
+
 def _morph(nc):
     n = len(nc); tot = nc[-1] / nc[0] - 1; hi = max(nc); lo = min(nc)
     pos = (nc[-1] - lo) / (hi - lo) if hi > lo else .5
@@ -173,8 +231,8 @@ def _morph(nc):
     return z, e
 
 
-def _verdict(condC, bas, corrRange, grp):
-    edge = condC[2][1] - bas[2][1]; q = corrRange[1]
+def _verdict(condC, condD, bas, corrRange, grp):
+    edge = (condC[2][1] + condD[2][1]) / 2 - bas[2][1]; q = corrRange[1]
     qk = "high" if q > (0.9 if grp == "crypto" else 0.8) else ("mid" if q > (0.75 if grp == "crypto" else 0.65) else "low")
     if edge > 0.05:
         vk, c = ("bull", "up") if q > (0.9 if grp == "crypto" else 0.7) else ("bullweak", "up")
@@ -199,15 +257,44 @@ def build_asset(k, nz, ne, grp, P, S):
     season = [[round(S["sum"][key][0] * 100), round(S["sum"][key][1] * 1000) / 10, S["sum"][key][2]] for key in sea_keys]
     seasyears = [[r[0]] + [(round(x * 1000) / 10 if x is not None else 0) for x in r[1:]] for r in S["py"]]
     matches = [[m[0], m[1]] + [round(x * 1000) / 10 for x in m[2:]] for m in P["mC"][:6]]
-    vk, vc, qk = _verdict(condC, bas, P["corrRange"], grp)
+    vk, vc, qk = _verdict(condC, condD, bas, P["corrRange"], grp)
     mz, me = _morph(P["nc"])
+    trust = _trust(P, grp)
     return dict(
         k=k, nz=nz, ne=ne, grp=grp, refRange=P["refRange"], last=None,
         corr=[P["corrRange"][0], P["corrRange"][1]], vk=vk, vc=vc, qk=qk,
         midp=round(condC[2][1] * 100), basmid=round(bas[2][1] * 100),
+        trust=trust,
         mz=mz, me=me, cond=cond, season=season, seasyears=seasyears,
         matches=matches, nc=[round(x * 10) / 10 for x in P["nc"]], chart=k,
     )
+
+
+def attach_previous(asset, old_asset):
+    """把上一版 APPDATA 的核心指标附到新资产,用于“相比昨天”。"""
+    if not old_asset:
+        asset["change"] = {"available": False}
+        return asset
+    old_t = old_asset.get("trust")
+    if not old_t:
+        try:
+            r = old_asset["cond"][2]
+            p = round((r[0] + r[3]) / 2)
+            base = round(r[6])
+            old_t = {"p": p, "edge": p - base}
+        except (KeyError, IndexError, TypeError):
+            asset["change"] = {"available": False}
+            return asset
+    nt = asset["trust"]
+    asset["change"] = {
+        "available": True,
+        "date": (old_asset.get("health") or {}).get("asof") or old_asset.get("refRange", [None, None])[-1],
+        "p": nt["p"] - int(old_t.get("p", nt["p"])),
+        "edge": nt["edge"] - int(old_t.get("edge", nt["edge"])),
+        "sim": round((asset["corr"][1] - old_asset.get("corr", asset["corr"])[1]) * 100),
+        "verdict": old_asset.get("vk") != asset.get("vk"),
+    }
+    return asset
 
 
 # ---------------- 图表(归一化曲线,深/浅两套 base64 PNG)----------------

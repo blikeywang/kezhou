@@ -7,6 +7,7 @@
 """
 from __future__ import annotations
 import sys, os, time, json, re, argparse, subprocess
+from datetime import datetime, timezone
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -14,6 +15,8 @@ import build, inject  # noqa: E402
 
 UI_PATCH = os.path.join(os.path.dirname(__file__), "ui-explanations.patch")
 UI_MARKER = 'data-methods-version="2026-07-10"'
+V21_PATCH = os.path.join(os.path.dirname(__file__), "ui-v21.patch")
+V21_MARKER = 'data-trust-version="2.1"'
 
 
 def _ensure_ui_explanations():
@@ -34,6 +37,26 @@ def _ensure_ui_explanations():
     if UI_MARKER not in open(inject.APP_HTML, encoding="utf-8").read():
         raise RuntimeError("UI explanations patch applied without version marker")
     print("applied UI explanations patch")
+
+
+def _ensure_ui_v21():
+    """首次部署 V2.1 时应用可信度 UI 补丁;之后只更新 APPDATA。"""
+    html = open(inject.APP_HTML, encoding="utf-8").read()
+    if V21_MARKER in html:
+        print("V2.1 trust UI already present")
+        return
+    if not os.path.exists(V21_PATCH):
+        raise RuntimeError(f"V2.1 UI patch missing: {V21_PATCH}")
+    result = subprocess.run(
+        ["git", "apply", "--unidiff-zero", "--whitespace=nowarn", V21_PATCH],
+        cwd=inject.ROOT, text=True, capture_output=True, check=False,
+    )
+    if result.returncode:
+        detail = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"failed to apply V2.1 UI patch: {detail}")
+    if V21_MARKER not in open(inject.APP_HTML, encoding="utf-8").read():
+        raise RuntimeError("V2.1 UI patch applied without version marker")
+    print("applied V2.1 trust UI")
 
 
 def _load_existing():
@@ -59,9 +82,12 @@ def get_ohlc(sym, grp, self_test):
     if self_test:
         step = 14400 if grp == "crypto" else 86400
         nbars = 12000 if grp == "crypto" else 4000
-        return _synth(nbars, 1500000000, step, hash(sym) % 1000)
+        ts, close, low = _synth(nbars, 1500000000, step, sum(map(ord, sym)))
+        return ts, close, low, {"source": "Synthetic", "endpoint": "self-test"}
     import fetch
-    return fetch.fetch_symbol(sym)
+    ts, close, low = fetch.fetch_symbol(sym)
+    source = "Binance" if grp == "crypto" else "Yahoo Finance"
+    return ts, close, low, {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source)}
 
 
 def main(self_test=False):
@@ -69,21 +95,35 @@ def main(self_test=False):
     old_assets, old_charts = _load_existing()
     assets, prims, seasons, grp_by = {}, {}, {}, {}
     failed = []
+    generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     for sym, meta in names.items():
         grp = meta["grp"]
         t0 = time.time()
         try:
-            ts, close, low = get_ohlc(sym, grp, self_test)
+            ts, close, low, fetch_meta = get_ohlc(sym, grp, self_test)
             P = build.build_prim(ts, close, low, grp)
             S = build.build_season(ts, close, grp)
             assets[sym] = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
+            build.attach_previous(assets[sym], old_assets.get(sym))
+            assets[sym]["health"] = {
+                "status": "fresh", "asof": P["refRange"][1], "generatedAt": generated_at,
+                "bars": len(close), "source": fetch_meta["source"], "endpoint": fetch_meta["endpoint"],
+            }
             prims[sym] = P; seasons[sym] = S; grp_by[sym] = grp
             print(f"  {sym:5} {grp:9} bars={len(close):6} corr={P['corrRange']} "
                   f"verdict={assets[sym]['vk']:8} ({time.time()-t0:.1f}s)")
         except Exception as e:  # noqa: BLE001
             # 兜底:该标的沿用上一次的数据,不因单个失败而中断全站
             if sym in old_assets:
-                assets[sym] = old_assets[sym]; failed.append(sym)
+                assets[sym] = dict(old_assets[sym]); failed.append(sym)
+                previous = (old_assets[sym].get("health") or {})
+                asof = previous.get("asof") or old_assets[sym].get("refRange", [None, None])[-1]
+                try:
+                    age = (datetime.now(timezone.utc).date() - datetime.fromisoformat(asof).date()).days
+                except (TypeError, ValueError):
+                    age = 99
+                assets[sym]["health"] = dict(previous, status="stale" if age > 2 else "cached",
+                    asof=asof, generatedAt=generated_at, error=str(e).splitlines()[0][:160])
                 print(f"  {sym:5} FETCH/BUILD FAILED -> keep previous data ({e})")
             else:
                 print(f"  {sym:5} FAILED and no previous data -> skipped ({e})")
@@ -106,11 +146,24 @@ def main(self_test=False):
             if ek in old_charts.get(theme, {}):
                 th[ek] = old_charts[theme][ek]
 
-    appdata = inject.assemble(assets, charts)
+    run_status = "healthy" if not failed else "partial"
+    run_meta = {"generatedAt": generated_at, "status": run_status,
+                "fresh": len(assets) - len(failed), "cached": len(failed), "failed": failed}
+    appdata = inject.assemble(assets, charts, run_meta)
     inject.inject(appdata)
     _ensure_ui_explanations()
+    _ensure_ui_v21()
     ok = len(assets) - len(failed)
     print(f"injected {len(assets)} symbols ({ok} fresh, {len(failed)} kept) into app.html")
+    if failed:
+        names_s = ", ".join(failed)
+        print(f"::warning title=Partial data refresh::{names_s} kept previous data")
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a", encoding="utf-8") as f:
+            f.write(f"## Kezhou refresh\n\n- Status: **{run_status}**\n- Fresh: **{ok}**\n- Cached/Stale: **{len(failed)}**\n")
+            if failed:
+                f.write(f"- Kept previous data: `{', '.join(failed)}`\n")
 
 
 if __name__ == "__main__":
