@@ -4,7 +4,7 @@
 >
 > **免责:本产品输出为基于历史相似度的概率描述,不构成任何投资建议。历史相似 ≠ 未来重复。** 详见 [`DISCLAIMER.md`](./DISCLAIMER.md)。
 
-当前状态:**已上线的免费静态数据页 + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
+当前状态:**已上线的 TraderHome 三工作台 Demo + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，EV Desk 位于 `/decision/app.html`，TradeReview OS 展示位于 `/review/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
@@ -19,6 +19,12 @@ kezhou/
 │   ├── report.html           # 统一分析报告(深浅切换,交互版)
 │   ├── report_dark.html      # 报告 · 深色仪表盘版
 │   └── report_light.html     # 报告 · 浅色杂志版
+├── portal/                   # TraderHome 同域集成层
+│   ├── home/                 # 统一首页
+│   ├── assets/               # 三工作台共享导航
+│   ├── vendor/               # 浏览器安全的静态 Demo 快照
+│   ├── build_site.py         # 生成 /history · /decision · /review
+│   └── test_portal.py        # 路由、隐私与域名回归测试
 ├── data/                     # 已算出的真实结果(可作后端回归测试基准样本)
 │   ├── crypto_payload.json   # BTC/ETH/SOL 多配置匹配结果
 │   ├── crypto_season.json    # 加密同期季节性
@@ -46,7 +52,7 @@ kezhou/
 
 ## 快速开始
 
-**只想看产品**:打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 或直接用浏览器打开 `prototype/app.html`。右上角可切换 `中/EN`、深/浅主题和“讲解”模式；站内全部分析表免费查看。
+**只想看产品**:打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、下单前决策或交易后复盘。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
 
 **重新生成图表与原型**(需 Python 3 + `matplotlib numpy`):
 

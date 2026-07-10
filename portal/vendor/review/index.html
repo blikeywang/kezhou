@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TradeReview OS · 交易后成长展示</title>
+<style>
+  :root { color-scheme: light; --bg:#f4f2ec; --panel:#fff; --ink:#2b2a26; --muted:#6c6960; --line:#e6e3db;
+          --up:#2e8b5b; --down:#c0503b; --warn:#c79a3a; --accent:#2a6fdb; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; line-height:1.6; }
+  .wrap { max-width:1000px; margin:0 auto; padding:28px 20px 64px; }
+  .hero h1 { font-size:27px; margin:0 0 6px; }
+  .hero p { color:var(--muted); margin:0 0 18px; }
+  .tag { display:inline-block; font-size:12px; color:var(--accent); background:#eaf1fc; border-radius:999px; padding:3px 10px; margin-bottom:10px; }
+  /* 生命周期条 */
+  .life { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:8px 0 26px; }
+  .life .stage { border:1px solid var(--line); border-radius:12px; padding:14px; background:var(--panel); opacity:.6; }
+  .life .stage.here { opacity:1; border-color:var(--accent); box-shadow:0 4px 16px rgba(42,111,219,.12); }
+  .life .stage b { display:block; font-size:15px; } .life .stage span { font-size:12px; color:var(--muted); }
+  .life .stage .badge { font-size:11px; color:var(--accent); }
+  @media(max-width:640px){ .life{grid-template-columns:1fr} }
+  .layer-title { display:flex; align-items:baseline; gap:10px; margin:30px 0 12px; }
+  .layer-title h2 { font-size:20px; margin:0; } .layer-title span { color:var(--muted); font-size:13px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px; box-shadow:0 3px 14px rgba(0,0,0,.04); }
+  .card h3 { font-size:15px; margin:0 0 4px; } .card .s { color:var(--muted); font-size:13px; margin:0 0 10px; }
+  .chips { display:flex; flex-wrap:wrap; gap:7px; } .chip { background:#f4f2ec; border:1px solid var(--line); border-radius:8px; padding:3px 9px; font-size:12.5px; }
+  .kpirow { display:flex; gap:14px; flex-wrap:wrap; }
+  .kpi b { display:block; font-size:17px; } .kpi small { color:var(--muted); font-size:12px; }
+  .kpi .pos{color:var(--up)} .kpi .neg{color:var(--down)}
+  table { width:100%; border-collapse:collapse; font-size:13px; } td,th{ text-align:left; padding:5px 6px; border-bottom:1px solid #f0eee7; }
+  .g { display:inline-block; width:20px; text-align:center; border-radius:5px; color:#fff; font-weight:700; font-size:12px; }
+  .gA{background:#2e8b5b}.gB{background:#4a8fd6}.gC{background:#c79a3a}.gD{background:#c0503b}
+  .pill { display:inline-block; font-size:12px; border:1px solid var(--line); border-radius:999px; padding:3px 10px; margin:3px 4px 0 0; background:#fbfaf8; }
+  .muted { color:var(--muted); font-size:13px; }
+  /* 诊断/成长/讨论 复用 */
+  .score { display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:30px;padding:0 8px;border-radius:8px;font-weight:700;color:#fff; }
+  .score.pos{background:var(--up)}.score.warn{background:var(--warn)}.score.neg{background:var(--down)}
+  .diag-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .diag-read{margin:8px 0 12px;padding-left:18px} .diag-read li{margin:4px 0}
+  .action{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:10px 12px;background:#fbfaf8}
+  .action span{font-size:12px;color:var(--accent);font-weight:600} .action p{margin:4px 0 0}
+  .big { grid-column:1/-1; }
+  .replay{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center} @media(max-width:640px){.replay{grid-template-columns:1fr}}
+  .dims{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-top:14px}
+  .gdim{border:1px solid var(--line);border-radius:10px;padding:12px} .gdim-name{font-weight:600;font-size:14px;margin-bottom:8px}
+  .gdim-name .pos{color:var(--up);font-size:12px}.gdim-name .neg{color:var(--down);font-size:12px}
+  .bar{height:8px;border-radius:6px;background:#edebe4;overflow:hidden;margin-bottom:6px} .bar span{display:block;height:100%}
+  .bar .pos{background:var(--up)}.bar .warn{background:var(--warn)}.bar .neg{background:var(--down)}
+  .thread{display:flex;flex-direction:column;gap:8px;margin-bottom:10px} .msg{background:#fbfaf8;border:1px solid #edebe4;border-radius:8px;padding:8px 10px}
+  .msg .who{font-weight:600;font-size:13px;color:var(--accent)} .msg p{margin:4px 0 0}
+  .cform{display:flex;gap:8px} .cform input{flex:1;padding:9px 11px;border:1px solid #d6d2c9;border-radius:8px;font-size:14px}
+  .cform button{padding:9px 16px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .note{font-size:12px;color:#9aa4b2;margin-top:8px}
+  .ready { display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--up);background:#eaf6ee;border-radius:999px;padding:3px 10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="tag">TradeReview OS · 全貌展示 · 合成样例数据</div>
+    <h1>把每一笔交易放回图上，像教练一样告诉你怎么提升</h1>
+    <p>TradeReview OS 负责交易的<strong>平仓后 · 成长分析</strong>，与历史证据、下单前决策组成 TraderHome 三段式闭环。下面使用样例数据展示复盘基建、核心付费价值与成长能力。</p>
+    <div class="life">
+      <a class="stage" href="/history/"><span class="badge">刻舟求剑</span><b>研究期 · 历史证据</b><span>相似片段、概率基准与可信度</span></a>
+      <a class="stage" href="/decision/app.html"><span class="badge">EV Desk</span><b>下单前 · 计划与风控</b><span>多流派评审、赔率和失效点</span></a>
+      <div class="stage here"><span class="badge">TradeReview OS</span><b>平仓后 · 成长分析</b><span>复盘、行为证据与成长验证</span></div>
+    </div>
+  </div>
+
+  <!-- ============ 一、复盘基建（V1） ============ -->
+  <div class="layer-title"><h2>一、复盘基建（V1）</h2><span>导入交易，剩下的统计、错题本、还原、专家计划、整图、数据全自动</span></div>
+  <div class="grid">
+    <div class="card">
+      <h3>交易导入 & 去重</h3><p class="s">MT5 / 券商 CSV，字段别名容错，按 ticket 去重</p>
+      <div class="chips"><span class="chip">多文件合并</span><span class="chip">字段自动映射</span><span class="chip">ticket 去重</span><span class="chip">空数据也合法</span></div>
+    </div>
+    <div class="card">
+      <h3>统计中枢 · 日 / 周 / 月</h3><p class="s">胜率、盈亏比、期望、回撤、连亏、时段</p>
+      <div class="kpirow">
+        <div class="kpi"><b class="pos">+640</b><small>样例净盈亏</small></div>
+        <div class="kpi"><b>58%</b><small>样例胜率</small></div>
+        <div class="kpi"><b>1.32</b><small>样例盈亏比</small></div>
+        <div class="kpi"><b>48</b><small>样例交易数</small></div>
+      </div>
+      <svg viewBox="0 0 260 46" width="100%" height="42" style="margin-top:8px"><polyline fill="none" stroke="#c0503b" stroke-width="2"
+        points="0,38 30,34 60,37 90,28 120,30 150,22 180,24 210,17 240,13 260,9"/></svg>
+    </div>
+    <div class="card">
+      <h3>错题本 · D→C→B→A</h3><p class="s">问题单排序，逐笔给 lesson 与下次动作</p>
+      <table>
+        <tr><td><span class="g gD">D</span></td><td>USTECm 做多</td><td class="neg">-88</td><td class="muted">无硬止损</td></tr>
+        <tr><td><span class="g gC">C</span></td><td>XAUUSDm 做空</td><td class="neg">-27</td><td class="muted">止损过宽</td></tr>
+        <tr><td><span class="g gB">B</span></td><td>US500m 做多</td><td class="pos">+20</td><td class="muted">盈利待复核</td></tr>
+        <tr><td><span class="g gA">A</span></td><td>BTCUSDm 做多</td><td class="pos">+120</td><td class="muted">计划内结构</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3>单笔 K 线还原</h3><p class="s">开仓前后真实蜡烛，标出入场/出场/止损/止盈</p>
+      <svg viewBox="0 0 260 120" width="100%" height="110"><rect width="260" height="120" fill="#fbfaf8"/>
+        <g stroke="#2e8b5b" fill="rgba(46,139,91,.2)"><line x1="30" y1="70" x2="30" y2="98"/><rect x="26" y="78" width="8" height="14"/><line x1="120" y1="40" x2="120" y2="80"/><rect x="116" y="48" width="8" height="22"/><line x1="200" y1="30" x2="200" y2="66"/><rect x="196" y="36" width="8" height="18"/></g>
+        <g stroke="#c0503b" fill="rgba(192,80,59,.2)"><line x1="75" y1="60" x2="75" y2="92"/><rect x="71" y="68" width="8" height="16"/><line x1="160" y1="44" x2="160" y2="78"/><rect x="156" y="54" width="8" height="18"/></g>
+        <line x1="20" y1="82" x2="250" y2="82" stroke="#2a6fdb" stroke-dasharray="4 3"/><text x="22" y="78" font-size="9" fill="#2a6fdb">入场</text>
+        <line x1="20" y1="40" x2="250" y2="40" stroke="#2e8b5b" stroke-dasharray="4 3"/><text x="22" y="36" font-size="9" fill="#2e8b5b">止盈</text>
+      </svg>
+    </div>
+    <div class="card">
+      <h3>专家计划 · Paul Wei 行为评分</h3><p class="s">具名专家的价格行为画像，按品类迁移，给本单契合度</p>
+      <div class="chips"><span class="chip">位置 · 确认 · 失效点</span><span class="chip">本单契合度 68</span><span class="chip">18 个品类 profile</span></div>
+      <p class="muted" style="margin-top:8px">跨品类只迁移行为语言与 R 单位，不照搬 BTC 阈值。非投资建议。</p>
+    </div>
+    <div class="card">
+      <h3>整图行情 · 全部交易标记</h3><p class="s">整条行情 + 开多/开空/平多/平空，多周期</p>
+      <svg viewBox="0 0 260 100" width="100%" height="92"><rect width="260" height="100" fill="#fbfaf8"/>
+        <g stroke="#2e8b5b" fill="#2e8b5b"><rect x="26" y="52" width="7" height="18"/><rect x="150" y="40" width="7" height="16"/><rect x="228" y="30" width="7" height="14"/></g>
+        <g stroke="#c0503b" fill="#c0503b"><rect x="62" y="46" width="7" height="20"/><rect x="110" y="42" width="7" height="18"/><rect x="190" y="36" width="7" height="18"/></g>
+        <path d="M62 38 l4 8 h-8 z" fill="#c0503b"/><text x="52" y="34" font-size="8" fill="#c0503b">开空</text>
+        <path d="M150 60 l4 -8 h-8 z" fill="#2e8b5b"/><text x="142" y="72" font-size="8" fill="#2e8b5b">平空</text>
+      </svg>
+    </div>
+    <div class="card big">
+      <h3>多源数据引擎 · 你只管导交易</h3><p class="s">主流品种自动识别 + 多源自动回退；<span class="ready">✓ 数据管线已跑通 stage=ready</span></p>
+      <div>
+        <span class="pill">加密 → 交易所 K 线适配器</span>
+        <span class="pill">黄金 → 授权行情适配器</span>
+        <span class="pill">指数/能源 → 授权期货行情</span>
+        <span class="pill">外汇 → 多数据商故障转移</span>
+        <span class="pill">美股 → 商业行情适配器</span>
+        <span class="pill">A/HK → 地区市场适配器</span>
+        <span class="pill">服务端重采样 5m→15m/1h/4h/日</span>
+        <span class="pill">TradingView UDF 兼容</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 二、核心攻击点 ============ -->
+  <div class="layer-title"><h2>二、核心攻击点</h2><span>这一单亏赚该怎么看、怎么提升 · 长期成长 · 家人陪伴</span></div>
+  <div class="grid">
+    <div class="card big">
+      <div class="diag-head"><span class="score warn">80</span><h3 style="font-size:17px">单笔诊断 · 这一单该怎么看</h3></div>
+      <p class="s">XAUUSDm 做多 · 盈利 +50，但这是一单“赚得远不够”的交易</p>
+      <div class="replay">
+        <svg viewBox="0 0 380 170" width="100%" height="160"><rect width="380" height="170" fill="#fbfaf8"/>
+          <g stroke="#2e8b5b" fill="rgba(46,139,91,.18)"><line x1="40" y1="115" x2="40" y2="145"/><rect x="35" y="122" width="10" height="16"/><line x1="120" y1="66" x2="120" y2="115"/><rect x="115" y="74" width="10" height="30"/><line x1="180" y1="38" x2="180" y2="92"/><rect x="175" y="44" width="10" height="26"/></g>
+          <g stroke="#c0503b" fill="rgba(192,80,59,.18)"><line x1="80" y1="92" x2="80" y2="135"/><rect x="75" y="100" width="10" height="24"/><line x1="230" y1="58" x2="230" y2="114"/><rect x="225" y="74" width="10" height="30"/><line x1="300" y1="92" x2="300" y2="145"/><rect x="295" y="106" width="10" height="30"/></g>
+          <line x1="30" y1="126" x2="360" y2="126" stroke="#2a6fdb" stroke-dasharray="4 4"/><text x="32" y="122" font-size="10" fill="#2a6fdb">入场</text>
+          <line x1="30" y1="44" x2="360" y2="44" stroke="#2e8b5b" stroke-dasharray="4 4"/><text x="32" y="40" font-size="10" fill="#2e8b5b">浮盈最高 +3.0R</text>
+        </svg>
+        <div>
+          <div class="chips"><span class="chip">浮盈最高 +3.00R</span><span class="chip">浮亏最深 -0.50R</span><span class="chip">兑现 17%</span><span class="chip">风险 1R=1.0</span></div>
+          <ul class="diag-read"><li>盘中浮盈最多到过 +3.00R，你落袋约 17%。</li><li>3R 的机会大半回吐了。</li><li>入场靠近支撑，位置尚可；开仓前偏多。</li></ul>
+          <div class="action"><span>下次一个动作</span><p>浮盈到 1R 就移动止损或先减半仓，别让 +3.00R 的浮盈回吐。</p></div>
+        </div>
+      </div>
+      <p class="note">由嵌入 K 线实时算：MFE/MAE、兑现率、入场位置、执行质量分。教练只让你先改一件事。</p>
+    </div>
+
+    <div class="card big">
+      <h3 style="font-size:17px">成长追踪 · 执行质量的成长曲线</h3>
+      <p class="s">把每一单诊断沉淀成长期进步 —— 每天回来看的理由</p>
+      <canvas id="growth" width="920" height="210" style="width:100%;height:210px"></canvas>
+      <div class="dims" id="dims"></div>
+    </div>
+
+    <div class="card big">
+      <h3 style="font-size:17px">家人陪伴讨论 · 一起复盘这一单</h3>
+      <p class="s">XAUUSDm #DEMO-003 的讨论线程（可直接在下面发言试试）</p>
+      <div class="thread" id="thread"></div>
+      <form class="cform" id="cform"><input id="cinput" placeholder="写点复盘感想，喊家人一起看…" autocomplete="off" /><button type="submit">发送</button></form>
+      <p class="note">真实产品里评论存后端、家人共享可见、按登录身份隔离。这里是本地演示。</p>
+    </div>
+  </div>
+
+  <!-- ============ 三、平台基建（SaaS） ============ -->
+  <div class="layer-title"><h2>三、平台基建（SaaS）</h2><span>本地能跑、结构对齐 AWS 的多用户平台底座</span></div>
+  <div class="grid">
+    <div class="card"><h3>账号 & 数据隔离</h3><p class="s">注册/登录/登出，密码加盐哈希，每个交易员数据互不可见</p><div class="chips"><span class="chip">pbkdf2</span><span class="chip">签名会话</span><span class="chip">多租户</span></div></div>
+    <div class="card"><h3>网页上传 · 后台异步构建</h3><p class="s">上传即返回，DB 任务队列 + worker，进度轮询</p><div class="chips"><span class="chip">不阻塞</span><span class="chip">原子领取</span><span class="chip">断点复位</span></div></div>
+    <div class="card"><h3>订阅 & 套餐门控</h3><p class="s">Free/Pro，Stripe 脚手架（含 dev 假实现），免费版限量</p><div class="chips"><span class="chip">结账/回调</span><span class="chip">功能门控</span><span class="chip">密钥不入库</span></div></div>
+    <div class="card"><h3>结构化日志</h3><p class="s">JSON 到 stdout，请求与关键事件全埋点，CloudWatch 友好</p><div class="chips"><span class="chip">请求耗时</span><span class="chip">登录/上传/构建</span><span class="chip">异常栈</span></div></div>
+    <div class="card"><h3>可替换数据层</h3><p class="s">Repository 接口 + 工厂，SQLite 起步，换 Postgres 只改一处</p><div class="chips"><span class="chip">DATABASE_URL</span><span class="chip">RDS 就绪</span></div></div>
+    <div class="card"><h3>迁 AWS 就绪</h3><p class="s">DB→RDS、文件→S3、队列→SQS、部署→ECS/Fargate，业务代码不动</p><div class="chips"><span class="chip">S3</span><span class="chip">SQS</span><span class="chip">容器化</span></div></div>
+  </div>
+
+  <p class="note" style="margin-top:22px">本页的金额、交易、曲线和对话均为合成样例，不来自任何真实账户。正式版只在用户授权后处理其交易记录，并按账户隔离。</p>
+</div>
+
+<script>
+const series=[{l:"06-08",v:48},{l:"06-09",v:52},{l:"06-10",v:47},{l:"06-11",v:58},{l:"06-12",v:61},{l:"06-15",v:66},{l:"06-16",v:64},{l:"06-17",v:72},{l:"06-18",v:75},{l:"06-19",v:80}];
+(function(){const c=document.getElementById("growth"),ctx=c.getContext("2d");const dpr=window.devicePixelRatio||1;c.width=c.clientWidth*dpr;c.height=210*dpr;ctx.scale(dpr,dpr);
+  const W=c.clientWidth,H=210,pL=34,pR=16,pT=14,pB=24;ctx.font="12px -apple-system,Segoe UI,sans-serif";
+  const y=v=>pT+(1-v/100)*(H-pT-pB),x=i=>pL+i*(W-pL-pR)/(series.length-1);
+  ctx.strokeStyle="#edebe4";ctx.fillStyle="#9aa4b2";[0,25,50,75,100].forEach(v=>{ctx.beginPath();ctx.moveTo(pL,y(v));ctx.lineTo(W-pR,y(v));ctx.stroke();ctx.fillText(v,8,y(v)+4);});
+  ctx.strokeStyle="#2a6fdb";ctx.lineWidth=2;ctx.beginPath();series.forEach((p,i)=>{const xx=x(i),yy=y(p.v);i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy);});ctx.stroke();
+  series.forEach((p,i)=>{ctx.fillStyle=p.v>=75?"#2e8b5b":p.v>=50?"#c79a3a":"#c0503b";ctx.beginPath();ctx.arc(x(i),y(p.v),3.4,0,7);ctx.fill();});
+  ctx.fillStyle="#9aa4b2";series.forEach((p,i)=>{if(i%2===0||i===series.length-1)ctx.fillText(p.l,x(i)-14,H-6);});ctx.fillStyle="#2b2a26";ctx.fillText("80",x(series.length-1)-6,y(80)-10);})();
+const dims=[{n:"止损纪律",c:88,d:6},{n:"利润保护",c:41,d:-4,h:"浮盈常常没保护就回吐"},{n:"风险控制",c:79,d:9},{n:"入场位置",c:63,d:2},{n:"情绪纪律",c:70,d:12}];
+document.getElementById("dims").innerHTML=dims.map(d=>{const cls=d.c>=75?"pos":d.c>=50?"warn":"neg";const ar=d.d>2?`<span class="pos">▲ +${d.d}</span>`:d.d<-2?`<span class="neg">▼ ${d.d}</span>`:`<span class="muted">→ 持平</span>`;const hint=d.c<60?(d.h||"")+"，重点盯":(d.d>2?"较上期进步":"保持");return `<div class="gdim"><div class="gdim-name">${d.n} ${ar}</div><div class="bar"><span class="${cls}" style="width:${d.c}%"></span></div><div class="muted">${d.c} 分 · ${hint}</div></div>`;}).join("");
+const thread=[{w:"交易员",b:"这单我平早了，看着还想再涨"},{w:"复盘教练",b:"浮盈到 1R 就该减半保护，规则先立住"},{w:"交易员",b:"收到，下次到 1R 先减半仓试试"}];
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(){document.getElementById("thread").innerHTML=thread.map(m=>`<div class="msg"><span class="who">${esc(m.w)}</span><p>${esc(m.b)}</p></div>`).join("");}
+document.getElementById("cform").addEventListener("submit",e=>{e.preventDefault();const i=document.getElementById("cinput");const v=i.value.trim();if(!v)return;thread.push({w:"我",b:v});i.value="";render();});
+render();
+</script>
+</body>
+</html>

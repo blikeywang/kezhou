@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - "pipeline/daily/**"
+      - "portal/**"
       - "docs/METHODS_AND_SOURCES.md"
       - "README.md"
       - ".github/workflows/daily.yml"
@@ -39,6 +40,9 @@ jobs:
       - name: Run V2.1 regression tests
         run: python -m unittest pipeline.daily.test_v21
 
+      - name: Run TraderHome portal tests
+        run: python -m unittest portal.test_portal
+
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py
 
@@ -51,12 +55,7 @@ jobs:
           git push || echo "nothing to push"
 
       - name: Prepare static site
-        run: |
-          mkdir -p _site
-          cp prototype/app.html _site/index.html
-          cp prototype/og.png   _site/og.png       2>/dev/null || true
-          cp DISCLAIMER.md      _site/DISCLAIMER.md 2>/dev/null || true
-          cp CNAME              _site/CNAME         2>/dev/null || true
+        run: python portal/build_site.py --output _site
 
       - uses: actions/upload-pages-artifact@v3
         with:

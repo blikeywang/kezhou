@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="TraderHome 将历史概率、下单前决策和交易后复盘连接成一条可验证的交易工作流。">
+  <title>TraderHome · 从证据到成长的交易工作台</title>
+  <style>
+    :root{--bg:#070b14;--panel:#0e1627;--panel2:#111c30;--line:#22304a;--txt:#f8fafc;--muted:#98a8bf;--blue:#60a5fa;--cyan:#67e8f9;--green:#4ade80;--amber:#fbbf24}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 78% 8%,#142440 0,transparent 34%),var(--bg);color:var(--txt);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;line-height:1.6}a{text-decoration:none;color:inherit}.page{width:min(1160px,calc(100% - 34px));margin:auto}.hero{padding:84px 0 62px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr);gap:50px;align-items:center}.eyebrow{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.16em}.hero h1{font-size:clamp(42px,6vw,76px);line-height:1.04;letter-spacing:-.045em;margin:14px 0 22px;max-width:820px}.hero h1 span{background:linear-gradient(90deg,#fff,#7dd3fc);-webkit-background-clip:text;color:transparent}.hero p{font-size:18px;color:#cbd5e1;max-width:720px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 17px;border-radius:11px;border:1px solid var(--line);font-weight:750;font-size:14px}.btn.primary{background:#e0f2fe;color:#07111f;border-color:#e0f2fe}.btn:hover{transform:translateY(-1px)}.flow{display:grid;gap:10px}.flow-card{position:relative;background:linear-gradient(145deg,rgba(20,34,57,.94),rgba(12,20,35,.96));border:1px solid var(--line);border-radius:16px;padding:17px 18px}.flow-card:after{content:"↓";position:absolute;bottom:-20px;left:26px;color:#52647f;z-index:2}.flow-card:last-child:after{display:none}.flow-card small{color:var(--muted);font-weight:700}.flow-card strong{display:block;font-size:17px;margin:3px 0}.flow-card p{font-size:13px;margin:0;color:#aebdd0}.section{padding:66px 0;border-top:1px solid rgba(148,163,184,.13)}.section h2{font-size:clamp(28px,4vw,42px);margin:5px 0 9px;letter-spacing:-.025em}.lead{color:var(--muted);margin:0 0 28px}.products{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.product{display:flex;flex-direction:column;min-height:365px;padding:23px;background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px}.product .n{font:700 12px/1 ui-monospace,SFMono-Regular,monospace;color:var(--blue)}.product h3{font-size:24px;margin:14px 0 7px}.product .sub{color:#cbd5e1;font-weight:700}.product p{color:var(--muted);font-size:14px}.product ul{padding-left:18px;color:#b8c6d9;font-size:13px}.product .go{margin-top:auto;color:#bae6fd;font-weight:800;font-size:14px}.principles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.principle{padding:18px;border:1px solid var(--line);background:rgba(14,22,39,.72);border-radius:14px}.principle b{display:block;margin-bottom:6px}.principle span{font-size:13px;color:var(--muted)}.community{display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center;padding:32px;background:linear-gradient(120deg,#102441,#132135);border:1px solid #29415f;border-radius:20px}.community h2{margin:0 0 8px}.community p{color:#b9c8da;margin:0}.community-actions{display:flex;gap:10px;flex-wrap:wrap}.pending{opacity:.72;cursor:not-allowed}footer{padding:28px 0 44px;color:#718096;font-size:12px;text-align:center}@media(max-width:900px){.hero{grid-template-columns:1fr;padding-top:60px}.products,.principles{grid-template-columns:1fr}.product{min-height:auto}.community{grid-template-columns:1fr}.hero h1{font-size:46px}}@media(max-width:520px){.hero h1{font-size:38px}.hero p{font-size:16px}.section{padding:48px 0}}
+  </style>
+</head>
+<body>
+  <main>
+    <section class="page hero">
+      <div>
+        <div class="eyebrow">TRADERHOME · EVIDENCE → DECISION → GROWTH</div>
+        <h1>把一次交易，变成<span>可以验证的完整闭环</span></h1>
+        <p>不是再堆一套指标。TraderHome 把历史概率证据、下单前计划和交易后成长接到一起，让每个判断都有依据、每次执行都能回看。</p>
+        <div class="actions"><a class="btn primary" href="/history/">从历史证据开始 →</a><a class="btn" href="#products">查看三个工作台</a></div>
+      </div>
+      <div class="flow" aria-label="交易闭环">
+        <div class="flow-card"><small>01 · RESEARCH</small><strong>先问：历史上像什么？</strong><p>用相关系数与 DTW 找历史相似片段，先建立概率基准和可信度。</p></div>
+        <div class="flow-card"><small>02 · PLAN</small><strong>再问：这一单值不值？</strong><p>集合多流派视角，明确方向、位置、失效点、赔率与风险边界。</p></div>
+        <div class="flow-card"><small>03 · REVIEW</small><strong>最后问：我哪里变好了？</strong><p>把真实执行放回行情，识别最贵的重复错误，并用后续交易验证改变。</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="products"><div class="page">
+      <div class="eyebrow">THREE WORKSPACES · ONE JOURNEY</div><h2>三个产品，各自只解决一件难事</h2><p class="lead">边界清楚，证据可以向下一阶段传递；Demo 可直接进入，无需注册。</p>
+      <div class="products">
+        <article class="product"><span class="n">01 / 历史研究</span><h3>刻舟求剑</h3><div class="sub">当前形态在历史上像什么？</div><p>给出相似历史、共识上涨概率、相对基准 Edge、置信区间、方法一致度和数据健康。</p><ul><li>历史相似不是未来预测</li><li>可信度等级不是买卖评级</li><li>适合作为交易假设的证据层</li></ul><a class="go" href="/history/">打开历史证据 →</a></article>
+        <article class="product"><span class="n">02 / 下单前</span><h3>EV Desk</h3><div class="sub">方向成立后，这一单怎样计划？</div><p>用多流派评审、赔率体检和风险护栏，把观点变成可执行、可失效、可复盘的交易计划。</p><ul><li>明确进场、止损、目标</li><li>赔率不足时主动劝退</li><li>专家战绩与适用环境分开</li></ul><a class="go" href="/decision/app.html">进入下单前决策 →</a></article>
+        <article class="product"><span class="n">03 / 交易后</span><h3>TradeReview OS</h3><div class="sub">交易结束后，我究竟该改什么？</div><p>从交易统计走到行为证据：找出最高成本行为、给出唯一行动处方，并跟踪后续是否真的改变。</p><ul><li>先自评，再揭示系统诊断</li><li>多流派共识与分歧</li><li>成长证明不只看短期盈亏</li></ul><a class="go" href="/review/">查看交易后复盘 →</a></article>
+      </div>
+    </div></section>
+
+    <section class="section"><div class="page"><div class="eyebrow">PRODUCT PRINCIPLES</div><h2>我们共同遵守的三条底线</h2><div class="principles"><div class="principle"><b>证据与推演分开</b><span>历史案例、规则推演和实时数据分别标注，不把故事包装成事实。</span></div><div class="principle"><b>不承诺确定收益</b><span>概率、评分、赔率与历史表现都用于决策支持，不代表未来必然重复。</span></div><div class="principle"><b>成长必须能验证</b><span>建议要落到下一批交易的可观察行为，不用一次盈利证明方法有效。</span></div></div></div></section>
+
+    <section class="section" id="community"><div class="page"><div class="community"><div><div class="eyebrow">PRIVATE COMMUNITY</div><h2>喜欢这套工作流？到 DC / TG 继续使用</h2><p>公开网站只负责 Demo 展示。品类需求、使用反馈、内测入口和后续服务将在私域承接。</p></div><div class="community-actions"><span class="btn pending" title="等待配置真实邀请链接">Discord · 待配置</span><span class="btn pending" title="等待配置真实邀请链接">Telegram · 待配置</span></div></div></div></section>
+  </main>
+  <footer>TraderHome Demo · 历史分析、交易决策支持与复盘教育工具 · 不构成投资建议</footer>
+</body>
+</html>
