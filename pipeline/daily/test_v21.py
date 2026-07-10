@@ -29,6 +29,15 @@ class TrustMetricsTest(unittest.TestCase):
         self.assertGreater(t["ci"][1], t["p"])
         self.assertIn(t["grade"], {"strong", "moderate", "weak"})
 
+    def test_small_edge_cannot_be_strong(self):
+        p = self._prim()
+        p["condC"][2][1] = .58
+        p["condD"][2][1] = .56
+        p["bas"][2][1] = .54
+        t = build._trust(p, "crypto")
+        self.assertEqual(t["edge"], 3)
+        self.assertNotEqual(t["grade"], "strong")
+
     def test_previous_delta(self):
         new = {"trust": {"p": 68, "edge": 14}, "corr": [-.8, .93], "vk": "bull"}
         old = {"cond": [[], [], [60, 0, "", 64, 0, "", 54]],

@@ -202,7 +202,9 @@ def _trust(P, grp):
     sim_mid = .75 if grp == "crypto" else .65
     score += 10 if sim >= sim_hi else (6 if sim >= sim_mid else 2)
     score += 5 if neff >= 20 else (3 if neff >= 12 else 1)
-    grade = "strong" if score >= 75 and agree else ("moderate" if score >= 50 else "weak")
+    # 等级同时要求“证据完整”与最小效应,避免稳定但仅 1–3pp 的 Edge 被称为强方向优势。
+    grade = "strong" if score >= 75 and agree and ae >= .05 else (
+        "moderate" if score >= 50 and ae >= .02 else "weak")
     direction = "above" if edge > .02 else ("below" if edge < -.02 else "flat")
     return dict(
         p=round(consensus * 100), pc=round(pc * 100), pd=round(pd * 100),
