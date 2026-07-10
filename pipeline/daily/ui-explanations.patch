@@ -1,0 +1,79 @@
+diff --git a/prototype/app.html b/prototype/app.html
+index 328f47f..000127f 100644
+--- a/prototype/app.html
++++ b/prototype/app.html
+@@ -169,0 +170,14 @@ h4.blk{font-size:13px;margin:16px 0 7px;font-weight:500}
++.readtitle{font-size:13px;font-weight:500;margin:12px 0 7px;color:var(--ink)}
++.readcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 14px}
++.readcard{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:12px;color:var(--ink2);line-height:1.62}
++.readcard b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:4px;font-weight:500}
++.readcard .rn{display:inline-flex;width:19px;height:19px;align-items:center;justify-content:center;border-radius:50%;background:var(--acc);color:#fff;font-size:11px;margin-right:5px}
++.tableguide{font-size:12px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:0 0 8px;line-height:1.6}
++.tableguide b{color:var(--ink);font-weight:500}
++.methodbox{background:var(--pan);border:1px solid var(--line);border-radius:14px;margin:18px 0 0;box-shadow:var(--sh)}
++.methodbox summary{cursor:pointer;padding:14px 16px;font-size:13.5px;font-weight:500;list-style:none;display:flex;align-items:center;gap:8px}
++.methodbox summary::-webkit-details-marker{display:none}.methodbox summary:after{content:'+';margin-left:auto;color:var(--acc);font-size:18px}.methodbox[open] summary:after{content:'−'}
++.methodbody{border-top:1px solid var(--line);padding:15px 17px 17px;color:var(--ink2);font-size:12.2px;line-height:1.72}
++.methodbody h5{color:var(--ink);font-size:12.8px;margin:12px 0 4px;font-weight:500}.methodbody h5:first-child{margin-top:0}
++.methodbody ol,.methodbody ul{margin:5px 0 8px;padding-left:20px}.methodbody li{margin:3px 0}.methodbody a{color:var(--acc);text-decoration:underline;text-underline-offset:2px}
++.methodmeta{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 8px}.methodmeta span{border:1px solid var(--line2);border-radius:14px;padding:2px 8px;color:var(--mut);font-size:11px}
+@@ -193,0 +208 @@ h4.blk{font-size:13px;margin:16px 0 7px;font-weight:500}
++@media(max-width:960px){.readcards{grid-template-columns:1fr}}
+@@ -254,3 +269,7 @@ var T={
+- fig_cap:{zh:"形态匹配全景:形态+投影 / 上涨概率 / 同期季节性",en:"Match panorama: pattern+projection / up-probability / seasonality"},
+- fig_tip:{zh:"左:当前形态(白/黑)与相似历史片段之后的中位路径(蓝=corr,紫=DTW),竖虚线为今日。中:各前瞻期 corr/DTW/基准 的上涨概率。右:历年同期之后的收益。详见下方图例。",en:"Left: current pattern (white/black) vs median analog paths (blue=corr, purple=DTW); dashed = today. Middle: up-probability by horizon for corr/DTW/baseline. Right: return after the same date each year. See legend below."},
+- morph_l:{zh:"形态拆解:",en:"Pattern: "},
++	 fig_cap:{zh:"形态匹配全景:形态+投影 / 上涨概率 / 同期季节性",en:"Match panorama: pattern+projection / up-probability / seasonality"},
++	 fig_tip:{zh:"左:当前形态(白/黑)与相似历史片段之后的中位路径(蓝=corr,紫=DTW),竖虚线为今日。中:各前瞻期 corr/DTW/基准 的上涨概率。右:历年同期之后的收益。详见下方图例。",en:"Left: current pattern (white/black) vs median analog paths (blue=corr, purple=DTW); dashed = today. Middle: up-probability by horizon for corr/DTW/baseline. Right: return after the same date each year. See legend below."},
++	 read_t:{zh:"三张图怎么读",en:"How to read the three charts"},
++	 read1_h:{zh:"当前形态与历史投影",en:"Current pattern & analog path"},read1_v:{zh:"虚线左边是最近窗口,全部统一从 100 起算,只比较形状而非绝对价格;虚线右边是相似历史案例后续路径的中位数。蓝、紫两条若方向一致,类比更稳定;若明显分叉,应视为不确定,不能当作目标价。",en:"Left of the divider is the latest window, indexed to 100 so shape—not price level—is compared. Right is the median path after historical analogs. Agreement between blue and purple is more stable; divergence means uncertainty, never a price target."},
++	 read2_h:{zh:"上涨概率与日常基准",en:"Up probability vs normal baseline"},read2_v:{zh:"每组柱子对应一个持有期。蓝色 corr 与紫色 DTW 是两种相似度方法;灰色 baseline 是不看形态时的历史上涨率。真正值得注意的是两种匹配都高于基准,而不是单看是否超过 50%。",en:"Each group is one horizon. Blue corr and purple DTW are two similarity methods; gray baseline is the historical up-rate without conditioning on shape. The useful signal is both match methods beating baseline—not merely being above 50%."},
++	 read3_h:{zh:"历年同日之后的收益",en:"Return after the same date by year"},read3_v:{zh:"每根柱是一年,绿色为正、红色为负。它回答“这个日历时点过去通常怎样”,不使用形态匹配。样本少且宏观环境不同,应先看多数年份方向是否一致,再看是否被少数极端年份拉高。",en:"Each bar is one year: green positive, red negative. This asks what usually followed this calendar date and does not use pattern matching. Samples are small and regimes differ; check consistency across years before any extreme outlier."},
++	 morph_l:{zh:"形态拆解:",en:"Pattern: "},
+@@ -294 +313,12 @@ var T={
+- ex_matches:{zh:"这些是历史上与当前形态最像的具体日期。相关越高、类比越可靠;回撤列告诉你那次之后中途最深跌了多少——即便方向对,过程也可能很颠簸。",en:"These are the specific past dates whose shape most resembles now. Higher correlation = closer analog; the drawdown column shows how deep it fell along the way — even a right direction can be a bumpy ride."},
++	 ex_matches:{zh:"这些是历史上与当前形态最像的具体日期。相关越高表示形状越接近;“最低下探”是从案例起点到最长前瞻期内,最低价相对起点跌了多少,并非传统的峰谷最大回撤。即使最终方向正确,途中也可能很颠簸。",en:"These are the dates whose shape most resembles now. Higher correlation means a closer shape. “Lowest excursion” is the lowest low versus the analog start through the longest horizon—not conventional peak-to-trough maximum drawdown. Even a correct final direction can be bumpy."},
++	 prob_guide:{zh:"<b>先看:</b> 同一行里 corr 与 DTW 是否同向、是否都高于基准;再看中位收益和 25–75% 区间。只高于 50% 但低于基准,不代表这个形态提供了优势。",en:"<b>Read first:</b> whether corr and DTW agree and both beat baseline; then inspect median return and the 25–75% range. Above 50% but below baseline is not a pattern edge."},
++	 season_guide:{zh:"<b>先看:</b> 样本数 n,再看上涨年份占比与中位收益。季节性样本通常只有 5–15 年;逐年表比一个汇总百分比更重要。",en:"<b>Read first:</b> sample size n, then up-year share and median return. Seasonality often has only 5–15 years; the year-by-year table matters more than one summary percentage."},
++	 match_guide:{zh:"<b>先看:</b> 日期与相关系数,然后横向比较各前瞻收益和最低下探。不要只挑最赚钱的案例;正负案例是否混杂,才反映类比的不确定性。",en:"<b>Read first:</b> date and correlation, then compare forward returns and lowest excursion across the row. Do not cherry-pick the winner; the mix of positive and negative analogs reveals uncertainty."},
++	 method_sum:{zh:"数据来源、计算方法与局限(展开查看)",en:"Data sources, methodology & limitations (expand)"},
++	 method_data:{zh:"数据与代理标的",en:"Data & proxy instruments"},
++	 method_steps_h:{zh:"计算步骤",en:"Calculation steps"},
++	 method_limits_h:{zh:"使用边界",en:"Limitations"},
++	 method_crypto:{zh:"加密数据来自 Binance 公开 Kline 接口,使用 USDT 交易对的 4 小时 OHLC;页面只下发衍生统计,不展示或缓存实时现价。",en:"Crypto data comes from Binance public Klines for USDT pairs at 4-hour OHLC resolution. The page ships derived statistics only and does not display or cache a live spot quote."},
++	 method_market:{zh:"美股与大宗数据来自 Yahoo Finance 历史日线。股票使用复权价格口径;GLD 是黄金 ETF、USO 是原油 ETF,只是可交易代理,不等于黄金现货或 WTI 期货连续合约。",en:"US stock and commodity data comes from Yahoo Finance daily history. Stocks use adjusted-price conventions. GLD is a gold ETF and USO an oil ETF—tradable proxies, not spot gold or a continuous WTI futures contract."},
++	 method_steps:{zh:"<ol><li>加密取最近 60 根 4 小时 K(约 10 天),美股/ETF 取最近 40 个交易日。</li><li>对收盘价取对数并在每个窗口内 z 标准化,去掉价格量级,只比较形状。</li><li>候选窗口必须在当前窗口之前结束,且后续完整覆盖最长前瞻期,避免未来函数。</li><li>corr 按皮尔逊相关排序;DTW 先由 corr 预筛 400 段,再以 Sakoe–Chiba 带宽约窗口的 1/6 重排。相邻案例至少间隔半个窗口,减少重复。</li><li>取加密 Top 50、股票/ETF Top 40 案例,统计后续上涨比例、中位收益与 25–75% 分位;baseline 使用所有合格历史时点。</li><li>加密季节性 7/30/90 天分别换算为 42/180/540 根 4 小时 K;股票/ETF 使用 5/21/63 个交易日。图中路径和收益均为历史样本统计,不是模型目标价。</li></ol>",en:"<ol><li>Crypto uses the latest 60 four-hour bars (~10 days); stocks/ETFs use 40 trading days.</li><li>Log closes are z-scored within each window, removing price level so only shape is compared.</li><li>Candidate windows must end before the current window and retain a fully observed longest horizon, preventing look-ahead.</li><li>corr ranks Pearson correlation. DTW reranks a 400-window corr prefilter with a Sakoe–Chiba band of about one-sixth of the window. Analogs are separated by at least half a window to reduce duplicates.</li><li>Top 50 crypto or Top 40 stock/ETF analogs produce up-rate, median and 25–75% returns; baseline uses all eligible dates.</li><li>Crypto seasonality converts 7/30/90 calendar days to 42/180/540 four-hour bars; stocks/ETFs use 5/21/63 trading days. Paths and returns are historical sample summaries, not model targets.</li></ol>"},
++	 method_limits:{zh:"<ul><li>★ 使用二项正态近似;重叠窗口会降低有效样本量,且未做多重检验校正。</li><li>历史制度、波动率、流动性和宏观环境会改变;相似形态不保证相似结果。</li><li>Yahoo/Binance 免费接口可能修订、限流或缺失;ETF 还存在跟踪误差、费用与换月影响。</li><li>未计滑点、手续费、税费、资金费率或可成交性;每日静态更新,不是实时交易信号。</li></ul>",en:"<ul><li>★ uses a binomial normal approximation; overlapping windows reduce effective sample size, with no multiple-testing correction.</li><li>Regimes, volatility, liquidity and macro conditions change; similar shapes do not guarantee similar outcomes.</li><li>Free Yahoo/Binance endpoints may revise, throttle or omit data. ETFs add tracking error, fees and roll effects.</li><li>No slippage, fees, tax, funding or execution constraints are modeled. This is a daily static update, not a real-time signal.</li></ul>"},
+@@ -319 +349 @@ var SLAB={crypto:{zh:['7天','30天','90天'],en:['7d','30d','90d']},day:{zh:['1
+-var MHEAD={crypto:{zh:['日期','相关','+1天','+10天','+30天','回撤'],en:['Date','Corr','+1d','+10d','+30d','MaxDD']},day:{zh:['日期','相关','+1月','+3月','回撤'],en:['Date','Corr','+1m','+3m','MaxDD']}};
++var MHEAD={crypto:{zh:['日期','相关','+1天','+10天','+30天','最低下探'],en:['Date','Corr','+1d','+10d','+30d','Lowest excursion']},day:{zh:['日期','相关','+1月','+3月','最低下探'],en:['Date','Corr','+1m','+3m','Lowest excursion']}};
+@@ -429,0 +460,12 @@ function exp(key,first){if(!S.explain)return '';return '<div class="explainbox">
++function readCardsHTML(){if(!S.explain)return '';return '<div class="readtitle"><i class="ti ti-book-2" style="color:var(--acc)"></i> '+t('read_t')+'</div><div class="readcards">'+
++ '<div class="readcard"><b><span class="rn">1</span>'+t('read1_h')+'</b>'+t('read1_v')+'</div>'+
++ '<div class="readcard"><b><span class="rn">2</span>'+t('read2_h')+'</b>'+t('read2_v')+'</div>'+
++ '<div class="readcard"><b><span class="rn">3</span>'+t('read3_h')+'</b>'+t('read3_v')+'</div></div>'}
++function methodsHTML(c,a){
++ var crypto=a.grp==='crypto';var source=crypto?t('method_crypto'):t('method_market');
++ var src=crypto?'<a href="https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#klinecandlestick-data" target="_blank" rel="noopener">Binance Kline documentation</a>':'<a href="https://finance.yahoo.com/quote/'+c.k+'/history/" target="_blank" rel="noopener">Yahoo Finance '+c.k+' history</a>';
++ if(c.k==='GLD')src+=' · <a href="https://www.ssga.com/us/en/intermediary/etfs/spdr-gold-shares-gld" target="_blank" rel="noopener">GLD fund page</a>';
++ if(c.k==='USO')src+=' · <a href="https://www.uscfinvestments.com/uso" target="_blank" rel="noopener">USO fund page</a>';
++ return '<details class="methodbox" data-methods-version="2026-07-10"><summary><i class="ti ti-database-search" style="color:var(--acc)"></i>'+t('method_sum')+'</summary><div class="methodbody">'+
++  '<div class="methodmeta"><span>'+c.k+'</span><span>'+a.refRange[0]+' → '+a.refRange[1]+'</span><span>'+(crypto?'4h · 60 bars':'1d · 40 bars')+'</span><span>corr + DTW</span></div>'+
++  '<h5>'+t('method_data')+'</h5><p>'+source+'</p><p>'+src+'</p><h5>'+t('method_steps_h')+'</h5>'+t('method_steps')+'<h5>'+t('method_limits_h')+'</h5>'+t('method_limits')+'</div></details>'}
+@@ -540 +582 @@ function analogSVG(a){
+-   legend+='<div style="display:flex;gap:7px;align-items:center;font-size:11.5px;margin:2px 0"><span style="width:14px;height:3px;background:'+c+';display:inline-block;border-radius:2px"></span>'+m[0]+' · <span class="'+(fin>0?'up':'dn')+'">'+(fin>0?'+':'')+fin+'%</span> <span class="mut">('+(isC?'+30天':'+3月')+', 回撤 '+m[ddIdx]+'%)</span></div>';
++   legend+='<div style="display:flex;gap:7px;align-items:center;font-size:11.5px;margin:2px 0"><span style="width:14px;height:3px;background:'+c+';display:inline-block;border-radius:2px"></span>'+m[0]+' · <span class="'+(fin>0?'up':'dn')+'">'+(fin>0?'+':'')+fin+'%</span> <span class="mut">('+(isC?(S.lang==='zh'?'+30天':'+30d'):(S.lang==='zh'?'+3月':'+3m'))+', '+(S.lang==='zh'?'最低下探 ':'lowest excursion ')+m[ddIdx]+'%)</span></div>';
+@@ -569 +611 @@ function renderAnalysis(c){var a=catData(c),g=a.grp,ls=lset(g);
+- '<div class="figbox"><div class="fcap"><b>'+t('fig_cap')+'</b><span class="info"><i class="ti ti-info-circle"></i><span class="tip">'+t('fig_tip')+'</span></span></div><img data-ck="'+a.chart+'" alt="'+c.k+'"></div>'+
++	 '<div class="figbox"><div class="fcap"><b>'+t('fig_cap')+'</b><span class="info"><i class="ti ti-info-circle"></i><span class="tip">'+t('fig_tip')+'</span></span></div><img data-ck="'+a.chart+'" alt="'+c.k+'"></div>'+readCardsHTML()+
+@@ -571,3 +613,3 @@ function renderAnalysis(c){var a=catData(c),g=a.grp,ls=lset(g);
+- '<div class="grid2"><div><h4 class="blk">'+t('cond_t')+' <span class="mut" style="font-weight:400;font-size:11px">corr / DTW / '+t('h_base')+'</span></h4>'+
+- gate('<div class="tw"><table class="t"><thead><tr><th>'+t('h_fwd')+'</th><th>'+t('h_pupc')+'</th><th>'+t('h_medc')+'</th><th>'+t('h_pupd')+'</th><th>'+t('h_medd')+'</th><th>'+t('h_base')+'</th><th>'+t('h_basem')+'</th><th>'+t('h_iqr')+'</th></tr></thead><tbody>'+condRows+'</tbody></table></div><p class="note">'+t('sig_note')+'</p>','lock_prob')+exp('ex_prob')+'</div>'+
+- '<div><h4 class="blk">'+t('season_t')+'</h4><div class="tw"><table class="t"><thead><tr><th>'+t('se_after')+'</th><th>'+t('se_up')+'</th><th>'+t('se_med')+'</th><th>'+t('se_n')+'</th></tr></thead><tbody>'+seaRows+'</tbody></table></div>'+
++	 '<div class="grid2"><div><h4 class="blk">'+t('cond_t')+' <span class="mut" style="font-weight:400;font-size:11px">corr / DTW / '+t('h_base')+'</span></h4><div class="tableguide">'+t('prob_guide')+'</div>'+
++	 gate('<div class="tw"><table class="t"><thead><tr><th>'+t('h_fwd')+'</th><th>'+t('h_pupc')+'</th><th>'+t('h_medc')+'</th><th>'+t('h_pupd')+'</th><th>'+t('h_medd')+'</th><th>'+t('h_base')+'</th><th>'+t('h_basem')+'</th><th>'+t('h_iqr')+'</th></tr></thead><tbody>'+condRows+'</tbody></table></div><p class="note">'+t('sig_note')+'</p>','lock_prob')+exp('ex_prob')+'</div>'+
++	 '<div><h4 class="blk">'+t('season_t')+'</h4><div class="tableguide">'+t('season_guide')+'</div><div class="tw"><table class="t"><thead><tr><th>'+t('se_after')+'</th><th>'+t('se_up')+'</th><th>'+t('se_med')+'</th><th>'+t('se_n')+'</th></tr></thead><tbody>'+seaRows+'</tbody></table></div>'+
+@@ -575 +617 @@ function renderAnalysis(c){var a=catData(c),g=a.grp,ls=lset(g);
+- '<h4 class="blk">'+t('matches_t')+'</h4>'+gate(analogSVG(a)+'<div class="tw"><table class="t"><thead><tr>'+mhh+'</tr></thead><tbody>'+mRows+'</tbody></table></div>','lock_match')+exp('ex_matches')+'</div></div>'+legendHTML();
++	 '<h4 class="blk">'+t('matches_t')+'</h4><div class="tableguide">'+t('match_guide')+'</div>'+gate(analogSVG(a)+'<div class="tw"><table class="t"><thead><tr>'+mhh+'</tr></thead><tbody>'+mRows+'</tbody></table></div>','lock_match')+exp('ex_matches')+'</div></div>'+legendHTML()+methodsHTML(c,a);
+

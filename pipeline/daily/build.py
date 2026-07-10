@@ -19,11 +19,14 @@ from app.engine.matcher import _zwin, _dtw, _stats  # noqa: E402
 # 各战场配置:窗口 / 前瞻横轴(bar) / 匹配表取哪几个横轴 / 季节性天数 / 取样上限 / 最小间隔
 CFG = {
     "crypto":    dict(window=60, H=[6, 30, 60, 90, 180], match_idx=[0, 2, 4],
-                      sea_days=[7, 30, 90], top_k=50, min_sep=30, prefilter=400),
+                      sea_days=[7, 30, 90], sea_bars=[42, 180, 540],
+                      top_k=50, min_sep=30, prefilter=400),
     "stock":     dict(window=40, H=[5, 10, 21, 42, 63], match_idx=[2, 4],
-                      sea_days=[5, 21, 63], top_k=40, min_sep=20, prefilter=400),
+                      sea_days=[5, 21, 63], sea_bars=[5, 21, 63],
+                      top_k=40, min_sep=20, prefilter=400),
     "commodity": dict(window=40, H=[5, 10, 21, 42, 63], match_idx=[2, 4],
-                      sea_days=[5, 21, 63], top_k=40, min_sep=20, prefilter=400),
+                      sea_days=[5, 21, 63], sea_bars=[5, 21, 63],
+                      top_k=40, min_sep=20, prefilter=400),
 }
 
 
@@ -105,7 +108,7 @@ def build_prim(ts, close, low, grp):
 
 # ---------------- 季节性(同期,逐年)----------------
 def build_season(ts, close, grp):
-    cfg = CFG[grp]; days = cfg["sea_days"]
+    cfg = CFG[grp]; days = cfg["sea_days"]; bars = cfg["sea_bars"]
     C = np.asarray(close, float); n = C.size
     anchor = datetime.fromtimestamp(ts[-1], tz=timezone.utc)
     first_y = datetime.fromtimestamp(ts[0], tz=timezone.utc).year
@@ -119,8 +122,8 @@ def build_season(ts, close, grp):
         if abs(ts[bi] - target) > 5 * 86400:
             continue
         row = [y]
-        for d in days:
-            j = bi + d
+        for d, step in zip(days, bars):
+            j = bi + step
             r = float(C[j] / C[bi] - 1) if j <= n - 1 else None
             row.append(round(r, 4) if r is not None else None)
             if r is not None:
@@ -154,7 +157,11 @@ def _sig(pup, n, p0):
 def _morph(nc):
     n = len(nc); tot = nc[-1] / nc[0] - 1; hi = max(nc); lo = min(nc)
     pos = (nc[-1] - lo) / (hi - lo) if hi > lo else .5
-    recent = nc[-1] / nc[-max(5, n // 6)] - 1; dd = lo / hi - 1
+    recent = nc[-1] / nc[-max(5, n // 6)] - 1
+    peak = nc[0]; dd = 0.0
+    for value in nc:
+        peak = max(peak, value)
+        dd = min(dd, value / peak - 1)
     tr_z = "上行趋势" if tot > 0.02 else ("下行趋势" if tot < -0.02 else "横盘震荡")
     tr_e = "Uptrend" if tot > 0.02 else ("Downtrend" if tot < -0.02 else "Range-bound")
     pp_z = "接近区间高点" if pos > 0.7 else ("接近区间低点" if pos < 0.3 else "居区间中部")
@@ -235,7 +242,7 @@ def _asset_fig(name, P, S, grp, th, plt, np_):
         base = nc[-1]; proj = [base * m / 100 for m in mp]; xp = list(range(Wl - 1, Wl - 1 + len(proj)))
         ax.plot(xp, proj, color=cl, lw=1.6, label=lb)
     ax.axvline(Wl - 1, color=th["mut"], ls=":", lw=.8)
-    ax.set_title(f"{name} · pattern + projection", fontsize=9, loc="left")
+    ax.set_title(f"① {name} · current pattern + historical projection", fontsize=9, loc="left")
     ax.legend(fontsize=6.5, frameon=False, loc="upper left"); ax.set_xlabel("bars (indexed = 100)")
     ax = axs[1]; xs = np_.arange(len(H)); w = 0.26
     cc = [P["condC"][i][1] for i in range(len(H))]; cd = [P["condD"][i][1] for i in range(len(H))]
@@ -245,13 +252,13 @@ def _asset_fig(name, P, S, grp, th, plt, np_):
     ax.bar(xs + w, [v * 100 for v in bb], w, color=th["base"], label="baseline")
     ax.axhline(50, color=th["fg"], lw=.6, ls=":")
     ax.set_xticks(xs); ax.set_xticklabels([HL[h] for h in H]); ax.set_ylabel("P(up) %")
-    ax.set_title(f"{name} · up-probability", fontsize=9, loc="left"); ax.legend(fontsize=6.5, frameon=False)
+    ax.set_title(f"② {name} · up probability vs baseline", fontsize=9, loc="left"); ax.legend(fontsize=6.5, frameon=False)
     ax = axs[2]; yrs = [r[0] for r in S["py"]]
     vals = [((r[-1] if r[-1] is not None else 0) * 100) for r in S["py"]]
     ax.bar(range(len(yrs)), vals, color=[th["up"] if v >= 0 else th["dn"] for v in vals])
     ax.axhline(0, color=th["fg"], lw=.6); ax.set_xticks(range(len(yrs)))
     ax.set_xticklabels([str(y)[2:] for y in yrs], fontsize=6.5)
-    ax.set_ylabel("return %"); ax.set_title(f"{name} · same-date forward, by year", fontsize=9, loc="left")
+    ax.set_ylabel("return %"); ax.set_title(f"③ {name} · same-date return by year", fontsize=9, loc="left")
     fig.tight_layout(); return _b64(fig, th, plt)
 
 

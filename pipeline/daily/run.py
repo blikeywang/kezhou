@@ -6,11 +6,34 @@
   python pipeline/daily/run.py --self-test  # 合成数据自测,不联网,验证全链路
 """
 from __future__ import annotations
-import sys, os, time, json, re, argparse
+import sys, os, time, json, re, argparse, subprocess
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
 import build, inject  # noqa: E402
+
+UI_PATCH = os.path.join(os.path.dirname(__file__), "ui-explanations.patch")
+UI_MARKER = 'data-methods-version="2026-07-10"'
+
+
+def _ensure_ui_explanations():
+    """首次部署时应用讲解层;后续日更检测标记后保持现有 UI 不变。"""
+    html = open(inject.APP_HTML, encoding="utf-8").read()
+    if UI_MARKER in html:
+        print("UI explanations already present")
+        return
+    if not os.path.exists(UI_PATCH):
+        raise RuntimeError(f"UI explanations patch missing: {UI_PATCH}")
+    result = subprocess.run(
+        ["git", "apply", "--unidiff-zero", "--whitespace=nowarn", UI_PATCH],
+        cwd=inject.ROOT, text=True, capture_output=True, check=False,
+    )
+    if result.returncode:
+        detail = (result.stderr or result.stdout).strip()
+        raise RuntimeError(f"failed to apply UI explanations patch: {detail}")
+    if UI_MARKER not in open(inject.APP_HTML, encoding="utf-8").read():
+        raise RuntimeError("UI explanations patch applied without version marker")
+    print("applied UI explanations patch")
 
 
 def _load_existing():
@@ -85,6 +108,7 @@ def main(self_test=False):
 
     appdata = inject.assemble(assets, charts)
     inject.inject(appdata)
+    _ensure_ui_explanations()
     ok = len(assets) - len(failed)
     print(f"injected {len(assets)} symbols ({ok} fresh, {len(failed)} kept) into app.html")
 

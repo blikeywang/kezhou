@@ -3,6 +3,13 @@ name: daily-refresh
 # 每天刷新一次数据 → 重算衍生曲线 → 注入 app.html → 部署到 GitHub Pages。
 # 用户永远打开的是静态页;不做实时查询。
 on:
+  push:
+    branches: [main]
+    paths:
+      - "pipeline/daily/**"
+      - "docs/METHODS_AND_SOURCES.md"
+      - "README.md"
+      - ".github/workflows/daily.yml"
   schedule:
     - cron: "30 6 * * *"   # 每天 06:30 UTC(美股收盘后;加密 24h)
   workflow_dispatch: {}     # 也可在 Actions 页面手动触发
