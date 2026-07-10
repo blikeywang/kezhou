@@ -15,6 +15,14 @@ YAHOO = {"AAPL": "AAPL", "NVDA": "NVDA", "GLD": "GLD", "USO": "USO"}
 GROUP = {"BTC": "crypto", "ETH": "crypto", "SOL": "crypto",
          "AAPL": "stock", "NVDA": "stock", "GLD": "commodity", "USO": "commodity"}
 
+# Binance 官方文档列出的只读市场数据入口。GitHub 托管机偶尔会被主站点
+# 按地域拒绝,因此优先 data-api,失败后才切到其它官方入口。
+BINANCE_BASES = (
+    "https://data-api.binance.vision",
+    "https://api-gcp.binance.com",
+    "https://api.binance.com",
+)
+
 
 def _get(url, timeout=25, retries=3):
     last = None
@@ -28,13 +36,13 @@ def _get(url, timeout=25, retries=3):
     raise RuntimeError(f"GET failed after {retries}: {url}\n{last}")
 
 
-def fetch_binance(pair, interval="4h", bars=12000):
-    """向前分页抓取 Binance K线,返回 (ts秒, close, low)。"""
+def _fetch_binance_from(base, pair, interval, bars):
+    """从一个 Binance 官方入口向前分页;中途失败则整批丢弃。"""
     out = []  # rows: [openTime_ms, close, low]
     end = None
-    base = "https://api.binance.com/api/v3/klines"
+    endpoint = base.rstrip("/") + "/api/v3/klines"
     while len(out) < bars:
-        url = f"{base}?symbol={pair}&interval={interval}&limit=1000"
+        url = f"{endpoint}?symbol={pair}&interval={interval}&limit=1000"
         if end is not None:
             url += f"&endTime={end}"
         rows = _get(url)
@@ -47,8 +55,23 @@ def fetch_binance(pair, interval="4h", bars=12000):
             break
         time.sleep(0.25)
     out = out[-bars:]
+    if not out:
+        raise RuntimeError(f"empty Binance response from {base}")
+    if any(out[i][0] >= out[i + 1][0] for i in range(len(out) - 1)):
+        raise RuntimeError(f"non-monotonic Binance timestamps from {base}")
     ts = [int(r[0] / 1000) for r in out]
     return ts, [r[1] for r in out], [r[2] for r in out]
+
+
+def fetch_binance(pair, interval="4h", bars=12000):
+    """抓取 Binance K线;在官方只读入口间故障转移。"""
+    errors = []
+    for base in BINANCE_BASES:
+        try:
+            return _fetch_binance_from(base, pair, interval, bars)
+        except Exception as e:  # noqa: BLE001
+            errors.append(f"{base}: {e}")
+    raise RuntimeError("all Binance endpoints failed\n" + "\n".join(errors))
 
 
 def fetch_yahoo(symbol, rng="15y", interval="1d"):
