@@ -8,6 +8,8 @@
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
+TraderHome V3 已统一三个工作台的专业界面与产品契约：每一阶段明确输入、有效输出、拒绝条件和下一步，并使用 DATA / DERIVED / FORWARD / METHOD-DEMO 统一证据语言。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
+
 ---
 
 ## 目录结构
@@ -40,6 +42,7 @@ kezhou/
 └── docs/
     ├── BUILD_SPEC.md         # 产品实现与支付接入说明书(架构/引擎/数据/账务/Stripe·支付宝·加密)
     ├── METHODS_AND_SOURCES.md# 线上图表的数据来源、算法口径、阅读方式与局限
+    ├── TRADERHOME_PRODUCT_SYSTEM.md # 三工作台产品边界、证据语言与统一视觉规范
     ├── FEATURES_v2.md        # 功能补充设计:数据刷新 / 检索校验 / 收藏夹 / 逐年季节性 / 讲解层 / 内容分层
     ├── ANALYTICS.md          # 埋点与后台统计:事件字典 / 转化漏斗 / 付费归因 / 存储与隐私
     ├── PAYMENTS.md           # 支付设计:闲鱼卡密 / Stripe / 加密 tx-hash 核验 + 统一权益

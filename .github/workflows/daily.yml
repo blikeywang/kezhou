@@ -9,6 +9,7 @@ on:
       - "pipeline/daily/**"
       - "portal/**"
       - "docs/METHODS_AND_SOURCES.md"
+      - "docs/TRADERHOME_PRODUCT_SYSTEM.md"
       - "README.md"
       - ".github/workflows/daily.yml"
   schedule:
