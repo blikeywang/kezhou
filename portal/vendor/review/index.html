@@ -3,121 +3,214 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="TradeReview OS 用真实交易证据识别最高成本行为，给出唯一改进动作并验证成长。">
-  <title>TradeReview OS · 交易后成长与证据复盘</title>
+  <meta name="description" content="TradeReview OS 在浏览器本地读取真实成交与历史K线，计算可核验的交易表现、行为证据与下一批改进动作。">
+  <title>TradeReview OS · 交易后证据复盘</title>
   <link rel="stylesheet" href="/assets/traderhome-site.css">
+  <link rel="stylesheet" href="./review.css">
 </head>
-<body class="th-site">
-  <main id="main">
-    <header class="th-container review-hero">
-      <div class="review-hero__top">
-        <div>
-          <div class="th-kicker">TradeReview OS · Post-trade evidence loop</div>
-          <h1>不是告诉你“这单做错了”，<br>而是证明<strong class="th-violet">下次只该改哪一件事</strong>。</h1>
-          <p>系统保留交易员当时的原始判断，再用订单、K线、行为标签和分级专家证据重演。最终只选择一个最高成本行为，在未来10笔交易中验证它是否下降。</p>
-        </div>
-        <span class="review-synth">本页全部数字与交易均为合成样例</span>
+<body class="th-site rv-page">
+  <main id="main" class="rv-workspace">
+    <header class="th-container rv-header">
+      <div>
+        <div class="th-kicker">TradeReview OS · Post-trade evidence</div>
+        <h1>交易后复盘</h1>
+        <p>把成交、计划与真实行情放回同一条时间线。先核验事实，再判断重复行为，最后只给未来10笔一个可验证的改进动作。</p>
       </div>
-
-      <div class="review-summary">
-        <article class="review-primary"><small>本期最值得解决的问题</small><strong>利润保护不足 · 9 / 48 笔</strong><p>多次在浮盈达到 1R 后未保护利润；它与样例总亏损中的 36% 同时出现。关联不等于可挽回收益。</p></article>
-        <article class="review-metric"><small>关联亏损</small><strong class="th-red">$420</strong><p>只描述已发生亏损与行为标签的共现</p></article>
-        <article class="review-metric"><small>证据置信度</small><strong class="th-violet">76 / 100</strong><p>样本、K线覆盖与原始自评共同决定</p></article>
-        <article class="review-metric"><small>成长状态</small><strong class="th-green">改善中</strong><p>最近10笔该行为频率由 25% 降至 10%</p></article>
+      <div class="rv-header__actions">
+        <span class="rv-local"><i></i>原始记录仅在本页内存处理</span>
+        <button class="rv-button" id="openApiButton" type="button">连接自托管 API</button>
       </div>
     </header>
 
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">One prescription · One validation window</div>
-      <h2>未来10笔只执行一个处方</h2>
-      <p class="th-lead">同时改十件事通常什么都改不了。TradeReview OS 把处方写成可以被后续交易直接判定的行为规则。</p>
-      <div class="review-prescription">
-        <article class="review-action"><small>NEXT 10 TRADES · 唯一行动处方</small><h3>浮盈首次达到 +1R：减仓一半，并把剩余仓位失效点推进到结构保护位。</h3><p>成功标准：未来10笔中，“达到 +1R 后最终转亏”的发生率低于 10%。起点证据为样例交易 #DEMO-014、#DEMO-022、#DEMO-031。</p></article>
-        <aside class="review-confidence"><div class="review-confidence__score"><span class="th-muted">证据完整度</span><strong>76</strong></div><div class="review-track"><i></i></div><p>48 笔订单中 42 笔具有匹配K线，31笔完成交易员原始自评。当前结论为“中等偏高”，不是确定因果。</p></aside>
+    <section class="th-container rv-import" id="importView" aria-labelledby="importTitle">
+      <div class="rv-import__main">
+        <div class="rv-import__copy">
+          <span class="rv-step">01 · 导入成交</span>
+          <h2 id="importTitle">先让数据开口，不让结论抢答</h2>
+          <p>支持按“一笔完整交易”汇总的 closed trades / position history CSV、TSV、JSON。系统会先校验字段、去重并报告证据覆盖，再开始复盘。</p>
+        </div>
+        <label class="rv-dropzone" id="tradeDropzone" for="tradeFile">
+          <span class="rv-dropzone__mark" aria-hidden="true">+</span>
+          <strong>拖入成交文件，或点击选择</strong>
+          <small>CSV / TSV / JSON · 文件不会上传到 TraderHome</small>
+          <input id="tradeFile" type="file" accept=".csv,.tsv,.txt,.json,text/csv,application/json" hidden>
+        </label>
+        <div class="rv-import__actions">
+          <button class="rv-button rv-button--primary" id="chooseTradeButton" type="button">选择成交文件</button>
+          <button class="rv-button" id="loadSampleButton" type="button">打开教学样例</button>
+          <button class="rv-button rv-button--quiet" id="downloadTemplateButton" type="button">下载字段模板</button>
+        </div>
+        <p class="rv-format-note">不要直接导入逐笔成交 fills / executions：开仓、加仓和分批平仓尚未聚合时，买卖方向不等于最终持仓方向。</p>
+        <p class="rv-sample-note">教学样例为合成记录，仅用于查看功能，不会混入真实历史战绩。</p>
       </div>
-    </div></section>
 
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Review workflow</div><h2>复盘必须先保留当时的你，再看事后的答案</h2>
-      <div class="review-flow">
-        <div><span>01</span><b>导入交易</b><p>字段校验、ticket 去重、数据质量与K线覆盖。</p></div>
-        <div><span>02</span><b>先做自评</b><p>保存方向、计划、失效点、情绪和当时信心。</p></div>
-        <div><span>03</span><b>单笔重演</b><p>把进场、出场、SL、TP放回真实行情结构。</p></div>
-        <div><span>04</span><b>多流派会诊</b><p>分别显示共识、分歧、适用前提与证据类型。</p></div>
-        <div><span>05</span><b>唯一处方</b><p>按最高关联亏损与重复频率选择一个动作。</p></div>
-        <div><span>06</span><b>后续验证</b><p>用下一批交易判断行为频率和执行质量是否改变。</p></div>
-      </div>
-    </div></section>
+      <aside class="rv-import__side" aria-label="复盘所需数据">
+        <div class="rv-source-block">
+          <span class="rv-step">必需字段</span>
+          <h3>最少四项即可开始</h3>
+          <dl class="rv-field-list">
+            <div><dt>品种</dt><dd>symbol / 品种</dd></div>
+            <div><dt>方向</dt><dd>long / short / 多 / 空</dd></div>
+            <div><dt>开仓时间</dt><dd>entry_time / 开仓时间</dd></div>
+            <div><dt>净盈亏</dt><dd>net_pnl / 净盈亏</dd></div>
+          </dl>
+        </div>
+        <div class="rv-source-block rv-source-block--optional">
+          <span class="rv-step">证据升级</span>
+          <h3>补充历史K线</h3>
+          <p>导入同一时期的 OHLC，可重建持仓路径、MFE/MAE、入场前结构与计划位置；没有K线时系统不会编造技术分析。</p>
+          <button class="rv-text-button" id="chooseBarButton" type="button">选择 K 线文件</button>
+          <input id="barFile" type="file" accept=".csv,.tsv,.txt,.json,text/csv,application/json" hidden>
+          <div class="rv-file-state" id="barFileState">尚未导入 · 需要 time, open, high, low, close</div>
+        </div>
+      </aside>
+    </section>
 
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Multi-school council</div><h2>同一笔交易：先看跨流派共识，再看分歧来自哪里</h2>
-      <p class="th-lead">方法匹配度用于判断前提是否适合，不代表未来胜率。缺少K线时，所有结构判断都会降级为条件式推演。</p>
-      <div class="review-council">
-        <article class="th-card"><span class="review-grade">跨流派共识</span><h3>这笔交易首先不是方向问题，而是失效点问题</h3><ul class="review-list"><li>开仓前没有写清硬失效条件</li><li>浮盈达到 1R 后仍未建立利润保护</li><li>不应对错误方向继续增加风险敞口</li></ul></article>
-        <article class="th-card"><span class="review-grade">关键分歧</span><h3>趋势延续 vs. 区间回归</h3><p>趋势派倾向等待突破回踩；均值回归派只在区间边缘参与。必须先识别行情状态，再选择方法。</p></article>
-        <article class="th-card"><span class="review-grade">当前证据</span><h3>订单 + 42 根匹配K线</h3><p>可做结构级复盘；专家案例库当前没有获授权的外部真实交易，因此不会伪造“大师会怎么做”。</p></article>
-      </div>
-    </div></section>
-
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Rights-safe expert evidence</div><h2>大师案例必须先过证据和权利两道闸门</h2>
-      <p class="th-lead">名气不能提高证据等级。当前外部授权真实案例数为 0；内置六流派属于 D 级方法推演，只有用户授权交易可以进入 A 级重演。</p>
-      <div class="th-grid four">
-        <article class="th-card"><span class="th-level">A</span><h3>授权逐笔交易</h3><p>券商导出或只读连接、完整时间戳和贡献者授权。可用于交易重演与行为分析。</p></article>
-        <article class="th-card"><span class="th-level">B</span><h3>授权时间戳计划</h3><p>结果前发布、有原始归档、进场与失效点，并获得作者许可。可用于决策过程案例。</p></article>
-        <article class="th-card"><span class="th-level">C</span><h3>公开聚合统计</h3><p>只能作为画像和风险背景，不能反推或虚构逐笔交易。</p></article>
-        <article class="th-card"><span class="th-level">D</span><h3>教学方法</h3><p>用于解释流派规则；不能冒充作者本人或被展示为真实历史交易。</p></article>
-      </div>
-      <div class="th-actions"><a class="th-btn" href="/standards/">查看完整证据与编辑标准 →</a></div>
-    </div></section>
-
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Growth proof</div><h2>成长曲线看执行质量，不用一次盈利证明进步</h2>
-      <p class="th-lead">分数用于跟踪同一交易员自身变化。它不与他人排名，也不是人格标签。</p>
-      <div class="review-growth">
-        <article class="th-card"><canvas id="growthChart" class="review-chart" aria-label="合成执行质量成长曲线"></canvas></article>
-        <div class="review-dims">
-          <article class="review-dim"><div class="review-dim__head"><b>止损纪律</b><span class="th-green">88 · +6</span></div><div class="review-track"><i style="--score:88%;--tone:#4ade80"></i></div></article>
-          <article class="review-dim"><div class="review-dim__head"><b>利润保护</b><span class="th-red">41 · -4</span></div><div class="review-track"><i style="--score:41%;--tone:#fb7185"></i></div></article>
-          <article class="review-dim"><div class="review-dim__head"><b>风险控制</b><span class="th-green">79 · +9</span></div><div class="review-track"><i style="--score:79%;--tone:#4ade80"></i></div></article>
-          <article class="review-dim"><div class="review-dim__head"><b>入场位置</b><span class="th-amber">63 · +2</span></div><div class="review-track"><i style="--score:63%;--tone:#fbbf24"></i></div></article>
-          <article class="review-dim"><div class="review-dim__head"><b>情绪纪律</b><span class="th-green">70 · +12</span></div><div class="review-track"><i style="--score:70%;--tone:#60a5fa"></i></div></article>
+    <section class="th-container rv-results" id="resultsView" hidden aria-live="polite">
+      <div class="rv-workbar">
+        <div class="rv-source-state">
+          <span id="sourceBadge" class="rv-badge">本地文件</span>
+          <strong id="sourceName">尚未导入</strong>
+          <span id="sourceFacts"></span>
+        </div>
+        <div class="rv-workbar__actions">
+          <button class="rv-button rv-button--quiet" id="replaceDataButton" type="button">更换成交</button>
+          <button class="rv-button rv-button--quiet" id="addBarsButton" type="button">导入 K 线</button>
+          <button class="rv-button rv-button--quiet" id="exportButton" type="button">导出聚合报告</button>
+          <button class="rv-button rv-button--danger" id="clearButton" type="button">清除本页数据</button>
         </div>
       </div>
-    </div></section>
 
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Privacy by default</div><h2>交易记录默认只属于交易员本人</h2>
-      <div class="review-privacy">
-        <article class="th-card"><span class="index">PRIVATE</span><b>默认私密</b><p>公开Demo只使用合成数据。真实交易不会随静态网页发布，也不会进入公开仓库。</p></article>
-        <article class="th-card"><span class="index">SCOPED</span><b>按交易授权点评</b><p>未来邀请教练或家人时，权限绑定具体交易与可见字段，不默认开放完整账户。</p></article>
-        <article class="th-card"><span class="index">SELECTIVE</span><b>个人主页选择性公开</b><p>平台、流派、成长过程、胜率和净盈亏分别授权；默认全部关闭。</p></article>
+      <div class="rv-verdict">
+        <article class="rv-prescription">
+          <div class="rv-prescription__top">
+            <span class="rv-step">未来10笔 · 唯一改进动作</span>
+            <span id="sampleStatus" class="rv-badge"></span>
+          </div>
+          <h2 id="prescriptionTitle">等待数据</h2>
+          <p id="prescriptionAction"></p>
+          <div class="rv-prescription__proof">
+            <div><span>成功标准</span><strong id="successMetric">-</strong></div>
+            <div><span>证据置信度</span><strong id="prescriptionConfidence">-</strong></div>
+          </div>
+        </article>
+        <div class="rv-kpis" aria-label="交易表现摘要">
+          <article><span>净盈亏</span><strong id="kpiNet">-</strong><small id="kpiCurrency">按文件记账单位</small></article>
+          <article><span>胜率</span><strong id="kpiWinRate">-</strong><small id="kpiWinLoss">-</small></article>
+          <article><span>期望值 / 笔</span><strong id="kpiExpectancy">-</strong><small>净盈亏 ÷ 有效交易</small></article>
+          <article><span>Profit Factor</span><strong id="kpiPf">-</strong><small>总盈利 ÷ 总亏损</small></article>
+          <article><span>最大回撤</span><strong id="kpiDrawdown">-</strong><small>按已实现权益曲线</small></article>
+          <article><span>平均 R</span><strong id="kpiR">-</strong><small id="kpiRCoverage">-</small></article>
+        </div>
       </div>
-    </div></section>
 
-    <section class="th-section" id="review-community"><div class="th-container"><div class="th-community">
-      <div><div class="th-kicker">Private beta</div><h2>想用自己的交易生成这套复盘？</h2><p>公开站展示产品方法与合成样例；真实数据导入、品类适配、受邀点评和成长追踪将在私域内测中开放。</p></div>
-      <div class="th-community__actions"><a class="th-btn violet" href="/#community">申请 DC / TG 内测 →</a></div>
-    </div></div></section>
+      <div class="rv-settings-row">
+        <div id="evidenceSummary" class="rv-evidence-summary"></div>
+        <details class="rv-settings">
+          <summary>复盘规则设置</summary>
+          <div class="rv-settings__grid">
+            <label>账户金额<input id="accountSize" type="number" min="1" step="100" value="10000"></label>
+            <label>单笔风险上限<input id="riskPercent" type="number" min="0.1" max="20" step="0.1" value="1"><span>%</span></label>
+            <label>每日最多交易<input id="maxDailyTrades" type="number" min="1" max="100" step="1" value="6"></label>
+            <label>亏损后冷静期<input id="revengeMinutes" type="number" min="0" max="240" step="5" value="20"><span>分钟</span></label>
+            <label>交易日时区<select id="reviewTimezone"><option value="UTC">UTC</option><option value="America/New_York">纽约</option><option value="Asia/Singapore">新加坡</option><option value="Asia/Shanghai">上海</option><option value="Europe/London">伦敦</option></select></label>
+          </div>
+        </details>
+      </div>
+
+      <nav class="rv-tabs" role="tablist" aria-label="复盘视图">
+        <button type="button" role="tab" aria-selected="true" aria-controls="panelOverview" data-tab="overview">总览</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="panelBehaviors" data-tab="behaviors">行为证据 <span id="behaviorCount">0</span></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="panelTrades" data-tab="trades">逐笔重演 <span id="tradeCount">0</span></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="panelGrowth" data-tab="growth">成长验证</button>
+      </nav>
+
+      <section class="rv-panel" id="panelOverview" role="tabpanel" data-panel="overview">
+        <div class="rv-panel-grid rv-panel-grid--wide">
+          <article class="rv-module">
+            <div class="rv-module__head"><div><span class="rv-step">已实现权益</span><h3>盈亏路径</h3></div><span id="equityCaption" class="rv-caption"></span></div>
+            <canvas id="equityChart" class="rv-chart" aria-label="已实现权益曲线"></canvas>
+          </article>
+          <article class="rv-module">
+            <div class="rv-module__head"><div><span class="rv-step">数据质量</span><h3 id="qualityTitle">证据覆盖</h3></div><strong id="qualityScore" class="rv-quality-score">-</strong></div>
+            <div id="qualityIssues" class="rv-quality-list"></div>
+          </article>
+        </div>
+        <div class="rv-module rv-module--table">
+          <div class="rv-module__head">
+            <div><span class="rv-step">切片核验</span><h3>优势与成本从哪里来</h3></div>
+            <div class="rv-segment" aria-label="分组方式">
+              <button type="button" class="is-active" data-group="symbols">品种</button>
+              <button type="button" data-group="strategies">策略</button>
+              <button type="button" data-group="sides">方向</button>
+              <button type="button" data-group="hours">时段</button>
+            </div>
+          </div>
+          <div class="rv-table-wrap"><table class="rv-table"><thead><tr><th>分组</th><th>笔数</th><th>净盈亏</th><th>胜率</th><th>期望值</th><th>PF</th></tr></thead><tbody id="groupTableBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="rv-panel" id="panelBehaviors" role="tabpanel" data-panel="behaviors" hidden>
+        <div class="rv-panel-intro">
+          <div><span class="rv-step">规则命中，不是人格标签</span><h2>行为证据账本</h2><p>每条结论都显示发生次数、共现亏损、字段覆盖、置信度和局限。共现不能直接当成可挽回收益。</p></div>
+        </div>
+        <div id="behaviorList" class="rv-behavior-list"></div>
+      </section>
+
+      <section class="rv-panel" id="panelTrades" role="tabpanel" data-panel="trades" hidden>
+        <div class="rv-trade-tools">
+          <label class="rv-search">搜索<input id="tradeSearch" type="search" placeholder="品种、策略或编号"></label>
+          <label>结果<select id="tradeResultFilter"><option value="all">全部</option><option value="win">盈利</option><option value="loss">亏损</option><option value="flat">持平</option></select></label>
+          <label>品种<select id="tradeSymbolFilter"><option value="all">全部品种</option></select></label>
+          <span id="tradeFilterFacts" class="rv-caption"></span>
+        </div>
+        <div class="rv-module rv-module--table">
+          <div class="rv-table-wrap"><table class="rv-table rv-trades-table"><thead><tr><th>时间 / 编号</th><th>品种</th><th>方向</th><th>策略</th><th>净盈亏</th><th>结果 R</th><th>计划</th><th>证据</th><th></th></tr></thead><tbody id="tradeTableBody"></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="rv-panel" id="panelGrowth" role="tabpanel" data-panel="growth" hidden>
+        <div class="rv-panel-grid rv-panel-grid--wide">
+          <article class="rv-module">
+            <div class="rv-module__head"><div><span class="rv-step">滚动10笔</span><h3>期望值与主要行为频率</h3></div><span class="rv-caption">盈利验证结果，行为验证过程</span></div>
+            <canvas id="growthChart" class="rv-chart" aria-label="滚动十笔成长曲线"></canvas>
+          </article>
+          <article class="rv-module">
+            <div class="rv-module__head"><div><span class="rv-step">执行维度</span><h3>只和过去的自己比较</h3></div></div>
+            <div id="dimensionList" class="rv-dimension-list"></div>
+          </article>
+        </div>
+        <div class="rv-compare" id="recentCompare"></div>
+      </section>
+    </section>
   </main>
-  <footer class="th-container th-footer">TradeReview OS · 合成演示 · 关联亏损不等于可挽回收益 · 不构成投资建议</footer>
 
-  <script>
-  (function(){
-    var points=[48,52,47,58,61,66,64,72,75,80],labels=["06-08","06-09","06-10","06-11","06-12","06-15","06-16","06-17","06-18","06-19"];
-    function draw(){
-      var c=document.getElementById("growthChart");if(!c)return;
-      var box=c.getBoundingClientRect(),w=Math.max(300,Math.floor(box.width)),h=260,dpr=window.devicePixelRatio||1;
-      c.width=w*dpr;c.height=h*dpr;var x=c.getContext("2d");x.scale(dpr,dpr);x.clearRect(0,0,w,h);
-      var l=34,r=18,t=18,b=30,px=function(i){return l+i*(w-l-r)/(points.length-1)},py=function(v){return t+(100-v)*(h-t-b)/100};
-      x.font="11px ui-sans-serif,system-ui";x.lineWidth=1;
-      [0,25,50,75,100].forEach(function(v){x.strokeStyle="#22304a";x.beginPath();x.moveTo(l,py(v));x.lineTo(w-r,py(v));x.stroke();x.fillStyle="#718096";x.fillText(String(v),7,py(v)+4)});
-      var g=x.createLinearGradient(l,0,w-r,0);g.addColorStop(0,"#60a5fa");g.addColorStop(1,"#c4b5fd");x.strokeStyle=g;x.lineWidth=2.4;x.beginPath();points.forEach(function(v,i){i?x.lineTo(px(i),py(v)):x.moveTo(px(i),py(v))});x.stroke();
-      points.forEach(function(v,i){x.fillStyle=v>=75?"#4ade80":v>=58?"#60a5fa":"#fbbf24";x.beginPath();x.arc(px(i),py(v),3.5,0,Math.PI*2);x.fill();if(i%2===0||i===points.length-1){x.fillStyle="#718096";x.fillText(labels[i],px(i)-15,h-8)}});
-      x.fillStyle="#f8fafc";x.fillText("80",px(points.length-1)-6,py(80)-10);
-    }
-    draw();window.addEventListener("resize",draw,{passive:true});
-  })();
-  </script>
+  <dialog class="rv-dialog" id="apiDialog">
+    <form method="dialog" class="rv-dialog__surface" id="apiForm">
+      <div class="rv-dialog__head"><div><span class="rv-step">只读连接</span><h2>连接你的自托管 API</h2></div><button class="rv-icon-button" value="cancel" aria-label="关闭" type="submit">&times;</button></div>
+      <p class="rv-dialog__lead">浏览器会直接请求你的地址。Token 只保存在当前页面内存；接口需要允许来自本站域名的跨域读取。</p>
+      <label>接口地址<input id="apiUrl" type="url" placeholder="https://your-domain.example/api/trades" required></label>
+      <label>Bearer Token（可选）<input id="apiToken" type="password" autocomplete="off" placeholder="只读 token"></label>
+      <div class="rv-api-contract"><strong>支持的返回格式 · 每个对象代表一笔已完成交易</strong><code>{ "trades": [ { "symbol": "NQ", "side": "long", "entry_time": "...", "net_pnl": 120 } ] }</code></div>
+      <div id="apiError" class="rv-form-error" role="alert"></div>
+      <div class="rv-dialog__actions"><button class="rv-button" value="cancel" type="submit">取消</button><button class="rv-button rv-button--primary" id="connectApiButton" value="default" type="button">读取交易</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="rv-dialog rv-dialog--trade" id="tradeDialog">
+    <div class="rv-dialog__surface">
+      <div class="rv-dialog__head"><div><span class="rv-step">单笔证据重演</span><h2 id="tradeDialogTitle">交易详情</h2><p id="tradeDialogMeta" class="rv-caption"></p></div><button class="rv-icon-button" id="closeTradeDialog" aria-label="关闭" type="button">&times;</button></div>
+      <div class="rv-replay-grid">
+        <section class="rv-replay-chart"><canvas id="tradeChart" aria-label="交易K线重演"></canvas><div id="tradeChartEmpty" class="rv-chart-empty" hidden></div></section>
+        <aside class="rv-replay-facts" id="tradeFacts"></aside>
+      </div>
+      <div class="rv-review-notes" id="tradeReviewNotes"></div>
+      <div class="rv-evidence-boundary"><div><strong>这份数据可以证明</strong><ul id="tradeCanSay"></ul></div><div><strong>这份数据不能证明</strong><ul id="tradeCannotSay"></ul></div></div>
+    </div>
+  </dialog>
+
+  <div class="rv-toast" id="toast" role="status" aria-live="polite"></div>
+  <footer class="th-container th-footer">TradeReview OS · 本地优先证据复盘 · 共现不等于因果 · 不构成投资建议</footer>
+  <script type="module" src="./review-app.mjs"></script>
 </body>
 </html>

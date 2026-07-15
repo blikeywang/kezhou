@@ -114,7 +114,11 @@ def build(output: Path) -> dict:
             "review": {"output": "costly_behavior_evidence_trade_one_action_growth", "rejects": "insufficient_evidence"},
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
-        "privacy": {"privateTradeLedgerPublished": False, "reviewDemo": "synthetic"},
+        "privacy": {
+            "privateTradeLedgerPublished": False,
+            "reviewRuntime": "browser_local",
+            "reviewDemo": "optional_synthetic",
+        },
     }
     (output / "traderhome-manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"

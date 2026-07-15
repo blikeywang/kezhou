@@ -47,7 +47,8 @@ class PortalBuildTests(unittest.TestCase):
         self.assertFalse((self.site / "review" / "data" / "review-data.json").exists())
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
         self.assertFalse(manifest["privacy"]["privateTradeLedgerPublished"])
-        self.assertEqual(manifest["privacy"]["reviewDemo"], "synthetic")
+        self.assertEqual(manifest["privacy"]["reviewRuntime"], "browser_local")
+        self.assertEqual(manifest["privacy"]["reviewDemo"], "optional_synthetic")
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
@@ -60,8 +61,30 @@ class PortalBuildTests(unittest.TestCase):
         for level in (">A<", ">B<", ">C<", ">D<"):
             self.assertIn(level, standards)
         review = (self.site / "review" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("当前外部授权真实案例数为 0", review)
-        self.assertIn("合成样例", review)
+        self.assertIn("原始记录仅在本页内存处理", review)
+        self.assertIn("打开教学样例", review)
+        self.assertIn("连接自托管 API", review)
+
+    def test_review_runtime_is_published_as_a_local_first_bundle(self):
+        expected = [
+            "review/review-engine.mjs",
+            "review/review-app.mjs",
+            "review/review.css",
+            "review/sample-trades.csv",
+        ]
+        for rel in expected:
+            self.assertTrue((self.site / rel).exists(), rel)
+
+        review = (self.site / "review" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="tradeFile"', review)
+        self.assertIn('id="barFile"', review)
+        self.assertIn('id="tradeDialog"', review)
+        self.assertIn("导出聚合报告", review)
+        self.assertNotIn("$420", review)
+        app = (self.site / "review" / "review-app.mjs").read_text(encoding="utf-8")
+        self.assertIn("normalizeTradeRecords", app)
+        self.assertIn("createExportReport", app)
+        self.assertIn("credentials: \"omit\"", app)
 
     def test_custom_domain_is_preserved(self):
         self.assertEqual((self.site / "CNAME").read_text().strip(), "traderhome-histroy.xyz")

@@ -35,6 +35,10 @@ jobs:
         with:
           python-version: "3.11"
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Install deps
         run: pip install -r pipeline/daily/requirements.txt
 
@@ -43,6 +47,9 @@ jobs:
 
       - name: Run TraderHome portal tests
         run: python -m unittest portal.test_portal
+
+      - name: Run TradeReview engine tests
+        run: node --test portal/test_review_engine.mjs
 
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py
