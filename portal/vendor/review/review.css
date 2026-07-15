@@ -269,6 +269,9 @@ button { letter-spacing: 0; }
 .rv-module__head h3 { margin: 5px 0 0; font-size: 15px; letter-spacing: 0; }
 .rv-caption { color: var(--rv-muted); font-size: 9.5px; }
 .rv-chart { display: block; width: 100%; height: 280px; }
+.rv-case-banner { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; margin-top: 10px; padding: 18px; border: 1px solid #46624f; border-left: 3px solid var(--rv-green); border-radius: 8px; background: #101a17; }
+.rv-case-banner h3 { margin: 6px 0 4px; font-size: 15px; letter-spacing: 0; }
+.rv-case-banner p { margin: 0; color: #aebdb4; font-size: 10.5px; }
 .rv-quality-score { font-size: 28px; }
 .rv-quality-list { display: grid; gap: 0; }
 .rv-quality-item { padding: 11px 0; border-top: 1px solid var(--rv-line-soft); }
@@ -396,6 +399,21 @@ button { letter-spacing: 0; }
 .rv-review-note strong { display: block; margin-bottom: 5px; color: #c8dde2; font-size: 10px; }
 .rv-review-note p { margin: 0; color: var(--rv-muted); font-size: 10px; }
 .rv-review-note:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.rv-better-plan { margin-top: 10px; overflow: hidden; border: 1px solid #395b47; border-radius: 7px; background: #0d1713; }
+.rv-better-plan__head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; align-items: start; padding: 16px; border-bottom: 1px solid #294235; }
+.rv-better-plan__head h3 { margin: 6px 0 4px; font-size: 16px; letter-spacing: 0; }
+.rv-better-plan__head p { max-width: 820px; margin: 0; color: #a8b9af; font-size: 10px; }
+.rv-better-plan__tag { display: inline-flex; min-height: 24px; align-items: center; padding: 0 8px; border: 1px solid #3c654d; border-radius: 5px; color: #aaf0c7; font-size: 9px; font-weight: 800; white-space: nowrap; }
+.rv-better-plan__steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.rv-better-step { min-width: 0; padding: 14px; }
+.rv-better-step + .rv-better-step { border-left: 1px solid #294235; }
+.rv-better-step span { display: grid; width: 23px; height: 23px; place-items: center; margin-bottom: 8px; border: 1px solid #3f6650; border-radius: 50%; color: var(--rv-green); font: 800 9px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+.rv-better-step strong { display: block; margin-bottom: 5px; font-size: 10px; }
+.rv-better-step p { margin: 0; color: var(--rv-muted); font-size: 9.5px; }
+.rv-better-plan__rule { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, .55fr); gap: 18px; padding: 13px 16px; border-top: 1px solid #294235; background: #101c17; }
+.rv-better-plan__rule strong { display: block; margin-bottom: 3px; color: #b9edcc; font-size: 9px; }
+.rv-better-plan__rule p { margin: 0; color: #a1b1a7; font-size: 9.5px; }
+.rv-better-plan__rule div:last-child p { color: #75867c; }
 .rv-evidence-boundary { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; padding: 14px; border: 1px solid var(--rv-line); border-radius: 7px; background: #0b1117; }
 .rv-evidence-boundary strong { font-size: 10px; }
 .rv-evidence-boundary ul { margin: 7px 0 0; padding-left: 16px; color: var(--rv-muted); font-size: 9.5px; }
@@ -445,6 +463,14 @@ button { letter-spacing: 0; }
   .rv-trade-tools .rv-caption { width: 100%; margin-left: 0; }
   .rv-replay-grid { grid-template-columns: 1fr; }
   .rv-replay-facts { min-height: 0; }
+  .rv-case-banner { grid-template-columns: 1fr; }
+  .rv-case-banner .rv-button { width: max-content; }
+  .rv-better-plan__head,
+  .rv-better-plan__rule { grid-template-columns: 1fr; }
+  .rv-better-plan__steps { grid-template-columns: 1fr 1fr; }
+  .rv-better-step + .rv-better-step { border-left: 0; }
+  .rv-better-step:nth-child(even) { border-left: 1px solid #294235; }
+  .rv-better-step:nth-child(n + 3) { border-top: 1px solid #294235; }
   .rv-review-notes,
   .rv-evidence-boundary { grid-template-columns: 1fr; }
 }
@@ -472,6 +498,10 @@ button { letter-spacing: 0; }
   .rv-compare { grid-template-columns: 1fr; }
   .rv-compare > div + div { border-top: 1px solid var(--rv-line-soft); border-left: 0; }
   .rv-dialog__surface { padding: 16px; }
+  .rv-case-banner .rv-button { width: 100%; }
+  .rv-better-plan__steps { grid-template-columns: 1fr; }
+  .rv-better-step:nth-child(even) { border-left: 0; }
+  .rv-better-step + .rv-better-step { border-top: 1px solid #294235; }
 }
 
 @media (prefers-reduced-motion: reduce) {

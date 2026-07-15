@@ -37,11 +37,11 @@
         </label>
         <div class="rv-import__actions">
           <button class="rv-button rv-button--primary" id="chooseTradeButton" type="button">选择成交文件</button>
-          <button class="rv-button" id="loadSampleButton" type="button">打开教学样例</button>
+          <button class="rv-button" id="loadSampleButton" type="button">查看完整教学案例</button>
           <button class="rv-button rv-button--quiet" id="downloadTemplateButton" type="button">下载字段模板</button>
         </div>
         <p class="rv-format-note">不要直接导入逐笔成交 fills / executions：开仓、加仓和分批平仓尚未聚合时，买卖方向不等于最终持仓方向。</p>
-        <p class="rv-sample-note">教学样例为合成记录，仅用于查看功能，不会混入真实历史战绩。</p>
+        <p class="rv-sample-note">教学案例为合成记录，包含24笔交易及一笔完整分钟K线重演，不会混入真实历史战绩。</p>
       </div>
 
       <aside class="rv-import__side" aria-label="复盘所需数据">
@@ -136,6 +136,14 @@
             <div id="qualityIssues" class="rv-quality-list"></div>
           </article>
         </div>
+        <article class="rv-case-banner" id="sampleCaseBanner" hidden>
+          <div>
+            <span class="rv-step">完整指导案例 · DEMO-014</span>
+            <h3 id="sampleCaseTitle">BTC 多单：方向一度兑现，为什么最后仍然亏损？</h3>
+            <p id="sampleCaseSummary">读取案例中…</p>
+          </div>
+          <button class="rv-button rv-button--primary" id="openSampleCaseButton" type="button">看这笔怎样做得更好</button>
+        </article>
         <div class="rv-module rv-module--table">
           <div class="rv-module__head">
             <div><span class="rv-step">切片核验</span><h3>优势与成本从哪里来</h3></div>
@@ -200,6 +208,7 @@
   <dialog class="rv-dialog rv-dialog--trade" id="tradeDialog">
     <div class="rv-dialog__surface">
       <div class="rv-dialog__head"><div><span class="rv-step">单笔证据重演</span><h2 id="tradeDialogTitle">交易详情</h2><p id="tradeDialogMeta" class="rv-caption"></p></div><button class="rv-icon-button" id="closeTradeDialog" aria-label="关闭" type="button">&times;</button></div>
+      <section class="rv-better-plan" id="betterPlan"></section>
       <div class="rv-replay-grid">
         <section class="rv-replay-chart"><canvas id="tradeChart" aria-label="交易K线重演"></canvas><div id="tradeChartEmpty" class="rv-chart-empty" hidden></div></section>
         <aside class="rv-replay-facts" id="tradeFacts"></aside>

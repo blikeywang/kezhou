@@ -62,7 +62,7 @@ class PortalBuildTests(unittest.TestCase):
             self.assertIn(level, standards)
         review = (self.site / "review" / "index.html").read_text(encoding="utf-8")
         self.assertIn("原始记录仅在本页内存处理", review)
-        self.assertIn("打开教学样例", review)
+        self.assertIn("查看完整教学案例", review)
         self.assertIn("连接自托管 API", review)
 
     def test_review_runtime_is_published_as_a_local_first_bundle(self):
@@ -71,6 +71,7 @@ class PortalBuildTests(unittest.TestCase):
             "review/review-app.mjs",
             "review/review.css",
             "review/sample-trades.csv",
+            "review/sample-bars.csv",
         ]
         for rel in expected:
             self.assertTrue((self.site / rel).exists(), rel)
@@ -79,6 +80,8 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('id="tradeFile"', review)
         self.assertIn('id="barFile"', review)
         self.assertIn('id="tradeDialog"', review)
+        self.assertIn('id="betterPlan"', review)
+        self.assertIn("看这笔怎样做得更好", review)
         self.assertIn("导出聚合报告", review)
         self.assertNotIn("$420", review)
         app = (self.site / "review" / "review-app.mjs").read_text(encoding="utf-8")

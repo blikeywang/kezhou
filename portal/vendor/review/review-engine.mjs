@@ -675,6 +675,71 @@ export function reviewTrade(trade, analysis) {
       text: "缺少足够的入场前K线上下文，趋势、区间与Paul Wei方法迁移均暂停。补充OHLC后才会给出带价格边界的条件计划；当前只复盘订单和风险执行。",
     });
   }
+  const gaveBackProfit = Number.isFinite(trade.mfeR) && trade.mfeR >= 1 && Number.isFinite(trade.rMultiple) && trade.rMultiple <= .25;
+  const exceededRisk = Number.isFinite(trade.maeR) && trade.maeR >= 1.2 && Number.isFinite(trade.rMultiple) && trade.rMultiple <= -1.05;
+  const entryAtExtreme = context && ((trade.side === "long" && context.position >= 80) || (trade.side === "short" && context.position <= 20));
+  const riskPerUnit = trade.entryPrice !== null && trade.stop !== null && trade.stopSideValid ? Math.abs(trade.entryPrice - trade.stop) : null;
+  const oneRPrice = riskPerUnit ? trade.entryPrice + (trade.side === "long" ? riskPerUnit : -riskPerUnit) : null;
+  const favorableBoundary = context ? (trade.side === "long" ? context.recentHigh : context.recentLow) : null;
+  const structureInvalidation = context ? (trade.side === "long" ? context.recentLow : context.recentHigh) : null;
+  const affectedBehavior = analysis.behaviors.find(behavior => behavior.affectedTradeIds.includes(trade.id));
+  const betterPlan = {
+    headline: gaveBackProfit
+      ? "方向一度兑现，问题是没有把优势变成受保护的交易"
+      : exceededRisk
+        ? "先把最大损失锁回原始1R，再讨论入场技巧"
+        : !planned
+          ? "先让计划可核验，再追求更漂亮的点位"
+          : entryAtExtreme
+            ? "方向可以保留，但入场要从追价改成等待确认"
+            : "把这笔交易改写成条件明确、风险固定的计划",
+    diagnosis: [
+      entryAtExtreme ? `入场位于最近30根窗口约 ${pct(context.position, 0)}% 的极端区域，方向正确也容易先承受回撤。` : null,
+      gaveBackProfit ? `行情曾提供约 +${pct(trade.mfeR, 2)}R，最终结果为 ${pct(trade.rMultiple, 2)}R；主要改进空间在利润保护，不是事后猜最高点。` : null,
+      exceededRisk ? `最大不利波动达到 ${pct(trade.maeR, 2)}R，最终超过原始1R，需要先核对止损执行和滑点。` : null,
+      !planned ? "当前订单没有完整且方向有效的止损与目标，无法证明入场前计划成立。" : null,
+    ].filter(Boolean).join(" ") || "当前没有单一证据足以解释结果；改进重点是把触发、失效、仓位与管理动作预先写清。",
+    steps: [
+      {
+        stage: "入场",
+        action: context
+          ? entryAtExtreme
+            ? `不在窗口极端直接追。先看 ${pct(favorableBoundary, 4)} 是否被有效确认，再等回踩/反抽不破；没有二次确认就放弃。`
+            : `只在 ${pct(favorableBoundary, 4)} 出现方向确认后参与，入场前先写下结构失效 ${pct(structureInvalidation, 4)}。`
+          : planned
+            ? `只在原计划入场 ${pct(trade.entryPrice, 4)} 附近执行；价格已经离开计划区就不追。`
+            : "先补齐触发条件、硬止损与目标，三项缺一时只记录机会，不开仓。",
+      },
+      {
+        stage: "初始风险",
+        action: planned
+          ? `硬失效保留在 ${pct(trade.stop, 4)}；按这个距离反推仓位，让最坏损失不超过账户的 ${analysis.options.riskPercent}%。止损变宽只能减仓。`
+          : `先确定唯一硬失效点，再把仓位缩到最坏损失不超过账户的 ${analysis.options.riskPercent}%。`,
+      },
+      {
+        stage: "加仓",
+        action: context
+          ? `只有价格向有利方向确认 ${pct(favorableBoundary, 4)}，且初始仓已经降低风险后才允许加；加仓后全仓最坏损失仍不得超过1R。绝不对亏损仓摊平。`
+          : "没有足够K线时不指定加仓价；只有初始仓已盈利、结构继续确认且总风险不增加时才允许加。",
+      },
+      {
+        stage: "减仓 / 保护",
+        action: oneRPrice
+          ? `价格首次到达约 ${pct(oneRPrice, 4)}（+1R）时，执行预先二选一：减仓一部分，或把剩余仓位失效点推进到结构保护位。不能等回吐后再决定。`
+          : "首次达到+1R时执行预先写好的减仓或结构保护动作；没有风险单位时先补齐止损，不能临场凭感觉。",
+      },
+      {
+        stage: "退出",
+        action: planned
+          ? `结构失效参考 ${context ? pct(structureInvalidation, 4) : pct(trade.stop, 4)}，硬止损最晚为 ${pct(trade.stop, 4)}；目标 ${pct(trade.target, 4)} 只负责获利，不得用来放宽止损。`
+          : "触发硬失效立即退出；缺少有效失效点时，这笔交易不具备可复制性。",
+      },
+    ],
+    nextTradeRule: affectedBehavior
+      ? affectedBehavior.prescription
+      : "未来10笔在入场前写清触发、失效、目标和最大1R，并逐笔核对是否照计划执行。",
+    limitation: "这是基于当时可见订单与K线重写的执行方案，目的是改善赔率和损失控制；它不能保证同一笔交易一定盈利。",
+  };
   return {
     plan,
     management,
@@ -682,6 +747,7 @@ export function reviewTrade(trade, analysis) {
     result: `最终结果 ${result}；${trade.exitTime ? `持仓 ${pct(trade.durationMinutes, 0)} 分钟` : "缺少平仓时间"}。结果用于验证执行，不反向证明原始方向一定正确或错误。`,
     flags,
     expertLenses,
+    betterPlan,
     canSay: ["订单字段、已发生盈亏与可计算R", trade.marketCoverage ? "匹配K线中的实际路径与MFE/MAE" : "当前没有K线结构证据", "规则命中的行为共现"],
     cannotSay: ["某个最高点本来一定可以成交", "关联亏损就是可挽回利润", "缺少时间戳证据时冒充某位大师的真实做法"],
   };

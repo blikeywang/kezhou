@@ -18,6 +18,7 @@ const refs = Object.fromEntries([
   "qualityScore", "qualityIssues", "equityCaption", "equityChart", "groupTableBody", "behaviorCount", "tradeCount",
   "behaviorList", "tradeSearch", "tradeResultFilter", "tradeSymbolFilter", "tradeFilterFacts", "tradeTableBody",
   "growthChart", "dimensionList", "recentCompare", "accountSize", "riskPercent", "maxDailyTrades", "revengeMinutes", "reviewTimezone",
+  "sampleCaseBanner", "sampleCaseTitle", "sampleCaseSummary", "openSampleCaseButton", "betterPlan",
   "apiDialog", "apiUrl", "apiToken", "apiError", "connectApiButton", "tradeDialog", "closeTradeDialog",
   "tradeDialogTitle", "tradeDialogMeta", "tradeChart", "tradeChartEmpty", "tradeFacts", "tradeReviewNotes",
   "tradeCanSay", "tradeCannotSay", "toast",
@@ -88,6 +89,19 @@ function applyBars() {
   state.trades = attachMarketData(state.normalized?.trades || [], state.bars?.bars || []);
 }
 
+function resetBars() {
+  state.bars = null;
+  refs.barFile.value = "";
+  refs.barFileState.textContent = "尚未导入 · 需要 time, open, high, low, close";
+  refs.barFileState.classList.remove("is-ready");
+}
+
+function setBars(result, name) {
+  state.bars = { ...result, name };
+  refs.barFileState.textContent = `${name} · ${compact(result.bars.length)} 根有效K线${result.invalid.length ? ` · ${result.invalid.length} 行无效` : ""}`;
+  refs.barFileState.classList.add("is-ready");
+}
+
 function recompute() {
   if (!state.normalized?.trades?.length) return;
   applyBars();
@@ -102,6 +116,7 @@ async function importTradeText(text, name, source = "browser_import", isSample =
     const detail = normalized.invalid.slice(0, 3).map(item => `第${item.row}行：${item.reasons.join("、")}`).join("；");
     throw new Error(`没有可分析的有效交易。${detail}`);
   }
+  resetBars();
   state.normalized = normalized;
   state.source = source;
   state.sourceName = name;
@@ -128,9 +143,7 @@ async function importBarFile(file) {
   const records = parseRecords(await file.text(), file.name);
   const result = normalizeBarRecords(records);
   if (!result.bars.length) throw new Error("K线文件没有有效 OHLC 记录");
-  state.bars = { ...result, name: file.name };
-  refs.barFileState.textContent = `${file.name} · ${compact(result.bars.length)} 根有效K线${result.invalid.length ? ` · ${result.invalid.length} 行无效` : ""}`;
-  refs.barFileState.classList.add("is-ready");
+  setBars(result, file.name);
   if (state.normalized) recompute();
   showToast(`已读取 ${compact(result.bars.length)} 根K线`);
 }
@@ -140,11 +153,22 @@ function renderAll() {
   renderSummary();
   renderQuality();
   renderGroups();
+  renderSampleCase();
   renderBehaviors();
   refreshTradeFilters();
   renderTrades();
   renderGrowth();
   window.requestAnimationFrame(() => drawEquityChart());
+}
+
+function renderSampleCase() {
+  const trade = state.trades.find(item => item.id === "DEMO-014");
+  refs.sampleCaseBanner.hidden = !(state.isSample && trade);
+  if (!state.isSample || !trade) return;
+  refs.sampleCaseTitle.textContent = `${trade.symbol} 多单：${rValue(trade.mfeR)} 浮盈，为什么最后变成 ${rValue(trade.rMultiple)}？`;
+  refs.sampleCaseSummary.textContent = trade.marketCoverage
+    ? `入场位于上行窗口高位，行情先向有利方向运行，随后全部回吐。打开案例可查看具体入场确认、${compact(trade.entryPrice + Math.abs(trade.entryPrice - trade.stop))} 附近的+1R保护、加仓条件与退出边界。`
+    : "案例K线正在读取；完成后会展示从入场前结构到最终退出的完整路径。";
 }
 
 function renderSource() {
@@ -447,6 +471,17 @@ function openTradeReview(tradeId) {
     ...(review.expertLenses || []).map(lens => [lens.label, lens.text]),
   ];
   refs.tradeReviewNotes.innerHTML = notes.map(([label, text]) => `<article class="rv-review-note"><strong>${escapeHtml(label)}</strong><p>${escapeHtml(text)}</p></article>`).join("");
+  refs.betterPlan.innerHTML = `
+    <div class="rv-better-plan__head">
+      <div><span class="rv-step">这笔怎样做得更好</span><h3>${escapeHtml(review.betterPlan.headline)}</h3><p>${escapeHtml(review.betterPlan.diagnosis)}</p></div>
+      <span class="rv-better-plan__tag">执行重写 · 非结果倒推</span>
+    </div>
+    <div class="rv-better-plan__steps">${review.betterPlan.steps.map((step, index) => `
+      <div class="rv-better-step"><span>${String(index + 1).padStart(2, "0")}</span><strong>${escapeHtml(step.stage)}</strong><p>${escapeHtml(step.action)}</p></div>`).join("")}</div>
+    <div class="rv-better-plan__rule">
+      <div><strong>下一次只练这一条</strong><p>${escapeHtml(review.betterPlan.nextTradeRule)}</p></div>
+      <div><strong>边界</strong><p>${escapeHtml(review.betterPlan.limitation)}</p></div>
+    </div>`;
   refs.tradeCanSay.innerHTML = review.canSay.map(item => `<li>${escapeHtml(item)}</li>`).join("");
   refs.tradeCannotSay.innerHTML = review.cannotSay.map(item => `<li>${escapeHtml(item)}</li>`).join("");
   refs.tradeDialog.showModal();
@@ -558,9 +593,16 @@ function clearData() {
 }
 
 async function loadSample() {
-  const response = await fetch(new URL("./sample-trades.csv", import.meta.url));
-  if (!response.ok) throw new Error("教学样例读取失败");
-  await importTradeText(await response.text(), "合成教学样例 · 24笔", "synthetic_sample", true);
+  const [tradeResponse, barResponse] = await Promise.all([
+    fetch(new URL("./sample-trades.csv", import.meta.url)),
+    fetch(new URL("./sample-bars.csv", import.meta.url)),
+  ]);
+  if (!tradeResponse.ok || !barResponse.ok) throw new Error("教学案例读取失败");
+  await importTradeText(await tradeResponse.text(), "合成教学案例 · 24笔", "synthetic_sample", true);
+  const barResult = normalizeBarRecords(parseRecords(await barResponse.text(), "sample-bars.csv"));
+  setBars(barResult, "DEMO-014 · BTCUSDT 1分钟K线");
+  recompute();
+  showToast("完整教学案例已就绪：点击绿色案例卡查看专家如何重做");
 }
 
 async function connectApi() {
@@ -609,6 +651,7 @@ refs.clearButton.addEventListener("click", clearData);
 refs.openApiButton.addEventListener("click", () => { refs.apiError.textContent = ""; refs.apiDialog.showModal(); });
 refs.connectApiButton.addEventListener("click", connectApi);
 refs.closeTradeDialog.addEventListener("click", () => refs.tradeDialog.close());
+refs.openSampleCaseButton.addEventListener("click", () => openTradeReview("DEMO-014"));
 
 ["dragenter", "dragover"].forEach(name => refs.tradeDropzone.addEventListener(name, event => { event.preventDefault(); refs.tradeDropzone.classList.add("is-dragging"); }));
 ["dragleave", "drop"].forEach(name => refs.tradeDropzone.addEventListener(name, event => { event.preventDefault(); refs.tradeDropzone.classList.remove("is-dragging"); }));

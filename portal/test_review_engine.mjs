@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -102,6 +103,27 @@ test("expert lenses provide conditional prices only with enough pre-entry bars",
   assert.match(review.expertLenses[0].text, /方向与入场前趋势一致/);
   assert.match(review.expertLenses[2].label, /Paul Wei/);
   assert.match(review.expertLenses[2].text, /不伪造动作概率/);
+  assert.equal(review.betterPlan.steps.length, 5);
+  assert.match(review.betterPlan.steps[2].action, /全仓最坏损失仍不得超过1R/);
+});
+
+test("bundled teaching case turns a profit giveback into an actionable plan", () => {
+  const tradeRows = parseRecords(readFileSync(new URL("./vendor/review/sample-trades.csv", import.meta.url), "utf8"), "sample-trades.csv");
+  const barRows = parseRecords(readFileSync(new URL("./vendor/review/sample-bars.csv", import.meta.url), "utf8"), "sample-bars.csv");
+  const normalized = normalizeTradeRecords(tradeRows);
+  const bars = normalizeBarRecords(barRows);
+  const trades = attachMarketData(normalized.trades, bars.bars);
+  const analysis = analyzeTrades(trades);
+  const trade = trades.find(item => item.id === "DEMO-014");
+  const review = reviewTrade(trade, analysis);
+
+  assert.equal(bars.bars.length, 161);
+  assert.ok(trade.mfeR > 1.4 && trade.mfeR < 1.5);
+  assert.equal(trade.rMultiple, -0.6);
+  assert.match(review.betterPlan.headline, /方向一度兑现/);
+  assert.match(review.betterPlan.steps[0].action, /不在窗口极端直接追/);
+  assert.match(review.betterPlan.steps[3].action, /97300/);
+  assert.match(review.betterPlan.limitation, /不能保证/);
 });
 
 test("analysis reconciles metrics and chooses one repeatable prescription", () => {
