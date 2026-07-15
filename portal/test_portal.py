@@ -84,6 +84,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("data/intraday-coaches.js", app)
         self.assertIn("NQ 日内计划席", app)
         self.assertIn("forwardStep(symbol,timeframe,ohlc.data,CARDS)", app)
+        self.assertIn('id="tourLaunch"', app)
+        self.assertIn('id="productTour" hidden', app)
+        self.assertIn("EV Desk 使用教程", app)
+        self.assertIn("以后不再自动弹出", app)
 
 
 if __name__ == "__main__":
