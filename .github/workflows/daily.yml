@@ -49,7 +49,7 @@ jobs:
         run: python -m unittest portal.test_portal
 
       - name: Run TradeReview engine tests
-        run: node --test portal/test_review_engine.mjs
+        run: node --test portal/test_review_engine.mjs portal/test_review_community.mjs
 
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py
