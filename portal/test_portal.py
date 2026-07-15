@@ -70,6 +70,8 @@ class PortalBuildTests(unittest.TestCase):
             "review/review-engine.mjs",
             "review/review-app.mjs",
             "review/review.css",
+            "review/review-benchmarks.mjs",
+            "review/review-community.mjs",
             "review/sample-trades.csv",
             "review/sample-bars.csv",
         ]
@@ -82,6 +84,11 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('id="tradeDialog"', review)
         self.assertIn('id="betterPlan"', review)
         self.assertIn("看这笔怎样做得更好", review)
+        self.assertIn("教练重做", review)
+        self.assertIn("成长对标", review)
+        self.assertIn("战友会诊", review)
+        self.assertIn('id="coachChart"', review)
+        self.assertIn('id="createFeedbackButton"', review)
         self.assertIn("导出聚合报告", review)
         self.assertNotIn("$420", review)
         app = (self.site / "review" / "review-app.mjs").read_text(encoding="utf-8")

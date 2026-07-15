@@ -7,6 +7,16 @@ import {
   parseRecords,
   reviewTrade,
 } from "./review-engine.mjs";
+import { REVIEW_BENCHMARKS } from "./review-benchmarks.mjs";
+import {
+  createCasePacket,
+  createFeedbackPacket,
+  createPublicCase,
+  decodeSharePayload,
+  encodeSharePayload,
+  validateCasePacket,
+  validateFeedbackPacket,
+} from "./review-community.mjs";
 
 const byId = id => document.getElementById(id);
 const refs = Object.fromEntries([
@@ -21,7 +31,16 @@ const refs = Object.fromEntries([
   "sampleCaseBanner", "sampleCaseTitle", "sampleCaseSummary", "openSampleCaseButton", "betterPlan",
   "apiDialog", "apiUrl", "apiToken", "apiError", "connectApiButton", "tradeDialog", "closeTradeDialog",
   "tradeDialogTitle", "tradeDialogMeta", "tradeChart", "tradeChartEmpty", "tradeFacts", "tradeReviewNotes",
-  "tradeCanSay", "tradeCannotSay", "toast",
+  "tradeCanSay", "tradeCannotSay", "toast", "coachTradeSelect", "coachChartTitle", "coachChartCaption",
+  "coachChart", "coachChartEmpty", "coachBrief", "coachCards", "coachConsensus", "benchmarkUpdatedAt",
+  "growthPassport", "benchmarkChartTitle", "benchmarkChart", "benchmarkChartNote", "growthStageTitle",
+  "growthStageScore", "growthStageActions", "benchmarkCards", "consultBuilder", "consultTradeSelect", "consultAlias",
+  "consultQuestion", "shareSymbol", "shareTime", "sharePrice", "shareMoney", "shareNotes", "createCaseButton",
+  "copyCaseButton", "caseLinkOutput", "consultCase", "consultEmpty", "consultCaseContent", "consultCaseHead",
+  "consultChart", "consultChartEmpty", "consultFacts", "publicFeedback", "feedbackWorkbench", "feedbackAlias",
+  "feedbackStance", "feedbackThesis", "feedbackEvidence", "feedbackPlan", "createFeedbackButton", "copyFeedbackButton",
+  "feedbackLinkOutput", "ownerCuration", "privateFeedbackList", "createPublicCaseButton", "copyPublicCaseButton",
+  "publicCaseLinkOutput",
 ].map(id => [id, byId(id)]));
 
 const state = {
@@ -34,11 +53,18 @@ const state = {
   isSample: false,
   groupKey: "symbols",
   activeTab: "overview",
+  activeWorkspace: "review",
   selectedTradeId: null,
+  coachTradeId: null,
+  consultCase: null,
+  consultFeedbacks: [],
+  ownedCaseIds: new Set(),
 };
 
 let toastTimer;
 let resizeTimer;
+const OWNED_CASES_KEY = "traderhome-review-owned-cases-v1";
+const FEEDBACKS_KEY = "traderhome-review-private-feedback-v1";
 
 const escapeHtml = value => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -53,6 +79,7 @@ const signed = value => finite(value) ? `${value > 0 ? "+" : ""}${compact(value)
 const percent = (value, digits = 1) => finite(value) ? `${Number(value.toFixed(digits))}%` : "-";
 const ratio = value => value === Infinity ? "∞" : finite(value) ? Number(value.toFixed(2)).toString() : "-";
 const rValue = value => finite(value) ? `${value > 0 ? "+" : ""}${Number(value.toFixed(2))}R` : "-";
+const maeValue = value => finite(value) ? `-${Number(Math.abs(value).toFixed(2))}R` : "-";
 const displayTimezone = () => refs.reviewTimezone?.value || "UTC";
 const dateTime = value => finite(value) ? new Intl.DateTimeFormat("zh-CN", {
   timeZone: displayTimezone(), month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false,
@@ -60,6 +87,59 @@ const dateTime = value => finite(value) ? new Intl.DateTimeFormat("zh-CN", {
 const fullDateTime = value => finite(value) ? new Intl.DateTimeFormat("zh-CN", {
   timeZone: displayTimezone(), year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
 }).format(new Date(value)) : "-";
+
+function loadStoredArray(key) {
+  try {
+    const value = JSON.parse(window.localStorage.getItem(key) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveStoredArray(key, value) {
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    showToast("浏览器未允许本地保存；链接仍可复制使用。", "error");
+  }
+}
+
+function rememberOwnedCase(caseId) {
+  state.ownedCaseIds.add(caseId);
+  saveStoredArray(OWNED_CASES_KEY, [...state.ownedCaseIds]);
+}
+
+function saveFeedback(feedback) {
+  const stored = loadStoredArray(FEEDBACKS_KEY).filter(item => item?.id !== feedback.id);
+  stored.push(feedback);
+  saveStoredArray(FEEDBACKS_KEY, stored.slice(-100));
+}
+
+function feedbacksForCase(caseId) {
+  return loadStoredArray(FEEDBACKS_KEY).filter(item => item?.caseId === caseId);
+}
+
+function shareUrl(casePacket, feedbackPacket = null) {
+  const url = new URL(window.location.href);
+  url.search = "";
+  const parts = [`case=${encodeSharePayload(casePacket)}`];
+  if (feedbackPacket) parts.push(`feedback=${encodeSharePayload(feedbackPacket)}`);
+  url.hash = parts.join("&");
+  return url.toString();
+}
+
+async function copyOutput(input, successMessage) {
+  if (!input.value) return;
+  try {
+    await navigator.clipboard.writeText(input.value);
+  } catch {
+    input.focus();
+    input.select();
+    document.execCommand("copy");
+  }
+  showToast(successMessage);
+}
 
 function showToast(message, type = "success") {
   window.clearTimeout(toastTimer);
@@ -122,8 +202,14 @@ async function importTradeText(text, name, source = "browser_import", isSample =
   state.sourceName = name;
   state.isSample = isSample;
   state.activeTab = "overview";
+  state.coachTradeId = null;
+  state.consultCase = null;
+  state.consultFeedbacks = [];
   refs.importView.hidden = true;
   refs.resultsView.hidden = false;
+  document.querySelector(".rv-workbar").hidden = false;
+  document.querySelectorAll("[data-workspace]").forEach(button => { button.disabled = false; });
+  setWorkspace("review");
   setActiveTab("overview");
   recompute();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -158,7 +244,15 @@ function renderAll() {
   refreshTradeFilters();
   renderTrades();
   renderGrowth();
-  window.requestAnimationFrame(() => drawEquityChart());
+  renderCoachWorkspace();
+  renderBenchmarkWorkspace();
+  renderConsultation();
+  window.requestAnimationFrame(() => {
+    drawEquityChart();
+    if (state.activeWorkspace === "coach") drawCoachChart();
+    if (state.activeWorkspace === "benchmark") drawBenchmarkChart();
+    if (state.activeWorkspace === "consult") drawConsultChart();
+  });
 }
 
 function renderSampleCase() {
@@ -337,6 +431,237 @@ function renderGrowth() {
     <div><span>${escapeHtml(behaviorLabel)}频率</span><strong>${escapeHtml(percent(recent.behaviorRate))}</strong><small>此前样本 ${escapeHtml(percent(prior.behaviorRate))}</small></div>`;
 }
 
+function setWorkspace(name) {
+  if (!state.analysis && name !== "consult") {
+    showToast("先导入自己的成交，才能使用复盘、教练和成长对标。", "error");
+    return;
+  }
+  state.activeWorkspace = name;
+  document.querySelectorAll("[data-workspace]").forEach(button => button.setAttribute("aria-selected", button.dataset.workspace === name ? "true" : "false"));
+  document.querySelectorAll("[data-workspace-panel]").forEach(panel => { panel.hidden = panel.dataset.workspacePanel !== name; });
+  window.requestAnimationFrame(() => {
+    if (name === "review") {
+      if (state.activeTab === "overview") drawEquityChart();
+      if (state.activeTab === "growth") drawGrowthChart();
+    }
+    if (name === "coach") drawCoachChart();
+    if (name === "benchmark") drawBenchmarkChart();
+    if (name === "consult") drawConsultChart();
+  });
+}
+
+function renderTradeSelect(select, selectedId) {
+  if (!state.trades.length) {
+    select.innerHTML = '<option value="">没有本地交易</option>';
+    select.disabled = true;
+    return null;
+  }
+  select.disabled = false;
+  const fallback = state.trades.find(trade => trade.id === "DEMO-014")?.id || state.trades.at(-1).id;
+  const selected = state.trades.some(trade => trade.id === selectedId) ? selectedId : fallback;
+  select.innerHTML = state.trades.slice().reverse().map(trade => `<option value="${escapeHtml(encodeURIComponent(trade.id))}">${escapeHtml(trade.symbol)} · ${trade.side === "long" ? "多" : "空"} · ${escapeHtml(rValue(trade.rMultiple))} · ${escapeHtml(trade.id)}</option>`).join("");
+  select.value = encodeURIComponent(selected);
+  return selected;
+}
+
+function renderCoachWorkspace() {
+  if (!state.analysis) return;
+  state.coachTradeId = renderTradeSelect(refs.coachTradeSelect, state.coachTradeId);
+  const trade = state.trades.find(item => item.id === state.coachTradeId);
+  if (!trade) return;
+  const review = reviewTrade(trade, state.analysis);
+  refs.coachChartTitle.textContent = `${trade.symbol} · ${trade.side === "long" ? "做多" : "做空"} · ${trade.id}`;
+  refs.coachChartCaption.textContent = trade.marketCoverage ? `入场前结构 + 持仓路径 · ${rValue(trade.rMultiple)}` : "只有订单证据 · 具体点位暂停";
+  refs.coachBrief.innerHTML = `
+    <span class="rv-step">真实结果与重做目标</span>
+    <h3>${escapeHtml(review.betterPlan.headline)}</h3>
+    <p>${escapeHtml(review.betterPlan.diagnosis)}</p>
+    <dl>
+      <div><dt>实际结果</dt><dd class="${trade.rMultiple > 0 ? "rv-value-positive" : trade.rMultiple < 0 ? "rv-value-negative" : ""}">${escapeHtml(rValue(trade.rMultiple))}</dd></div>
+      <div><dt>最大有利 / 不利</dt><dd>${escapeHtml(rValue(trade.mfeR))} / ${escapeHtml(maeValue(trade.maeR))}</dd></div>
+      <div><dt>计划赔率</dt><dd>${finite(trade.plannedRR) ? `1:${escapeHtml(compact(trade.plannedRR))}` : "不完整"}</dd></div>
+      <div><dt>当前证据</dt><dd>${trade.marketCoverage ? "订单 + K线" : "订单字段"}</dd></div>
+    </dl>`;
+  refs.coachCards.innerHTML = review.coachReplay.map(coach => `
+    <article class="rv-coach-card">
+      <div class="rv-coach-card__head"><div><span class="rv-step">${escapeHtml(coach.school)}</span><h3>${escapeHtml(coach.name)}</h3></div><span class="rv-evidence-pill">${escapeHtml(coach.evidence)}</span></div>
+      <div class="rv-coach-decision"><span>会不会做</span><strong>${escapeHtml(coach.decision)}</strong></div>
+      <dl class="rv-coach-plan">
+        <div><dt>入场</dt><dd>${escapeHtml(coach.entry)}</dd></div>
+        <div><dt>止损</dt><dd>${escapeHtml(coach.stop)}</dd></div>
+        <div><dt>加仓</dt><dd>${escapeHtml(coach.add)}</dd></div>
+        <div><dt>减仓</dt><dd>${escapeHtml(coach.reduce)}</dd></div>
+        <div><dt>退出</dt><dd>${escapeHtml(coach.exit)}</dd></div>
+      </dl>
+      <div class="rv-coach-rationale"><strong>为什么</strong><p>${escapeHtml(coach.rationale)}</p></div>
+      <div class="rv-coach-limit"><span>推演完整度 ${coach.confidence}/100，不是胜率</span><p>${escapeHtml(coach.limitation)}</p></div>
+    </article>`).join("");
+  refs.coachConsensus.innerHTML = `
+    <div><span class="rv-step">三位教练的共同底线</span><h3>他们可以不同意方向，但不能违背同一套生存规则</h3></div>
+    <div class="rv-consensus-rules"><span>价格离开计划区，不追</span><span>亏损仓不摊平</span><span>加仓后总风险仍≤1R</span><span>失效先退，不拿目标放宽止损</span></div>
+    <p>${escapeHtml(review.betterPlan.nextTradeRule)}</p>`;
+}
+
+function growthPassport() {
+  if (!state.analysis) return [];
+  const { analysis } = state;
+  const dimensionMap = Object.fromEntries(analysis.dimensions.map(item => [item.label, item]));
+  const risk = dimensionMap["风险预算"];
+  const executionScores = analysis.dimensions.filter(item => finite(item.score) && item.coverage >= 50).map(item => item.score);
+  const executionAverage = executionScores.length ? executionScores.reduce((sum, value) => sum + value, 0) / executionScores.length : 0;
+  const behaviorImproving = analysis.primary
+    ? finite(analysis.recent.behaviorRate) && finite(analysis.prior.behaviorRate) && analysis.recent.behaviorRate < analysis.prior.behaviorRate
+    : analysis.summary.count >= 20;
+  return [
+    { label: "证据完整", pass: analysis.summary.count >= 20 && analysis.qualityScore >= 70, value: `${analysis.summary.count}笔 · 质量${analysis.qualityScore}`, action: "先积累20笔，并让止损、目标、时间和R覆盖达到可核验水平。" },
+    { label: "损失受控", pass: finite(risk?.score) && risk.score >= 80 && risk.coverage >= 60, value: finite(risk?.score) ? `${risk.score}/100` : "证据不足", action: "固定1R；止损变宽只能减仓，亏损后下一笔不得扩大风险。" },
+    { label: "执行一致", pass: executionAverage >= 75 && behaviorImproving, value: `${Math.round(executionAverage)}/100`, action: "只练当前唯一处方，让主要违规频率在下一个10笔窗口下降。" },
+    { label: "优势可重复", pass: analysis.summary.count >= 30 && analysis.recent.expectancy > 0 && analysis.prior.expectancy > 0, value: `近10笔 ${signed(analysis.recent.expectancy)}`, action: "至少让前后两个独立窗口都保持正期望，再讨论放大仓位。" },
+  ];
+}
+
+function renderBenchmarkWorkspace() {
+  refs.benchmarkUpdatedAt.textContent = `资料核对至 ${REVIEW_BENCHMARKS.updatedAt}`;
+  const passport = growthPassport();
+  refs.growthPassport.innerHTML = passport.length ? passport.map((item, index) => `
+    <article class="${item.pass ? "is-pass" : ""}"><span>${String(index + 1).padStart(2, "0")}</span><div><strong>${escapeHtml(item.label)}</strong><small>${escapeHtml(item.value)}</small></div><b>${item.pass ? "已通过" : "进行中"}</b></article>`).join("") : '<p>导入自己的交易后生成成长护照。</p>';
+  const firstIncomplete = passport.findIndex(item => !item.pass);
+  const currentIndex = firstIncomplete === -1 ? Math.max(0, passport.length - 1) : firstIncomplete;
+  const current = passport[currentIndex] || passport.at(-1);
+  const passed = passport.filter(item => item.pass).length;
+  refs.growthStageTitle.textContent = current ? `当前阶段：${current.label}` : "等待交易样本";
+  refs.growthStageScore.textContent = passport.length ? `${passed}/4` : "-";
+  refs.growthStageActions.innerHTML = current ? `
+    <div class="rv-growth-next"><strong>这阶段先做什么</strong><p>${escapeHtml(current.action)}</p></div>
+    <div class="rv-growth-next"><strong>毕业条件</strong><p>${escapeHtml(current.value)} 只是当前值；满足本阶段后，还要在后续样本继续保持。</p></div>
+    <div class="rv-growth-next"><strong>不做什么</strong><p>不拿高手的一段高收益替代自己的样本，不因一次盈利提前放大风险。</p></div>` : '<p class="rv-caption">至少导入5笔后开始判断。</p>';
+  refs.benchmarkChartTitle.textContent = `${REVIEW_BENCHMARKS.trajectory.name} · ${REVIEW_BENCHMARKS.trajectory.label}`;
+  refs.benchmarkChartNote.innerHTML = `${escapeHtml(REVIEW_BENCHMARKS.trajectory.lesson)} <a href="${escapeHtml(REVIEW_BENCHMARKS.trajectory.sourceUrl)}" target="_blank" rel="noreferrer">查看官方来源</a>。${escapeHtml(REVIEW_BENCHMARKS.trajectory.limitation)}`;
+  refs.benchmarkCards.innerHTML = REVIEW_BENCHMARKS.references.map(reference => `
+    <article class="rv-benchmark-card">
+      <div class="rv-benchmark-card__head"><span class="rv-step">${escapeHtml(reference.eyebrow)}</span><span class="rv-evidence-pill">${escapeHtml(reference.evidence)}</span></div>
+      <h3>${escapeHtml(reference.name)}</h3><strong>${escapeHtml(reference.headline)}</strong><p>${escapeHtml(reference.body)}</p>
+      <div class="rv-benchmark-takeaway">${escapeHtml(reference.takeaway)}</div>
+      <a href="${escapeHtml(reference.sourceUrl)}" target="_blank" rel="noreferrer">${escapeHtml(reference.sourceLabel)}</a>
+    </article>`).join("");
+}
+
+function stanceLabel(value) {
+  return value === "agree" ? "赞同" : value === "oppose" ? "反对" : "谨慎";
+}
+
+function renderConsultation() {
+  const selected = renderTradeSelect(refs.consultTradeSelect, refs.consultTradeSelect.value ? decodeURIComponent(refs.consultTradeSelect.value) : state.coachTradeId);
+  refs.createCaseButton.disabled = !selected;
+  refs.consultBuilder.classList.toggle("is-disabled", !state.analysis);
+  const packet = state.consultCase;
+  refs.consultEmpty.hidden = Boolean(packet);
+  refs.consultCaseContent.hidden = !packet;
+  refs.feedbackWorkbench.hidden = !packet;
+  refs.ownerCuration.hidden = true;
+  if (!packet) return;
+  state.consultFeedbacks = feedbacksForCase(packet.id);
+  refs.consultCaseHead.innerHTML = `
+    <div><span class="rv-step">${escapeHtml(packet.id)} · ${packet.publicFeedback?.length ? "本人精选公开版" : "匿名会诊单"}</span><h3>${escapeHtml(packet.trade.symbol)} · ${packet.trade.side === "long" ? "做多" : "做空"} · ${escapeHtml(packet.author)}</h3><p>${escapeHtml(packet.question)}</p></div>
+    <span class="rv-evidence-pill">${packet.chart.bars.length ? "含匿名K线" : "只有订单字段"}</span>`;
+  const priceSuffix = packet.chart.priceMode === "entry_normalized_to_100" ? "（入场归一为100）" : "";
+  const facts = [
+    ["方向 / 策略", `${packet.trade.side === "long" ? "做多" : "做空"} / ${packet.trade.strategy}`],
+    ["入场 / 出场", `${compact(packet.trade.entry)} / ${compact(packet.trade.exit)} ${priceSuffix}`],
+    ["止损 / 目标", `${compact(packet.trade.stop)} / ${compact(packet.trade.target)}`],
+    ["结果 / MFE / MAE", `${rValue(packet.trade.rMultiple)} / ${rValue(packet.trade.mfeR)} / ${maeValue(packet.trade.maeR)}`],
+  ];
+  if (packet.trade.netPnl !== null) facts.push(["金额盈亏", `${signed(packet.trade.netPnl)} ${packet.trade.currency || ""}`]);
+  if (packet.trade.entryTime) facts.push(["精确时间", packet.trade.entryTime]);
+  if (packet.trade.notes) facts.push(["原始备注", packet.trade.notes]);
+  refs.consultFacts.innerHTML = facts.map(([label, value]) => `<div><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong></div>`).join("");
+  refs.publicFeedback.innerHTML = packet.publicFeedback?.length
+    ? `<div class="rv-module__head"><div><span class="rv-step">由交易本人选出的公开思路</span><h3>${packet.publicFeedback.length} 条</h3></div></div>${packet.publicFeedback.map(item => `
+      <article><div><span>${escapeHtml(stanceLabel(item.stance))}</span><strong>${escapeHtml(item.author)}</strong></div><h4>${escapeHtml(item.thesis)}</h4>${item.evidence ? `<p><b>证据：</b>${escapeHtml(item.evidence)}</p>` : ""}<p><b>计划：</b>${escapeHtml(item.plan)}</p></article>`).join("")}`
+    : '<div class="rv-public-empty"><strong>还没有本人公开的战友思路</strong><p>私评默认不可见，只有发单者勾选后才会出现在精选公开链接中。</p></div>';
+  const owner = state.ownedCaseIds.has(packet.id);
+  refs.ownerCuration.hidden = !owner;
+  if (owner) {
+    refs.privateFeedbackList.innerHTML = state.consultFeedbacks.length ? state.consultFeedbacks.map(item => `
+      <label class="rv-private-view"><input type="checkbox" value="${escapeHtml(item.id)}"><div><span>${escapeHtml(stanceLabel(item.stance))} · ${escapeHtml(item.author)}</span><strong>${escapeHtml(item.thesis)}</strong>${item.evidence ? `<p>证据：${escapeHtml(item.evidence)}</p>` : ""}<p>计划：${escapeHtml(item.plan)}</p></div></label>`).join("") : '<p class="rv-caption">还没有收到私评。战友打开会诊链接后生成回传链接，你打开一次就会进入这里。</p>';
+  }
+}
+
+function createConsultationCase() {
+  if (!state.analysis) throw new Error("请先导入自己的成交，再选择一笔生成会诊链接。");
+  const tradeId = decodeURIComponent(refs.consultTradeSelect.value || "");
+  const trade = state.trades.find(item => item.id === tradeId);
+  const packet = createCasePacket({
+    trade,
+    alias: refs.consultAlias.value,
+    question: refs.consultQuestion.value,
+    visibility: {
+      symbol: refs.shareSymbol.checked,
+      time: refs.shareTime.checked,
+      price: refs.sharePrice.checked,
+      money: refs.shareMoney.checked,
+      notes: refs.shareNotes.checked,
+    },
+  });
+  state.consultCase = packet;
+  rememberOwnedCase(packet.id);
+  refs.caseLinkOutput.value = shareUrl(packet);
+  refs.copyCaseButton.disabled = false;
+  refs.feedbackLinkOutput.value = "";
+  refs.copyFeedbackButton.disabled = true;
+  renderConsultation();
+  window.requestAnimationFrame(drawConsultChart);
+  showToast("匿名会诊链接已生成；默认字段不会离开这个链接。");
+}
+
+function createPrivateFeedback() {
+  if (!state.consultCase) throw new Error("请先打开一张会诊单。");
+  const feedback = createFeedbackPacket({
+    casePacket: state.consultCase,
+    alias: refs.feedbackAlias.value,
+    stance: refs.feedbackStance.value,
+    thesis: refs.feedbackThesis.value,
+    evidence: refs.feedbackEvidence.value,
+    plan: refs.feedbackPlan.value,
+  });
+  refs.feedbackLinkOutput.value = shareUrl(state.consultCase, feedback);
+  refs.copyFeedbackButton.disabled = false;
+  showToast("私评回传链接已生成；它不会自动公开。");
+}
+
+function createCuratedPublicCase() {
+  if (!state.consultCase || !state.ownedCaseIds.has(state.consultCase.id)) throw new Error("只有这张会诊单的发起浏览器可以生成精选公开版。");
+  const selectedIds = [...refs.privateFeedbackList.querySelectorAll('input[type="checkbox"]:checked')].map(input => input.value);
+  if (!selectedIds.length) throw new Error("请先勾选至少一条值得公开的私评。");
+  const publicCase = createPublicCase(state.consultCase, state.consultFeedbacks, selectedIds);
+  refs.publicCaseLinkOutput.value = shareUrl(publicCase);
+  refs.copyPublicCaseButton.disabled = false;
+  showToast(`已生成包含 ${publicCase.publicFeedback.length} 条精选思路的公开链接。`);
+}
+
+function loadSharedHash() {
+  const raw = window.location.hash.replace(/^#/, "");
+  if (!raw.includes("case=")) return false;
+  const params = new URLSearchParams(raw);
+  const packet = validateCasePacket(decodeSharePayload(params.get("case")));
+  const feedbackEncoded = params.get("feedback");
+  if (feedbackEncoded) {
+    const feedback = validateFeedbackPacket(decodeSharePayload(feedbackEncoded));
+    if (feedback.caseId !== packet.id) throw new Error("私评与会诊单编号不一致。");
+    saveFeedback(feedback);
+    showToast(state.ownedCaseIds.has(packet.id) ? "已收到一条私评，只有你选择后才会公开。" : "私评链接已读取；仅会诊单发起者能进入筛选区。");
+  }
+  state.consultCase = packet;
+  refs.importView.hidden = true;
+  refs.resultsView.hidden = false;
+  document.querySelector(".rv-workbar").hidden = !state.analysis;
+  document.querySelectorAll("[data-workspace]").forEach(button => { button.disabled = !state.analysis && button.dataset.workspace !== "consult"; });
+  renderConsultation();
+  setWorkspace("consult");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  return true;
+}
+
 function setActiveTab(name) {
   state.activeTab = name;
   document.querySelectorAll("[data-tab]").forEach(button => button.setAttribute("aria-selected", button.dataset.tab === name ? "true" : "false"));
@@ -445,6 +770,39 @@ function drawGrowthChart() {
   ctx.fillStyle = "#758493"; ctx.textAlign = "right"; ctx.fillText("100%", width - 2, pad.top + 3); ctx.fillText("0%", width - 2, height - pad.bottom); ctx.textAlign = "left";
 }
 
+function drawBenchmarkChart() {
+  if (state.activeWorkspace !== "benchmark") return;
+  const surface = canvasContext(refs.benchmarkChart);
+  if (!surface) return;
+  const { context: ctx, width, height } = surface;
+  const points = REVIEW_BENCHMARKS.trajectory.points;
+  const values = points.map(point => point.value);
+  let min = Math.min(0, ...values);
+  let max = Math.max(...values);
+  const span = Math.max(1, max - min);
+  min -= span * .08; max += span * .12;
+  const pad = { left: 48, right: 22, top: 24, bottom: 34 };
+  const x = index => pad.left + index * (width - pad.left - pad.right) / Math.max(1, points.length - 1);
+  const y = value => pad.top + (max - value) * (height - pad.top - pad.bottom) / (max - min);
+  ctx.font = "9px ui-sans-serif, system-ui";
+  for (let index = 0; index <= 4; index += 1) {
+    const value = min + (max - min) * index / 4;
+    ctx.strokeStyle = "#202a34"; ctx.beginPath(); ctx.moveTo(pad.left, y(value)); ctx.lineTo(width - pad.right, y(value)); ctx.stroke();
+    ctx.fillStyle = "#758493"; ctx.fillText(`${Math.round(value)}%`, 3, y(value) + 3);
+  }
+  const gradient = ctx.createLinearGradient(0, pad.top, 0, height - pad.bottom);
+  gradient.addColorStop(0, "rgba(99,166,244,.28)"); gradient.addColorStop(1, "rgba(99,166,244,0)");
+  ctx.beginPath(); points.forEach((point, index) => index ? ctx.lineTo(x(index), y(point.value)) : ctx.moveTo(x(index), y(point.value)));
+  ctx.lineTo(x(points.length - 1), height - pad.bottom); ctx.lineTo(x(0), height - pad.bottom); ctx.closePath(); ctx.fillStyle = gradient; ctx.fill();
+  ctx.beginPath(); points.forEach((point, index) => index ? ctx.lineTo(x(index), y(point.value)) : ctx.moveTo(x(index), y(point.value)));
+  ctx.strokeStyle = "#63a6f4"; ctx.lineWidth = 2.2; ctx.stroke();
+  points.forEach((point, index) => {
+    ctx.fillStyle = index === 3 ? "#ef7c86" : "#63a6f4"; ctx.beginPath(); ctx.arc(x(index), y(point.value), 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = "#aab7c4"; ctx.textAlign = "center"; ctx.fillText(point.label, x(index), height - 12); ctx.fillText(`${point.value}%`, x(index), y(point.value) - 8);
+  });
+  ctx.textAlign = "left";
+}
+
 function openTradeReview(tradeId) {
   const trade = state.trades.find(item => item.id === tradeId);
   if (!trade) return;
@@ -489,15 +847,26 @@ function openTradeReview(tradeId) {
 }
 
 function drawTradeChart(trade) {
+  drawTradeChartInto(refs.tradeChart, refs.tradeChartEmpty, trade, "这笔交易没有匹配到历史K线。当前只展示订单证据，不生成支撑阻力、趋势或最佳进出场点。");
+}
+
+function drawCoachChart() {
+  if (!state.analysis || state.activeWorkspace !== "coach") return;
+  const trade = state.trades.find(item => item.id === state.coachTradeId);
+  if (!trade) return;
+  drawTradeChartInto(refs.coachChart, refs.coachChartEmpty, trade, "这笔交易缺少历史K线。三位教练只回答风险与记录要求，不会编造具体价位。");
+}
+
+function drawTradeChartInto(canvas, empty, trade, emptyMessage) {
   const bars = trade.marketBars || [];
   const hasBars = bars.length > 1;
-  refs.tradeChart.hidden = !hasBars;
-  refs.tradeChartEmpty.hidden = hasBars;
+  canvas.hidden = !hasBars;
+  empty.hidden = hasBars;
   if (!hasBars) {
-    refs.tradeChartEmpty.textContent = "这笔交易没有匹配到历史K线。当前只展示订单证据，不生成支撑阻力、趋势或最佳进出场点。";
+    empty.textContent = emptyMessage;
     return;
   }
-  const surface = canvasContext(refs.tradeChart, 500);
+  const surface = canvasContext(canvas, 500);
   if (!surface) return;
   const { context: ctx, width, height } = surface;
   const levels = [trade.entryPrice, trade.exitPrice, trade.stop, trade.target].filter(finite);
@@ -548,6 +917,59 @@ function drawTradeChart(trade) {
   });
 }
 
+function drawConsultChart() {
+  if (state.activeWorkspace !== "consult" || !state.consultCase) return;
+  const packet = state.consultCase;
+  const bars = packet.chart.bars || [];
+  const hasBars = bars.length > 1;
+  refs.consultChart.hidden = !hasBars;
+  refs.consultChartEmpty.hidden = hasBars;
+  if (!hasBars) {
+    refs.consultChartEmpty.textContent = "发单者没有分享可用K线；只能讨论订单计划与风险字段。";
+    return;
+  }
+  const surface = canvasContext(refs.consultChart, 500);
+  if (!surface) return;
+  const { context: ctx, width, height } = surface;
+  const levels = [packet.trade.entry, packet.trade.exit, packet.trade.stop, packet.trade.target].filter(finite);
+  let min = Math.min(...bars.map(bar => bar.low), ...levels);
+  let max = Math.max(...bars.map(bar => bar.high), ...levels);
+  const span = Math.max(Math.abs(max) * .0001, max - min, 1e-8);
+  min -= span * .08; max += span * .08;
+  const pad = { left: 12, right: 64, top: 16, bottom: 26 };
+  const plotWidth = width - pad.left - pad.right;
+  const plotHeight = height - pad.top - pad.bottom;
+  const firstMinute = bars[0].minute;
+  const lastMinute = bars.at(-1).minute;
+  const xFor = minute => pad.left + (minute - firstMinute) * plotWidth / Math.max(1, lastMinute - firstMinute);
+  const y = value => pad.top + (max - value) * plotHeight / (max - min);
+  ctx.font = "9px ui-sans-serif, system-ui";
+  for (let index = 0; index <= 4; index += 1) {
+    const value = min + (max - min) * index / 4;
+    ctx.strokeStyle = "#1b252e"; ctx.beginPath(); ctx.moveTo(pad.left, y(value)); ctx.lineTo(width - pad.right, y(value)); ctx.stroke();
+    ctx.fillStyle = "#758493"; ctx.fillText(compact(value), width - pad.right + 6, y(value) + 3);
+  }
+  const candleWidth = Math.max(1, Math.min(8, plotWidth / bars.length * .62));
+  bars.forEach(bar => {
+    const rising = bar.close >= bar.open;
+    const tone = rising ? "#55d68b" : "#ef7c86";
+    const xx = xFor(bar.minute);
+    ctx.strokeStyle = tone; ctx.beginPath(); ctx.moveTo(xx, y(bar.high)); ctx.lineTo(xx, y(bar.low)); ctx.stroke();
+    ctx.fillStyle = tone; ctx.fillRect(xx - candleWidth / 2, Math.min(y(bar.open), y(bar.close)), candleWidth, Math.max(1, Math.abs(y(bar.open) - y(bar.close))));
+  });
+  const drawLevel = (value, label, tone, dashed = false) => {
+    if (!finite(value)) return;
+    ctx.strokeStyle = tone; if (dashed) ctx.setLineDash([4, 3]);
+    ctx.beginPath(); ctx.moveTo(pad.left, y(value)); ctx.lineTo(width - pad.right, y(value)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = tone; ctx.fillText(label, pad.left + 4, y(value) - 4);
+  };
+  drawLevel(packet.trade.entry, "ENTRY", "#63a6f4");
+  drawLevel(packet.trade.exit, "EXIT", "#c6d0da", true);
+  drawLevel(packet.trade.stop, "SL", "#ef7c86", true);
+  drawLevel(packet.trade.target, "TP", "#55d68b", true);
+  ctx.fillStyle = "#8293a3"; ctx.fillText(`${firstMinute}m`, pad.left, height - 8); ctx.textAlign = "right"; ctx.fillText(`${lastMinute}m`, width - pad.right, height - 8); ctx.textAlign = "left";
+}
+
 function downloadBlob(content, fileName, type) {
   const url = URL.createObjectURL(new Blob([content], { type }));
   const link = document.createElement("a");
@@ -580,12 +1002,20 @@ function clearData() {
   state.sourceName = "";
   state.isSample = false;
   state.selectedTradeId = null;
+  state.coachTradeId = null;
+  state.consultCase = null;
+  state.consultFeedbacks = [];
+  state.activeWorkspace = "review";
   refs.tradeFile.value = "";
   refs.barFile.value = "";
   refs.tradeSearch.value = "";
   refs.tradeResultFilter.value = "all";
   refs.barFileState.textContent = "尚未导入 · 需要 time, open, high, low, close";
   refs.barFileState.classList.remove("is-ready");
+  refs.caseLinkOutput.value = "";
+  refs.feedbackLinkOutput.value = "";
+  refs.publicCaseLinkOutput.value = "";
+  window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
   refs.resultsView.hidden = true;
   refs.importView.hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -602,7 +1032,7 @@ async function loadSample() {
   const barResult = normalizeBarRecords(parseRecords(await barResponse.text(), "sample-bars.csv"));
   setBars(barResult, "DEMO-014 · BTCUSDT 1分钟K线");
   recompute();
-  showToast("完整教学案例已就绪：点击绿色案例卡查看专家如何重做");
+  showToast("完整教学案例已就绪：可在教练重做和战友会诊中继续体验");
 }
 
 async function connectApi() {
@@ -658,6 +1088,7 @@ refs.openSampleCaseButton.addEventListener("click", () => openTradeReview("DEMO-
 refs.tradeDropzone.addEventListener("drop", event => importTradeFile(event.dataTransfer.files[0]).catch(handleError));
 
 document.querySelectorAll("[data-tab]").forEach(button => button.addEventListener("click", () => setActiveTab(button.dataset.tab)));
+document.querySelectorAll("[data-workspace]").forEach(button => button.addEventListener("click", () => setWorkspace(button.dataset.workspace)));
 document.querySelectorAll("[data-group]").forEach(button => button.addEventListener("click", () => {
   state.groupKey = button.dataset.group;
   document.querySelectorAll("[data-group]").forEach(item => item.classList.toggle("is-active", item === button));
@@ -666,6 +1097,17 @@ document.querySelectorAll("[data-group]").forEach(button => button.addEventListe
 
 [refs.tradeSearch, refs.tradeResultFilter, refs.tradeSymbolFilter].forEach(control => control.addEventListener("input", renderTrades));
 [refs.accountSize, refs.riskPercent, refs.maxDailyTrades, refs.revengeMinutes, refs.reviewTimezone].forEach(control => control.addEventListener("change", recompute));
+refs.coachTradeSelect.addEventListener("change", () => {
+  state.coachTradeId = decodeURIComponent(refs.coachTradeSelect.value);
+  renderCoachWorkspace();
+  window.requestAnimationFrame(drawCoachChart);
+});
+refs.createCaseButton.addEventListener("click", () => { try { createConsultationCase(); } catch (error) { handleError(error); } });
+refs.copyCaseButton.addEventListener("click", () => copyOutput(refs.caseLinkOutput, "会诊链接已复制"));
+refs.createFeedbackButton.addEventListener("click", () => { try { createPrivateFeedback(); } catch (error) { handleError(error); } });
+refs.copyFeedbackButton.addEventListener("click", () => copyOutput(refs.feedbackLinkOutput, "私评回传链接已复制"));
+refs.createPublicCaseButton.addEventListener("click", () => { try { createCuratedPublicCase(); } catch (error) { handleError(error); } });
+refs.copyPublicCaseButton.addEventListener("click", () => copyOutput(refs.publicCaseLinkOutput, "精选公开链接已复制"));
 refs.tradeTableBody.addEventListener("click", event => {
   const button = event.target.closest("[data-trade-id]");
   if (button) openTradeReview(decodeURIComponent(button.dataset.tradeId));
@@ -676,6 +1118,9 @@ window.addEventListener("resize", () => {
   resizeTimer = window.setTimeout(() => {
     if (state.activeTab === "overview") drawEquityChart();
     if (state.activeTab === "growth") drawGrowthChart();
+    if (state.activeWorkspace === "coach") drawCoachChart();
+    if (state.activeWorkspace === "benchmark") drawBenchmarkChart();
+    if (state.activeWorkspace === "consult") drawConsultChart();
     if (refs.tradeDialog.open && state.selectedTradeId) drawTradeChart(state.trades.find(trade => trade.id === state.selectedTradeId));
   }, 120);
 }, { passive: true });
@@ -689,3 +1134,6 @@ refs.tradeDialog.addEventListener("click", event => {
 
 const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 if ([...refs.reviewTimezone.options].some(option => option.value === browserTimezone)) refs.reviewTimezone.value = browserTimezone;
+state.ownedCaseIds = new Set(loadStoredArray(OWNED_CASES_KEY));
+window.addEventListener("hashchange", () => { try { loadSharedHash(); } catch (error) { handleError(error); } });
+try { loadSharedHash(); } catch (error) { handleError(error); }

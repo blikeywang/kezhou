@@ -6,7 +6,7 @@ TraderHome is one evidence-led trading workflow with three bounded workspaces:
 
 1. **Kezhou / Research** — turn current market shape into a falsifiable historical hypothesis.
 2. **EV Desk / Plan** — turn a directional hypothesis into a conditional plan with invalidation and risk.
-3. **TradeReview OS / Review** — turn completed execution into one behavior change that future trades can verify.
+3. **TradeReview OS / Growth** — turn completed execution into evidence review, a coach redo, a measurable growth stage, and an owner-controlled consultation case.
 
 The product should reduce unstructured action, not increase the number of signals a user consumes.
 
@@ -16,7 +16,7 @@ The product should reduce unstructured action, not increase the number of signal
 |---|---|---|---|
 | Kezhou | Closed historical candles + current pattern window | Consensus probability, Edge, interval, robustness, analogs | Stale data, weak sample, or method conflict |
 | EV Desk | Symbol, timeframe, current structure, risk budget | Trigger, entry zone, invalidation, target, R, or no-trade | Direction, location, or reward/risk gate fails |
-| TradeReview OS | Authorized trades, candles, original self-review | Costly behavior, evidence trade, one action, growth proof | Evidence is incomplete or rights are unclear |
+| TradeReview OS | Authorized trades, candles, original self-review | Evidence review, coach redo, one action, growth proof, optional consultation case | Evidence is incomplete or rights are unclear |
 
 Scores never cross these boundaries:
 
@@ -39,6 +39,15 @@ TradeReview expert cases additionally use A–D levels:
 - D: educational method or historical narrative.
 
 Only A and B can be presented as trade replay evidence.
+
+TradeReview contains four user-visible work areas:
+
+1. **My review** — reconcile orders, K-lines, R, behavior evidence, and the next 10-trade prescription.
+2. **Coach redo** — answer take/pass, entry, invalidation, add, reduce, and exit using only information visible at the original decision time.
+3. **Growth benchmark** — compare the user with their own prior windows first, then with rights-bounded teacher ledgers, public aggregate snapshots, and research base rates.
+4. **Peer consultation** — create an anonymized case link, receive private feedback, and let the originating browser select which opinions enter a public version.
+
+Method transfer must identify itself as level D. Paul Wei behavior sequencing may use aggregate teacher-ledger evidence, but a specific post-trade answer is never described as Paul Wei's personal opinion unless the timestamped model was actually run.
 
 ## 4. Cross-product handoff
 
@@ -63,12 +72,14 @@ Future authenticated versions should persist a handoff object instead of asking 
 
 The public demo links stages without storing personal or private trade data.
 
+Peer consultation uses URL fragments for the static deployment. Exact time, price, monetary P&L, and notes are hidden by default; normalized K-lines and R can be shared without uploading the original ledger. A server-backed community must not be implied until identity, permissions, abuse controls, deletion, and moderation are operating.
+
 ## 5. Visual system
 
 - Base: midnight navy, cool neutral panels, restrained borders.
 - Research accent: cyan — evidence and uncertainty.
 - Plan accent: green — conditional action and risk gates.
-- Review accent: violet — reflection and behavior change.
+- Review accent: cyan and green — evidence reconstruction and verified behavior change.
 - Amber: uncertainty / waiting / incomplete evidence.
 - Red: invalidation, downside, failed gate, or evidence risk.
 

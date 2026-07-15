@@ -81,6 +81,15 @@
         </div>
       </div>
 
+      <nav class="rv-workspaces" role="tablist" aria-label="交易后成长工作区">
+        <button type="button" role="tab" aria-selected="true" aria-controls="workspaceReview" data-workspace="review"><span>01</span><strong>我的复盘</strong><small>事实、行为、逐笔重演</small></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="workspaceCoach" data-workspace="coach"><span>02</span><strong>教练重做</strong><small>如果是老手，会怎样计划</small></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="workspaceBenchmark" data-workspace="benchmark"><span>03</span><strong>成长对标</strong><small>自己、真人台账与高手样本</small></button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="workspaceConsult" data-workspace="consult"><span>04</span><strong>战友会诊</strong><small>匿名晒单、私评、选择公开</small></button>
+      </nav>
+
+      <section class="rv-workspace-panel" id="workspaceReview" role="tabpanel" data-workspace-panel="review">
+
       <div class="rv-verdict">
         <article class="rv-prescription">
           <div class="rv-prescription__top">
@@ -189,6 +198,98 @@
           </article>
         </div>
         <div class="rv-compare" id="recentCompare"></div>
+      </section>
+      </section>
+
+      <section class="rv-workspace-panel" id="workspaceCoach" role="tabpanel" data-workspace-panel="coach" hidden>
+        <div class="rv-panel-intro rv-panel-intro--split">
+          <div><span class="rv-step">不是点评，是重新做一遍</span><h2>如果这笔交给教练，他会在哪里等、哪里做、哪里认错</h2><p>教练只能使用入场当时可见的K线与订单字段。每位教练都必须回答做不做、入场、止损、加仓、减仓和退出，并标出证据等级。</p></div>
+          <label class="rv-coach-picker">选择一笔交易<select id="coachTradeSelect"></select></label>
+        </div>
+        <div class="rv-coach-stage">
+          <article class="rv-module rv-coach-chart-module">
+            <div class="rv-module__head"><div><span class="rv-step">当时可见的行情</span><h3 id="coachChartTitle">等待选择</h3></div><span id="coachChartCaption" class="rv-caption"></span></div>
+            <div class="rv-coach-chart"><canvas id="coachChart" aria-label="教练交易重演K线"></canvas><div id="coachChartEmpty" class="rv-chart-empty" hidden></div></div>
+          </article>
+          <aside class="rv-coach-brief" id="coachBrief"></aside>
+        </div>
+        <div class="rv-coach-cards" id="coachCards"></div>
+        <section class="rv-coach-consensus" id="coachConsensus"></section>
+      </section>
+
+      <section class="rv-workspace-panel" id="workspaceBenchmark" role="tabpanel" data-workspace-panel="benchmark" hidden>
+        <div class="rv-panel-intro rv-panel-intro--split">
+          <div><span class="rv-step">正确成长不是一条直线</span><h2>先证明自己能活下来，再证明优势可以重复</h2><p>个人交易用逐笔证据比较；真人高手只展示来源允许证明的部分。收益榜不能替代交易台账，方法名也不能替代样本外表现。</p></div>
+          <span class="rv-source-date" id="benchmarkUpdatedAt"></span>
+        </div>
+        <section class="rv-growth-passport" id="growthPassport" aria-label="个人成长护照"></section>
+        <div class="rv-benchmark-stage">
+          <article class="rv-module">
+            <div class="rv-module__head"><div><span class="rv-step">公开月度快照</span><h3 id="benchmarkChartTitle">高手的曲线也会回撤</h3></div><span class="rv-caption">累计收益 · 不等于完整账户净值</span></div>
+            <canvas id="benchmarkChart" class="rv-chart" aria-label="公开高手阶段收益曲线"></canvas>
+            <p id="benchmarkChartNote" class="rv-module-note"></p>
+          </article>
+          <article class="rv-module rv-benchmark-self">
+            <div class="rv-module__head"><div><span class="rv-step">你的下一阶段</span><h3 id="growthStageTitle">等待交易样本</h3></div><strong id="growthStageScore" class="rv-quality-score">-</strong></div>
+            <div id="growthStageActions" class="rv-growth-actions"></div>
+          </article>
+        </div>
+        <div class="rv-benchmark-cards" id="benchmarkCards"></div>
+      </section>
+
+      <section class="rv-workspace-panel" id="workspaceConsult" role="tabpanel" data-workspace-panel="consult" hidden>
+        <div class="rv-panel-intro rv-panel-intro--split">
+          <div><span class="rv-step">单子可以公开，原始账户不必公开</span><h2>战友会诊：先私下给看法，由交易本人决定哪些公开</h2><p>链接中的会诊内容放在网址井号之后，不随页面请求发送给本站。默认隐藏精确时间、价格、金额和备注，只保留可讨论的结构与R。</p></div>
+          <span class="rv-local"><i></i>无账号 · 无上传 · 发单者选择公开</span>
+        </div>
+        <ol class="rv-consult-flow" aria-label="会诊流程">
+          <li><span>1</span><div><strong>匿名晒单</strong><small>选择一笔，决定公开哪些字段</small></div></li>
+          <li><span>2</span><div><strong>私下回传</strong><small>战友用私评链接发回完整看法</small></div></li>
+          <li><span>3</span><div><strong>本人筛选</strong><small>勾选好思路，再生成公开版本</small></div></li>
+        </ol>
+        <div class="rv-consult-grid">
+          <section class="rv-consult-builder" id="consultBuilder">
+            <div class="rv-module__head"><div><span class="rv-step">我要晒单</span><h3>生成匿名会诊链接</h3></div></div>
+            <div class="rv-consult-form">
+              <label>选择交易<select id="consultTradeSelect"></select></label>
+              <label>你的称呼<input id="consultAlias" type="text" maxlength="32" value="匿名战友"></label>
+              <label class="rv-consult-question">最想让大家看什么<textarea id="consultQuestion" maxlength="500" rows="3">请帮我判断这笔交易的入场、管理与退出还能怎样改进。</textarea></label>
+            </div>
+            <fieldset class="rv-privacy-options"><legend>允许出现在会诊链接中</legend><label><input id="shareSymbol" type="checkbox" checked>品种</label><label><input id="shareTime" type="checkbox">精确时间</label><label><input id="sharePrice" type="checkbox">精确价格</label><label><input id="shareMoney" type="checkbox">金额盈亏</label><label><input id="shareNotes" type="checkbox">原始备注</label></fieldset>
+            <div class="rv-consult-actions"><button class="rv-button rv-button--primary" id="createCaseButton" type="button">生成会诊链接</button><button class="rv-button" id="copyCaseButton" type="button" disabled>复制链接</button></div>
+            <label class="rv-share-output">会诊链接<input id="caseLinkOutput" type="text" readonly placeholder="生成后会出现在这里"></label>
+          </section>
+
+          <section class="rv-consult-case" id="consultCase">
+            <div class="rv-consult-empty" id="consultEmpty"><strong>还没有打开会诊单</strong><p>从自己的交易生成链接，或打开战友发来的会诊链接后，这里会出现匿名K线、问题和已经由本人公开的思路。</p></div>
+            <div id="consultCaseContent" hidden>
+              <div class="rv-consult-case-head" id="consultCaseHead"></div>
+              <div class="rv-consult-chart"><canvas id="consultChart" aria-label="匿名会诊K线"></canvas><div id="consultChartEmpty" class="rv-chart-empty" hidden></div></div>
+              <div class="rv-consult-facts" id="consultFacts"></div>
+              <div class="rv-public-feedback" id="publicFeedback"></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="rv-feedback-workbench" id="feedbackWorkbench" hidden>
+          <div class="rv-module__head"><div><span class="rv-step">给他一个可执行的看法</span><h3>私评不会自动出现在公开会诊中</h3></div><span class="rv-caption">交易本人收到链接后才能选择公开</span></div>
+          <div class="rv-feedback-form">
+            <label>你的称呼<input id="feedbackAlias" type="text" maxlength="32" value="匿名战友"></label>
+            <label>立场<select id="feedbackStance"><option value="caution">谨慎：方向可讨论，计划需改</option><option value="agree">赞同：逻辑成立，执行可改</option><option value="oppose">反对：这笔当时不该做</option></select></label>
+            <label>你的判断<textarea id="feedbackThesis" maxlength="800" rows="3" placeholder="先说你会不会做，以及为什么"></textarea></label>
+            <label>你看到的证据<textarea id="feedbackEvidence" maxlength="800" rows="3" placeholder="只写K线、结构、订单或风险证据"></textarea></label>
+            <label>换你来做的计划<textarea id="feedbackPlan" maxlength="800" rows="3" placeholder="入场、止损、加减仓、退出至少写清两项"></textarea></label>
+          </div>
+          <div class="rv-consult-actions"><button class="rv-button rv-button--primary" id="createFeedbackButton" type="button">生成私评回传链接</button><button class="rv-button" id="copyFeedbackButton" type="button" disabled>复制私评链接</button></div>
+          <label class="rv-share-output">私评回传链接<input id="feedbackLinkOutput" type="text" readonly placeholder="生成后私下发给交易本人"></label>
+        </section>
+
+        <section class="rv-owner-curation" id="ownerCuration" hidden>
+          <div class="rv-module__head"><div><span class="rv-step">这张单由你发起</span><h3>选择值得公开的战友思路</h3></div><span class="rv-caption">未勾选的私评永远不会进入公开版本</span></div>
+          <div id="privateFeedbackList" class="rv-private-feedback"></div>
+          <div class="rv-consult-actions"><button class="rv-button rv-button--primary" id="createPublicCaseButton" type="button">生成精选公开链接</button><button class="rv-button" id="copyPublicCaseButton" type="button" disabled>复制公开链接</button></div>
+          <label class="rv-share-output">精选公开链接<input id="publicCaseLinkOutput" type="text" readonly placeholder="勾选私评后生成"></label>
+        </section>
       </section>
     </section>
   </main>

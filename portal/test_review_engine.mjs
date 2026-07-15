@@ -105,6 +105,10 @@ test("expert lenses provide conditional prices only with enough pre-entry bars",
   assert.match(review.expertLenses[2].text, /不伪造动作概率/);
   assert.equal(review.betterPlan.steps.length, 5);
   assert.match(review.betterPlan.steps[2].action, /全仓最坏损失仍不得超过1R/);
+  assert.deepEqual(review.coachReplay.map(coach => coach.id), ["paul-wei", "brooks-pa", "risk-probability"]);
+  assert.match(review.coachReplay[0].limitation, /不提供伪精确胜率/);
+  assert.match(review.coachReplay[1].entry, /二次|回踩/);
+  assert.match(review.coachReplay[2].add, /全仓最坏损失仍不得超过1R/);
 });
 
 test("bundled teaching case turns a profit giveback into an actionable plan", () => {

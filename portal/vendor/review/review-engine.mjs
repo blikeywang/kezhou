@@ -740,6 +740,74 @@ export function reviewTrade(trade, analysis) {
       : "未来10笔在入场前写清触发、失效、目标和最大1R，并逐笔核对是否照计划执行。",
     limitation: "这是基于当时可见订单与K线重写的执行方案，目的是改善赔率和损失控制；它不能保证同一笔交易一定盈利。",
   };
+  const aligned = context && ((trade.side === "long" && context.trend === "上行") || (trade.side === "short" && context.trend === "下行"));
+  const coachReplay = [
+    {
+      id: "paul-wei",
+      name: "Paul Wei 行为教练",
+      school: "真实台账提炼的方法迁移",
+      evidence: context ? "D · 方法迁移" : "暂停 · 缺少K线",
+      confidence: context ? 46 : 0,
+      decision: context
+        ? aligned
+          ? "条件参与：先试仓，确认后才加"
+          : "先观察：逆向或横向环境不抢第一脚"
+        : "暂停：不在缺少结构时编动作",
+      entry: context
+        ? `小试仓只在 ${pct(favorableBoundary, 4)} 出现方向确认并完成回踩/反抽后；确认失败就不做。`
+        : "补足至少8根入场前K线后再给条件位置。",
+      stop: context ? `结构退回 ${pct(structureInvalidation, 4)} 先减风险，硬止损不得晚于原计划${planned ? ` ${pct(trade.stop, 4)}` : "失效点"}。` : betterPlan.steps[1].action,
+      add: context ? `只在行情继续向有利方向扩展、原仓风险已经下降后加；加完后的全仓最坏损失仍不超过1R。` : "没有结构确认时不加仓。",
+      reduce: oneRPrice ? `首次触及约 ${pct(oneRPrice, 4)}（+1R）执行预写的减仓或保护，不等回吐后再想。` : "先定义1R，达到后按预案减风险。",
+      exit: planned ? `目标 ${pct(trade.target, 4)} 负责获利；结构与硬止损负责否定，减多不自动反手开空。` : "失效即退，不因已经亏损而把退出改成加仓。",
+      rationale: "迁移的是台账中可反复核对的动作顺序，不是声称Paul Wei本人会在这个时点下单。",
+      limitation: "本页没有运行该时点的Paul Wei相似度概率模型，因此不提供伪精确胜率或本人观点。",
+    },
+    {
+      id: "brooks-pa",
+      name: "Brooks 价格行为教练",
+      school: "趋势、区间与二次信号",
+      evidence: context ? "D · 规则化方法镜头" : "暂停 · 缺少K线",
+      confidence: context ? 52 : 0,
+      decision: context
+        ? context.trend === "横向"
+          ? "大概率交易区间：只在边缘做，中央放弃"
+          : aligned
+            ? "顺势但不追：等突破后的二次确认"
+            : "逆势单门槛更高：没有强反转就放弃"
+        : "暂停：没有入场前价格行为上下文",
+      entry: context
+        ? context.trend === "横向"
+          ? `只在 ${pct(context.recentLow, 4)} / ${pct(context.recentHigh, 4)} 的区间边缘等待失败突破或二次信号，中值 ${pct(context.recentMid, 4)} 附近不做。`
+          : `等待最近边界 ${pct(favorableBoundary, 4)} 被有效突破，再等一次回踩/反抽确认；第一根突破棒不追。`
+        : "补K线后再判断趋势、区间和信号棒。",
+      stop: context ? `放在使价格行为假设失效的 ${pct(structureInvalidation, 4)} 外侧，并用仓位把风险压回1R。` : betterPlan.steps[1].action,
+      add: context ? "二次信号成功且初始仓已出现浮盈后，才允许一次小幅加仓；交易区间中央不加。" : "暂停。",
+      reduce: context ? `到最近对侧边界或+1R先兑现一部分；如果突破后立刻回到原区间，主动降风险。` : "先补足路径证据。",
+      exit: planned ? `价格行为失效先退出，计划目标 ${pct(trade.target, 4)} 不是必须等到的承诺。` : "强反向棒或结构失效时退出。",
+      rationale: "它回答的是当时结构下怎样提高交易质量，不用最终盈亏倒推入场一定正确或错误。",
+      limitation: "这是可编码的价格行为镜头，不代表Al Brooks本人针对这笔交易的意见。",
+    },
+    {
+      id: "risk-probability",
+      name: "纪律与概率教练",
+      school: "固定风险、条件计划、样本验证",
+      evidence: "B · 本笔证据推演",
+      confidence: planned ? 78 : 38,
+      decision: planned ? "可以评估，但先让最坏结果固定" : "不做：计划字段不完整",
+      entry: betterPlan.steps[0].action,
+      stop: betterPlan.steps[1].action,
+      add: betterPlan.steps[2].action,
+      reduce: betterPlan.steps[3].action,
+      exit: betterPlan.steps[4].action,
+      rationale: gaveBackProfit
+        ? `这笔曾有约 +${pct(trade.mfeR, 2)}R 却最终为 ${pct(trade.rMultiple, 2)}R，优先修利润保护比寻找新指标更有证据。`
+        : affectedBehavior
+          ? `它命中了“${affectedBehavior.label}”，所以未来10笔只改这一项并核验频率是否下降。`
+          : "没有足够证据证明某种技术分析更强，先把每笔损失和执行过程做成可重复样本。",
+      limitation: "风险纪律能改善生存与可验证性，不能把负期望方法自动变成正期望。",
+    },
+  ];
   return {
     plan,
     management,
@@ -748,6 +816,7 @@ export function reviewTrade(trade, analysis) {
     flags,
     expertLenses,
     betterPlan,
+    coachReplay,
     canSay: ["订单字段、已发生盈亏与可计算R", trade.marketCoverage ? "匹配K线中的实际路径与MFE/MAE" : "当前没有K线结构证据", "规则命中的行为共现"],
     cannotSay: ["某个最高点本来一定可以成交", "关联亏损就是可挽回利润", "缺少时间戳证据时冒充某位大师的真实做法"],
   };
