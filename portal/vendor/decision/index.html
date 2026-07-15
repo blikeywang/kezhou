@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="data:,">
 <title>正EV决策台 · 下单前的支撑阻力与进出场分析</title>
 <meta name="description" content="把17种主流交易框架汇成支撑阻力与进出场计划；专家随实时市场前瞻模拟做单，公开EV、回撤、适用行情与成长记录。">
 <style>
-  :root{--bg:#070b14;--panel:#0e1627;--panel2:#111c30;--border:#22304a;--txt:#f8fafc;--muted:#91a2b8;
-    --long:#22c55e;--long2:#4ade80;--short:#f43f5e;--short2:#fb7185;--warn:#fbbf24;--accent:#60a5fa;}
+  :root{--bg:#0d1117;--panel:#161b22;--panel2:#1c2230;--border:#2a3240;--txt:#e6edf3;--muted:#8b949e;
+    --long:#2ea043;--long2:#4ac26b;--short:#e5534b;--short2:#f0776f;--warn:#d29922;--accent:#3b82f6;}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--txt);line-height:1.6;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
@@ -52,8 +53,8 @@
   <div class="top">
     <div class="logo">正<b>EV</b>决策台</div>
     <div style="display:flex;gap:10px;align-items:center">
-      <a class="note" href="#join" style="color:var(--muted)">加入等候列表</a>
-      <a class="cta" href="app.html">免费试用 Demo →</a>
+      <a class="note" href="https://github.com/blikeywang/ev-desk/issues" target="_blank" rel="noopener" style="color:var(--muted)">反馈建议</a>
+      <a class="cta" href="app.html">打开决策台 →</a>
     </div>
   </div>
 
@@ -62,8 +63,8 @@
     <div class="note">今日机会榜 · 多流派位置地图 · 条件式进出场 · 正EV风控</div>
     <h1>下单前，先回答：<br><span class="hl">位置在哪</span>，<span class="hl2">错在哪里</span>。</h1>
     <p class="sub">系统先从你的自选池中找出当前更值得等待的机会，再由趋势、道氏、Brooks价格行为、威科夫、缠论、ICT/SMC、成交量分布、VWAP、斐波与一目均衡等
-       <b>17种视角</b>，把支撑阻力从一堆线聚合成可读的<b>价格区</b>；最后给出触发、进场、止损、目标和赔率。
-       没有位置优势时，结论就是<b>不下单</b>。</p>
+       <b>17种视角</b>整理结构。它们不是17个赚钱承诺；真正进入计划的是明确触发、失效、赔率和固定风险。
+       没有位置优势或没有通过证据门控时，结论就是<b>不下单</b>。</p>
     <div class="btns">
       <a class="cta big" href="app.html">查看今日机会 →</a>
       <span class="note">无需注册 · 浏览器直连行情 · 分析工具，非投资建议</span>
@@ -84,7 +85,7 @@
   <!-- 洞察 -->
   <section>
     <h2>为什么"高胜率"是陷阱</h2>
-    <p class="lead">只要死扛亏损，胜率能刷得很好看——但生存能力在崩塌。以下是基于历史市场数据的规则化演示回测，不代表真实账户表现。</p>
+    <p class="lead">只要死扛亏损，胜率能刷得很好看——但生存能力在崩塌。这是我们对真实数据的回测结论。</p>
     <div class="insight">
       <div class="note">固定"赚 +0.5R 就跑"，只放宽止损（越往下=越死扛亏损）· BTC+ETH 4h · 含成本</div>
       <div class="bars">
@@ -100,12 +101,12 @@
 
   <!-- 三卖点 -->
   <section>
-    <h2>我们卖的不是预测，是纪律</h2>
-    <p class="lead">这三件事，是绝大多数亏钱交易者的通病。</p>
+    <h2>技术分析不给承诺，纪律与概率给你生存机会</h2>
+    <p class="lead">图形可以帮助组织信息，但不能替你创造优势。这里把每个判断变成可执行、可否决、可复盘的计划。</p>
     <div class="cards">
-      <div class="card"><div class="ic">🗺️</div><h3>位置地图</h3><p>摆动点、前高前低、POC、VWAP、枢轴、Fib、均线等聚合成区，显示汇合来源和强度。</p></div>
-      <div class="card"><div class="ic">🎯</div><h3>条件式计划</h3><p>区分支撑确认、阻力确认、突破回踩和跌破反抽；必须等触发，不把现价自动当进场价。</p></div>
-      <div class="card"><div class="ic">🛡️</div><h3>EV与风险门控</h3><p>赔率、失效位和仓位同时检查。方向、位置或赔率任一不成立，就明确劝退。</p></div>
+      <div class="card"><div class="ic">🗺️</div><h3>分析只是地图</h3><p>多流派负责标出结构、位置和冲突，不把任何一位教练包装成单独可执行的神谕。</p></div>
+      <div class="card"><div class="ic">🎯</div><h3>计划是一份合同</h3><p>进场前写清触发、止损、目标和仓位；价格不到不追，结构失效立即退出。</p></div>
+      <div class="card"><div class="ic">🛡️</div><h3>概率靠重复兑现</h3><p>每笔固定风险，用R值结算，完整记录赢亏。只有长期样本能回答计划是否真的有优势。</p></div>
     </div>
   </section>
 
@@ -121,14 +122,13 @@
   </section>
 
   <section>
-    <h2>专家也要经得起未来行情</h2>
-    <p class="lead">不靠事后解释。每个计划先封存，再等待市场判卷。</p>
+    <h2>教练也要用战绩说话</h2>
+    <p class="lead">历史证据、跨市场训练与 Paul Wei 行为记录分别展示，没有记录就明确说明。</p>
     <div class="cards">
-      <div class="card"><div class="ic">🔒</div><h3>信号先封存</h3><p>记录产生时间、市场环境、方向、进场、止损和目标；失败计划不能从账本里删除。</p></div>
-      <div class="card"><div class="ic">⚖️</div><h3>统一悲观结算</h3><p>所有流派使用同一执行层；同一根K线同时碰止损和目标时，按先止损处理，并计入成本。</p></div>
-      <div class="card"><div class="ic">🧠</div><h3>有证据地成长</h3><p>比较近期与此前EV，识别各自适用的趋势/震荡环境；小样本强制收缩，失效专家自动降权。</p></div>
+      <div class="card"><div class="ic">📋</div><h3>17 位教练逐一列出</h3><p>当前市场有正式战绩就显示当前范围；没有覆盖时显示 BTC、ETH、NQ、ES 的训练结果或未参赛原因。</p></div>
+      <div class="card"><div class="ic">⚖️</div><h3>统一保守结算</h3><p>所有方法使用同一执行口径；同一根K线同时碰止损和目标时按先止损处理，并计入成本。</p></div>
+      <div class="card"><div class="ic">🧠</div><h3>Paul Wei 行为证据</h3><p>用真实成交重建进攻、减仓与退出倾向，再由独立价位引擎给出进场、止损、目标和加减仓计划。</p></div>
     </div>
-    <div class="disc">当前 Demo 的前瞻赛场保存在你的浏览器中，只在页面运行时更新；正式付费版需使用统一服务端时钟、24小时行情任务和可验证账本。</div>
   </section>
 
   <!-- 市场 -->
@@ -137,35 +137,15 @@
     <p class="lead">一个面板，多市场多周期（1m 到 1d）。</p>
     <div class="mkts">
       <span class="chip">加密 BTC/ETH/SOL…</span><span class="chip">美股 AAPL/NVDA/SPY/QQQ</span>
+      <span class="chip">US Tech 100 / Nasdaq-100</span>
       <span class="chip">大宗 黄金/原油</span><span class="chip">周期 1m·5m·15m·1h·4h·1d</span>
     </div>
     <div style="display:flex;gap:20px;margin-top:22px;flex-wrap:wrap">
       <div><div class="kpi" style="color:var(--long2)">17</div><div class="note">流派视角</div></div>
       <div><div class="kpi">6</div><div class="note">时间周期</div></div>
-      <div><div class="kpi">100%</div><div class="note">浏览器端实时回测</div></div>
+      <div><div class="kpi">4</div><div class="note">训练市场 BTC/ETH/NQ/ES</div></div>
     </div>
     <div style="margin-top:26px"><a class="cta big" href="app.html">开始体验 →</a></div>
-  </section>
-
-  <!-- 等候列表 / 反馈 -->
-  <section id="join">
-    <h2>加入等候列表</h2>
-    <p class="lead">留个邮箱，新功能（多市场预警、完整战绩、DC/TG 社区）上线第一时间通知你。也欢迎告诉我们你最想要什么。</p>
-    <form id="wf" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" onsubmit="return onWait(event)"
-      style="display:flex;gap:10px;flex-wrap:wrap;max-width:560px">
-      <input name="email" type="email" required placeholder="你的邮箱"
-        style="flex:2;min-width:200px;background:var(--panel2);border:1px solid var(--border);color:var(--txt);border-radius:10px;padding:12px 14px;font-size:14px">
-      <input name="want" placeholder="你最想要的功能(可选)"
-        style="flex:2;min-width:200px;background:var(--panel2);border:1px solid var(--border);color:var(--txt);border-radius:10px;padding:12px 14px;font-size:14px">
-      <button class="cta" type="submit" style="border:none;cursor:pointer">加入 →</button>
-    </form>
-    <div id="wmsg" class="note" style="margin-top:10px;color:var(--long2)"></div>
-    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
-      <a class="cta ghost" id="tgLink" href="#" onclick="return needSetup('Telegram')">💬 Telegram 群</a>
-      <a class="cta ghost" id="dcLink" href="#" onclick="return needSetup('Discord')">🎮 Discord</a>
-      <a class="cta ghost" id="fbLink" href="https://github.com/blikeywang/ev-desk/issues" target="_blank" rel="noopener">✉️ 反馈建议</a>
-    </div>
-    <div class="note" style="margin-top:10px">数据只用于产品通知与改进，不出售第三方。详见 <a href="tos.html" style="color:var(--accent)">服务条款与隐私</a>。</div>
   </section>
 
   <div class="disc">
@@ -173,21 +153,6 @@
     所有分析与历史战绩仅供参考，<b>历史表现不代表未来</b>；交易有风险，盈亏与决策由你本人负责。
   </div>
 </div>
-<footer>正EV决策台 · Demo · 分析工具，非投资建议 · 你的数据本地保存，不上传 · <a href="tos.html" style="color:var(--muted)">服务条款与隐私</a></footer>
-<script>
-async function onWait(e){e.preventDefault();
-  const f=e.target,email=f.email.value,want=f.want.value,msg=document.getElementById('wmsg');
-  const configured=!f.action.includes('YOUR_FORM_ID');
-  if(configured){
-    try{await fetch(f.action,{method:'POST',headers:{Accept:'application/json'},body:new FormData(f)});
-      msg.textContent='✅ 已加入等候列表，谢谢！上线后第一时间通知你。';f.reset();}
-    catch(err){msg.style.color='var(--warn)';msg.textContent='提交失败，请稍后重试或用邮件反馈。';}
-  }else{
-    try{const w=JSON.parse(localStorage.getItem('waitlist')||'[]');w.push({email,want,t:Date.now()});localStorage.setItem('waitlist',JSON.stringify(w));}catch(x){}
-    msg.innerHTML='✅ 已记录（演示：本地保存）。<br><span style="color:var(--muted)">上线前把表单 action 换成你的 Formspree / Tally / Google Forms 端点，即可真正收到报名。</span>';f.reset();
-  }
-  return false;}
-function needSetup(name){alert(name+' 群链接待配置：上线前把该按钮的 href 换成你的邀请链接即可。');return false;}
-</script>
+<footer>正EV决策台 · 分析工具，非投资建议 · <a href="tos.html" style="color:var(--muted)">服务条款与隐私</a></footer>
 </body>
 </html>

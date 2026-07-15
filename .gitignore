@@ -23,6 +23,7 @@ secrets*.json
 
 # CI static-site build output
 _site/
+.playwright-cli/
 
 # OS / editor
 .DS_Store

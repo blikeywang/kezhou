@@ -66,6 +66,25 @@ class PortalBuildTests(unittest.TestCase):
     def test_custom_domain_is_preserved(self):
         self.assertEqual((self.site / "CNAME").read_text().strip(), "traderhome-histroy.xyz")
 
+    def test_decision_runtime_is_published_as_a_complete_bundle(self):
+        expected = [
+            "decision/data/expert-evidence.js",
+            "decision/data/coach-training.js",
+            "decision/data/intraday-coaches.js",
+            "decision/data/plan-gate-model.js",
+            "decision/data/market-snapshots/NQ.json",
+            "decision/data/market-snapshots/MSFT.json",
+            "decision/vendor/lightweight-charts.standalone.production.js",
+            "decision/arena-worker/src/engine.js",
+        ]
+        for rel in expected:
+            self.assertTrue((self.site / rel).exists(), rel)
+
+        app = (self.site / "decision" / "app.html").read_text(encoding="utf-8")
+        self.assertIn("data/intraday-coaches.js", app)
+        self.assertIn("NQ 日内计划席", app)
+        self.assertIn("forwardStep(symbol,timeframe,ohlc.data,CARDS)", app)
+
 
 if __name__ == "__main__":
     unittest.main()
