@@ -88,6 +88,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('id="productTour" hidden', app)
         self.assertIn("EV Desk 使用教程", app)
         self.assertIn("以后不再自动弹出", app)
+        self.assertIn("教学示例 · 不是当前交易建议", app)
+        self.assertIn("主计划是回踩 98 入场、95 止损、104 目标", app)
+        self.assertIn("62分不是 62% 胜率", app)
+        self.assertIn("把 NQ 放入等待清单", app)
 
 
 if __name__ == "__main__":
