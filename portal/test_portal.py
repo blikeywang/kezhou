@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -25,13 +26,14 @@ class PortalBuildTests(unittest.TestCase):
             "decision/app.html",
             "decision/tos.html",
             "review/index.html",
+            "flow/index.html",
             "standards/index.html",
         ]
         for rel in expected:
             path = self.site / rel
             self.assertTrue(path.exists(), rel)
             html = path.read_text(encoding="utf-8")
-            self.assertIn('data-traderhome-shell="v3"', html, rel)
+            self.assertIn('data-traderhome-shell="v4"', html, rel)
             self.assertIn('rel="canonical"', html, rel)
             self.assertIn('name="theme-color"', html, rel)
             self.assertIn('rel="icon"', html, rel)
@@ -52,8 +54,12 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 3)
+        self.assertEqual(manifest["version"], 4)
+        self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow"})
+        self.assertNotIn("flow", manifest["productContracts"])
+        self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
@@ -125,6 +131,31 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("主计划是回踩 98 入场、95 止损、104 目标", app)
         self.assertIn("62分不是 62% 胜率", app)
         self.assertIn("把 NQ 放入等待清单", app)
+
+    def test_flow_is_published_as_an_independent_browser_safe_system(self):
+        flow = (self.site / "flow" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="flow-root"', flow)
+        self.assertIn("NQ Flow Console", flow)
+        self.assertIn("https://nq-flow-console.blikeywang.chatgpt.site", self._flow_javascript())
+        self.assertIn("SIMULATED FEED", self._flow_javascript())
+        self.assertIn("v1.6.4 BRIDGE", self._flow_javascript())
+        self.assertRegex(flow, r'/flow/assets/flow-app-[^"\']+\.js')
+        self.assertRegex(flow, r'/flow/assets/flow-[^"\']+\.css')
+
+        for asset in re.findall(r'(?:src|href)="(/flow/assets/[^"]+)"', flow):
+            self.assertTrue((self.site / asset.removeprefix("/")).exists(), asset)
+
+        snapshot = json.loads((self.site / "flow" / "snapshot.json").read_text())
+        self.assertEqual(snapshot["strategyVersion"], "1.6.4")
+        self.assertEqual(snapshot["bundleMode"], "browser-safe-simulated-preview")
+        self.assertEqual(self.manifest["routes"]["flow"], "/flow/")
+        self.assertEqual(self.manifest["privacy"]["flowPublicRuntime"], "simulated_preview")
+
+    def _flow_javascript(self) -> str:
+        return "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (self.site / "flow" / "assets").glob("*.js")
+        )
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@
   var section = path.indexOf("/history/") === 0 ? "history"
     : path.indexOf("/decision/") === 0 ? "decision"
     : path.indexOf("/review/") === 0 ? "review"
+    : path.indexOf("/flow/") === 0 ? "flow"
     : path.indexOf("/standards/") === 0 ? "standards" : "home";
   document.documentElement.setAttribute("data-th-stage", section);
 
@@ -14,6 +15,7 @@
     ["history", "/history/", "历史证据"],
     ["decision", "/decision/app.html", "下单前决策"],
     ["review", "/review/", "交易后复盘"],
+    ["flow", "/flow/", "NQ 订单流"],
     ["standards", "/standards/", "证据标准"]
   ];
   var stages = {
@@ -39,7 +41,7 @@
 
   var header = document.createElement("header");
   header.className = "th-shell";
-  header.setAttribute("data-traderhome", "shell-v3");
+  header.setAttribute("data-traderhome", "shell-v4");
   header.innerHTML = '<div class="th-shell__inner">'
     + '<a class="th-shell__brand" href="/"><span class="th-shell__mark">TH</span>'
     + '<span class="th-shell__brandtext"><strong>TraderHome</strong><small>Evidence-led trading workspace</small></span></a>'

@@ -13,6 +13,7 @@
 html[data-th-stage="history"] { --th-stage: #67e8f9; }
 html[data-th-stage="decision"] { --th-stage: #4ade80; }
 html[data-th-stage="review"] { --th-stage: #c4b5fd; }
+html[data-th-stage="flow"] { --th-stage: #2ed0a5; }
 
 .th-shell,
 .th-shell *,
@@ -221,3 +222,7 @@ html[data-th-stage="review"] { --th-stage: #c4b5fd; }
 /* Keep product-native sticky elements below the shared 60px shell. */
 html[data-th-stage="history"] .mnav { top: 60px !important; }
 html[data-th-stage="decision"] .verdict { top: 70px !important; }
+
+/* The independent Flow console owns a full-height trading viewport below the shell. */
+html[data-th-stage="flow"] .access-shell { min-height: calc(100vh - 60px); }
+html[data-th-stage="flow"] .console-shell { height: calc(100vh - 60px); }

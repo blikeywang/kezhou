@@ -4,11 +4,11 @@
 >
 > **免责:本产品输出为基于历史相似度的概率描述,不构成任何投资建议。历史相似 ≠ 未来重复。** 详见 [`DISCLAIMER.md`](./DISCLAIMER.md)。
 
-当前状态:**已上线的 TraderHome 三工作台 Demo + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，EV Desk 位于 `/decision/app.html`，TradeReview OS 展示位于 `/review/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
+当前状态：**已上线的 TraderHome 三阶段工作流 + 独立 NQ Flow 系统 + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，EV Desk 位于 `/decision/app.html`，TradeReview OS 位于 `/review/`，独立订单流终端位于 `/flow/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
-TraderHome V3 已统一三个工作台的专业界面与产品契约：每一阶段明确输入、有效输出、拒绝条件和下一步，并使用 DATA / DERIVED / FORWARD / METHOD-DEMO 统一证据语言。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
+TraderHome V4 保留 V3 的三个核心工作台与产品契约，并新增不占用 01–03 阶段编号的 NQ Flow Console。NQ Flow 只负责盘中订单流和 Fibo OTE v1.6.4 Bridge，不改写历史研究、下单决策或复盘逻辑。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
 
 ---
 
@@ -23,9 +23,9 @@ kezhou/
 │   └── report_light.html     # 报告 · 浅色杂志版
 ├── portal/                   # TraderHome 同域集成层
 │   ├── home/                 # 统一首页
-│   ├── assets/               # 三工作台共享导航
-│   ├── vendor/               # 浏览器安全的静态 Demo 快照
-│   ├── build_site.py         # 生成 /history · /decision · /review
+│   ├── assets/               # 三阶段工作台与独立系统共享导航
+│   ├── vendor/               # 浏览器安全的静态 Demo 快照（含 flow）
+│   ├── build_site.py         # 生成 /history · /decision · /review · /flow
 │   └── test_portal.py        # 路由、隐私与域名回归测试
 ├── data/                     # 已算出的真实结果(可作后端回归测试基准样本)
 │   ├── crypto_payload.json   # BTC/ETH/SOL 多配置匹配结果
@@ -42,7 +42,7 @@ kezhou/
 └── docs/
     ├── BUILD_SPEC.md         # 产品实现与支付接入说明书(架构/引擎/数据/账务/Stripe·支付宝·加密)
     ├── METHODS_AND_SOURCES.md# 线上图表的数据来源、算法口径、阅读方式与局限
-    ├── TRADERHOME_PRODUCT_SYSTEM.md # 三工作台产品边界、证据语言与统一视觉规范
+    ├── TRADERHOME_PRODUCT_SYSTEM.md # 三阶段产品边界、独立系统边界与统一视觉规范
     ├── FEATURES_v2.md        # 功能补充设计:数据刷新 / 检索校验 / 收藏夹 / 逐年季节性 / 讲解层 / 内容分层
     ├── ANALYTICS.md          # 埋点与后台统计:事件字典 / 转化漏斗 / 付费归因 / 存储与隐私
     ├── PAYMENTS.md           # 支付设计:闲鱼卡密 / Stripe / 加密 tx-hash 核验 + 统一权益
@@ -55,7 +55,7 @@ kezhou/
 
 ## 快速开始
 
-**只想看产品**:打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、下单前决策或交易后复盘。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
+**只想看产品**：打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、下单前决策、交易后复盘或独立 NQ 订单流。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
 
 **重新生成图表与原型**(需 Python 3 + `matplotlib numpy`):
 
@@ -77,6 +77,7 @@ python report3.py        # -> report.html
 - 加密:Binance 公开 Klines,当前生产页使用 4 小时线。
 - 美股 / 大宗 ETF:Yahoo Finance 日线;GLD、USO 是 ETF 代理,不等于黄金现货或 WTI 连续期货。
 - 网页只发布衍生统计,资产字段 `last` 必须保持 `null`,不提供实时价格。
+- `/flow/` 的公开快照只运行明确标记的模拟流；真实 NQ/MNQ L2、供应商密钥与用户会话留在独立授权服务中。
 - 免费接口适合研究展示;商用需改用正规数据商并取得授权。
 - 完整字段解释、时间换算、corr/DTW、显著性和局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
 

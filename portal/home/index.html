@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="TraderHome 将历史证据、下单前决策与交易后成长连接成一条可验证的交易工作流。">
+  <meta name="description" content="TraderHome 将历史证据、下单前决策与交易后成长连接成可验证工作流，并提供独立的 NQ 实时订单流系统。">
   <title>TraderHome · 从证据到成长的交易工作台</title>
   <link rel="stylesheet" href="/assets/traderhome-site.css">
 </head>
@@ -13,15 +13,17 @@
       <div>
         <div class="th-kicker">TraderHome · Evidence → Decision → Growth</div>
         <h1>专业，不是指标更多。<br><span>而是每一步都能验证。</span></h1>
-        <p>TraderHome 把历史概率、下单前计划和交易后复盘接成一条完整工作流。每个结论都说明依据、边界和下一步；没有达到门槛时，“不行动”也是正式输出。</p>
+        <p>TraderHome 把历史概率、下单前计划和交易后复盘接成一条完整工作流。NQ Flow 则作为独立实时系统存在，不改变前三套体系的判断逻辑。每个结论都说明依据、边界和下一步；没有达到门槛时，“不行动”也是正式输出。</p>
         <div class="th-actions">
           <a class="th-btn primary" href="/history/">从历史证据开始 →</a>
-          <a class="th-btn" href="#contracts">查看三个产品的输出契约</a>
+          <a class="th-btn" href="/flow/">打开 NQ 订单流 →</a>
+          <a class="th-btn" href="#contracts">查看三阶段输出契约</a>
         </div>
         <div class="th-proofline">
           <span><i></i>刻舟求剑每日更新</span>
           <span><i></i>EV Desk 明确区分历史回测与前向封存</span>
           <span><i></i>TradeReview 真实数据默认私密</span>
+          <span><i></i>NQ Flow 严格锁定 v1.6.4 Bridge</span>
         </div>
       </div>
       <div class="th-journey" aria-label="TraderHome 三阶段工作流">
@@ -44,24 +46,46 @@
     </section>
 
     <section class="th-section" id="products"><div class="th-container">
-      <div class="th-kicker">Three workspaces · One operating system</div>
-      <h2>三个产品，各自只负责一个关键问题</h2>
-      <p class="th-lead">边界越清楚，用户越知道现在该看什么、接下来该做什么，也越容易判断产品是否真的有用。</p>
+      <div class="th-kicker">Three-stage workflow · One independent live system</div>
+      <h2>三套核心工作台，外加一套独立实时系统</h2>
+      <p class="th-lead">历史研究、下单决策与交易复盘继续组成原有三阶段闭环；NQ Flow 只负责盘中订单流与 v1.6.4 Bridge，不改写前三套产品的输入、输出和拒绝条件。</p>
       <div class="th-grid three">
         <article class="th-card"><span class="index">01 / 历史研究</span><h3>刻舟求剑</h3><p>不是预测价格，而是判断“当前形态相对历史基准是否出现了值得关注的统计差异”。</p><ul><li>corr + DTW 双方法共识</li><li>Edge、95%区间与Top-K稳健性</li><li>Fresh / Cached / Stale 数据健康</li></ul><a class="go" href="/history/">打开历史证据 →</a></article>
         <article class="th-card"><span class="index">02 / 下单前</span><h3>EV Desk</h3><p>不是喊单，而是把注意力分配给计划更完整的机会，并要求触发、失效与赔率同时成立。</p><ul><li>NQ/MNQ 与高流动性美股分钟行情</li><li>17 个通用镜头 + NQ 日内独立考场</li><li>专家前向封存、EV、回撤与权限淘汰</li></ul><a class="go" href="/decision/app.html">进入下单前决策 →</a></article>
         <article class="th-card"><span class="index">03 / 交易后</span><h3>TradeReview OS</h3><p>不是再给一张盈亏报表，而是用真实成交与行情证据找到最高成本行为，再用下一批交易验证改进。</p><ul><li>本地导入 CSV / JSON 或读取自托管 API</li><li>匹配历史K线，逐笔重演计划与持仓路径</li><li>唯一处方、行为证据与滚动成长验证</li></ul><a class="go" href="/review/">打开交易后复盘 →</a></article>
       </div>
+      <article class="th-independent-card">
+        <div>
+          <span class="th-independent-badge">INDEPENDENT SYSTEM · 不占用 01–03 阶段编号</span>
+          <h3>NQ Flow Console</h3>
+          <p>面向 NQ / MNQ 盘中的独立订单流终端，把逐笔成交、L2 深度、CVD、成交量分布和 Fibo OTE v1.6.4 Bridge 放在同一工作区。</p>
+        </div>
+        <ul>
+          <li>执行周期自动映射结构周期：1m→5m、15m→1h、30m→2h、1h→4h、4h→1D、1D→1W</li>
+          <li>0.618–0.790 首次回撤、R2/R3 与 MTF 吸引力分层显示</li>
+          <li>公开入口只展示明确标记的模拟流；真实 L2 与密钥不进入静态网页</li>
+        </ul>
+        <div class="th-independent-actions">
+          <a class="th-btn primary" href="/flow/">进入独立订单流系统 →</a>
+          <span>真实行情继续走独立授权端点</span>
+        </div>
+      </article>
     </div></section>
 
     <section class="th-section" id="contracts"><div class="th-container">
       <div class="th-kicker">Product output contracts</div>
-      <h2>每个工作台都明确：输入什么、输出什么、何时拒绝</h2>
+      <h2>三个核心工作台都明确：输入什么、输出什么、何时拒绝</h2>
       <p class="th-lead">专业产品不能只展示答案，还要让用户知道答案何时失效。</p>
       <div class="th-contracts">
         <div class="th-contract"><strong class="th-cyan">刻舟求剑</strong><div><span>输入</span><b>已收盘历史K线与当前形态窗口</b></div><div><span>输出</span><b>概率、Edge、区间、稳健性与相似案例</b></div><div><span>拒绝条件</span><b>数据过期、样本不足或方法明显冲突</b></div></div>
         <div class="th-contract"><strong class="th-green">EV Desk</strong><div><span>输入</span><b>标的、周期、风险预算与当前市场结构</b></div><div><span>输出</span><b>触发、进场区、失效位、目标与R</b></div><div><span>拒绝条件</span><b>方向、位置或赔率任一不过门槛</b></div></div>
         <div class="th-contract"><strong class="th-violet">TradeReview OS</strong><div><span>输入</span><b>浏览器本地成交、计划字段与可选历史K线</b></div><div><span>输出</span><b>真实表现、成本行为、单笔重演、唯一处方与成长变化</b></div><div><span>拒绝条件</span><b>缺K线不讲结构，缺计划不猜意图，样本不足不下确定诊断</b></div></div>
+      </div>
+      <div class="th-independent-contract">
+        <strong>NQ Flow · 独立边界</strong>
+        <span><b>输入</b>NQ/MNQ 实时逐笔、L2 与 v1.6.4 Bridge 事件</span>
+        <span><b>输出</b>订单流确认、数据健康与执行权限提示</span>
+        <span><b>拒绝</b>数据缺失、过期、重建中或策略版本不匹配</span>
       </div>
     </div></section>
 
@@ -95,6 +119,6 @@
       </div>
     </div></section>
   </main>
-  <footer class="th-container th-footer">TraderHome Demo · 历史分析、交易决策支持与复盘教育工具 · 不构成投资建议 · <a href="/standards/">证据标准</a></footer>
+  <footer class="th-container th-footer">TraderHome Demo · 历史分析、交易决策、订单流观察与复盘教育工具 · 不构成投资建议 · <a href="/standards/">证据标准</a></footer>
 </body>
 </html>

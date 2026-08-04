@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the single-domain TraderHome demo from the three product snapshots."""
+"""Build TraderHome from the three-stage workflow and independent systems."""
 from __future__ import annotations
 
 import argparse
@@ -10,8 +10,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "portal"
-SHELL_CSS = '<link rel="stylesheet" href="/assets/traderhome-shell.css" data-traderhome-shell="v3">'
-SHELL_JS = '<script src="/assets/traderhome-shell.js" data-traderhome-shell="v3" defer></script>'
+SHELL_CSS = '<link rel="stylesheet" href="/assets/traderhome-shell.css" data-traderhome-shell="v4">'
+SHELL_JS = '<script src="/assets/traderhome-shell.js" data-traderhome-shell="v4" defer></script>'
 THEME_COLOR = '<meta name="theme-color" content="#070b14">'
 FAVICON = (
     '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 '
@@ -27,6 +27,7 @@ CANONICAL_ROUTES = {
     "decision/app.html": "/decision/app.html",
     "decision/tos.html": "/decision/tos.html",
     "review/index.html": "/review/",
+    "flow/index.html": "/flow/",
     "standards/index.html": "/standards/",
 }
 
@@ -60,7 +61,7 @@ def _inject_shell(path: Path, output: Path) -> None:
     if head_extras:
         head_at = html.lower().rfind("</head>")
         html = html[:head_at] + "  " + "\n  ".join(head_extras) + "\n" + html[head_at:]
-    if 'data-traderhome-shell="v3"' in html:
+    if 'data-traderhome-shell="v4"' in html:
         path.write_text(html, encoding="utf-8")
         return
     lower = html.lower()
@@ -90,6 +91,10 @@ def build(output: Path) -> dict:
     shutil.copytree(PORTAL / "vendor" / "decision", output / "decision")
     shutil.copytree(PORTAL / "vendor" / "review", output / "review")
 
+    # NQ Flow is a fourth, independent system. Its public bundle is a clearly
+    # labelled simulated preview; private live access stays on its own service.
+    shutil.copytree(PORTAL / "vendor" / "flow", output / "flow")
+
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
 
@@ -100,12 +105,14 @@ def build(output: Path) -> dict:
 
     manifest = {
         "name": "TraderHome",
-        "version": 3,
+        "version": 4,
+        "coreWorkflowVersion": 3,
         "routes": {
             "home": "/",
             "history": "/history/",
             "decision": "/decision/app.html",
             "review": "/review/",
+            "flow": "/flow/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -113,11 +120,22 @@ def build(output: Path) -> dict:
             "decision": {"output": "trigger_entry_invalidation_target_r", "rejects": "direction_location_or_rr_gate"},
             "review": {"output": "costly_behavior_evidence_trade_one_action_growth", "rejects": "insufficient_evidence"},
         },
+        "independentSystems": {
+            "flow": {
+                "input": "nq_mnq_trades_l2_and_v164_bridge",
+                "output": "flow_confirmation_and_execution_authority",
+                "rejects": "missing_stale_or_version_mismatched_data",
+                "route": "/flow/",
+                "partOfCoreWorkflow": False,
+            }
+        },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
         "privacy": {
             "privateTradeLedgerPublished": False,
             "reviewRuntime": "browser_local",
             "reviewDemo": "optional_synthetic",
+            "flowPublicRuntime": "simulated_preview",
+            "flowPrivateLiveService": "separate_authenticated_endpoint",
         },
     }
     (output / "traderhome-manifest.json").write_text(
