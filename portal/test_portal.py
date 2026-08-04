@@ -139,6 +139,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("https://nq-flow-console.blikeywang.chatgpt.site", self._flow_javascript())
         self.assertIn("SIMULATED FEED", self._flow_javascript())
         self.assertIn("v1.6.4 BRIDGE", self._flow_javascript())
+        self.assertIn("AUTO HIGHER TIMEFRAME", self._flow_javascript())
+        self.assertIn("FIBO LEVEL TABLE", self._flow_javascript())
+        self.assertIn("nq-flow-font-scale", self._flow_javascript())
+        self.assertIn("nq-flow-fibo-table", self._flow_javascript())
         self.assertRegex(flow, r'/flow/assets/flow-app-[^"\']+\.js')
         self.assertRegex(flow, r'/flow/assets/flow-[^"\']+\.css')
 
@@ -148,6 +152,14 @@ class PortalBuildTests(unittest.TestCase):
         snapshot = json.loads((self.site / "flow" / "snapshot.json").read_text())
         self.assertEqual(snapshot["strategyVersion"], "1.6.4")
         self.assertEqual(snapshot["bundleMode"], "browser-safe-simulated-preview")
+        self.assertEqual(
+            snapshot["features"],
+            {
+                "adaptiveHigherTimeframe": True,
+                "fontScalePreference": True,
+                "hideableFiboLevelTable": True,
+            },
+        )
         self.assertEqual(self.manifest["routes"]["flow"], "/flow/")
         self.assertEqual(self.manifest["privacy"]["flowPublicRuntime"], "simulated_preview")
 
