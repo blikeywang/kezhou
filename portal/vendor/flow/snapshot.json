@@ -1,9 +1,14 @@
 {
   "name": "NQ Flow Console",
   "sourceRepository": "blikeywang/nq-flow-console",
-  "sourceCommit": "3231983de9c35ac88c02adfcc47afca512a3ae29",
+  "sourceCommit": "cf89159d1916a00392b92c2dcf397275cc81bae6",
   "strategyVersion": "1.6.4",
   "bundleMode": "browser-safe-simulated-preview",
   "privateLiveUrl": "https://nq-flow-console.blikeywang.chatgpt.site",
+  "features": {
+    "adaptiveHigherTimeframe": true,
+    "fontScalePreference": true,
+    "hideableFiboLevelTable": true
+  },
   "dataBoundary": "No paid market data or provider credentials are included in this snapshot."
 }
