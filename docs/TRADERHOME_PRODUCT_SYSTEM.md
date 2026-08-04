@@ -10,6 +10,8 @@ TraderHome is one evidence-led trading workflow with three bounded workspaces:
 
 The product should reduce unstructured action, not increase the number of signals a user consumes.
 
+**NQ Flow Console / Live Flow is deliberately outside this three-stage workflow.** It is an independent intraday observation and execution-authority system for NQ/MNQ order flow plus the Fibo OTE v1.6.4 Bridge. It must not silently alter Kezhou statistics, EV Desk gates, or TradeReview diagnoses.
+
 ## 2. Product contracts
 
 | Workspace | Input | Output | Reject / downgrade when |
@@ -17,6 +19,14 @@ The product should reduce unstructured action, not increase the number of signal
 | Kezhou | Closed historical candles + current pattern window | Consensus probability, Edge, interval, robustness, analogs | Stale data, weak sample, or method conflict |
 | EV Desk | Symbol, timeframe, current structure, risk budget | Trigger, entry zone, invalidation, target, R, or no-trade | Direction, location, or reward/risk gate fails |
 | TradeReview OS | Authorized trades, candles, original self-review | Evidence review, coach redo, one action, growth proof, optional consultation case | Evidence is incomplete or rights are unclear |
+
+Independent system contract:
+
+| System | Input | Output | Reject / downgrade when |
+|---|---|---|---|
+| NQ Flow Console | Entitled NQ/MNQ trades, L2 depth, feed health, and v1.6.4 Bridge events | Flow confirmation, data health, and execution-authority prompt | Data is missing, stale, rebuilding, not entitled, or strategy version does not match 1.6.4 |
+
+The public `/flow/` route is a labelled simulated preview. Paid market data, provider credentials, user entitlements, and live WebSocket sessions remain on the separately authenticated service.
 
 Scores never cross these boundaries:
 
@@ -51,12 +61,14 @@ Method transfer must identify itself as level D. Paul Wei behavior sequencing ma
 
 ## 4. Cross-product handoff
 
-Every workspace receives a shared stage bar containing:
+The three core workflow workspaces receive a shared stage bar containing:
 
 - the current decision question;
 - the product's valid output;
 - its explicit boundary;
 - the next workspace.
+
+NQ Flow receives the shared TraderHome navigation but no stage number and no automatic handoff. This keeps it visibly available without turning order-flow confirmation into a hidden fourth vote inside the three existing systems.
 
 Future authenticated versions should persist a handoff object instead of asking the user to re-enter context:
 
@@ -80,6 +92,7 @@ Peer consultation uses URL fragments for the static deployment. Exact time, pric
 - Research accent: cyan — evidence and uncertainty.
 - Plan accent: green — conditional action and risk gates.
 - Review accent: cyan and green — evidence reconstruction and verified behavior change.
+- Independent Flow accent: teal — real-time data health and execution authority.
 - Amber: uncertainty / waiting / incomplete evidence.
 - Red: invalidation, downside, failed gate, or evidence risk.
 
@@ -112,5 +125,6 @@ Useful product metrics for the next backend stage:
 - 10-trade prescription completion rate.
 - Change in target behavior frequency after prescription.
 - Evidence coverage: candles, self-review, rights-cleared expert cases.
+- Flow feed uptime, stale-frame rate, entitlement failures, and v1.6.4 Bridge version mismatches, reported separately from the three-stage funnel.
 
 These are more informative than raw page views or short-term user P&L.

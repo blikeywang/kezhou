@@ -1,7 +1,7 @@
 # 部署与每日刷新 · Deploy & Daily Refresh
 
-**架构:** 每天后台跑一次 → 重算衍生曲线 → 注入 `prototype/app.html` → 部署静态页。
-用户永远打开的是**纯静态网页**,不做实时查询。全站只展示归一化衍生分析,不下发原始价。
+**架构：**每天后台刷新刻舟求剑 → 重算衍生曲线 → 注入 `prototype/app.html` → `portal/build_site.py` 汇总所有路由 → 部署静态页。
+`/history/` 只展示归一化衍生分析；`/decision/` 与 `/review/` 发布浏览器安全快照；`/flow/` 发布明确标记的模拟订单流快照，并把真实会话留在独立授权服务中。
 
 ```
 pipeline/daily/
@@ -24,17 +24,15 @@ pipeline/daily/
 4. 打开 **Actions → daily-refresh → Run workflow** 手动跑一次,几分钟后 Pages 给出网址。
 5. 之后每天自动刷新。
 
-产物:`_site/index.html`(= 最新 `app.html`)。想换首页文案/图标只改 `prototype/app.html`。
+产物：`_site/`，包含统一首页、`/history/`、`/decision/`、`/review/`、`/flow/` 与 `/standards/`。刻舟求剑的内容仍从 `prototype/app.html` 生成；统一首页与路由由 `portal/` 管理。
 
 ## 二、Cloudflare Pages / Netlify(想用自定义域名更省心)
 
 这些平台连上你的 GitHub 仓库后,**每次 push 自动部署**。工作流每天会把刷新后的
 `app.html` 提交回仓库 → 触发它们自动重新部署。
 
-- 构建设置:**无需构建命令**(纯静态)。
-- 输出目录:仓库根;**把 `prototype/app.html` 设为首页**——两种做法任选:
-  - 在平台的部署设置里把 `prototype/` 设为发布目录,并把 `app.html` 重命名/映射为 `index.html`;或
-  - 在仓库根加一个 `index.html`,内容为 `<meta http-equiv="refresh" content="0; url=prototype/app.html">`。
+- 构建命令：`python portal/build_site.py --output _site`。
+- 输出目录：`_site`。
 - 自定义域名:在平台后台绑定,自动配 HTTPS。
 
 ## 三、自定义域名
