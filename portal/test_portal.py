@@ -27,6 +27,7 @@ class PortalBuildTests(unittest.TestCase):
             "decision/tos.html",
             "review/index.html",
             "flow/index.html",
+            "incomeos/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -54,12 +55,14 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 4)
+        self.assertEqual(manifest["version"], 5)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos"})
         self.assertNotIn("flow", manifest["productContracts"])
+        self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
+        self.assertFalse(manifest["independentSystems"]["incomeos"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
@@ -174,6 +177,40 @@ class PortalBuildTests(unittest.TestCase):
         )
         self.assertEqual(self.manifest["routes"]["flow"], "/flow/")
         self.assertEqual(self.manifest["privacy"]["flowPublicRuntime"], "simulated_preview")
+
+    def test_incomeos_is_published_as_an_independent_browser_local_system(self):
+        expected = [
+            "incomeos/index.html",
+            "incomeos/incomeos.css",
+            "incomeos/incomeos-app.mjs",
+            "incomeos/incomeos-engine.mjs",
+            "incomeos/data/research-snapshot.json",
+        ]
+        for rel in expected:
+            self.assertTrue((self.site / rel).exists(), rel)
+
+        page = (self.site / "incomeos" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("IncomeOS", page)
+        self.assertIn('id="weeklyContribution"', page)
+        self.assertIn('id="accountValue"', page)
+        self.assertIn('id="optionReserve"', page)
+        self.assertIn('data-font-scale="130"', page)
+        self.assertIn("只拿“普通高股息”确实会漏掉复利赢家", page)
+        self.assertIn("Sell put 测试", page)
+
+        app = (self.site / "incomeos" / "incomeos-app.mjs").read_text(encoding="utf-8")
+        self.assertIn("localStorage", app)
+        self.assertIn('credentials: "omit"', app)
+        self.assertIn("contributionPlan", app)
+
+        snapshot = json.loads((self.site / "incomeos" / "data" / "research-snapshot.json").read_text())
+        self.assertEqual(snapshot["schema"], "traderhome_incomeos_growth_cycle_v1")
+        self.assertEqual({row["symbol"] for row in snapshot["benchmarks"]}, {"JPM", "SPY", "SCHD", "BAC", "GS"})
+        self.assertEqual(snapshot["jpmEvidence"]["lastEightQuarterEpsBeatRate"], 88)
+        self.assertFalse(all(candidate["hasBidAsk"] for candidate in snapshot["puts"]))
+        self.assertEqual(self.manifest["routes"]["incomeos"], "/incomeos/")
+        self.assertEqual(self.manifest["privacy"]["incomeosRuntime"], "browser_local")
+        self.assertFalse(self.manifest["privacy"]["incomeosBrokerConnection"])
 
     def _flow_javascript(self) -> str:
         return "\n".join(

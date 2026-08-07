@@ -28,6 +28,7 @@ CANONICAL_ROUTES = {
     "decision/tos.html": "/decision/tos.html",
     "review/index.html": "/review/",
     "flow/index.html": "/flow/",
+    "incomeos/index.html": "/incomeos/",
     "standards/index.html": "/standards/",
 }
 
@@ -95,6 +96,11 @@ def build(output: Path) -> dict:
     # labelled simulated preview; private live access stays on its own service.
     shutil.copytree(PORTAL / "vendor" / "flow", output / "flow")
 
+    # IncomeOS is another independent system. It publishes derived market
+    # research and runs account allocation locally in the browser; no broker
+    # credential, account ledger, or order permission is copied into the site.
+    shutil.copytree(PORTAL / "vendor" / "incomeos", output / "incomeos")
+
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
 
@@ -105,7 +111,7 @@ def build(output: Path) -> dict:
 
     manifest = {
         "name": "TraderHome",
-        "version": 4,
+        "version": 5,
         "coreWorkflowVersion": 3,
         "routes": {
             "home": "/",
@@ -113,6 +119,7 @@ def build(output: Path) -> dict:
             "decision": "/decision/app.html",
             "review": "/review/",
             "flow": "/flow/",
+            "incomeos": "/incomeos/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -127,6 +134,13 @@ def build(output: Path) -> dict:
                 "rejects": "missing_stale_or_version_mismatched_data",
                 "route": "/flow/",
                 "partOfCoreWorkflow": False,
+            },
+            "incomeos": {
+                "input": "weekly_net_contribution_account_value_option_reserve_and_derived_market_snapshot",
+                "output": "dynamic_dollar_allocation_growth_cycle_evidence_and_cash_secured_put_gate",
+                "rejects": "stale_missing_untradeable_overvalued_or_concentration_breaching_data",
+                "route": "/incomeos/",
+                "partOfCoreWorkflow": False,
             }
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
@@ -136,6 +150,10 @@ def build(output: Path) -> dict:
             "reviewDemo": "optional_synthetic",
             "flowPublicRuntime": "simulated_preview",
             "flowPrivateLiveService": "separate_authenticated_endpoint",
+            "incomeosRuntime": "browser_local",
+            "incomeosBrokerConnection": False,
+            "incomeosAccountInputsStored": "browser_local_storage_only",
+            "incomeosPublishedData": "derived_read_only_snapshot",
         },
     }
     (output / "traderhome-manifest.json").write_text(

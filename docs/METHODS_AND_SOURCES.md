@@ -239,3 +239,21 @@ $$
 - CI 与 Pages 部署：`.github/workflows/daily.yml`
 
 运行 `python pipeline/daily/run.py --self-test` 可用合成数据检查全链路。该命令会改写 `prototype/app.html`，因此只应在可还原的工作树中运行。
+
+## 12. IncomeOS 成长周期与现金担保 Put 快照
+
+`/incomeos/` 与刻舟求剑的形态匹配引擎相互独立。当前快照通过已授权的 Longbridge 只读接口取得：
+
+- `kline history --adjust forward`：JPM、SPY、SCHD、BAC、GS 的 2016 年至今月线，用于 10/5/3 年 CAGR、分阶段 CAGR、年化波动与最大回撤；
+- `financial-report --latest`、`forecast-eps`、`consensus`：银行股收入、利润、EPS、ROE、预期修正与最近八季超预期率；
+- `compare`、`calc-index`、`dividend`：当前 PE/PB、可得五年历史分位、股息率与派息历史；
+- `option chain`、`option quote`、`calc-index`：同一到期日附近的 Delta、IV、HV、OI、成交量与最后成交价；
+- `finance-calendar report`：候选合约到期前是否跨越财报。
+
+页面所称“复权价格回报代理”是同一复权口径下的历史比较，不等同于含税、含手续费且按真实派息日再投资的账户总收益。权利金年化使用最后成交价相对现金担保额的简单年化，只用于候选横向比较；它不计 bid/ask、滑点、佣金、税、提前指派和 roll。当前快照没有完整 bid/ask，因此所有 put 都保持 `WAIT`，用户必须在 IBKR 实时订单票中重新核对。
+
+成长周期评分只在同类公司内使用：长期复利 30%、前瞻预期 20%、盈利质量 15%、估值周期 15%、风险周期 15%、现金收益 5%。对银行股优先解释 PB 与 ROE，不把低 PE 机械视为低估。评分是候选优先级，不是未来收益率或胜率。
+
+账户规则同样是硬约束：单一公司被指派后的市值默认不得超过账户 12%，ETF 上限按候选类型另设。以快照中的 JPM 340P 为例，现金担保为 `$34,000`，因此仅从集中度计算就要求账户约为 `$34,000 / 12% ≈ $283,000`；达到该数值仍不代表估值、盘口和事件闸门已经通过。
+
+要验证长期 sell-put 是否真正优于 SPY、SCHD 或 Income ETF，仍需要授权的历史期权面与可成交 bid/ask、拆分/派息/提前行权处理、IBKR 真实费用与税务口径，以及严格的 walk-forward。没有这些数据时，TraderHome 不发布“十年 sell-put 回测”结论。

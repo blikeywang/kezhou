@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="TraderHome 将历史证据、下单前决策与交易后成长连接成可验证工作流，并提供独立的 NQ 实时订单流系统。">
+  <meta name="description" content="TraderHome 将历史证据、下单前决策与交易后成长连接成可验证工作流，并提供 NQ Flow 与 IncomeOS 两套独立系统。">
   <title>TraderHome · 从证据到成长的交易工作台</title>
   <link rel="stylesheet" href="/assets/traderhome-site.css">
 </head>
@@ -13,9 +13,10 @@
       <div>
         <div class="th-kicker">TraderHome · Evidence → Decision → Growth</div>
         <h1>专业，不是指标更多。<br><span>而是每一步都能验证。</span></h1>
-        <p>TraderHome 把历史概率、下单前计划和交易后复盘接成一条完整工作流。NQ Flow 则作为独立实时系统存在，不改变前三套体系的判断逻辑。每个结论都说明依据、边界和下一步；没有达到门槛时，“不行动”也是正式输出。</p>
+        <p>TraderHome 把历史概率、下单前计划和交易后复盘接成一条完整工作流。NQ Flow 与 IncomeOS 作为独立系统存在，不改变前三套体系的判断逻辑。每个结论都说明依据、边界和下一步；没有达到门槛时，“不行动”也是正式输出。</p>
         <div class="th-actions">
           <a class="th-btn primary" href="/history/">从历史证据开始 →</a>
+          <a class="th-btn" href="/incomeos/">打开 IncomeOS →</a>
           <a class="th-btn" href="/flow/">打开 NQ 订单流 →</a>
           <a class="th-btn" href="#contracts">查看三阶段输出契约</a>
         </div>
@@ -24,6 +25,7 @@
           <span><i></i>EV Desk 明确区分历史回测与前向封存</span>
           <span><i></i>TradeReview 真实数据默认私密</span>
           <span><i></i>NQ Flow 严格锁定 v1.6.4 Bridge</span>
+          <span><i></i>IncomeOS 按每周到账与账户净值动态配比</span>
         </div>
       </div>
       <div class="th-journey" aria-label="TraderHome 三阶段工作流">
@@ -46,9 +48,9 @@
     </section>
 
     <section class="th-section" id="products"><div class="th-container">
-      <div class="th-kicker">Three-stage workflow · One independent live system</div>
-      <h2>三套核心工作台，外加一套独立实时系统</h2>
-      <p class="th-lead">历史研究、下单决策与交易复盘继续组成原有三阶段闭环；NQ Flow 只负责盘中订单流与 v1.6.4 Bridge，不改写前三套产品的输入、输出和拒绝条件。</p>
+      <div class="th-kicker">Three-stage workflow · Two independent systems</div>
+      <h2>三套核心工作台，外加两套独立系统</h2>
+      <p class="th-lead">历史研究、下单决策与交易复盘继续组成原有三阶段闭环；NQ Flow 负责盘中订单流，IncomeOS 负责长期资金进入与现金收益规划，二者都不改写前三套产品的输入、输出和拒绝条件。</p>
       <div class="th-grid three">
         <article class="th-card"><span class="index">01 / 历史研究</span><h3>刻舟求剑</h3><p>不是预测价格，而是判断“当前形态相对历史基准是否出现了值得关注的统计差异”。</p><ul><li>corr + DTW 双方法共识</li><li>Edge、95%区间与Top-K稳健性</li><li>Fresh / Cached / Stale 数据健康</li></ul><a class="go" href="/history/">打开历史证据 →</a></article>
         <article class="th-card"><span class="index">02 / 下单前</span><h3>EV Desk</h3><p>不是喊单，而是把注意力分配给计划更完整的机会，并要求触发、失效与赔率同时成立。</p><ul><li>NQ/MNQ 与高流动性美股分钟行情</li><li>17 个通用镜头 + NQ 日内独立考场</li><li>专家前向封存、EV、回撤与权限淘汰</li></ul><a class="go" href="/decision/app.html">进入下单前决策 →</a></article>
@@ -70,6 +72,22 @@
           <span>真实行情继续走独立授权端点</span>
         </div>
       </article>
+      <article class="th-independent-card incomeos-card">
+        <div>
+          <span class="th-independent-badge">INDEPENDENT SYSTEM · 不占用 01–03 阶段编号</span>
+          <h3>IncomeOS</h3>
+          <p>面向持续进入 IBKR 的长期资金：输入本周实际到账、账户净值与 put 准备金，立即生成动态美元配比和当天操作单。</p>
+        </div>
+        <ul>
+          <li>字体 90%–130% 可调，账户输入只保存在当前浏览器</li>
+          <li>成长周期引擎同时看长期复利、预期修正、ROE、估值分位与回撤</li>
+          <li>JPM/BAC/GS 与 SPY/SCHD 同口径测试；现金担保 put 受账户集中度硬闸门约束</li>
+        </ul>
+        <div class="th-independent-actions">
+          <a class="th-btn primary" href="/incomeos/">生成本周操作单 →</a>
+          <span>静态研究快照 · IBKR 人工执行</span>
+        </div>
+      </article>
     </div></section>
 
     <section class="th-section" id="contracts"><div class="th-container">
@@ -86,6 +104,12 @@
         <span><b>输入</b>NQ/MNQ 实时逐笔、L2 与 v1.6.4 Bridge 事件</span>
         <span><b>输出</b>订单流确认、数据健康与执行权限提示</span>
         <span><b>拒绝</b>数据缺失、过期、重建中或策略版本不匹配</span>
+      </div>
+      <div class="th-independent-contract">
+        <strong>IncomeOS · 独立边界</strong>
+        <span><b>输入</b>本周净入金、IBKR 净值、准备金与只读市场快照</span>
+        <span><b>输出</b>动态美元配比、成长周期证据与现金担保 put 闸门</span>
+        <span><b>拒绝</b>数据过期、盘口缺失、估值或账户集中度不过线</span>
       </div>
     </div></section>
 
@@ -119,6 +143,6 @@
       </div>
     </div></section>
   </main>
-  <footer class="th-container th-footer">TraderHome Demo · 历史分析、交易决策、订单流观察与复盘教育工具 · 不构成投资建议 · <a href="/standards/">证据标准</a></footer>
+  <footer class="th-container th-footer">TraderHome Demo · 历史分析、交易决策、长期资金规划、订单流观察与复盘教育工具 · 不构成投资建议 · <a href="/standards/">证据标准</a></footer>
 </body>
 </html>

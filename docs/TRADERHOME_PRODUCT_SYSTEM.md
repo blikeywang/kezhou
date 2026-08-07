@@ -12,6 +12,8 @@ The product should reduce unstructured action, not increase the number of signal
 
 **NQ Flow Console / Live Flow is deliberately outside this three-stage workflow.** It is an independent intraday observation and execution-authority system for NQ/MNQ order flow plus the Fibo OTE v1.6.4 Bridge. It must not silently alter Kezhou statistics, EV Desk gates, or TradeReview diagnoses.
 
+**IncomeOS is also deliberately outside the three-stage workflow.** It converts variable weekly cash entering IBKR into a browser-local allocation plan, then evaluates growth cycles and cash-secured-put candidates. It cannot write to the broker, consume margin, or turn a stale/static option quote into an executable order.
+
 ## 2. Product contracts
 
 | Workspace | Input | Output | Reject / downgrade when |
@@ -25,8 +27,11 @@ Independent system contract:
 | System | Input | Output | Reject / downgrade when |
 |---|---|---|---|
 | NQ Flow Console | Entitled NQ/MNQ trades, L2 depth, feed health, and v1.6.4 Bridge events | Flow confirmation, data health, and execution-authority prompt | Data is missing, stale, rebuilding, not entitled, or strategy version does not match 1.6.4 |
+| IncomeOS | Actual weekly contribution, account value, isolated put reserve, current single-stock exposure, and derived market snapshot | Dynamic dollar allocation, growth-cycle evidence, and cash-secured-put gate | Snapshot is stale, bid/ask is missing, valuation/event gate fails, or assignment breaches concentration limits |
 
 The public `/flow/` route is a labelled simulated preview. Paid market data, provider credentials, user entitlements, and live WebSocket sessions remain on the separately authenticated service.
+
+The public `/incomeos/` route stores account inputs and font preference only in browser local storage. Published market data is a derived read-only snapshot. The current option comparison uses last trades for research; a missing executable bid/ask is a hard rejection, not an invitation to estimate a fill.
 
 Scores never cross these boundaries:
 
@@ -68,7 +73,7 @@ The three core workflow workspaces receive a shared stage bar containing:
 - its explicit boundary;
 - the next workspace.
 
-NQ Flow receives the shared TraderHome navigation but no stage number and no automatic handoff. This keeps it visibly available without turning order-flow confirmation into a hidden fourth vote inside the three existing systems.
+NQ Flow and IncomeOS receive the shared TraderHome navigation but no stage number and no automatic handoff. This keeps both visibly available without turning order-flow confirmation or long-term allocation into a hidden fourth vote inside the three existing systems.
 
 Future authenticated versions should persist a handoff object instead of asking the user to re-enter context:
 
@@ -93,6 +98,7 @@ Peer consultation uses URL fragments for the static deployment. Exact time, pric
 - Plan accent: green — conditional action and risk gates.
 - Review accent: cyan and green — evidence reconstruction and verified behavior change.
 - Independent Flow accent: teal — real-time data health and execution authority.
+- Independent IncomeOS accent: cyan/violet — capital allocation, compounding, and gate status.
 - Amber: uncertainty / waiting / incomplete evidence.
 - Red: invalidation, downside, failed gate, or evidence risk.
 
@@ -126,5 +132,6 @@ Useful product metrics for the next backend stage:
 - Change in target behavior frequency after prescription.
 - Evidence coverage: candles, self-review, rights-cleared expert cases.
 - Flow feed uptime, stale-frame rate, entitlement failures, and v1.6.4 Bridge version mismatches, reported separately from the three-stage funnel.
+- IncomeOS weekly-plan completion, allocation drift, stale-snapshot rejections, concentration-gate rejections, and realized assignment exposure, also reported separately.
 
 These are more informative than raw page views or short-term user P&L.

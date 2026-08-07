@@ -4,11 +4,11 @@
 >
 > **免责:本产品输出为基于历史相似度的概率描述,不构成任何投资建议。历史相似 ≠ 未来重复。** 详见 [`DISCLAIMER.md`](./DISCLAIMER.md)。
 
-当前状态：**已上线的 TraderHome 三阶段工作流 + 独立 NQ Flow 系统 + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，EV Desk 位于 `/decision/app.html`，TradeReview OS 位于 `/review/`，独立订单流终端位于 `/flow/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
+当前状态：**已上线的 TraderHome 三阶段工作流 + NQ Flow / IncomeOS 两套独立系统 + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，EV Desk 位于 `/decision/app.html`，TradeReview OS 位于 `/review/`，独立订单流终端位于 `/flow/`，长期资金操作系统位于 `/incomeos/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
-TraderHome V4 保留 V3 的三个核心工作台与产品契约，并新增不占用 01–03 阶段编号的 NQ Flow Console。NQ Flow 只负责盘中订单流和 Fibo OTE v1.6.4 Bridge，不改写历史研究、下单决策或复盘逻辑。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
+TraderHome V5 保留 V3 的三个核心工作台与产品契约，并保留不占用 01–03 阶段编号的 NQ Flow Console，再加入同样独立的 IncomeOS。IncomeOS 把持续进入 IBKR 的每周资金按账户阶段动态配比，并用成长周期、估值、集中度和实时盘口闸门约束现金担保 put；它不自动连接券商或下单。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
 
 ---
 
@@ -24,8 +24,8 @@ kezhou/
 ├── portal/                   # TraderHome 同域集成层
 │   ├── home/                 # 统一首页
 │   ├── assets/               # 三阶段工作台与独立系统共享导航
-│   ├── vendor/               # 浏览器安全的静态 Demo 快照（含 flow）
-│   ├── build_site.py         # 生成 /history · /decision · /review · /flow
+│   ├── vendor/               # 浏览器安全的静态 Demo 快照（含 flow / incomeos）
+│   ├── build_site.py         # 生成 /history · /decision · /review · /flow · /incomeos
 │   └── test_portal.py        # 路由、隐私与域名回归测试
 ├── data/                     # 已算出的真实结果(可作后端回归测试基准样本)
 │   ├── crypto_payload.json   # BTC/ETH/SOL 多配置匹配结果
@@ -55,7 +55,7 @@ kezhou/
 
 ## 快速开始
 
-**只想看产品**：打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、下单前决策、交易后复盘或独立 NQ 订单流。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
+**只想看产品**：打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、下单前决策、交易后复盘、独立 NQ 订单流或 IncomeOS。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
 
 **重新生成图表与原型**(需 Python 3 + `matplotlib numpy`):
 
@@ -78,6 +78,7 @@ python report3.py        # -> report.html
 - 美股 / 大宗 ETF:Yahoo Finance 日线;GLD、USO 是 ETF 代理,不等于黄金现货或 WTI 连续期货。
 - 网页只发布衍生统计,资产字段 `last` 必须保持 `null`,不提供实时价格。
 - `/flow/` 的公开快照只运行明确标记的模拟流；真实 NQ/MNQ L2、供应商密钥与用户会话留在独立授权服务中。
+- `/incomeos/` 只发布 Longbridge 派生研究快照；本周入金、IBKR 净值、准备金与字体档位仅保存在浏览器。期权最后成交价不等于可成交价，缺 bid/ask 时系统拒绝执行。
 - 免费接口适合研究展示;商用需改用正规数据商并取得授权。
 - 完整字段解释、时间换算、corr/DTW、显著性和局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
 

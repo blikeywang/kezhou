@@ -7,6 +7,7 @@
     : path.indexOf("/decision/") === 0 ? "decision"
     : path.indexOf("/review/") === 0 ? "review"
     : path.indexOf("/flow/") === 0 ? "flow"
+    : path.indexOf("/incomeos/") === 0 ? "incomeos"
     : path.indexOf("/standards/") === 0 ? "standards" : "home";
   document.documentElement.setAttribute("data-th-stage", section);
 
@@ -16,6 +17,7 @@
     ["decision", "/decision/app.html", "下单前决策"],
     ["review", "/review/", "交易后复盘"],
     ["flow", "/flow/", "NQ 订单流"],
+    ["incomeos", "/incomeos/", "IncomeOS"],
     ["standards", "/standards/", "证据标准"]
   ];
   var stages = {
