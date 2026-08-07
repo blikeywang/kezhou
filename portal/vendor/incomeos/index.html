@@ -24,7 +24,7 @@
       <aside class="io-control-panel" aria-label="IncomeOS 本周输入">
         <div class="io-panel-head"><div><span>THIS WEEK</span><strong id="weeklyAmountHero">$1,000</strong></div><small>输入只保存在当前浏览器</small></div>
         <label class="io-input"><span>本周实际到账</span><div><b>$</b><input id="weeklyContribution" type="number" min="0" step="50" inputmode="decimal" value="1000"></div><small>不是固定本金，每周按实际净入金改</small></label>
-        <label class="io-input"><span>IBKR 当前净值</span><div><b>$</b><input id="accountValue" type="number" min="0" step="1000" inputmode="decimal" value="0"></div><small>决定阶段、配比和单合约集中度</small></label>
+        <label class="io-input"><span>IBKR 当前净值（不含本周到账）</span><div><b>$</b><input id="accountValue" type="number" min="0" step="1000" inputmode="decimal" value="0"></div><small>避免与上方本周到账重复计算</small></label>
         <label class="io-input"><span>已隔离的 put 现金</span><div><b>$</b><input id="optionReserve" type="number" min="0" step="100" inputmode="decimal" value="0"></div><small>只填真正愿意用于被指派的现金</small></label>
         <label class="io-input"><span>现有成长单股市值</span><div><b>$</b><input id="currentGrowthValue" type="number" min="0" step="100" inputmode="decimal" value="0"></div><small>用于限制 JPM 等同类单股不超过 12%</small></label>
         <div class="io-font-control"><span>字体大小</span><div role="group" aria-label="字体大小">

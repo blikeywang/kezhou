@@ -150,5 +150,5 @@ export function contributionPlan(input, snapshot) {
 }
 
 export function formatMoney(value) {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value || 0);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value || 0);
 }
