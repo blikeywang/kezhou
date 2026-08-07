@@ -185,6 +185,7 @@ class PortalBuildTests(unittest.TestCase):
             "incomeos/incomeos-app.mjs",
             "incomeos/incomeos-engine.mjs",
             "incomeos/data/research-snapshot.json",
+            "incomeos/data/incomeos-full.json",
         ]
         for rel in expected:
             self.assertTrue((self.site / rel).exists(), rel)
@@ -195,13 +196,29 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('id="accountValue"', page)
         self.assertIn('id="optionReserve"', page)
         self.assertIn('data-font-scale="130"', page)
-        self.assertIn("只拿“普通高股息”确实会漏掉复利赢家", page)
-        self.assertIn("Sell put 测试", page)
+        self.assertIn("每周重新找更好的组合", page)
+        self.assertIn('data-tab="overview"', page)
+        self.assertIn('data-tab="ranking"', page)
+        self.assertIn('data-tab="portfolio"', page)
+        self.assertIn('data-tab="calls"', page)
+        self.assertIn('data-tab="puts"', page)
+        self.assertIn('data-tab="risk"', page)
+        self.assertIn('data-tab="backtest"', page)
+        self.assertIn('data-tab="data"', page)
 
         app = (self.site / "incomeos" / "incomeos-app.mjs").read_text(encoding="utf-8")
         self.assertIn("localStorage", app)
         self.assertIn('credentials: "omit"', app)
-        self.assertIn("contributionPlan", app)
+        self.assertIn("portfolioContributionPlan", app)
+
+        full_snapshot = json.loads((self.site / "incomeos" / "data" / "incomeos-full.json").read_text())
+        self.assertEqual(full_snapshot["universe"]["candidateCount"], 71)
+        self.assertEqual(full_snapshot["universe"]["top50Count"], 50)
+        self.assertGreaterEqual(full_snapshot["universe"]["challengerCount"], 20)
+        self.assertGreaterEqual(full_snapshot["optionDataQuality"]["usable"], 15)
+        jpm = next(asset for asset in full_snapshot["assets"] if asset["ticker"] == "JPM")
+        self.assertEqual(jpm["status"], "VALUATION_WAIT")
+        self.assertGreaterEqual(jpm["valuation"]["historicalPercentile"], 95)
 
         snapshot = json.loads((self.site / "incomeos" / "data" / "research-snapshot.json").read_text())
         self.assertEqual(snapshot["schema"], "traderhome_incomeos_growth_cycle_v1")

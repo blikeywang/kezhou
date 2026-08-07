@@ -152,3 +152,117 @@ export function contributionPlan(input, snapshot) {
 export function formatMoney(value) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(value || 0);
 }
+
+const PORTFOLIO_ANCHORS = [
+  { account: 0, core: 0.55, dividend: 0.20, growthEtf: 0.00, reserve: 0.15, satellites: 0.10 },
+  { account: 20_000, core: 0.50, dividend: 0.18, growthEtf: 0.04, reserve: 0.15, satellites: 0.13 },
+  { account: 60_000, core: 0.42, dividend: 0.16, growthEtf: 0.06, reserve: 0.14, satellites: 0.22 },
+  { account: 150_000, core: 0.32, dividend: 0.13, growthEtf: 0.08, reserve: 0.12, satellites: 0.35 },
+  { account: 300_000, core: 0.30, dividend: 0.14, growthEtf: 0.08, reserve: 0.10, satellites: 0.38 },
+  { account: 500_000, core: 0.30, dividend: 0.15, growthEtf: 0.08, reserve: 0.10, satellites: 0.37 },
+];
+
+function interpolatedPortfolioSleeves(accountValue) {
+  const account = Math.max(0, Number(accountValue) || 0);
+  let left = PORTFOLIO_ANCHORS[0];
+  let right = PORTFOLIO_ANCHORS.at(-1);
+  for (let index = 1; index < PORTFOLIO_ANCHORS.length; index += 1) {
+    if (account <= PORTFOLIO_ANCHORS[index].account) {
+      left = PORTFOLIO_ANCHORS[index - 1];
+      right = PORTFOLIO_ANCHORS[index];
+      break;
+    }
+    left = PORTFOLIO_ANCHORS[index];
+  }
+  if (account >= right.account) return { ...right, account };
+  const progress = (account - left.account) / Math.max(1, right.account - left.account);
+  const result = { account };
+  for (const key of ["core", "dividend", "growthEtf", "reserve", "satellites"]) {
+    result[key] = left[key] + (right[key] - left[key]) * progress;
+  }
+  return result;
+}
+
+export function dynamicPortfolioWeights(model, accountValue) {
+  const sleeves = interpolatedPortfolioSleeves(accountValue);
+  const byTicker = new Map((model?.weights ?? []).map((item) => [item.ticker, item]));
+  const satelliteModels = (model?.weights ?? []).filter((item) => !["SPY", "SCHD", "QQQ", "SGOV"].includes(item.ticker));
+  const satelliteWeight = satelliteModels.length ? sleeves.satellites / satelliteModels.length : 0;
+  const rows = [
+    { ...(byTicker.get("SPY") ?? { ticker: "SPY", symbol: "SPY.US", name: "SPDR S&P 500 ETF", role: "宽基核心" }), weight: sleeves.core },
+    { ...(byTicker.get("SCHD") ?? { ticker: "SCHD", symbol: "SCHD.US", name: "Schwab US Dividend Equity ETF", role: "股息质量" }), weight: sleeves.dividend },
+    { ...(byTicker.get("QQQ") ?? { ticker: "QQQ", symbol: "QQQ.US", name: "Invesco QQQ", role: "成长宽基" }), weight: sleeves.growthEtf },
+    { ...(byTicker.get("SGOV") ?? { ticker: "SGOV", symbol: "SGOV.US", name: "iShares 0-3 Month Treasury Bond ETF", role: "现金/期权准备" }), weight: sleeves.reserve },
+    ...satelliteModels.map((item) => ({ ...item, weight: satelliteWeight })),
+  ];
+  return rows.filter((item) => item.weight > 0.0001);
+}
+
+export function allocateDollarOrders(totalDollars, weights) {
+  const totalCents = Math.max(0, Math.round((Number(totalDollars) || 0) * 100));
+  const raw = weights.map((item) => totalCents * item.weight);
+  const cents = raw.map(Math.floor);
+  let remaining = totalCents - cents.reduce((sum, value) => sum + value, 0);
+  const priority = raw.map((value, index) => ({ index, fraction: value - Math.floor(value) }))
+    .sort((left, right) => right.fraction - left.fraction || left.index - right.index);
+  for (let cursor = 0; remaining > 0 && priority.length; cursor += 1) {
+    cents[priority[cursor % priority.length].index] += 1;
+    remaining -= 1;
+  }
+  return weights.map((item, index) => ({ ...item, amount: cents[index] / 100 }));
+}
+
+export function evaluateLivePut(optionRow, assets, accountValue, isolatedCash) {
+  const put = optionRow?.put;
+  if (!put) return { eligible: false, reasons: ["缺少 Put 快照"], concentration: null, reserveGap: null };
+  const asset = (assets ?? []).find((candidate) => candidate.symbol === optionRow.symbol);
+  const maxConcentration = asset?.kind === "ETF" ? 0.50 : 0.12;
+  const account = Math.max(0, Number(accountValue) || 0);
+  const reserve = Math.max(0, Number(isolatedCash) || 0);
+  const reasons = [...(put.gates ?? [])];
+  if (!String(put.action).startsWith("REVIEW")) {
+    if (!reasons.length) reasons.push(put.action === "WAIT_VALUATION" ? "底层估值闸门未通过" : "期权结构闸门未通过");
+  }
+  const reserveGap = Math.max(0, (put.cashRequired ?? 0) - reserve);
+  if (reserveGap > 0) reasons.push(`隔离现金还差 ${formatMoney(reserveGap)}`);
+  const concentration = account > 0 ? (put.cashRequired ?? Infinity) / account : Infinity;
+  if (concentration > maxConcentration) reasons.push(`被指派后占账户 ${Number.isFinite(concentration) ? (concentration * 100).toFixed(1) : "∞"}%，超过 ${(maxConcentration * 100).toFixed(0)}% 上限`);
+  return {
+    eligible: String(put.action).startsWith("REVIEW") && reasons.length === 0,
+    reasons: [...new Set(reasons)],
+    concentration: Number.isFinite(concentration) ? round(concentration * 100, 1) : null,
+    reserveGap,
+    maxConcentration: maxConcentration * 100,
+  };
+}
+
+export function portfolioContributionPlan(input, data) {
+  const accountValue = Math.max(0, Number(input.accountValue) || 0);
+  const weeklyContribution = Math.max(0, Number(input.weeklyContribution) || 0);
+  const optionReserve = Math.max(0, Number(input.optionReserve) || 0);
+  const postDepositValue = accountValue + weeklyContribution;
+  const weights = dynamicPortfolioWeights(data.portfolio, postDepositValue);
+  const orders = allocateDollarOrders(weeklyContribution, weights);
+  const stage = accountStage(postDepositValue);
+  const reserveOrder = orders.find((item) => item.ticker === "SGOV")?.amount ?? 0;
+  const projectedOptionReserve = optionReserve + reserveOrder;
+  const optionReviews = (data.options ?? []).map((row) => ({
+    ...row,
+    accountEvaluation: evaluateLivePut(row, data.assets, postDepositValue, projectedOptionReserve),
+  }));
+  const executablePut = optionReviews.find((row) => row.accountEvaluation.eligible) ?? null;
+  return {
+    accountValue,
+    weeklyContribution,
+    optionReserve,
+    postDepositValue,
+    stage,
+    weights,
+    orders,
+    projectedOptionReserve,
+    optionReviews,
+    executablePut,
+  };
+}
+
+export const formatPercentValue = (value, digits = 1) => Number.isFinite(value) ? `${value.toFixed(digits)}%` : "—";
