@@ -23,7 +23,13 @@ const state = {
   rankingFilter: "top50",
   search: "",
   detailTicker: null,
+  topbarObserver: null,
 };
+
+function syncTopbarOffset() {
+  const topbar = $("#incomeosTopbar");
+  if (topbar) document.documentElement.style.setProperty("--io-topbar-offset", `${Math.ceil(topbar.getBoundingClientRect().height)}px`);
+}
 
 function safeLoadPlan() {
   try {
@@ -47,6 +53,7 @@ function setFontScale(value) {
   document.documentElement.style.setProperty("--income-font-scale", `${scale / 100}`);
   localStorage.setItem(FONT_KEY, String(scale));
   $$('[data-font-scale]').forEach((button) => button.setAttribute("aria-pressed", String(Number(button.dataset.fontScale) === scale)));
+  requestAnimationFrame(syncTopbarOffset);
 }
 
 function setFontFamily(value) {
@@ -55,12 +62,13 @@ function setFontFamily(value) {
   document.documentElement.dataset.incomeFont = family;
   localStorage.setItem(FONT_FAMILY_KEY, family);
   $$('[data-font-family]').forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.fontFamily === family)));
+  requestAnimationFrame(syncTopbarOffset);
 }
 
 function setColorTheme(value) {
-  const allowed = ["ocean", "indigo", "pine", "amber"];
+  const allowed = ["daylight", "ocean", "indigo", "pine", "amber"];
   const theme = allowed.includes(value) ? value : "ocean";
-  const browserColors = { ocean: "#07101c", indigo: "#090d1b", pine: "#07130f", amber: "#161006" };
+  const browserColors = { daylight: "#f4f7fb", ocean: "#07101c", indigo: "#090d1b", pine: "#07130f", amber: "#161006" };
   document.documentElement.dataset.incomeColor = theme;
   localStorage.setItem(COLOR_THEME_KEY, theme);
   document.querySelector('meta[name="theme-color"]')?.setAttribute("content", browserColors[theme]);
@@ -437,6 +445,13 @@ async function init() {
   setFontFamily(localStorage.getItem(FONT_FAMILY_KEY) ?? "system");
   setColorTheme(localStorage.getItem(COLOR_THEME_KEY) ?? "ocean");
   bindEvents();
+  syncTopbarOffset();
+  if ("ResizeObserver" in window) {
+    state.topbarObserver = new ResizeObserver(syncTopbarOffset);
+    state.topbarObserver.observe($("#incomeosTopbar"));
+  } else {
+    window.addEventListener("resize", syncTopbarOffset);
+  }
   try {
     const [response, historyResponse] = await Promise.all([
       fetch("./data/incomeos-full.json", { cache: "no-store", credentials: "omit" }),
