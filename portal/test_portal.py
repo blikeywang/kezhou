@@ -186,6 +186,7 @@ class PortalBuildTests(unittest.TestCase):
             "incomeos/incomeos-engine.mjs",
             "incomeos/data/research-snapshot.json",
             "incomeos/data/incomeos-full.json",
+            "incomeos/data/operation-history.json",
         ]
         for rel in expected:
             self.assertTrue((self.site / rel).exists(), rel)
@@ -196,6 +197,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('id="accountValue"', page)
         self.assertIn('id="optionReserve"', page)
         self.assertIn('data-font-scale="130"', page)
+        self.assertIn('data-font-family="reading"', page)
+        self.assertIn('data-color-theme="amber"', page)
+        self.assertIn('id="operationHistoryRecords"', page)
+        self.assertIn('id="historyArchive"', page)
         self.assertIn("每周重新找更好的组合", page)
         self.assertIn('data-tab="overview"', page)
         self.assertIn('data-tab="ranking"', page)
@@ -210,6 +215,9 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("localStorage", app)
         self.assertIn('credentials: "omit"', app)
         self.assertIn("portfolioContributionPlan", app)
+        self.assertIn("renderOperationHistory", app)
+        self.assertIn("operation-history.json", app)
+        self.assertNotIn("window.scrollTo", app)
 
         full_snapshot = json.loads((self.site / "incomeos" / "data" / "incomeos-full.json").read_text())
         self.assertEqual(full_snapshot["universe"]["candidateCount"], 71)
@@ -225,6 +233,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual({row["symbol"] for row in snapshot["benchmarks"]}, {"JPM", "SPY", "SCHD", "BAC", "GS"})
         self.assertEqual(snapshot["jpmEvidence"]["lastEightQuarterEpsBeatRate"], 88)
         self.assertFalse(all(candidate["hasBidAsk"] for candidate in snapshot["puts"]))
+        operation_history = json.loads((self.site / "incomeos" / "data" / "operation-history.json").read_text())
+        self.assertEqual(operation_history["schema"], "traderhome_incomeos_operation_history_v1")
+        self.assertGreaterEqual(len(operation_history["records"]), 1)
+        self.assertIn("allocation", operation_history["records"][0])
         self.assertEqual(self.manifest["routes"]["incomeos"], "/incomeos/")
         self.assertEqual(self.manifest["privacy"]["incomeosRuntime"], "browser_local")
         self.assertFalse(self.manifest["privacy"]["incomeosBrokerConnection"])

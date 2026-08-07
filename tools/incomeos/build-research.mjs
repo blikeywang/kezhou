@@ -10,6 +10,16 @@ const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
 const outputPath = resolve(projectDir, "portal/vendor/incomeos/data/incomeos-full.json");
+const todayEt = (() => {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+})();
 
 const originalUniverse = [
   ["SPY.US", "SPDR S&P 500 ETF", "ETF", "core", "Broad Market"],
@@ -446,7 +456,7 @@ const quotes = mapBySymbol(quoteRows);
 const indexes = mapBySymbol(indexRows);
 
 const historyRows = await pooled(universe, 4, async (asset) => {
-  const rows = await longbridge(["kline", "history", asset.symbol, "--start", "2016-01-01", "--end", "2026-08-06", "--period", "month", "--adjust", "forward"], 90_000);
+  const rows = await longbridge(["kline", "history", asset.symbol, "--start", "2016-01-01", "--end", todayEt, "--period", "month", "--adjust", "forward"], 90_000);
   return (Array.isArray(rows) ? rows : []).map((row) => ({ date: String(row.time).slice(0, 10), close: numeric(row.close) })).filter((row) => row.close > 0);
 }, "history");
 const histories = new Map(universe.map((asset, index) => [asset.symbol, Array.isArray(historyRows[index]) ? historyRows[index] : []]));
@@ -503,7 +513,7 @@ const selected = investable.filter((asset) => asset.selectedTop50);
 const output = {
   version: 2,
   asOf: new Date().toISOString(),
-  tradingDate: "2026-08-06",
+  tradingDate: todayEt,
   source: "Longbridge Securities",
   mode: errors.length ? "partial" : "live",
   market: {

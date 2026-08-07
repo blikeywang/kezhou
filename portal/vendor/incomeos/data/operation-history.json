@@ -1,0 +1,112 @@
+{
+  "schema": "traderhome_incomeos_operation_history_v1",
+  "version": 1,
+  "records": [
+    {
+      "id": "friday-2026-08-07",
+      "actionDate": "2026-08-07",
+      "month": "2026-08",
+      "generatedAt": "2026-08-07T05:17:46.055Z",
+      "generatedTimeEt": "01:17 ET",
+      "snapshotTradingDate": "2026-08-06",
+      "source": "Longbridge Securities",
+      "market": {
+        "temperature": 64,
+        "valuation": 83,
+        "sentiment": 44
+      },
+      "allocation": [
+        {
+          "ticker": "SPY",
+          "role": "宽基核心",
+          "weight": 0.32
+        },
+        {
+          "ticker": "SCHD",
+          "role": "股息质量",
+          "weight": 0.13
+        },
+        {
+          "ticker": "QQQ",
+          "role": "成长宽基",
+          "weight": 0.08
+        },
+        {
+          "ticker": "SGOV",
+          "role": "现金/期权准备",
+          "weight": 0.12
+        },
+        {
+          "ticker": "PGR",
+          "role": "Financials 复利卫星",
+          "weight": 0.07
+        },
+        {
+          "ticker": "LLY",
+          "role": "Healthcare 复利卫星",
+          "weight": 0.07
+        },
+        {
+          "ticker": "WMT",
+          "role": "Consumer Staples 复利卫星",
+          "weight": 0.07
+        },
+        {
+          "ticker": "MSFT",
+          "role": "Technology 复利卫星",
+          "weight": 0.07
+        },
+        {
+          "ticker": "GOOGL",
+          "role": "Communication 复利卫星",
+          "weight": 0.07
+        }
+      ],
+      "leaders": [
+        {
+          "ticker": "LLY",
+          "rank": 1,
+          "score": 89,
+          "status": "COMPOUNDER"
+        },
+        {
+          "ticker": "GOOGL",
+          "rank": 2,
+          "score": 88,
+          "status": "COMPOUNDER"
+        },
+        {
+          "ticker": "MSFT",
+          "rank": 3,
+          "score": 87,
+          "status": "COMPOUNDER"
+        },
+        {
+          "ticker": "PGR",
+          "rank": 4,
+          "score": 84,
+          "status": "COMPOUNDER"
+        },
+        {
+          "ticker": "AVGO",
+          "rank": 5,
+          "score": 83,
+          "status": "COMPOUNDER"
+        }
+      ],
+      "optionDecision": {
+        "status": "STRUCTURE_REVIEW",
+        "headline": "SPY Put 仅通过市场结构，等待账户复核",
+        "ticker": "SPY",
+        "contract": "SPY260911P740000.US",
+        "cashRequired": 74000,
+        "action": "REVIEW_CASH"
+      },
+      "notes": [
+        "这是周五系统操作单快照，不代表 IBKR 已实际成交。",
+        "历史记录保存当周模型目标比例；实际美元金额取决于当周输入和账户阶段。"
+      ]
+    }
+  ],
+  "updatedAt": "2026-08-07T06:08:09.634Z"
+}

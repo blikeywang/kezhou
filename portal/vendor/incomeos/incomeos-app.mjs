@@ -6,6 +6,8 @@ import {
 
 const STORAGE_KEY = "traderhome-incomeos-plan-v2";
 const FONT_KEY = "traderhome-incomeos-font-scale";
+const FONT_FAMILY_KEY = "traderhome-incomeos-font-family";
+const COLOR_THEME_KEY = "traderhome-incomeos-color-theme";
 const TAB_IDS = ["report", "overview", "ranking", "portfolio", "calls", "puts", "risk", "backtest", "data"];
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -16,6 +18,7 @@ const moneyCompact = (value) => Number.isFinite(value) ? new Intl.NumberFormat("
 const number = (value, digits = 0) => Number.isFinite(value) ? value.toLocaleString("en-US", { maximumFractionDigits: digits }) : "—";
 const state = {
   data: null,
+  history: null,
   plan: null,
   rankingFilter: "top50",
   search: "",
@@ -46,12 +49,33 @@ function setFontScale(value) {
   $$('[data-font-scale]').forEach((button) => button.setAttribute("aria-pressed", String(Number(button.dataset.fontScale) === scale)));
 }
 
+function setFontFamily(value) {
+  const allowed = ["system", "reading", "rounded"];
+  const family = allowed.includes(value) ? value : "system";
+  document.documentElement.dataset.incomeFont = family;
+  localStorage.setItem(FONT_FAMILY_KEY, family);
+  $$('[data-font-family]').forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.fontFamily === family)));
+}
+
+function setColorTheme(value) {
+  const allowed = ["ocean", "indigo", "pine", "amber"];
+  const theme = allowed.includes(value) ? value : "ocean";
+  const browserColors = { ocean: "#07101c", indigo: "#090d1b", pine: "#07130f", amber: "#161006" };
+  document.documentElement.dataset.incomeColor = theme;
+  localStorage.setItem(COLOR_THEME_KEY, theme);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", browserColors[theme]);
+  $$('[data-color-theme]').forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.colorTheme === theme)));
+}
+
 function setTab(id, updateHash = true) {
   const next = TAB_IDS.includes(id) ? id : "report";
-  $$('[data-tab]').forEach((button) => button.classList.toggle("active", button.dataset.tab === next));
+  $$('[data-tab]').forEach((button) => {
+    const active = button.dataset.tab === next;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
   $$('[data-view]').forEach((view) => view.classList.toggle("active", view.dataset.view === next));
   if (updateHash) history.replaceState(null, "", `#${next}`);
-  if (updateHash) window.scrollTo({ top: $("#moduleTabs").offsetTop - 18, behavior: "smooth" });
 }
 
 function snapshotState(data) {
@@ -85,7 +109,7 @@ function assetReason(asset) {
 }
 
 function colorFor(index) {
-  return ["#5ee8e0", "#63a9ff", "#ad8cff", "#f3bf6b", "#78e2aa", "#ff9f7e", "#77bdf8", "#cf8cff", "#a6d66d"][index % 9];
+  return `var(--io-series-${(index % 9) + 1})`;
 }
 
 function renderStatus(data) {
@@ -160,6 +184,64 @@ function renderReport(data, plan) {
   }
   $("#noActions").innerHTML = ["不因 JPM/GS/BAC 质量高就忽略其自身估值高位", "没有确认 100 股持仓，不卖 Covered Call", "不用 IBKR 保证金补足现金担保", "不把当前权利金年化代理当成长期收益率"].map((item) => `<li>${item}</li>`).join("");
   $("#finalChecks").innerHTML = ["IBKR 可用现金与未结算资金", "碎股订单币种与限价/市价设置", "期权实时 bid/ask、OI 与财报日", "下单后单股和行业集中度"].map((item) => `<li>${item}</li>`).join("");
+}
+
+function historyTimestamp(record) {
+  if (!record.generatedAt) return record.generatedTimeEt ?? "—";
+  return new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).format(new Date(record.generatedAt));
+}
+
+function renderOperationHistory(historyData) {
+  const records = [...(historyData?.records ?? [])].sort((left, right) => right.actionDate.localeCompare(left.actionDate));
+  $("#historyRecordCount").textContent = `${records.length} 周`;
+  if (!records.length) {
+    $("#historyArchive").innerHTML = "";
+    $("#operationHistoryRecords").innerHTML = '<div class="io-history-empty">首个周五刷新完成后，这里会出现按年月归档的操作单。</div>';
+    return;
+  }
+
+  const months = new Map();
+  for (const record of records) {
+    const month = record.month ?? record.actionDate.slice(0, 7);
+    const values = months.get(month) ?? [];
+    values.push(record);
+    months.set(month, values);
+  }
+  const years = new Map();
+  for (const [month, monthRecords] of months) {
+    const year = month.slice(0, 4);
+    const values = years.get(year) ?? [];
+    values.push([month, monthRecords]);
+    years.set(year, values);
+  }
+
+  $("#historyArchive").innerHTML = [...years].map(([year, values]) => `<section><b>${year}</b><div>${values.map(([month, monthRecords]) => `<a href="#history-month-${month}">${Number(month.slice(5))} 月 · ${monthRecords.length} 周</a>`).join("")}</div></section>`).join("");
+  $("#operationHistoryRecords").innerHTML = [...months].map(([month, monthRecords]) => {
+    const weeklyLinks = monthRecords.map((record) => `<a href="#history-week-${record.actionDate}">${record.actionDate.slice(5).replace("-", "/")}</a>`).join("");
+    const weeklyRecords = monthRecords.map((record) => {
+      const allocation = (record.allocation ?? []).map((item) => `<div><b>${escapeHtml(item.ticker)} · ${(Number(item.weight) * 100).toFixed(0)}%</b><span>${escapeHtml(item.role)}</span></div>`).join("");
+      const option = record.optionDecision ?? {};
+      const optionDetail = option.contract
+        ? `${escapeHtml(option.contract)} · 现金担保 ${formatMoney(option.cashRequired)}`
+        : "没有降低估值、流动性或事件门槛来制造交易";
+      const leaders = (record.leaders ?? []).map((item) => `#${item.rank} ${item.ticker} ${item.score ?? "—"}`).join(" · ");
+      return `<article class="io-history-week" id="history-week-${record.actionDate}">
+        <div class="io-history-week-head"><div><time datetime="${record.actionDate}">${record.actionDate} · 周五操作单</time><p>数据交易日 ${escapeHtml(record.snapshotTradingDate)} · ${escapeHtml(record.source)}</p></div><span>生成于 ${escapeHtml(historyTimestamp(record))} ET</span></div>
+        <div class="io-history-allocation">${allocation}</div>
+        <div class="io-history-decision"><div><span>OPTION DECISION</span><strong>${escapeHtml(option.headline ?? "—")}</strong></div><p>${optionDetail}</p></div>
+        <p class="io-history-leaders">当周前五：${escapeHtml(leaders || "—")}。记录的是系统目标比例和期权闸门结论，不代表 IBKR 已成交。</p>
+      </article>`;
+    }).join("");
+    return `<section class="io-history-month" id="history-month-${month}"><div class="io-history-month-head"><h4>${month.slice(0, 4)} 年 ${Number(month.slice(5))} 月</h4><nav class="io-week-links" aria-label="${month} 周记录">${weeklyLinks}</nav></div>${weeklyRecords}</section>`;
+  }).join("");
 }
 
 function renderOverview(data) {
@@ -309,6 +391,7 @@ function renderAll() {
   renderStatus(data);
   renderMarket(data);
   renderReport(data, state.plan);
+  renderOperationHistory(state.history);
   renderOverview(data);
   renderRanking(data);
   renderPortfolio(data, state.plan);
@@ -322,6 +405,8 @@ function renderAll() {
 function bindEvents() {
   $$('[data-tab]').forEach((button) => button.addEventListener("click", () => setTab(button.dataset.tab)));
   $$('[data-font-scale]').forEach((button) => button.addEventListener("click", () => setFontScale(button.dataset.fontScale)));
+  $$('[data-font-family]').forEach((button) => button.addEventListener("click", () => setFontFamily(button.dataset.fontFamily)));
+  $$('[data-color-theme]').forEach((button) => button.addEventListener("click", () => setColorTheme(button.dataset.colorTheme)));
   ["#weeklyContribution", "#accountValue", "#optionReserve"].forEach((selector) => $(selector).addEventListener("input", () => state.data && renderAll()));
   $("#rankingFilters").addEventListener("click", (event) => {
     const button = event.target.closest("button[data-filter]");
@@ -349,15 +434,22 @@ async function init() {
   $("#accountValue").value = saved.accountValue ?? 0;
   $("#optionReserve").value = saved.optionReserve ?? 0;
   setFontScale(localStorage.getItem(FONT_KEY) ?? 100);
+  setFontFamily(localStorage.getItem(FONT_FAMILY_KEY) ?? "system");
+  setColorTheme(localStorage.getItem(COLOR_THEME_KEY) ?? "ocean");
   bindEvents();
   try {
-    const response = await fetch("./data/incomeos-full.json", { cache: "no-store", credentials: "omit" });
+    const [response, historyResponse] = await Promise.all([
+      fetch("./data/incomeos-full.json", { cache: "no-store", credentials: "omit" }),
+      fetch("./data/operation-history.json", { cache: "no-store", credentials: "omit" }).catch(() => null),
+    ]);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     state.data = await response.json();
+    state.history = historyResponse?.ok ? await historyResponse.json() : { records: [] };
     state.detailTicker = state.data.assets.find((asset) => asset.rank === 1)?.ticker ?? null;
     renderAll();
     const hash = location.hash.replace("#", "");
     setTab(TAB_IDS.includes(hash) ? hash : "report", false);
+    if (hash.startsWith("history-")) requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView());
   } catch (error) {
     $("#appError").hidden = false;
     $("#appError").textContent = `IncomeOS 数据加载失败：${error.message}`;
