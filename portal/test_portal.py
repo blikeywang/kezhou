@@ -109,6 +109,8 @@ class PortalBuildTests(unittest.TestCase):
         expected = [
             "decision/data/expert-evidence.js",
             "decision/data/coach-training.js",
+            "decision/data/index-coach-competition.js",
+            "decision/data/index-coach-competition.json",
             "decision/data/intraday-coaches.js",
             "decision/data/plan-gate-model.js",
             "decision/data/market-snapshots/NQ.json",
@@ -121,6 +123,10 @@ class PortalBuildTests(unittest.TestCase):
 
         app = (self.site / "decision" / "app.html").read_text(encoding="utf-8")
         self.assertIn("data/intraday-coaches.js", app)
+        self.assertIn("data/index-coach-competition.js", app)
+        self.assertIn("NQ / ES 过去一年赛", app)
+        self.assertIn("验证与留出没有同时过线就不增加下单权", app)
+        self.assertIn("function openIndexCompetition(id)", app)
         self.assertIn("NQ 日内计划席", app)
         self.assertIn("forwardStep(symbol,timeframe,ohlc.data,CARDS)", app)
         self.assertIn('id="tourLaunch"', app)
@@ -131,6 +137,12 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("主计划是回踩 98 入场、95 止损、104 目标", app)
         self.assertIn("62分不是 62% 胜率", app)
         self.assertIn("把 NQ 放入等待清单", app)
+
+        competition = json.loads((self.site / "decision" / "data" / "index-coach-competition.json").read_text())
+        self.assertEqual(competition["schema"], "ev_desk_index_coach_competition_v1")
+        self.assertEqual(competition["summary"]["roster"], 17)
+        self.assertEqual(len(competition["leaderboard"]), 17)
+        self.assertTrue(competition["meta"]["quality"]["nq_one_minute_path_audit"]["available"])
 
     def test_flow_is_published_as_an_independent_browser_safe_system(self):
         flow = (self.site / "flow" / "index.html").read_text(encoding="utf-8")
