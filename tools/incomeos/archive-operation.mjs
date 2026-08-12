@@ -35,6 +35,13 @@ const data = JSON.parse(await readFile(snapshotPath, "utf8"));
 const history = await loadHistory();
 const clock = newYorkParts(data.asOf);
 const actionDate = `${clock.year}-${clock.month}-${clock.day}`;
+const weekday = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/New_York",
+  weekday: "short",
+}).format(new Date(data.asOf));
+const scheduledFriday = weekday === "Fri";
+const recordKind = scheduledFriday ? "friday" : "special";
+const recordLabel = scheduledFriday ? "周五操作单" : "临时更新操作单";
 const structuralPuts = (data.options ?? []).filter((row) => String(row.put?.action ?? "").startsWith("REVIEW"));
 const primaryPut = structuralPuts[0] ?? null;
 const allocation = (data.portfolio?.weights ?? []).map((item) => ({
@@ -50,7 +57,9 @@ const leaders = (data.assets ?? []).filter((asset) => asset.rank && asset.rank <
 }));
 
 const record = {
-  id: `friday-${actionDate}`,
+  id: `${recordKind}-${actionDate}`,
+  kind: recordKind,
+  label: recordLabel,
   actionDate,
   month: actionDate.slice(0, 7),
   generatedAt: data.asOf,
@@ -80,7 +89,7 @@ const record = {
     action: "WAIT",
   },
   notes: [
-    "这是周五系统操作单快照，不代表 IBKR 已实际成交。",
+    `这是${recordLabel}快照，不代表 IBKR 已实际成交。`,
     "历史记录保存当周模型目标比例；实际美元金额取决于当周输入和账户阶段。",
   ],
 };
@@ -88,7 +97,7 @@ const record = {
 history.schema = "traderhome_incomeos_operation_history_v1";
 history.version = 1;
 history.updatedAt = new Date().toISOString();
-history.records = [record, ...(history.records ?? []).filter((item) => item.id !== record.id)]
+history.records = [record, ...(history.records ?? []).filter((item) => item.actionDate !== record.actionDate)]
   .sort((left, right) => right.actionDate.localeCompare(left.actionDate));
 
 await mkdir(dirname(historyPath), { recursive: true });

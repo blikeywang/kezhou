@@ -126,7 +126,9 @@ test("Friday operation snapshots are date-addressable model records, not broker 
   assert.equal(operationHistory.schema, "traderhome_incomeos_operation_history_v1");
   assert.ok(operationHistory.records.length >= 1);
   const latest = operationHistory.records[0];
-  assert.match(latest.id, /^friday-\d{4}-\d{2}-\d{2}$/);
+  assert.match(latest.id, /^(friday|special)-\d{4}-\d{2}-\d{2}$/);
+  assert.ok(["friday", "special"].includes(latest.kind ?? "friday"));
+  assert.match(latest.label ?? "周五操作单", /操作单$/);
   assert.equal(latest.month, latest.actionDate.slice(0, 7));
   assert.ok(Math.abs(latest.allocation.reduce((sum, item) => sum + item.weight, 0) - 1) < 1e-9);
   assert.ok(latest.notes.some((note) => note.includes("不代表 IBKR 已实际成交")));

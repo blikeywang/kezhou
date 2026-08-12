@@ -242,7 +242,7 @@ function renderOperationHistory(historyData) {
         : "没有降低估值、流动性或事件门槛来制造交易";
       const leaders = (record.leaders ?? []).map((item) => `#${item.rank} ${item.ticker} ${item.score ?? "—"}`).join(" · ");
       return `<article class="io-history-week" id="history-week-${record.actionDate}">
-        <div class="io-history-week-head"><div><time datetime="${record.actionDate}">${record.actionDate} · 周五操作单</time><p>数据交易日 ${escapeHtml(record.snapshotTradingDate)} · ${escapeHtml(record.source)}</p></div><span>生成于 ${escapeHtml(historyTimestamp(record))} ET</span></div>
+        <div class="io-history-week-head"><div><time datetime="${record.actionDate}">${record.actionDate} · ${escapeHtml(record.label ?? "周五操作单")}</time><p>数据交易日 ${escapeHtml(record.snapshotTradingDate)} · ${escapeHtml(record.source)}</p></div><span>生成于 ${escapeHtml(historyTimestamp(record))} ET</span></div>
         <div class="io-history-allocation">${allocation}</div>
         <div class="io-history-decision"><div><span>OPTION DECISION</span><strong>${escapeHtml(option.headline ?? "—")}</strong></div><p>${optionDetail}</p></div>
         <p class="io-history-leaders">当周前五：${escapeHtml(leaders || "—")}。记录的是系统目标比例和期权闸门结论，不代表 IBKR 已成交。</p>
