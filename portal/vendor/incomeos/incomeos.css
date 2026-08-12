@@ -168,6 +168,8 @@ body.incomeos a { color: inherit; }
 .io-order strong { color: #f1f7fb; font: 750 .78rem/1 ui-monospace, monospace; }
 .io-order small { grid-column: 1/-1; color: #6f8298; font-size: .64rem; }
 .io-order > b { color: var(--io-cyan); font-size: 1.05rem; }
+.io-whole-summary { display: flex; justify-content: space-between; gap: 14px; margin-top: 10px; padding: 12px 13px; border: 1px dashed color-mix(in srgb, var(--io-cyan) 35%, var(--io-line)); border-radius: 8px; color: var(--io-muted); background: color-mix(in srgb, var(--io-cyan) 4%, transparent); font-size: .68rem; }
+.io-whole-summary b { color: var(--io-cyan); white-space: nowrap; }
 .io-note { color: var(--io-amber); font-size: .72rem; }
 .io-put-callout { background: linear-gradient(145deg, rgba(173,140,255,.09), rgba(13,24,39,.95)); }
 .io-put-callout h3 { margin: 12px 0 8px; font-size: 1.35rem; line-height: 1.15; }
@@ -252,6 +254,7 @@ body.incomeos a { color: inherit; }
 }
 
 @media (max-width: 640px) {
+  .io-whole-summary { display: grid; }
   .io-wrap { width: min(100% - 24px, 1180px); }
   .io-global-controls { gap: 11px; }
   .io-global-controls > strong { display: none; }

@@ -15,5 +15,6 @@ function run(script) {
 }
 
 await run("build-research.mjs");
+await run("enrich-execution.mjs");
 await run("enrich-options.mjs");
 await run("archive-operation.mjs");

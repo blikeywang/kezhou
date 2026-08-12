@@ -113,6 +113,13 @@ body.th-site {
     linear-gradient(145deg, rgba(13, 29, 39, .96), rgba(10, 18, 31, .98));
 }
 .th-independent-card.incomeos-card .th-independent-badge { border-color: rgba(94, 232, 224, .32); color: #91f2ec; background: rgba(94, 232, 224, .07); }
+.th-independent-card.incomeos-whole-card {
+  border-color: rgba(251, 191, 36, .38);
+  background:
+    radial-gradient(circle at 88% 18%, rgba(251, 191, 36, .12), transparent 34%),
+    linear-gradient(145deg, rgba(35, 28, 13, .96), rgba(10, 18, 31, .98));
+}
+.th-independent-card.incomeos-whole-card .th-independent-badge { border-color: rgba(251, 191, 36, .34); color: #fde68a; background: rgba(251, 191, 36, .08); }
 
 .th-contracts { overflow: hidden; border: 1px solid var(--site-line); border-radius: 18px; background: rgba(10, 17, 31, .72); }
 .th-contract { display: grid; grid-template-columns: 150px 1fr 1fr 1fr; gap: 16px; padding: 18px 20px; align-items: start; }

@@ -2,9 +2,11 @@ import {
   formatMoney,
   formatPercentValue,
   portfolioContributionPlan,
+  wholeShareContributionPlan,
 } from "./incomeos-engine.mjs";
 
-const STORAGE_KEY = "traderhome-incomeos-plan-v2";
+const WHOLE_SHARE_MODE = document.body.dataset.executionMode === "whole";
+const STORAGE_KEY = WHOLE_SHARE_MODE ? "traderhome-incomeos-whole-plan-v1" : "traderhome-incomeos-plan-v2";
 const FONT_KEY = "traderhome-incomeos-font-scale";
 const FONT_FAMILY_KEY = "traderhome-incomeos-font-family";
 const COLOR_THEME_KEY = "traderhome-incomeos-color-theme";
@@ -44,6 +46,8 @@ function currentInput() {
     weeklyContribution: Math.max(0, Number($("#weeklyContribution").value) || 0),
     accountValue: Math.max(0, Number($("#accountValue").value) || 0),
     optionReserve: Math.max(0, Number($("#optionReserve").value) || 0),
+    carryCash: WHOLE_SHARE_MODE ? Math.max(0, Number($("#carryCash")?.value) || 0) : 0,
+    cashBuffer: WHOLE_SHARE_MODE ? Math.max(0, Number($("#cashBuffer")?.value) || 0) : 0,
   };
 }
 
@@ -145,15 +149,49 @@ function renderMarket(data) {
 }
 
 function renderAllocation(plan) {
+  if (WHOLE_SHARE_MODE) {
+    const denominator = Math.max(0.01, plan.budget);
+    const rows = [
+      ...plan.orders.map((item) => ({ ticker: item.ticker, weight: item.estimatedCost / denominator })),
+      ...(plan.cashRemaining > 0 ? [{ ticker: "现金", weight: plan.cashRemaining / denominator }] : []),
+    ];
+    $("#allocationHeadline").textContent = `${plan.stage.label} · 整数股实际执行`;
+    $("#allocationBar").innerHTML = rows.map((item, index) => `<span style="width:${item.weight * 100}%;background:${colorFor(index)}" title="${item.ticker} ${(item.weight * 100).toFixed(1)}%"></span>`).join("");
+    $("#allocationLegend").innerHTML = rows.map((item, index) => `<div><i style="background:${colorFor(index)}"></i><span>${item.ticker}</span><b>${(item.weight * 100).toFixed(1)}%</b></div>`).join("");
+    return;
+  }
   $("#allocationHeadline").textContent = `${plan.stage.label} · ${plan.weights.length} 个资金去向`;
   $("#allocationBar").innerHTML = plan.weights.map((item, index) => `<span style="width:${item.weight * 100}%;background:${colorFor(index)}" title="${item.ticker} ${(item.weight * 100).toFixed(1)}%"></span>`).join("");
   $("#allocationLegend").innerHTML = plan.weights.map((item, index) => `<div><i style="background:${colorFor(index)}"></i><span>${item.ticker}</span><b>${(item.weight * 100).toFixed(1)}%</b></div>`).join("");
 }
 
 function renderOrders(data, plan) {
-  const assetMap = new Map(data.assets.map((asset) => [asset.ticker, asset]));
-  const orders = plan.orders.filter((order) => order.amount >= 0.01);
+  const assetMap = new Map([...(data.assets ?? []), ...(data.executionAssets ?? [])].map((asset) => [asset.ticker, asset]));
+  const orders = plan.orders.filter((order) => WHOLE_SHARE_MODE ? order.shares > 0 : order.amount >= 0.01);
   $("#orderCount").textContent = String(orders.length);
+  if (WHOLE_SHARE_MODE) {
+    $("#orders").innerHTML = orders.map((order) => {
+      const reason = order.proxyFor
+        ? `${order.proxyFor} 的同指数整股执行代理；目标暴露不变。`
+        : order.ticker === "SGOV" && plan.deferred.length
+          ? `${plan.deferred.length} 个不足一股的目标暂时汇入现金等待区。`
+          : assetReason(assetMap.get(order.ticker));
+      return `<article class="io-order"><div><span>${escapeHtml(order.role)}</span><strong>${order.ticker} · ${order.shares} 股</strong><small>${escapeHtml(reason)}</small></div><b>${formatMoney(order.estimatedCost)}</b></article>`;
+    }).join("");
+    $("#portfolioOrders").innerHTML = orders.map((order) => {
+      const reason = order.proxyFor
+        ? `${order.proxyFor} 的同指数低单价执行代理；不能用其持仓覆盖 ${order.proxyFor} Call。`
+        : order.ticker === "SGOV" && plan.deferred.length
+          ? `含 ${formatMoney(plan.deferredTargetAmount)} 不足一股的延后目标。`
+          : assetReason(assetMap.get(order.ticker));
+      return `<tr><td><strong>${order.ticker}</strong><small>${escapeHtml(order.role)}${order.proxyFor ? ` · 代理 ${order.proxyFor}` : ""}</small></td><td>${pct(order.targetWeight * 100)}</td><td>${formatMoney(order.targetAmount)}<small>预计使用 ${formatMoney(order.estimatedCost)}</small></td><td>${formatMoney(order.price)}</td><td><b>${order.shares} 股</b></td><td><small>${escapeHtml(reason)}</small></td></tr>`;
+    }).join("");
+    if ($("#wholeShareSummary")) {
+      const blocked = plan.blocked.length ? `；${plan.blocked.map((item) => item.executionTicker).join(" / ")} 缺少价格，本次保留现金` : "";
+      $("#wholeShareSummary").innerHTML = `<b>预计使用 ${formatMoney(plan.investedAmount)}</b><span>剩余 ${formatMoney(plan.cashRemaining)}（含 ${formatMoney(plan.cashBuffer)} 缓冲）自动滚入下次；${plan.deferred.length} 个不足一股目标先由 SGOV 承接${blocked}。</span>`;
+    }
+    return;
+  }
   $("#orders").innerHTML = orders.map((order) => {
     const asset = assetMap.get(order.ticker);
     return `<article class="io-order"><div><span>${escapeHtml(order.role)}</span><strong>${order.ticker}</strong><small>${escapeHtml(assetReason(asset))}</small></div><b>${formatMoney(order.amount)}</b></article>`;
@@ -166,7 +204,7 @@ function renderOrders(data, plan) {
 }
 
 function renderReport(data, plan) {
-  $("#weeklyAmountHero").textContent = formatMoney(plan.weeklyContribution);
+  $("#weeklyAmountHero").textContent = formatMoney(WHOLE_SHARE_MODE ? plan.budget : plan.weeklyContribution);
   $("#stageLabel").textContent = plan.stage.label;
   $("#stageDetail").textContent = plan.stage.detail;
   $("#postDepositValue").textContent = formatMoney(plan.postDepositValue);
@@ -187,11 +225,13 @@ function renderReport(data, plan) {
     $("#putReasons").innerHTML = evaluation.reasons.slice(0, 4).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   } else {
     $("#putHeadline").textContent = "本周没有通过全部闸门的 Put";
-    $("#putExplanation").textContent = "继续执行美元买入与现金停泊；没有合格权利金时，零期权订单也是正确动作。";
+    $("#putExplanation").textContent = WHOLE_SHARE_MODE
+      ? "继续执行整数股买入与 SGOV 停泊；没有合格权利金时，零期权订单也是正确动作。"
+      : "继续执行美元买入与现金停泊；没有合格权利金时，零期权订单也是正确动作。";
     $("#putReasons").innerHTML = ["不为收入目标降低估值标准", "不跨财报卖出", "不接受过宽价差或低 IV/HV"].map((item) => `<li>${item}</li>`).join("");
   }
   $("#noActions").innerHTML = ["不因 JPM/GS/BAC 质量高就忽略其自身估值高位", "没有确认 100 股持仓，不卖 Covered Call", "不用 IBKR 保证金补足现金担保", "不把当前权利金年化代理当成长期收益率"].map((item) => `<li>${item}</li>`).join("");
-  $("#finalChecks").innerHTML = ["IBKR 可用现金与未结算资金", "碎股订单币种与限价/市价设置", "期权实时 bid/ask、OI 与财报日", "下单后单股和行业集中度"].map((item) => `<li>${item}</li>`).join("");
+  $("#finalChecks").innerHTML = ["IBKR 可用现金与未结算资金", WHOLE_SHARE_MODE ? "整数股数量、参考价与限价设置" : "碎股订单币种与限价/市价设置", "期权实时 bid/ask、OI 与财报日", "下单后单股和行业集中度"].map((item) => `<li>${item}</li>`).join("");
 }
 
 function historyTimestamp(record) {
@@ -241,11 +281,12 @@ function renderOperationHistory(historyData) {
         ? `${escapeHtml(option.contract)} · 现金担保 ${formatMoney(option.cashRequired)}`
         : "没有降低估值、流动性或事件门槛来制造交易";
       const leaders = (record.leaders ?? []).map((item) => `#${item.rank} ${item.ticker} ${item.score ?? "—"}`).join(" · ");
+      const recordLabel = WHOLE_SHARE_MODE ? `整数股版 · ${record.label ?? "周五操作单"}` : record.label ?? "周五操作单";
       return `<article class="io-history-week" id="history-week-${record.actionDate}">
-        <div class="io-history-week-head"><div><time datetime="${record.actionDate}">${record.actionDate} · ${escapeHtml(record.label ?? "周五操作单")}</time><p>数据交易日 ${escapeHtml(record.snapshotTradingDate)} · ${escapeHtml(record.source)}</p></div><span>生成于 ${escapeHtml(historyTimestamp(record))} ET</span></div>
+        <div class="io-history-week-head"><div><time datetime="${record.actionDate}">${record.actionDate} · ${escapeHtml(recordLabel)}</time><p>数据交易日 ${escapeHtml(record.snapshotTradingDate)} · ${escapeHtml(record.source)}</p></div><span>生成于 ${escapeHtml(historyTimestamp(record))} ET</span></div>
         <div class="io-history-allocation">${allocation}</div>
         <div class="io-history-decision"><div><span>OPTION DECISION</span><strong>${escapeHtml(option.headline ?? "—")}</strong></div><p>${optionDetail}</p></div>
-        <p class="io-history-leaders">当周前五：${escapeHtml(leaders || "—")}。记录的是系统目标比例和期权闸门结论，不代表 IBKR 已成交。</p>
+        <p class="io-history-leaders">当周前五：${escapeHtml(leaders || "—")}。记录的是系统目标比例和期权闸门结论${WHOLE_SHARE_MODE ? "；具体整数股数由当周输入、余款和价格计算" : ""}，不代表 IBKR 已成交。</p>
       </article>`;
     }).join("");
     return `<section class="io-history-month" id="history-month-${month}"><div class="io-history-month-head"><h4>${month.slice(0, 4)} 年 ${Number(month.slice(5))} 月</h4><nav class="io-week-links" aria-label="${month} 周记录">${weeklyLinks}</nav></div>${weeklyRecords}</section>`;
@@ -254,7 +295,7 @@ function renderOperationHistory(historyData) {
 
 function renderOverview(data) {
   const modules = [
-    ["周五操作单", "把本周入金转成今天的美元订单"], ["Top 50", "71 个候选每周竞争 50 个席位"], ["组合引擎", "把高分变成受行业与仓位约束的组合"],
+    [WHOLE_SHARE_MODE ? "整数股操作单" : "周五操作单", WHOLE_SHARE_MODE ? "把本周入金转成完整股数与现金余款" : "把本周入金转成今天的美元订单"], ["Top 50", "71 个候选每周竞争 50 个席位"], ["组合引擎", "把高分变成受行业与仓位约束的组合"],
     ["Sell Call", "100 股、Delta、IV 与事件闸门"], ["Sell Put", "底层、期权和账户容量三层闸门"], ["Risk Engine", "账户阶段、集中度和现金约束"],
     ["回测 / 基准", "与 SPY、QQQI、JEPI、JEPQ、SPYI 比较"], ["数据室", "数据覆盖、缺口与外部源"], ["IBKR 边界", "手工输入到 Flex Query 的升级路径"],
   ];
@@ -352,7 +393,7 @@ function renderPuts(data, plan) {
 function renderRisk(data, plan) {
   $("#riskSummary").innerHTML = `<article><span>当前阶段</span><strong>${plan.stage.label}</strong><p>${plan.stage.detail}</p></article><article><span>市场估值热度</span><strong>${data.market.valuation}/100</strong><p>高于 80：新增单股必须通过自身估值分位。</p></article><article><span>隔离现金</span><strong>${formatMoney(plan.projectedOptionReserve)}</strong><p>本周 SGOV/现金分配后；不等于 IBKR 实时可用购买力。</p></article><article><span>合格期权订单</span><strong>${plan.executablePut ? "1" : "0"}</strong><p>无合格机会时不降低 Delta、价差或估值门槛。</p></article>`;
   const roadmap = [
-    ["< $20k", "积累期", "SPY / SCHD / SGOV 为主，卫星仓小额碎股；不做期权。"],
+    ["< $20k", "积累期", WHOLE_SHARE_MODE ? "SPYM / SCHD / SGOV 整股优先；不足一股的卫星目标先停泊，不做期权。" : "SPY / SCHD / SGOV 为主，卫星仓小额碎股；不做期权。"],
     ["$20k–60k", "准备期", "逐步增加成长宽基和卫星仓，继续积累现金担保能力。"],
     ["$60k–150k", "首份合约期", "只允许账户装得下的低集中度现金担保 Put。"],
     ["$150k–300k", "组合收益期", "ETF 与单股期权分层；单股指派仍 ≤12%。"],
@@ -395,7 +436,7 @@ function renderAll() {
   const data = state.data;
   const input = currentInput();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(input));
-  state.plan = portfolioContributionPlan(input, data);
+  state.plan = WHOLE_SHARE_MODE ? wholeShareContributionPlan(input, data) : portfolioContributionPlan(input, data);
   renderStatus(data);
   renderMarket(data);
   renderReport(data, state.plan);
@@ -415,7 +456,7 @@ function bindEvents() {
   $$('[data-font-scale]').forEach((button) => button.addEventListener("click", () => setFontScale(button.dataset.fontScale)));
   $$('[data-font-family]').forEach((button) => button.addEventListener("click", () => setFontFamily(button.dataset.fontFamily)));
   $$('[data-color-theme]').forEach((button) => button.addEventListener("click", () => setColorTheme(button.dataset.colorTheme)));
-  ["#weeklyContribution", "#accountValue", "#optionReserve"].forEach((selector) => $(selector).addEventListener("input", () => state.data && renderAll()));
+  ["#weeklyContribution", "#accountValue", "#optionReserve", ...(WHOLE_SHARE_MODE ? ["#carryCash", "#cashBuffer"] : [])].forEach((selector) => $(selector)?.addEventListener("input", () => state.data && renderAll()));
   $("#rankingFilters").addEventListener("click", (event) => {
     const button = event.target.closest("button[data-filter]");
     if (!button) return;
@@ -438,9 +479,11 @@ function bindEvents() {
 
 async function init() {
   const saved = safeLoadPlan();
-  $("#weeklyContribution").value = saved.weeklyContribution ?? 1_000;
+  $("#weeklyContribution").value = saved.weeklyContribution ?? (WHOLE_SHARE_MODE ? 1_900 : 1_000);
   $("#accountValue").value = saved.accountValue ?? 0;
   $("#optionReserve").value = saved.optionReserve ?? 0;
+  if (WHOLE_SHARE_MODE && $("#carryCash")) $("#carryCash").value = saved.carryCash ?? 0;
+  if (WHOLE_SHARE_MODE && $("#cashBuffer")) $("#cashBuffer").value = saved.cashBuffer ?? 15;
   setFontScale(localStorage.getItem(FONT_KEY) ?? 100);
   setFontFamily(localStorage.getItem(FONT_FAMILY_KEY) ?? "system");
   setColorTheme(localStorage.getItem(COLOR_THEME_KEY) ?? "ocean");

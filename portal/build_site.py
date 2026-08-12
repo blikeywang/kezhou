@@ -29,6 +29,7 @@ CANONICAL_ROUTES = {
     "review/index.html": "/review/",
     "flow/index.html": "/flow/",
     "incomeos/index.html": "/incomeos/",
+    "incomeos-whole/index.html": "/incomeos-whole/",
     "standards/index.html": "/standards/",
 }
 
@@ -74,6 +75,46 @@ def _inject_shell(path: Path, output: Path) -> None:
     path.write_text(html, encoding="utf-8")
 
 
+def _prepare_incomeos_whole(output: Path) -> None:
+    target = output / "incomeos-whole"
+    shutil.copytree(PORTAL / "vendor" / "incomeos", target)
+    page = target / "index.html"
+    html = page.read_text(encoding="utf-8")
+    replacements = {
+        '<meta name="description" content="IncomeOS：每周扫描候选池、更新 Top 50、构建动态组合，并生成 Sell Call / Cash-Secured Put 风险闸门与 IBKR 操作单。">': '<meta name="description" content="IncomeOS 整股版：完整保留研究、Top 50、组合、期权和历史模块，只生成 IBKR 可执行的整数股订单。">',
+        '<title>IncomeOS · 长期资金与现金流系统 | TraderHome</title>': '<title>IncomeOS 整股版 · 整数股长期资金系统 | TraderHome</title>',
+        'href="/incomeos/incomeos.css"': 'href="/incomeos-whole/incomeos.css"',
+        '<body class="incomeos">': '<body class="incomeos" data-execution-mode="whole">',
+        '<span>TRADERHOME</span><b>INCOMEOS</b>': '<span>TRADERHOME</span><b>INCOMEOS · WHOLE</b>',
+        '<h1>不是一只 JPM。<br><span>每周重新找更好的组合。</span></h1>': '<h1>同一套 IncomeOS。<br><span>每一单只买整数股。</span></h1>',
+        '<p>候选池从原 50 扩展到 71 个，再按长期复利、盈利预期、质量、估值、风险、股息和流动性选出当期 Top 50。输入本周到账与 IBKR 净值后，系统把当前组合转成今天可执行的美元订单。</p>': '<p>完整复制研究、Top 50、组合、Sell Call、Sell Put、风险和历史记录；唯一变化是执行层只输出完整股数。SPY 核心在小账户阶段用同指数低单价 SPYM 执行，不足一股的目标先停泊。</p>',
+        'aria-label="IncomeOS 本周输入"': 'aria-label="IncomeOS 整股版本周输入"',
+        '<span>THIS WEEK</span><strong id="weeklyAmountHero">$1,000</strong>': '<span>WHOLE SHARES</span><strong id="weeklyAmountHero">$1,900</strong>',
+        '<button type="button" data-tab="report" class="active">周五操作单</button>': '<button type="button" data-tab="report" class="active">整数股操作单</button>',
+        'FRIDAY 10:00 ET · ACTION SHEET': 'WHOLE SHARES · ACTION SHEET',
+        '<article><span>本周美元买入</span><strong><b id="orderCount">0</b> 笔</strong><small>支持 IBKR 碎股 / 按美元买入</small></article>': '<article><span>本周整数股买入</span><strong><b id="orderCount">0</b> 笔</strong><small>仅输出 IBKR 完整股数订单</small></article>',
+        '<div class="io-subhead"><span>IBKR · TODAY</span><h3>按美元下单</h3><p>这是新增资金流向，不会假装知道你现有持仓偏离。</p></div>': '<div class="io-subhead"><span>IBKR · WHOLE SHARES</span><h3>按整数股下单</h3><p>不足一股的小额目标先汇入 SGOV；未使用现金自动留到下次。</p></div>',
+        '<div id="orders" class="io-orders"></div>': '<div id="orders" class="io-orders"></div><div class="io-whole-summary" id="wholeShareSummary"></div>',
+        '<div><span class="io-label">FRIDAY LEDGER</span><h3 id="operationHistoryTitle">周五操作历史</h3><p>保存每周五系统生成的操作单快照；这是当时的模型建议，不冒充 IBKR 实际成交。</p></div>': '<div><span class="io-label">WHOLE-SHARE LEDGER</span><h3 id="operationHistoryTitle">整股版操作历史</h3><p>共享当期研究与目标比例快照；具体整数股数由每次输入、余款和执行价格重新计算，不冒充 IBKR 实际成交。</p></div>',
+        '<div class="io-subhead score-head"><span>THIS WEEK</span><h3>新增资金订单拆分</h3><p>分配到美分并确保总额与本周输入完全一致。</p></div>': '<div class="io-subhead score-head"><span>THIS WEEK</span><h3>新增资金整数股订单</h3><p>目标权重保持不变；无法达到一股的目标先停泊，绝不生成碎股。</p></div>',
+        '<th>标的 / 角色</th><th>当前动态权重</th><th>本周金额</th><th>参考价</th><th>估算碎股</th><th>选择理由</th>': '<th>标的 / 角色</th><th>整数股有效权重</th><th>目标 / 预计使用</th><th>参考价</th><th>整数股</th><th>选择理由</th>',
+        '<span>IncomeOS · TraderHome 独立长期资金系统</span>': '<span>IncomeOS Whole · TraderHome 独立整数股长期资金系统</span>',
+        'src="/incomeos/incomeos-app.mjs"': 'src="/incomeos-whole/incomeos-app.mjs"',
+    }
+    for old, new in replacements.items():
+        if old not in html:
+            raise ValueError(f"IncomeOS whole-page transform anchor missing: {old[:80]}")
+        html = html.replace(old, new)
+    contribution = '<label class="io-input"><span>本周实际到账</span><div><b>$</b><input id="weeklyContribution" type="number" min="0" step="50" inputmode="decimal" value="1000"></div><small>每周按真正进入 IBKR 的净新增现金填写</small></label>'
+    whole_contribution = contribution.replace('value="1000"', 'value="1900"')
+    carry = whole_contribution + '\n        <label class="io-input"><span>上次未使用现金</span><div><b>$</b><input id="carryCash" type="number" min="0" step="1" inputmode="decimal" value="0"></div><small>只填仍可用于本次整数股订单的美元现金</small></label>'
+    carry += '\n        <label class="io-input"><span>成交与手续费缓冲</span><div><b>$</b><input id="cashBuffer" type="number" min="0" step="1" inputmode="decimal" value="15"></div><small>默认保留 $15，防止限价变化或费用导致超额</small></label>'
+    if contribution not in html:
+        raise ValueError("IncomeOS whole-page carry-cash anchor missing")
+    html = html.replace(contribution, carry)
+    page.write_text(html, encoding="utf-8")
+
+
 def build(output: Path) -> dict:
     if output.exists():
         shutil.rmtree(output)
@@ -100,6 +141,7 @@ def build(output: Path) -> dict:
     # research and runs account allocation locally in the browser; no broker
     # credential, account ledger, or order permission is copied into the site.
     shutil.copytree(PORTAL / "vendor" / "incomeos", output / "incomeos")
+    _prepare_incomeos_whole(output)
 
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
@@ -111,7 +153,7 @@ def build(output: Path) -> dict:
 
     manifest = {
         "name": "TraderHome",
-        "version": 5,
+        "version": 6,
         "coreWorkflowVersion": 3,
         "routes": {
             "home": "/",
@@ -120,6 +162,7 @@ def build(output: Path) -> dict:
             "review": "/review/",
             "flow": "/flow/",
             "incomeos": "/incomeos/",
+            "incomeosWhole": "/incomeos-whole/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -141,7 +184,14 @@ def build(output: Path) -> dict:
                 "rejects": "stale_missing_untradeable_overvalued_or_concentration_breaching_data",
                 "route": "/incomeos/",
                 "partOfCoreWorkflow": False,
-            }
+            },
+            "incomeosWhole": {
+                "input": "weekly_net_contribution_carry_cash_account_value_option_reserve_and_derived_market_snapshot",
+                "output": "whole_share_orders_cash_remainder_growth_cycle_evidence_and_cash_secured_put_gate",
+                "rejects": "fractional_orders_stale_missing_untradeable_overvalued_or_concentration_breaching_data",
+                "route": "/incomeos-whole/",
+                "partOfCoreWorkflow": False,
+            },
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
         "privacy": {
@@ -151,6 +201,7 @@ def build(output: Path) -> dict:
             "flowPublicRuntime": "simulated_preview",
             "flowPrivateLiveService": "separate_authenticated_endpoint",
             "incomeosRuntime": "browser_local",
+            "incomeosWholeRuntime": "browser_local_whole_shares_only",
             "incomeosBrokerConnection": False,
             "incomeosAccountInputsStored": "browser_local_storage_only",
             "incomeosPublishedData": "derived_read_only_snapshot",

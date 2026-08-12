@@ -28,6 +28,7 @@ class PortalBuildTests(unittest.TestCase):
             "review/index.html",
             "flow/index.html",
             "incomeos/index.html",
+            "incomeos-whole/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -55,14 +56,15 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 5)
+        self.assertEqual(manifest["version"], 6)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeos"]["partOfCoreWorkflow"])
+        self.assertFalse(manifest["independentSystems"]["incomeosWhole"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
@@ -234,6 +236,8 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(full_snapshot["universe"]["top50Count"], 50)
         self.assertGreaterEqual(full_snapshot["universe"]["challengerCount"], 20)
         self.assertGreaterEqual(full_snapshot["optionDataQuality"]["usable"], 15)
+        self.assertEqual(full_snapshot["executionAssets"][0]["ticker"], "SPYM")
+        self.assertEqual(full_snapshot["executionAssets"][0]["proxyFor"], "SPY")
         jpm = next(asset for asset in full_snapshot["assets"] if asset["ticker"] == "JPM")
         self.assertEqual(jpm["status"], "VALUATION_WAIT")
         self.assertGreaterEqual(jpm["valuation"]["historicalPercentile"], 95)
@@ -250,6 +254,40 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(self.manifest["routes"]["incomeos"], "/incomeos/")
         self.assertEqual(self.manifest["privacy"]["incomeosRuntime"], "browser_local")
         self.assertFalse(self.manifest["privacy"]["incomeosBrokerConnection"])
+
+    def test_incomeos_whole_is_a_complete_integer_only_copy(self):
+        expected = [
+            "incomeos-whole/index.html",
+            "incomeos-whole/incomeos.css",
+            "incomeos-whole/incomeos-app.mjs",
+            "incomeos-whole/incomeos-engine.mjs",
+            "incomeos-whole/data/incomeos-full.json",
+            "incomeos-whole/data/operation-history.json",
+        ]
+        for rel in expected:
+            self.assertTrue((self.site / rel).exists(), rel)
+
+        page = (self.site / "incomeos-whole" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('data-execution-mode="whole"', page)
+        self.assertIn('id="carryCash"', page)
+        self.assertIn('id="cashBuffer"', page)
+        self.assertIn('id="weeklyContribution" type="number" min="0" step="50" inputmode="decimal" value="1900"', page)
+        self.assertIn("整数股操作单", page)
+        self.assertIn("同一套 IncomeOS", page)
+        self.assertIn("Sell Call", page)
+        self.assertIn("Sell Put", page)
+        self.assertIn('data-tab="overview"', page)
+        self.assertIn('data-tab="ranking"', page)
+        self.assertIn('data-tab="backtest"', page)
+        self.assertNotIn("估算碎股", page)
+        self.assertIn('src="/incomeos-whole/incomeos-app.mjs"', page)
+
+        app = (self.site / "incomeos-whole" / "incomeos-app.mjs").read_text(encoding="utf-8")
+        engine = (self.site / "incomeos-whole" / "incomeos-engine.mjs").read_text(encoding="utf-8")
+        self.assertIn("wholeShareContributionPlan", app)
+        self.assertIn("allocateWholeShareOrders", engine)
+        self.assertEqual(self.manifest["routes"]["incomeosWhole"], "/incomeos-whole/")
+        self.assertEqual(self.manifest["privacy"]["incomeosWholeRuntime"], "browser_local_whole_shares_only")
 
     def _flow_javascript(self) -> str:
         return "\n".join(

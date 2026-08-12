@@ -6543,5 +6543,20 @@
     "errors": [
       "MU.US: no usable 28-49 DTE option surface"
     ]
-  }
+  },
+  "executionAssets": [
+    {
+      "symbol": "SPYM.US",
+      "ticker": "SPYM",
+      "name": "State Street SPDR Portfolio S&P 500 ETF",
+      "proxyFor": "SPY",
+      "role": "宽基核心整股代理",
+      "price": 90.93,
+      "dayChange": 0.26,
+      "dollarVolume": 579790539.948,
+      "quoteTimestamp": "2026-08-12T13:29:57Z",
+      "source": "Longbridge Securities"
+    }
+  ],
+  "executionAsOf": "2026-08-12T14:33:16.403Z"
 }

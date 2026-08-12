@@ -15,6 +15,7 @@ html[data-th-stage="decision"] { --th-stage: #4ade80; }
 html[data-th-stage="review"] { --th-stage: #c4b5fd; }
 html[data-th-stage="flow"] { --th-stage: #2ed0a5; }
 html[data-th-stage="incomeos"] { --th-stage: #5ee8e0; }
+html[data-th-stage="incomeosWhole"] { --th-stage: #fbbf24; }
 
 .th-shell,
 .th-shell *,

@@ -5,12 +5,14 @@ import test from "node:test";
 import {
   allocationFor,
   allocateDollarOrders,
+  allocateWholeShareOrders,
   contributionPlan,
   dynamicPortfolioWeights,
   evaluateLivePut,
   evaluatePut,
   growthCycleScore,
   portfolioContributionPlan,
+  wholeShareContributionPlan,
 } from "./vendor/incomeos/incomeos-engine.mjs";
 
 const snapshot = JSON.parse(await readFile(new URL("./vendor/incomeos/data/research-snapshot.json", import.meta.url), "utf8"));
@@ -109,6 +111,49 @@ test("weekly dollar routing preserves the exact user-entered amount down to cent
   assert.equal(Math.round(orders.reduce((sum, order) => sum + order.amount, 0) * 100), 100_001);
   const plan = portfolioContributionPlan({ accountValue: 82_000, weeklyContribution: 1_000.01, optionReserve: 0 }, fullSnapshot);
   assert.equal(Math.round(plan.orders.reduce((sum, order) => sum + order.amount, 0) * 100), 100_001);
+});
+
+test("whole-share routing uses SPYM as the SPY execution proxy and never exceeds cash", () => {
+  const wholeShareData = {
+    ...fullSnapshot,
+    executionAssets: [{
+      symbol: "SPYM.US",
+      ticker: "SPYM",
+      name: "State Street SPDR Portfolio S&P 500 ETF",
+      proxyFor: "SPY",
+      price: 91.20,
+    }],
+    assets: fullSnapshot.assets.map((asset) => asset.ticker === "SCHD" ? { ...asset, price: 34.20 }
+      : asset.ticker === "SGOV" ? { ...asset, price: 100.52 } : asset),
+  };
+  const plan = wholeShareContributionPlan({ accountValue: 0, weeklyContribution: 1_900, carryCash: 0, cashBuffer: 15, optionReserve: 0 }, wholeShareData);
+  assert.deepEqual(Object.fromEntries(plan.orders.map((order) => [order.ticker, order.shares])), {
+    SPYM: 11,
+    SCHD: 11,
+    SGOV: 5,
+  });
+  assert.equal(plan.orders.some((order) => order.ticker === "SPY"), false);
+  assert.equal(plan.orders.find((order) => order.ticker === "SPYM").proxyFor, "SPY");
+  assert.ok(plan.orders.every((order) => Number.isInteger(order.shares) && order.shares > 0));
+  assert.ok(plan.investedAmount <= plan.budget);
+  assert.equal(plan.investedAmount, 1_882);
+  assert.equal(plan.cashRemaining, 18);
+  assert.equal(Math.round((plan.investedAmount + plan.cashRemaining) * 100), 190_000);
+  assert.ok(plan.deferred.some((item) => item.ticker === "QQQ"));
+  assert.ok(plan.projectedOptionReserve < plan.orders.find((order) => order.ticker === "SGOV").estimatedCost);
+});
+
+test("whole-share allocator rolls prior cash into the budget without creating fractional orders", () => {
+  const weights = dynamicPortfolioWeights(fullSnapshot.portfolio, 2_000);
+  const data = {
+    ...fullSnapshot,
+    executionAssets: [{ ticker: "SPYM", symbol: "SPYM.US", price: 90 }],
+  };
+  const allocation = allocateWholeShareOrders(1_050, weights, data);
+  assert.equal(allocation.budget, 1_050);
+  assert.ok(allocation.orders.every((order) => Number.isInteger(order.shares)));
+  assert.ok(allocation.investedAmount <= 1_050);
+  assert.equal(Math.round((allocation.investedAmount + allocation.cashRemaining) * 100), 105_000);
 });
 
 test("current option structure does not become an order until account cash and concentration also pass", () => {

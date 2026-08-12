@@ -212,6 +212,140 @@ export function allocateDollarOrders(totalDollars, weights) {
   return weights.map((item, index) => ({ ...item, amount: cents[index] / 100 }));
 }
 
+const WHOLE_SHARE_PROXY = {
+  SPY: "SPYM",
+};
+
+function wholeShareAssetMap(data) {
+  return new Map([...(data?.assets ?? []), ...(data?.executionAssets ?? [])].map((asset) => [asset.ticker, asset]));
+}
+
+export function allocateWholeShareOrders(totalDollars, weights, data, options = {}) {
+  const budget = Math.max(0, round(Number(totalDollars) || 0));
+  const cashBuffer = Math.min(budget, Math.max(0, round(Number(options.cashBuffer) || 0)));
+  const spendableBudget = round(budget - cashBuffer);
+  const assetMap = wholeShareAssetMap(data);
+  const targets = new Map();
+  const deferred = [];
+  const blocked = [];
+  let reserveRedirect = 0;
+
+  for (const item of weights) {
+    const executionTicker = WHOLE_SHARE_PROXY[item.ticker] ?? item.ticker;
+    const asset = assetMap.get(executionTicker);
+    const targetAmount = spendableBudget * item.weight;
+    const price = Number(asset?.price);
+    const validPrice = Number.isFinite(price) && price > 0;
+    if (!validPrice) {
+      blocked.push({ ticker: item.ticker, executionTicker, reason: "缺少有效执行价格" });
+      deferred.push({
+        ticker: item.ticker,
+        executionTicker,
+        role: item.role,
+        targetAmount: round(targetAmount),
+        price: null,
+        reason: "缺少可执行价格，本次保留现金",
+      });
+      continue;
+    }
+    if (item.ticker !== "SGOV" && targetAmount + 0.005 < price) {
+      reserveRedirect += targetAmount;
+      deferred.push({
+        ticker: item.ticker,
+        executionTicker,
+        role: item.role,
+        targetAmount: round(targetAmount),
+        price: validPrice ? price : null,
+        reason: "目标金额不足一股，暂时并入 SGOV",
+      });
+      continue;
+    }
+    const current = targets.get(executionTicker) ?? {
+      ...item,
+      ticker: executionTicker,
+      sourceTicker: item.ticker,
+      proxyFor: executionTicker === item.ticker ? null : item.ticker,
+      symbol: asset?.symbol ?? `${executionTicker}.US`,
+      name: asset?.name ?? item.name,
+      price: validPrice ? price : null,
+      targetAmount: 0,
+      targetWeight: 0,
+    };
+    current.targetAmount += targetAmount;
+    current.targetWeight += item.weight;
+    targets.set(executionTicker, current);
+  }
+
+  const reserve = targets.get("SGOV");
+  if (reserve) {
+    reserve.targetAmount += reserveRedirect;
+    reserve.targetWeight += spendableBudget > 0 ? reserveRedirect / spendableBudget : 0;
+  } else if (reserveRedirect > 0) {
+    const asset = assetMap.get("SGOV");
+    const price = Number(asset?.price);
+    targets.set("SGOV", {
+      ticker: "SGOV",
+      sourceTicker: "SGOV",
+      proxyFor: null,
+      symbol: asset?.symbol ?? "SGOV.US",
+      name: asset?.name ?? "iShares 0-3 Month Treasury Bond ETF",
+      role: "现金/整数股等待区",
+      weight: spendableBudget > 0 ? reserveRedirect / spendableBudget : 0,
+      targetWeight: spendableBudget > 0 ? reserveRedirect / spendableBudget : 0,
+      targetAmount: reserveRedirect,
+      price: Number.isFinite(price) && price > 0 ? price : null,
+    });
+  }
+
+  const candidates = [...targets.values()]
+    .filter((item) => Number.isFinite(item.price) && item.price > 0 && item.targetAmount > 0)
+    .map((item) => ({ ...item, shares: Math.max(0, Math.round(item.targetAmount / item.price)) }));
+  const cost = (rows) => rows.reduce((sum, item) => sum + item.shares * item.price, 0);
+  const trackingError = (item, shares = item.shares) => Math.abs(shares * item.price - item.targetAmount);
+
+  while (cost(candidates) > spendableBudget + 0.005) {
+    const removable = candidates.filter((item) => item.shares > 0).sort((left, right) => {
+      const leftPenalty = trackingError(left, left.shares - 1) - trackingError(left);
+      const rightPenalty = trackingError(right, right.shares - 1) - trackingError(right);
+      return leftPenalty - rightPenalty || right.price - left.price || left.ticker.localeCompare(right.ticker);
+    });
+    if (!removable.length) break;
+    removable[0].shares -= 1;
+  }
+
+  let remaining = spendableBudget - cost(candidates);
+  while (remaining > 0.005) {
+    const additions = candidates.filter((item) => item.price <= remaining + 0.005).map((item) => ({
+      item,
+      improvement: trackingError(item) - trackingError(item, item.shares + 1),
+    })).filter((row) => row.improvement > 0.005)
+      .sort((left, right) => right.improvement - left.improvement || left.item.price - right.item.price || left.item.ticker.localeCompare(right.item.ticker));
+    if (!additions.length) break;
+    additions[0].item.shares += 1;
+    remaining -= additions[0].item.price;
+  }
+
+  const orders = candidates.filter((item) => item.shares > 0).map((item) => ({
+    ...item,
+    targetAmount: round(item.targetAmount),
+    targetWeight: round(item.targetWeight, 6),
+    estimatedCost: round(item.shares * item.price),
+    amount: round(item.shares * item.price),
+  }));
+  const investedAmount = round(orders.reduce((sum, item) => sum + item.estimatedCost, 0));
+  return {
+    budget,
+    spendableBudget,
+    cashBuffer,
+    orders,
+    investedAmount,
+    cashRemaining: round(Math.max(0, budget - investedAmount)),
+    deferred,
+    blocked,
+    deferredTargetAmount: round(deferred.reduce((sum, item) => sum + item.targetAmount, 0)),
+  };
+}
+
 export function evaluateLivePut(optionRow, assets, accountValue, isolatedCash) {
   const put = optionRow?.put;
   if (!put) return { eligible: false, reasons: ["缺少 Put 快照"], concentration: null, reserveGap: null };
@@ -259,6 +393,51 @@ export function portfolioContributionPlan(input, data) {
     stage,
     weights,
     orders,
+    projectedOptionReserve,
+    optionReviews,
+    executablePut,
+  };
+}
+
+export function wholeShareContributionPlan(input, data) {
+  const accountValue = Math.max(0, Number(input.accountValue) || 0);
+  const weeklyContribution = Math.max(0, Number(input.weeklyContribution) || 0);
+  const carryCash = Math.max(0, Number(input.carryCash) || 0);
+  const cashBuffer = input.cashBuffer === undefined ? 15 : Math.max(0, Number(input.cashBuffer) || 0);
+  const optionReserve = Math.max(0, Number(input.optionReserve) || 0);
+  const postDepositValue = accountValue + weeklyContribution;
+  const weights = dynamicPortfolioWeights(data.portfolio, postDepositValue);
+  const allocation = allocateWholeShareOrders(weeklyContribution + carryCash, weights, data, { cashBuffer });
+  const baseStage = accountStage(postDepositValue);
+  const stage = baseStage.id === "accumulate"
+    ? { ...baseStage, detail: "整股核心优先；不足一股的小额目标先停泊在 SGOV，剩余现金滚入下次。" }
+    : { ...baseStage, detail: `${baseStage.detail} 整股版只输出完整股数。` };
+  const reserveOrder = allocation.orders.find((item) => item.ticker === "SGOV")?.estimatedCost ?? 0;
+  const strategicReserveTarget = allocation.spendableBudget * (weights.find((item) => item.ticker === "SGOV")?.weight ?? 0);
+  const projectedOptionReserve = optionReserve + Math.min(reserveOrder, strategicReserveTarget);
+  const optionReviews = (data.options ?? []).map((row) => ({
+    ...row,
+    accountEvaluation: evaluateLivePut(row, data.assets, postDepositValue, projectedOptionReserve),
+  }));
+  const executablePut = optionReviews.find((row) => row.accountEvaluation.eligible) ?? null;
+  return {
+    accountValue,
+    weeklyContribution,
+    carryCash,
+    optionReserve,
+    postDepositValue,
+    stage,
+    weights,
+    wholeShareMode: true,
+    budget: allocation.budget,
+    spendableBudget: allocation.spendableBudget,
+    cashBuffer: allocation.cashBuffer,
+    orders: allocation.orders,
+    investedAmount: allocation.investedAmount,
+    cashRemaining: allocation.cashRemaining,
+    deferred: allocation.deferred,
+    blocked: allocation.blocked,
+    deferredTargetAmount: allocation.deferredTargetAmount,
     projectedOptionReserve,
     optionReviews,
     executablePut,

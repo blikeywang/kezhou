@@ -8,7 +8,7 @@ node --test portal/test_incomeos_engine.mjs
 python3 -m unittest portal.test_portal
 ```
 
-The refresh scans 71 assets, selects the current investable Top 50, builds the constrained portfolio, enriches the highest-ranked and benchmark assets with 28–49 DTE Call/Put data, then upserts that Friday's model action sheet into `operation-history.json`.
+The refresh scans 71 assets, selects the current investable Top 50, builds the constrained portfolio, refreshes the SPYM whole-share execution proxy, enriches the highest-ranked and benchmark assets with 28–49 DTE Call/Put data, then upserts that day's model action sheet into `operation-history.json`.
 
 It requires an authenticated local Longbridge CLI session. Credentials are never written into the repository or the published site. GitHub Actions therefore validates and deploys the committed snapshot but does not fetch private Longbridge data itself.
 
