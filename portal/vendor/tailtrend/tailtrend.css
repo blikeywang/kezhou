@@ -179,6 +179,10 @@ body.tailtrend {
 .tt-risk-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 20px; border: 1px solid var(--tt-line); border-radius: 15px; background: rgba(13, 25, 23, .72); }
 .tt-risk-form label { min-width: 0; }
 .tt-risk-form .tt-button { align-self: end; }
+.tt-config-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-column: span 2; align-self: end; }
+.tt-config-import { position: relative; overflow: hidden; }
+.tt-config-import input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+#riskConfigStatus { grid-column: 1 / -1; margin-top: -5px; }
 .tt-risk-output { min-height: 390px; padding: 20px; border: 1px solid rgba(101,230,189,.25); border-radius: 15px; background: linear-gradient(145deg, rgba(17, 36, 31, .92), rgba(8, 18, 17, .98)); }
 .tt-risk-verdict { display: flex; justify-content: space-between; gap: 18px; align-items: start; }
 .tt-risk-verdict span { color: var(--tt-muted); font-size: 9px; }
@@ -198,6 +202,7 @@ body.tailtrend {
 .tt-file input { padding: 9px; font-size: 10px; }
 .tt-alert { padding: 11px 13px; border: 1px solid var(--tt-line); border-radius: 9px; color: var(--tt-muted); background: rgba(13, 25, 23, .58); font-size: 10px; }
 .tt-alert.error { margin-top: 12px; color: #ffd1d2; border-color: rgba(244,127,131,.35); background: rgba(244,127,131,.06); }
+.tt-noscript { margin-bottom: 12px; color: #ffe3ad; border-color: rgba(243,197,107,.4); }
 .tt-import-result { min-height: 260px; padding: 19px; border: 1px solid var(--tt-line); border-radius: 14px; background: rgba(13, 25, 23, .72); }
 
 .tt-method-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 25px; }
@@ -254,6 +259,7 @@ body.tailtrend {
   .tt-health > div:nth-child(n+3) { border-top: 1px solid var(--tt-line); }
   .tt-health > div:last-child { grid-column: 1 / -1; }
   .tt-cadence, .tt-method-grid, .tt-risk-form, .tt-import-controls { grid-template-columns: 1fr; }
+  .tt-config-actions { grid-column: auto; grid-template-columns: 1fr; }
   .tt-audit-summary { grid-template-columns: 1fr 1fr; }
   .tt-fast-lane { grid-template-columns: 1fr; }
   .tt-footer { display: grid; }

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import html as html_module
 import json
 import re
 import shutil
@@ -116,6 +117,48 @@ def _prepare_incomeos_whole(output: Path) -> None:
     page.write_text(html, encoding="utf-8")
 
 
+def _prepare_tailtrend(output: Path) -> None:
+    target = output / "tailtrend"
+    data = target / "data"
+    snapshot_path = data / "latest.json"
+    if not snapshot_path.exists():
+        snapshot_path = data / "tailtrend-snapshot.json"
+    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
+    rows = []
+    for record in snapshot.get("records", []):
+        escape = lambda value: html_module.escape(str(value if value is not None else "—"), quote=True)
+        position = record.get("rangePositionPct")
+        position_label = f"{position:.1f}%" if isinstance(position, (int, float)) else "—"
+        atr = record.get("atrPct")
+        atr_label = f"{atr:.2f}%" if isinstance(atr, (int, float)) else "—"
+        hv = record.get("hvPercentile")
+        hv_label = f"p{hv:.0f}" if isinstance(hv, (int, float)) else "—"
+        blocker = (record.get("blockers") or [""])[0]
+        rows.append(
+            '<tr data-static-fallback="true">'
+            f'<td data-label="标的"><div class="tt-symbol"><strong>{escape(record.get("ticker"))}</strong><small>{escape(record.get("name"))}</small></div></td>'
+            f'<td data-label="状态"><span class="tt-state tone-muted">{escape(record.get("label"))}</span><small class="tt-cell-sub">复核优先级 {escape(record.get("priority"))}</small></td>'
+            f'<td data-label="位置"><small class="tt-cell-sub">60日区间 {escape(position_label)}</small></td>'
+            f'<td data-label="周线 / 波动"><b>{escape(record.get("weeklyRegime"))}</b><small class="tt-cell-sub">ATR {escape(atr_label)} · HV {escape(hv_label)}</small></td>'
+            f'<td data-label="动作" class="tt-action">{escape(record.get("action"))}<small class="tt-cell-sub">{escape(blocker)}</small></td>'
+            f'<td data-label="数据"><span class="tt-fresh">{escape(record.get("dataStatus"))}</span><small class="tt-cell-sub">{escape(record.get("tradingDate"))}</small></td>'
+            '</tr>'
+        )
+    page = target / "index.html"
+    page_html = page.read_text(encoding="utf-8")
+    anchor = '<tbody id="scannerRows"><tr><td colspan="6" class="tt-empty">正在读取派生快照…</td></tr></tbody>'
+    if anchor not in page_html:
+        raise ValueError("TailTrend static fallback table anchor missing")
+    page_html = page_html.replace(anchor, f'<tbody id="scannerRows">{"".join(rows)}</tbody>')
+    notice_anchor = '<div class="tt-board">'
+    notice = (
+        '<noscript><div class="tt-alert tt-noscript">JavaScript 未运行：以下是构建时冻结的只读日线快照；'
+        '仓位计算、本地导入和交互筛选已停用。</div></noscript>'
+    )
+    page_html = page_html.replace(notice_anchor, notice + notice_anchor, 1)
+    page.write_text(page_html, encoding="utf-8")
+
+
 def build(output: Path) -> dict:
     if output.exists():
         shutil.rmtree(output)
@@ -147,6 +190,7 @@ def build(output: Path) -> dict:
     # TailTrend Lab publishes only derived daily-close states. Raw bars,
     # account inputs and broker credentials never enter the static bundle.
     shutil.copytree(PORTAL / "vendor" / "tailtrend", output / "tailtrend")
+    _prepare_tailtrend(output)
 
     for html in output.rglob("*.html"):
         _inject_shell(html, output)

@@ -12,13 +12,21 @@ import {
   normalizeBars,
   summarizeSnapshot,
   updateAuditLedger,
+  volatilityMultiplier,
 } from "../../portal/vendor/tailtrend/tailtrend-engine.mjs";
+import {
+  persistDailySnapshots,
+  readJson,
+  sha256Json,
+} from "./snapshot-store.mjs";
 
 const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
 const dataDir = resolve(projectDir, "portal/vendor/tailtrend/data");
 const snapshotPath = resolve(dataDir, "tailtrend-snapshot.json");
+const latestPath = resolve(dataDir, "latest.json");
+const indexPath = resolve(dataDir, "index.json");
 const historyPath = resolve(dataDir, "run-history.json");
 const auditPath = resolve(dataDir, "tailtrend-audit.json");
 const universePath = resolve(scriptDir, "universe.json");
@@ -40,20 +48,57 @@ function addDays(dateText, days) {
   return date.toISOString().slice(0, 10);
 }
 
-async function readJson(path, fallback) {
-  try {
-    return JSON.parse(await readFile(path, "utf8"));
-  } catch (error) {
-    if (error?.code === "ENOENT") return fallback;
-    throw error;
-  }
-}
-
 function errorText(error) {
   const source = error?.stderr || error?.stdout || error?.message || String(error);
   return String(source).split("\n").find((line) => line.trim().startsWith("Error:"))
     ?? String(source).split("\n").find(Boolean)
     ?? "unknown Longbridge error";
+}
+
+async function buildMetadata(universe) {
+  const enginePath = resolve(projectDir, "portal/vendor/tailtrend/tailtrend-engine.mjs");
+  const engineSource = await readFile(enginePath, "utf8");
+  let gitCommit = "UNKNOWN";
+  let engineDirty = true;
+  try {
+    const commit = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: projectDir });
+    const status = await execFileAsync("git", ["status", "--porcelain", "--untracked-files=no"], { cwd: projectDir });
+    gitCommit = commit.stdout.trim();
+    engineDirty = Boolean(status.stdout.trim());
+  } catch (error) {
+    console.warn(`git metadata unavailable: ${errorText(error)}`);
+  }
+  return {
+    engineVersion: gitCommit,
+    engineDirty,
+    engineSourceHash: sha256Json(engineSource),
+    paramsHash: sha256Json({ config: TAILTREND_CONFIG, universe }),
+  };
+}
+
+function weeklyRiskMultiplier(module, weekly) {
+  if (module === "pure_trend" && weekly !== "UP") return 0;
+  if (module === "tail_core" && weekly === "DOWN") return 0.5;
+  if (module === "us_short" && weekly === "UP") return 0.5;
+  return 1;
+}
+
+function publicRiskFactors(record) {
+  const module = record.candidateModule ?? record.riskModule;
+  const mHv = volatilityMultiplier(record.hvPercentile);
+  const mWeekly = weeklyRiskMultiplier(module, record.weeklyRegime);
+  return {
+    mDrawdown: null,
+    mHv,
+    mWeekly,
+    groupAWithoutAccount: Math.min(mHv, mWeekly),
+    headroomPortfolioPct: null,
+    headroomClusterPct: null,
+    headroomLiquidityPct: null,
+    circuitBreaker: null,
+    finalRiskPct: null,
+    bindingConstraint: "ACCOUNT_INPUT_REQUIRED",
+  };
 }
 
 async function longbridge(args, timeout = 75_000) {
@@ -146,13 +191,17 @@ function staleRecord(previous, error, today) {
 
 const universe = await readJson(universePath, null);
 if (!universe?.symbols?.length) throw new Error("TailTrend universe is empty");
-const previous = await readJson(snapshotPath, { records: [] });
+const legacyPrevious = await readJson(snapshotPath, { records: [] });
+const previous = await readJson(latestPath, legacyPrevious);
+const snapshotIndex = await readJson(indexPath, { schema: "traderhome_tailtrend_snapshot_index_v1", entries: [] });
 const previousBySymbol = new Map((previous.records ?? []).map((row) => [row.symbol, row]));
+const build = await buildMetadata(universe);
+const runAt = new Date().toISOString();
 const todayEt = dateInZone("America/New_York");
 const calendarEnd = addDays(todayEt, 21);
 const symbols = universe.symbols.map((item) => item.symbol);
 
-console.log(`TailTrend daily-close scan: ${symbols.length} symbols`);
+console.log(`TailTrend daily-close scan: ${symbols.length} symbols engine=${build.engineVersion.slice(0, 12)} dirty=${build.engineDirty}`);
 
 let staticRows = [];
 try {
@@ -188,14 +237,17 @@ const outcomes = await pooled(universe.symbols, 4, async (item) => {
       "--adjust", "forward",
       "--session", "intraday",
     ], 90_000);
-    const lastDate = Array.isArray(rows) && rows.length ? String(rows.at(-1).time).slice(0, 10) : todayEt;
+    const normalized = normalizeBars(rows);
+    const lastDate = normalized.at(-1)?.date ?? todayEt;
     const event = nearestUpcoming(events, item.symbol, lastDate, calendarEnd);
     const metadata = staticBySymbol.get(item.symbol) ?? {};
+    const previousState = previousBySymbol.get(item.symbol);
     const record = analyzeBars(rows, {
       ...item,
       name: metadata.name_cn ?? metadata.name_en ?? metadata.name ?? item.name,
       eventDate: event?.date ?? null,
       dataStatus: "FRESH",
+      previousState: previousState?.tradingDate < lastDate ? previousState : null,
     });
     completed += 1;
     console.log(`${String(completed).padStart(2, "0")}/${symbols.length} ${item.symbol} ${record.state}`);
@@ -204,17 +256,23 @@ const outcomes = await pooled(universe.symbols, 4, async (item) => {
         ...record,
         role: item.role ?? "research",
         event: event ? { date: event.date, timing: event.timing, label: event.label } : null,
-        refreshedAt: new Date().toISOString(),
+        refreshedAt: runAt,
         source: "Longbridge Securities",
       },
-      auditBars: normalizeBars(rows).slice(-20),
+      auditBars: normalized.slice(-20),
+      calendarDates: normalized.map((bar) => bar.date),
       error: null,
     };
   } catch (error) {
     const message = errorText(error);
     completed += 1;
     console.warn(`${String(completed).padStart(2, "0")}/${symbols.length} ${item.symbol} ERROR ${message}`);
-    return { record: staleRecord(previousBySymbol.get(item.symbol), message, todayEt), auditBars: [], error: `${item.symbol}: ${message}` };
+    return {
+      record: staleRecord(previousBySymbol.get(item.symbol), message, todayEt),
+      auditBars: [],
+      calendarDates: [],
+      error: `${item.symbol}: ${message}`,
+    };
   }
 });
 
@@ -234,25 +292,36 @@ records.sort((left, right) => order.indexOf(left.bucket) - order.indexOf(right.b
   || right.priority - left.priority || left.symbol.localeCompare(right.symbol));
 
 const tradingDate = records.map((row) => row.tradingDate).filter(Boolean).sort().at(-1) ?? todayEt;
-const runHistory = await readJson(historyPath, { schema: "traderhome_tailtrend_run_history_v2", records: [] });
-const priorRun = (runHistory.records ?? [])
-  .filter((item) => item.tradingDate < tradingDate && Array.isArray(item.symbols))
-  .sort((left, right) => right.tradingDate.localeCompare(left.tradingDate))[0] ?? null;
-const comparisonRows = priorRun?.symbols
-  ?? (previous.tradingDate && previous.tradingDate < tradingDate ? previous.records ?? [] : []);
-const comparisonDate = priorRun?.tradingDate
-  ?? (previous.tradingDate && previous.tradingDate < tradingDate ? previous.tradingDate : null);
+const priorEntry = (snapshotIndex.entries ?? [])
+  .filter((item) => item.status === "COMPLETE" && item.dataAsOf < tradingDate)
+  .sort((left, right) => right.dataAsOf.localeCompare(left.dataAsOf))[0] ?? null;
+const priorSnapshot = priorEntry
+  ? await readJson(resolve(dataDir, priorEntry.file), null)
+  : previous.tradingDate && previous.tradingDate < tradingDate ? previous : null;
+const comparisonRows = priorSnapshot?.records ?? [];
+const comparisonDate = priorSnapshot?.dataAsOf ?? priorSnapshot?.tradingDate ?? null;
 const comparisonBySymbol = new Map(comparisonRows.map((row) => [row.symbol, row]));
 records = records.map((record) => {
   const prior = comparisonBySymbol.get(record.symbol);
+  const transitionReason = [...(record.stateReason ?? [])];
+  const isCurrent = record.tradingDate === tradingDate;
+  const blockers = isCurrent ? record.blockers : [...new Set([...(record.blockers ?? []), `该标的最近完整日线为 ${record.tradingDate}`])];
   return {
     ...record,
+    dataStatus: isCurrent ? record.dataStatus : "STALE",
+    newPositionAllowed: isCurrent ? record.newPositionAllowed : false,
+    riskModule: isCurrent ? record.riskModule : null,
+    blockers,
+    prevState: prior?.state ?? null,
+    previousObservationDate: comparisonDate,
+    transitionReason,
+    riskFactors: publicRiskFactors(record),
     change: {
       comparisonDate,
       from: prior?.state ?? null,
       to: record.state,
       changed: Boolean(prior && prior.state !== record.state),
-      reason: (record.stateReason ?? []).join("；") || record.action,
+      reason: transitionReason.join("；") || record.action,
     },
   };
 });
@@ -264,13 +333,28 @@ const transitions = records.flatMap((record) => record.change.changed ? [{
   reason: record.change.reason,
 }] : []);
 const summary = summarizeSnapshot(records);
+const missingSymbols = symbols.filter((symbol) => !records.some((record) => record.symbol === symbol));
+const health = {
+  fresh: records.filter((row) => row.dataStatus === "FRESH").length,
+  cached: records.filter((row) => row.dataStatus === "CACHED").length,
+  stale: records.filter((row) => row.dataStatus === "STALE").length,
+  error: errors.length,
+  missing: missingSymbols,
+  errors,
+};
 const snapshot = {
   schema: TAILTREND_CONFIG.schema,
-  version: 2,
+  version: 3,
   frameworkVersion: TAILTREND_CONFIG.version,
-  asOf: new Date().toISOString(),
+  dataAsOf: tradingDate,
   tradingDate,
-  mode: errors.length ? "partial" : "complete",
+  runAt,
+  asOf: runAt,
+  engineVersion: build.engineVersion,
+  engineDirty: build.engineDirty,
+  engineSourceHash: build.engineSourceHash,
+  paramsHash: build.paramsHash,
+  mode: errors.length || records.length !== symbols.length ? "partial" : "complete",
   source: "Longbridge Securities",
   sourceMethod: "daily OHLCV · forward adjusted · regular session · 360 bars",
   signalTimeframe: "daily_close",
@@ -279,14 +363,16 @@ const snapshot = {
     description: universe.description,
     requested: symbols.length,
     published: records.length,
+    symbols,
   },
   summary,
   transitions,
+  health,
   dataQuality: {
-    fresh: records.filter((row) => row.dataStatus === "FRESH").length,
-    cached: records.filter((row) => row.dataStatus === "CACHED").length,
-    stale: records.filter((row) => row.dataStatus === "STALE").length,
-    missing: symbols.length - records.length,
+    fresh: health.fresh,
+    cached: health.cached,
+    stale: health.stale,
+    missing: health.missing.length,
     errors,
   },
   privacy: {
@@ -300,47 +386,37 @@ const snapshot = {
   disclaimer: "研究影子运行，不是投资建议，不自动下单。状态与参数尚未完成样本外验证。",
 };
 
-runHistory.schema = "traderhome_tailtrend_run_history_v2";
-runHistory.version = 2;
-runHistory.frameworkVersion = TAILTREND_CONFIG.version;
-runHistory.records = [
-  {
-    asOf: snapshot.asOf,
-    tradingDate,
-    mode: snapshot.mode,
-    summary,
-    dataQuality: snapshot.dataQuality,
-    transitions,
-    symbols: records.map((record) => ({
-      symbol: record.symbol,
-      state: record.state,
-      bucket: record.bucket,
-      priority: record.priority,
-      priorityBreakdown: record.priorityBreakdown,
-      dataStatus: record.dataStatus,
-      newPositionAllowed: record.newPositionAllowed,
-      stateReason: record.stateReason,
-      nextCondition: record.nextCondition,
-      blockers: record.blockers,
-    })),
-  },
-  ...(runHistory.records ?? []).filter((item) => item.tradingDate !== tradingDate),
-].slice(0, 90);
+const calendarDates = [...new Set(outcomes.flatMap((item) => item.calendarDates ?? []))].sort();
+const stored = await persistDailySnapshots({ dataDir, snapshot, calendarDates });
+const officialRecords = stored.persistedSnapshot?.status === "COMPLETE" ? stored.persistedSnapshot.records ?? [] : [];
+const runHistory = {
+  schema: "traderhome_tailtrend_run_history_v3",
+  version: 3,
+  frameworkVersion: TAILTREND_CONFIG.version,
+  records: stored.index.entries.map((entry) => ({
+    asOf: entry.runAt,
+    tradingDate: entry.dataAsOf,
+    mode: entry.status.toLowerCase(),
+    summary: entry.summary,
+    dataQuality: entry.health,
+    transitions: entry.transitions,
+  })),
+};
 
 const previousAudit = await readJson(auditPath, { schema: "traderhome_tailtrend_audit_v1", entries: [] });
 const auditBars = new Map(outcomes
   .filter((item) => item.record?.symbol && item.auditBars?.length)
   .map((item) => [item.record.symbol, item.auditBars]));
-const auditLedger = updateAuditLedger(previousAudit, records, auditBars, {
-  retentionDays: 30,
-  updatedAt: snapshot.asOf,
+const auditLedger = updateAuditLedger(previousAudit, officialRecords, auditBars, {
+  updatedAt: runAt,
+  epochId: `${TAILTREND_CONFIG.version}:${build.engineSourceHash.slice(0, 12)}:${build.paramsHash.slice(0, 12)}`,
 });
 
 await mkdir(dataDir, { recursive: true });
-await writeFile(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
 await writeFile(historyPath, `${JSON.stringify(runHistory, null, 2)}\n`, "utf8");
 await writeFile(auditPath, `${JSON.stringify(auditLedger, null, 2)}\n`, "utf8");
-console.log(`wrote ${snapshotPath}`);
+console.log(`${stored.created ? "froze" : "kept"} snapshots/${tradingDate}.json status=${stored.persistedSnapshot.status}`);
+if (stored.generatedMissing.length) console.log(`recorded missing sessions=${stored.generatedMissing.join(",")}`);
 console.log(`auditDays=${auditLedger.daysCollected} auditEntries=${auditLedger.entries.length}`);
-console.log(`fresh=${snapshot.dataQuality.fresh} cached=${snapshot.dataQuality.cached} stale=${snapshot.dataQuality.stale} errors=${errors.length}`);
+console.log(`fresh=${health.fresh} cached=${health.cached} stale=${health.stale} errors=${errors.length}`);
 console.log(`buckets=${JSON.stringify(summary.bucketCounts)}`);

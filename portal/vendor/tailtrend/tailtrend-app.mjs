@@ -3,12 +3,14 @@ import {
   STATE_META,
   analyzeBars,
   calculateRiskPlan,
+  normalizeBars,
 } from "/tailtrend/tailtrend-engine.mjs";
 
 const $ = (selector) => document.querySelector(selector);
 const state = {
   snapshot: null,
   history: null,
+  index: null,
   audit: null,
   selected: null,
   filter: "ALL",
@@ -46,6 +48,18 @@ function weeklyLabel(value) {
   return ({ UP: "上升", DOWN: "下降", RANGE: "震荡", UNKNOWN: "未知" })[value] ?? value;
 }
 
+function bindingLabel(value) {
+  return ({
+    base: "袖套基准",
+    pressure_group: "压力环境组",
+    portfolio_headroom: "组合剩余额度",
+    cluster_headroom: "集群剩余额度",
+    liquidity: "流动性上限",
+    circuit_breaker: "当日行为熔断",
+    hard_gate: "状态 / 数据硬闸门",
+  })[value] ?? value ?? "—";
+}
+
 function dataClass(value) {
   return value === "FRESH" ? "" : value === "CACHED" ? "cached" : "stale";
 }
@@ -53,14 +67,21 @@ function dataClass(value) {
 function renderHeader() {
   const snapshot = state.snapshot;
   const quality = snapshot.dataQuality;
-  $("#snapshotMode").textContent = snapshot.mode === "complete" ? "完整日线快照" : "部分数据降级";
-  $("#snapshotDate").textContent = `截至 ${snapshot.tradingDate}`;
+  const newest = state.index?.entries?.[0];
+  $("#snapshotMode").textContent = newest?.status === "MISSING"
+    ? `缺少 ${newest.dataAsOf} · 已禁新仓`
+    : snapshot.mode === "complete" ? "完整日线快照" : "部分数据降级";
+  $("#snapshotDate").textContent = newest?.status === "MISSING"
+    ? `最近完整 ${snapshot.tradingDate}`
+    : `截至 ${snapshot.tradingDate}`;
   $("#metricUniverse").textContent = snapshot.universe.published;
   const edgeBuckets = ["TAIL_RECLAIM_WATCH", "BREAKOUT_CANDIDATE_WATCH", "TREND_ACCEPTED_WATCH", "BREAKOUT_FAILURE_WATCH", "BREAKDOWN_RISK", "EVENT_QUARANTINE"];
   $("#metricEdges").textContent = snapshot.records.filter((row) => edgeBuckets.includes(row.bucket)).length;
   $("#metricMiddle").textContent = snapshot.summary.bucketCounts.NO_TRADE_MIDDLE ?? 0;
   $("#metricFresh").textContent = `${quality.fresh}/${snapshot.universe.requested}`;
-  $("#metricQuality").textContent = quality.errors.length ? `${quality.errors.length} 项失败，已禁止缓存触发新仓` : "全部 Fresh · 无缺失";
+  $("#metricQuality").textContent = newest?.status === "MISSING"
+    ? `${newest.dataAsOf} 已写入 MISSING，不沿用旧信号`
+    : quality.errors.length ? `${quality.errors.length} 项失败，已禁止缓存触发新仓` : "全部 Fresh · 无缺失";
   $("#metricTransitions").textContent = snapshot.transitions.length;
 }
 
@@ -112,6 +133,7 @@ function renderRows() {
 
 function managementRows(record) {
   const rows = [];
+  if (record.signalBoundary?.boundary) rows.push(`本状态冻结边界：${money(record.signalBoundary.boundary)}${record.signalBoundary.atrAtLock ? ` · 锁定 ATR ${money(record.signalBoundary.atrAtLock)}` : ""}`);
   if (record.management?.entryReference) rows.push(`参考入场：${money(record.management.entryReference)}`);
   if (record.management?.hardStop) rows.push(`硬失效：${money(record.management.hardStop)}`);
   if (record.management?.firstZone) rows.push(`第一管理区：${money(record.management.firstZone)}`);
@@ -119,6 +141,8 @@ function managementRows(record) {
   if (record.management?.trailingExit) rows.push(`10日低点：${money(record.management.trailingExit)}`);
   if (record.management?.exitMethod) rows.push(record.management.exitMethod);
   if (record.event) rows.push(`事件：${record.event.date} · ${record.event.label}${record.event.timing ? ` · ${record.event.timing}` : ""}`);
+  if (record.eventRiskPolicy) rows.push(`已知事件进入 ${record.eventRiskPolicy.appliesWithinCalendarDays} 日风险窗口：跳空准备金基准放大至 ${record.eventRiskPolicy.gapReserveMultiplier}×`);
+  if (record.holdingRule?.action) rows.push(`持仓侧：${record.holdingRule.action}`);
   return rows;
 }
 
@@ -167,6 +191,8 @@ function detailMarkup(record, compact = false) {
       <div><span>HV20 百分位</span><b>p${number(record.hvPercentile, 0)}</b></div>
       <div><span>量比 / 20日</span><b>${number(record.volumeRatio, 2)}×</b></div>
       <div><span>平均成交额</span><b>${money(record.averageTurnover20, 0)}</b></div>
+      <div><span>ATR 尾部对照 · 仅影子</span><b>${escapeHtml(STATE_META[record.comparisonStates?.atr]?.label ?? "—")}</b></div>
+      <div><span>边界记忆</span><b>${record.locked?.lockedAt ? `${escapeHtml(record.locked.lockedAt)} · ${escapeHtml(record.locked.lockedBy)}` : "无活动锁"}</b></div>
     </div>
     <div class="tt-detail__plan"><h4>预先写下的管理方式</h4><ul>${managementRows(record).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
     <div class="tt-detail__plan"><h4>阻断 / 复核</h4><ul>${blockers.map((item) => `<li class="${record.blockers?.length ? "tt-blocker" : ""}">${escapeHtml(item)}</li>`).join("")}</ul></div>
@@ -204,7 +230,8 @@ function populateRisk(record) {
   $("#riskModule").value = chosenModule(record);
   $("#riskEntry").value = Number.isFinite(record.management?.entryReference) ? record.management.entryReference : "";
   $("#riskStop").value = Number.isFinite(record.management?.hardStop) ? record.management.hardStop : "";
-  $("#riskGap").value = Number.isFinite(record.atr) ? Math.max(0, record.atr * 0.25).toFixed(2) : 0;
+  const eventMultiplier = record.eventRiskPolicy?.gapReserveMultiplier ?? 1;
+  $("#riskGap").value = Number.isFinite(record.atr) ? Math.max(0, record.atr * 0.25 * eventMultiplier).toFixed(2) : 0;
   calculateAndRenderRisk();
 }
 
@@ -213,6 +240,55 @@ function formNumber(selector) {
   if (raw.trim() === "") return null;
   const value = Number(raw);
   return Number.isFinite(value) ? value : null;
+}
+
+const RISK_CONFIG_FIELDS = [
+  "riskEquity",
+  "riskSlippage",
+  "riskDrawdown",
+  "riskHeat",
+  "riskCluster",
+  "riskStops",
+  "riskDailyLoss",
+];
+
+function exportRiskConfig() {
+  const config = {
+    schema: "traderhome_tailtrend_local_risk_config_v1",
+    exportedAt: new Date().toISOString(),
+    values: Object.fromEntries(RISK_CONFIG_FIELDS.map((id) => [id, $("#" + id).value])),
+  };
+  const blob = new Blob([`${JSON.stringify(config, null, 2)}\n`], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = "tailtrend-risk-config.json";
+  anchor.click();
+  URL.revokeObjectURL(url);
+  $("#riskConfigStatus").textContent = "配置已导出到本地文件；未写入浏览器存储。";
+}
+
+async function importRiskConfig(file) {
+  if (!file) return;
+  const status = $("#riskConfigStatus");
+  try {
+    if (file.size > 100 * 1024) throw new Error("配置文件超过 100 KB 上限");
+    const config = JSON.parse(await file.text());
+    if (config?.schema !== "traderhome_tailtrend_local_risk_config_v1") throw new Error("配置 schema 不匹配");
+    for (const id of RISK_CONFIG_FIELDS) {
+      const raw = config.values?.[id];
+      if (raw === undefined) continue;
+      const value = Number(raw);
+      if (!Number.isFinite(value) || value < 0) throw new Error(`${id} 不是有效非负数`);
+      $("#" + id).value = String(value);
+    }
+    status.textContent = "本地配置已导入；标的入场、止损与事件准备金仍由当前状态重新带入。";
+    calculateAndRenderRisk();
+  } catch (error) {
+    status.textContent = `配置导入失败：${error instanceof Error ? error.message : String(error)}`;
+  } finally {
+    $("#riskConfigFile").value = "";
+  }
 }
 
 function calculateAndRenderRisk() {
@@ -254,14 +330,15 @@ function calculateAndRenderRisk() {
       <div><span>本袖套账户风险</span><strong>${number(plan.tradeRiskPct, 3)}%</strong></div>
       <div><span>同想法趋势预留</span><strong>${number(plan.reservedRiskPct, 3)}%</strong></div>
       <div><span>估算仓位市值</span><strong>${money(plan.positionValue)}</strong></div>
-      <div><span>风险乘数</span><strong>${number(plan.multipliers.drawdown, 2)} × ${number(plan.multipliers.volatility, 2)} × ${number(plan.multipliers.weekly, 2)}</strong></div>
+      <div><span>压力组 · 取最严值</span><strong>min(${number(plan.multipliers.drawdown, 2)}, ${number(plan.multipliers.volatility, 2)}, ${number(plan.multipliers.weekly, 2)}) = ${number(plan.multipliers.pressureGroup, 2)}</strong></div>
+      <div><span>最终约束</span><strong>${escapeHtml(bindingLabel(plan.bindingConstraint))}</strong></div>
     </div>
     <div class="tt-risk-notes">${notes.length ? notes.map((item) => `<div class="tt-risk-note ${item.block ? "block" : ""}">${escapeHtml(item.text)}</div>`).join("") : '<div class="tt-risk-note">未触发账户级阻断；这不代表策略已有正期望。</div>'}</div>`;
 }
 
 function renderAudit() {
   const ledger = state.audit ?? { entries: [], daysCollected: 0 };
-  const entries = ledger.entries ?? [];
+  const entries = (ledger.entries ?? []).filter((entry) => !ledger.activeEpochId || entry.epochId === ledger.activeEpochId);
   const days = ledger.daysCollected ?? new Set(entries.map((entry) => entry.originDate)).size;
   const trackedSignals = entries.filter((entry) => entry.direction !== "OBSERVE").length;
   const nextReferences = entries.filter((entry) => Number.isFinite(entry.execution?.nextTradableReference)).length;
@@ -301,15 +378,20 @@ async function handleImport(file) {
   const status = $("#importStatus");
   if (!file) return;
   try {
+    if (file.size > 5 * 1024 * 1024) throw new Error("文件超过 5 MB 上限");
     const text = await file.text();
     const rows = file.name.toLowerCase().endsWith(".csv") ? parseCsv(text) : JSON.parse(text);
     const symbol = $("#importSymbol").value.trim().toUpperCase() || "CUSTOM.US";
-    const result = analyzeBars(Array.isArray(rows) ? rows : rows?.data ?? rows?.bars ?? [], {
+    const sourceRows = Array.isArray(rows) ? rows : rows?.data ?? rows?.bars ?? [];
+    const normalized = normalizeBars(sourceRows);
+    if (normalized.length < 90) throw new Error(`只有 ${normalized.length} 根有效日线；本地研究槽至少需要 90 根`);
+    const turnoverAvailable = normalized.slice(-20).some((row) => Number.isFinite(row.turnover) && row.turnover > 0);
+    const result = analyzeBars(normalized, {
       symbol,
       name: `${symbol} 本地导入`,
       dataStatus: "LOCAL",
     });
-    status.textContent = `已在浏览器内存读取 ${result.bars ?? 0} 根有效日线；文件未上传。`;
+    status.textContent = `已在浏览器内存读取 ${result.bars ?? 0} 根有效日线；文件未上传。${turnoverAvailable ? "" : " 缺 turnover：流动性闸门已停用，仓位结果会显示警告。"}`;
     $("#importResult").innerHTML = detailMarkup(result, true);
   } catch (error) {
     status.textContent = `无法解析文件：${error instanceof Error ? error.message : String(error)}`;
@@ -319,14 +401,22 @@ async function handleImport(file) {
 
 async function load() {
   try {
-    const [snapshotResponse, historyResponse, auditResponse] = await Promise.all([
-      fetch("/tailtrend/data/tailtrend-snapshot.json", { cache: "no-store", credentials: "omit" }),
-      fetch("/tailtrend/data/run-history.json", { cache: "no-store", credentials: "omit" }),
+    const [snapshotResponse, indexResponse, auditResponse] = await Promise.all([
+      fetch("/tailtrend/data/latest.json", { cache: "no-store", credentials: "omit" }),
+      fetch("/tailtrend/data/index.json", { cache: "no-store", credentials: "omit" }),
       fetch("/tailtrend/data/tailtrend-audit.json", { cache: "no-store", credentials: "omit" }),
     ]);
     if (!snapshotResponse.ok) throw new Error(`snapshot HTTP ${snapshotResponse.status}`);
     state.snapshot = await snapshotResponse.json();
-    state.history = historyResponse.ok ? await historyResponse.json() : { records: [] };
+    state.index = indexResponse.ok ? await indexResponse.json() : { entries: [] };
+    state.history = { records: (state.index.entries ?? []).map((entry) => ({
+      asOf: entry.runAt,
+      tradingDate: entry.dataAsOf,
+      mode: entry.status?.toLowerCase(),
+      summary: entry.summary,
+      dataQuality: entry.health,
+      transitions: entry.transitions ?? [],
+    })) };
     state.audit = auditResponse.ok ? await auditResponse.json() : { entries: [], daysCollected: 0 };
     if (state.snapshot.schema !== "traderhome_tailtrend_snapshot_v1") throw new Error("unknown TailTrend snapshot schema");
     renderHeader();
@@ -355,6 +445,8 @@ $("#riskForm").addEventListener("submit", (event) => {
   calculateAndRenderRisk();
 });
 $("#riskForm").addEventListener("input", () => calculateAndRenderRisk());
+$("#exportRiskConfig").addEventListener("click", exportRiskConfig);
+$("#riskConfigFile").addEventListener("change", (event) => importRiskConfig(event.target.files?.[0]));
 $("#barFile").addEventListener("change", (event) => handleImport(event.target.files?.[0]));
 $("#detailBackdrop").addEventListener("click", closeDetail);
 document.addEventListener("keydown", (event) => {

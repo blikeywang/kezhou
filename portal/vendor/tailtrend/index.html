@@ -104,6 +104,11 @@
           <label><span>今日完整止损次数</span><input id="riskStops" type="number" min="0" step="1" value="0"></label>
           <label><span>今日已实现亏损 / 权益 %</span><input id="riskDailyLoss" type="number" min="0" max="100" step="0.1" value="0"></label>
           <button class="tt-button primary" type="submit">重新计算压力仓位</button>
+          <div class="tt-config-actions">
+            <button id="exportRiskConfig" class="tt-button" type="button">导出本地配置</button>
+            <label class="tt-button tt-config-import">导入本地配置<input id="riskConfigFile" type="file" accept=".json,application/json"></label>
+          </div>
+          <small id="riskConfigStatus" class="tt-field-note">配置文件由你自行保管；本站不写浏览器存储。</small>
         </form>
         <div id="riskOutput" class="tt-risk-output"><div class="tt-empty">先从状态表选择一个有结构失效位的候选。</div></div>
       </div>
@@ -113,7 +118,7 @@
       <div>
         <div class="tt-kicker">LOCAL RESEARCH SLOT</div>
         <h2>临时测试自定义股票，不把原始K线上传</h2>
-        <p class="tt-lead">导入 Longbridge JSON 或含 time/open/high/low/close/volume/turnover 的 CSV。文件只在本页内存解析，刷新页面即清除。</p>
+        <p class="tt-lead">导入 Longbridge JSON 或含 time/open/high/low/close/volume/turnover 的 CSV。至少 90 根有效日线，单文件不超过 5 MB；缺 turnover 时会停用流动性闸门并明确提示。文件只在本页内存解析，刷新页面即清除。</p>
         <div class="tt-import-controls">
           <label><span>标的代码</span><input id="importSymbol" value="CUSTOM.US" autocomplete="off"></label>
           <label class="tt-file"><span>选择 JSON / CSV</span><input id="barFile" type="file" accept=".json,.csv,application/json,text/csv"></label>
@@ -139,7 +144,7 @@
       </div>
     </div></section>
   </main>
-  <footer class="tt-wrap tt-footer"><span>TailTrend Lab v0.2 · TraderHome independent research system</span><span>数据来源：Longbridge Securities · 仅派生状态</span></footer>
+  <footer class="tt-wrap tt-footer"><span>TailTrend Lab v0.3 · TraderHome independent research system</span><span>数据来源：Longbridge Securities · 仅派生状态</span></footer>
   <script type="module" src="/tailtrend/tailtrend-app.mjs"></script>
 </body>
 </html>

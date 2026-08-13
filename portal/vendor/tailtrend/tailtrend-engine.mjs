@@ -2,9 +2,10 @@ const DAY_MS = 86_400_000;
 
 export const TAILTREND_CONFIG = Object.freeze({
   schema: "traderhome_tailtrend_snapshot_v1",
-  version: "0.2.0",
+  version: "0.3.0",
   tailLookback: 60,
   tailFraction: 0.20,
+  atrTailWidth: 1.5,
   atrPeriod: 20,
   hvPeriod: 20,
   hvRankLookback: 252,
@@ -12,8 +13,13 @@ export const TAILTREND_CONFIG = Object.freeze({
   breakoutHoldCloses: 2,
   breakoutHoldWindow: 3,
   maximumTrendExtensionAtr: 1.0,
+  lowerBoundaryStableSessions: 5,
+  structureResetAtr: 1.0,
+  structureLockMaxSessions: 40,
   gapQuarantineAtr: 1.5,
   eventQuarantineCalendarDays: 2,
+  eventGapReserveMultiplier: 2.5,
+  eventRiskLookaheadCalendarDays: 10,
 });
 
 export const STATE_META = Object.freeze({
@@ -249,9 +255,8 @@ export function weeklyRegime(rows) {
   return "RANGE";
 }
 
-function tailMapAt(bars, index, lookback = TAILTREND_CONFIG.tailLookback) {
-  if (index < lookback) return null;
-  const history = bars.slice(index - lookback, index);
+function tailMapFromHistory(history) {
+  if (!Array.isArray(history) || !history.length) return null;
   const rangeHigh = Math.max(...history.map((bar) => bar.high));
   const rangeLow = Math.min(...history.map((bar) => bar.low));
   const width = rangeHigh - rangeLow;
@@ -266,6 +271,16 @@ function tailMapAt(bars, index, lookback = TAILTREND_CONFIG.tailLookback) {
   };
 }
 
+function tailMapAt(bars, index, lookback = TAILTREND_CONFIG.tailLookback) {
+  if (index < lookback) return null;
+  return tailMapFromHistory(bars.slice(index - lookback, index));
+}
+
+function tailMapEndingAt(bars, index, lookback = TAILTREND_CONFIG.tailLookback) {
+  if (index + 1 < lookback) return null;
+  return tailMapFromHistory(bars.slice(index - lookback + 1, index + 1));
+}
+
 function eventDistance(lastDate, eventDate) {
   if (!lastDate || !eventDate) return null;
   const last = new Date(`${lastDate}T00:00:00Z`);
@@ -274,33 +289,205 @@ function eventDistance(lastDate, eventDate) {
   return Math.round((event - last) / DAY_MS);
 }
 
-function recentBreakoutContext(bars, atrs, currentIndex) {
-  const minimum = Math.max(TAILTREND_CONFIG.tailLookback, currentIndex - 5);
-  let failure = null;
-  let accepted = null;
-  let candidate = null;
-  for (let start = minimum; start <= currentIndex; start += 1) {
-    const map = tailMapAt(bars, start);
-    const atr = atrs[start];
-    if (!map || !Number.isFinite(atr)) continue;
-    const threshold = map.rangeHigh + TAILTREND_CONFIG.breakoutBufferAtr * atr;
-    if (bars[start].close < threshold) continue;
-    const elapsed = currentIndex - start;
-    const closes = bars.slice(start, Math.min(currentIndex, start + TAILTREND_CONFIG.breakoutHoldWindow - 1) + 1);
-    const holdCloses = closes.filter((bar) => bar.close > map.rangeHigh).length;
-    const context = {
-      start,
-      boundary: map.rangeHigh,
-      threshold,
-      holdCloses,
-      elapsed,
-      extensionAtr: (bars[currentIndex].close - map.rangeHigh) / atrs[currentIndex],
-    };
-    if (currentIndex > start && bars[currentIndex].close <= map.rangeHigh) failure = context;
-    else if (elapsed < TAILTREND_CONFIG.breakoutHoldWindow && holdCloses >= TAILTREND_CONFIG.breakoutHoldCloses) accepted = context;
-    else if (start === currentIndex) candidate = context;
+function emptyStateMemory() {
+  return { version: 1, lower: null, upper: null, trend: null };
+}
+
+function cloneStateMemory(value) {
+  const source = value && typeof value === "object" ? value : emptyStateMemory();
+  return {
+    version: 1,
+    lower: source.lower ? { ...source.lower } : null,
+    upper: source.upper ? { ...source.upper } : null,
+    trend: source.trend ? { ...source.trend } : null,
+  };
+}
+
+function lowerLock(map, bar, atr, lockedBy = "LOWER_TAIL_FALLING") {
+  const newStructuralLow = bar.low < map.rangeLow;
+  return {
+    boundary: map.lowerTailTop,
+    rangeLow: map.rangeLow,
+    rangeHigh: map.rangeHigh,
+    atrAtLock: atr,
+    lockedAt: bar.date,
+    lockedBy,
+    ageSessions: 0,
+    stableSessions: newStructuralLow ? 0 : 1,
+    trackedLow: Math.min(map.rangeLow, bar.low),
+  };
+}
+
+function upperLock(map, bar, atr) {
+  return {
+    boundary: map.rangeHigh,
+    threshold: map.rangeHigh + TAILTREND_CONFIG.breakoutBufferAtr * atr,
+    atrAtLock: atr,
+    lockedAt: bar.date,
+    lockedBy: "BREAKOUT_CANDIDATE",
+    ageSessions: 0,
+    holdCloses: 1,
+  };
+}
+
+function breakoutEvidence(lock, current) {
+  if (!lock) return null;
+  return {
+    boundary: lock.boundary,
+    threshold: lock.threshold,
+    atrAtLock: lock.atrAtLock,
+    lockedAt: lock.lockedAt,
+    holdCloses: lock.holdCloses,
+    elapsed: lock.ageSessions,
+    extensionAtr: (current.close - lock.boundary) / lock.atrAtLock,
+  };
+}
+
+function priorTrailingLow(bars, index, sessions = 10) {
+  const history = bars.slice(Math.max(0, index - sessions), index);
+  return history.length ? Math.min(...history.map((bar) => bar.low)) : null;
+}
+
+function advanceStateMemory(previousMemory, bars, atrs, index) {
+  const memory = cloneStateMemory(previousMemory);
+  const current = bars[index];
+  const previous = bars[index - 1];
+  const map = tailMapAt(bars, index);
+  const atr = atrs[index];
+  if (!map || !Number.isFinite(atr) || !previous) return { memory, structural: null };
+
+  if (memory.trend) {
+    const trailingExit = priorTrailingLow(bars, index);
+    const evidence = breakoutEvidence(memory.trend, current);
+    if (Number.isFinite(trailingExit) && current.close < trailingExit) {
+      memory.trend = null;
+      return {
+        memory,
+        structural: { state: "BREAKOUT_FAILED", breakout: evidence, reasonCode: "TREND_TRAILING_EXIT", trailingExit },
+      };
+    }
+    memory.trend.ageSessions = (memory.trend.ageSessions ?? 0) + 1;
+    return { memory, structural: { state: "TREND_ACCEPTED", breakout: evidence, reasonCode: "TREND_PERSISTS", trailingExit } };
   }
-  return { failure, accepted, candidate };
+
+  if (memory.upper) {
+    memory.upper.ageSessions = (memory.upper.ageSessions ?? 0) + 1;
+    if (current.close > memory.upper.threshold) memory.upper.holdCloses = (memory.upper.holdCloses ?? 0) + 1;
+    const evidence = breakoutEvidence(memory.upper, current);
+    const failureFloor = memory.upper.boundary - TAILTREND_CONFIG.breakoutBufferAtr * memory.upper.atrAtLock;
+    if (current.close < failureFloor) {
+      memory.upper = null;
+      return { memory, structural: { state: "BREAKOUT_FAILED", breakout: evidence, reasonCode: "BREAKOUT_RETURNED_INSIDE" } };
+    }
+    if (memory.upper.holdCloses >= TAILTREND_CONFIG.breakoutHoldCloses) {
+      memory.trend = {
+        ...memory.upper,
+        acceptedAt: current.date,
+        lockedBy: "TREND_ACCEPTED",
+      };
+      memory.upper = null;
+      return { memory, structural: { state: "TREND_ACCEPTED", breakout: evidence, reasonCode: "BREAKOUT_ACCEPTED" } };
+    }
+    if (memory.upper.ageSessions >= TAILTREND_CONFIG.breakoutHoldWindow - 1) {
+      memory.upper = null;
+      return { memory, structural: { state: "BREAKOUT_FAILED", breakout: evidence, reasonCode: "ACCEPTANCE_WINDOW_EXPIRED" } };
+    }
+    return { memory, structural: { state: "BREAKOUT_CANDIDATE", breakout: evidence, reasonCode: "ACCEPTANCE_PENDING" } };
+  }
+
+  const breakdownFloor = map.rangeLow - TAILTREND_CONFIG.breakoutBufferAtr * atr;
+  if (memory.lower) {
+    memory.lower.ageSessions = (memory.lower.ageSessions ?? 0) + 1;
+    const resetFloor = memory.lower.rangeLow - TAILTREND_CONFIG.structureResetAtr * memory.lower.atrAtLock;
+    if (current.close < resetFloor) {
+      const resetMap = tailMapEndingAt(bars, index) ?? map;
+      memory.lower = lowerLock(resetMap, current, atr, "STRUCTURE_RESET");
+      return { memory, structural: { state: "LOWER_TAIL_FALLING", lower: { ...memory.lower }, reasonCode: "STRUCTURE_RESET" } };
+    }
+
+    if (current.low < memory.lower.trackedLow) {
+      memory.lower.trackedLow = current.low;
+      memory.lower.stableSessions = 0;
+    } else {
+      memory.lower.stableSessions = (memory.lower.stableSessions ?? 0) + 1;
+    }
+
+    if (current.close <= breakdownFloor) {
+      return { memory, structural: { state: "LOWER_TAIL_BREAKDOWN", lower: { ...memory.lower }, reasonCode: "CURRENT_RANGE_BREAKDOWN" } };
+    }
+
+    if (memory.lower.ageSessions >= TAILTREND_CONFIG.structureLockMaxSessions) {
+      if (current.low <= map.lowerTailTop || current.close <= map.lowerTailTop) {
+        memory.lower = lowerLock(map, current, atr, "LOCK_EXPIRED_REBASE");
+        return { memory, structural: { state: "LOWER_TAIL_FALLING", lower: { ...memory.lower }, reasonCode: "LOCK_EXPIRED_REBASE" } };
+      }
+      memory.lower = null;
+      return { memory, structural: null };
+    }
+
+    const reversalConfirmed = current.close > current.open || current.close > previous.close;
+    if (current.close > memory.lower.boundary
+      && reversalConfirmed
+      && memory.lower.stableSessions >= TAILTREND_CONFIG.lowerBoundaryStableSessions) {
+      const evidence = { ...memory.lower };
+      memory.lower = null;
+      return { memory, structural: { state: "LOWER_TAIL_RECLAIMED", lower: evidence, reasonCode: "LOCKED_LOWER_RECLAIMED" } };
+    }
+    return { memory, structural: { state: "LOWER_TAIL_FALLING", lower: { ...memory.lower }, reasonCode: "LOWER_LOCK_PENDING" } };
+  }
+
+  if (current.close <= breakdownFloor) {
+    return { memory, structural: { state: "LOWER_TAIL_BREAKDOWN", reasonCode: "CURRENT_RANGE_BREAKDOWN" } };
+  }
+
+  const breakoutThreshold = map.rangeHigh + TAILTREND_CONFIG.breakoutBufferAtr * atr;
+  if (current.close >= breakoutThreshold) {
+    memory.upper = upperLock(map, current, atr);
+    return {
+      memory,
+      structural: {
+        state: "BREAKOUT_CANDIDATE",
+        breakout: breakoutEvidence(memory.upper, current),
+        reasonCode: "BREAKOUT_LOCKED",
+      },
+    };
+  }
+
+  const reversalConfirmed = current.close > current.open || current.close > previous.close;
+  if (current.close <= map.lowerTailTop) {
+    memory.lower = lowerLock(map, current, atr);
+    return { memory, structural: { state: "LOWER_TAIL_FALLING", lower: { ...memory.lower }, reasonCode: "LOWER_LOCKED" } };
+  }
+  if (current.low <= map.lowerTailTop && current.close > map.lowerTailTop && reversalConfirmed) {
+    if (current.low < map.rangeLow) {
+      memory.lower = lowerLock(map, current, atr, "NEW_LOW_REQUIRES_STABILITY");
+      return { memory, structural: { state: "LOWER_TAIL_FALLING", lower: { ...memory.lower }, reasonCode: "NEW_LOW_REQUIRES_STABILITY" } };
+    }
+    return {
+      memory,
+      structural: {
+        state: "LOWER_TAIL_RECLAIMED",
+        lower: { ...lowerLock(map, current, atr, "STABLE_MAP_RECLAIM") },
+        reasonCode: "STABLE_MAP_RECLAIM",
+      },
+    };
+  }
+  return { memory, structural: null };
+}
+
+function replayStateMemory(bars, atrs, options = {}) {
+  const currentIndex = bars.length - 1;
+  const previousRecord = options.previousState && typeof options.previousState === "object" ? options.previousState : null;
+  const canSeed = previousRecord?.tradingDate === bars[currentIndex - 1]?.date && previousRecord?.stateMemory;
+  let memory = canSeed ? cloneStateMemory(previousRecord.stateMemory) : emptyStateMemory();
+  let structural = null;
+  const start = canSeed ? currentIndex : TAILTREND_CONFIG.tailLookback;
+  for (let index = start; index <= currentIndex; index += 1) {
+    const step = advanceStateMemory(memory, bars, atrs, index);
+    memory = step.memory;
+    structural = step.structural;
+  }
+  return { memory, structural, coldStart: !canSeed };
 }
 
 function recentBreakdown(bars, atrs, currentIndex, window = 20) {
@@ -368,7 +555,7 @@ function liquidityBand(turnover) {
 
 function managementFor(state, map, bars, index, atr, breakout) {
   const current = bars[index];
-  const tenDayExit = Math.min(...bars.slice(Math.max(0, index - 9), index + 1).map((bar) => bar.low));
+  const tenDayExit = priorTrailingLow(bars, index);
   if (state === "LOWER_TAIL_RECLAIMED") {
     return {
       entryReference: current.close,
@@ -418,7 +605,9 @@ function managementFor(state, map, bars, index, atr, breakout) {
 }
 
 function stateExplanation(state, context) {
-  const { current, previous, map, atr, breakout, management, gapAtr, daysToEvent } = context;
+  const {
+    current, previous, map, atr, breakout, management, gapAtr, daysToEvent, lowerLock: lockedLower, reasonCode, trailingExit,
+  } = context;
   const distance = (price) => Number.isFinite(price) && Number.isFinite(atr) && atr > 0
     ? round(Math.abs(price - current.close) / atr, 2)
     : null;
@@ -430,10 +619,14 @@ function stateExplanation(state, context) {
     if (Number.isFinite(daysToEvent) && daysToEvent >= 0) output.reasons.push(`距已知事件 ${daysToEvent} 个日历日`);
     output.nextCondition = { targetState: "REASSESS", label: "事件后重算", condition: "事件完成且形成新的完整日线后重新计算，不沿用普通 ATR 仓位", distanceAtr: null };
   } else if (state === "BREAKOUT_FAILED") {
-    output.reasons.push(`此前越过 ${moneyless(breakout?.boundary)} 的突破未能留在旧区间外`);
+    output.reasons.push(reasonCode === "TREND_TRAILING_EXIT"
+      ? `收盘跌破进入今天前已知的 10 日低点 ${moneyless(trailingExit)}`
+      : reasonCode === "ACCEPTANCE_WINDOW_EXPIRED"
+        ? `3 日接受窗口结束，未取得 ${TAILTREND_CONFIG.breakoutHoldCloses} 个缓冲线外收盘`
+        : `此前越过 ${moneyless(breakout?.boundary)} 的突破退回失败线内`);
     output.nextCondition = { targetState: "RANGE_REASSESS", label: "旧区间内重评", condition: "先退出趋势袖套，再等待新的边缘状态", distanceAtr: null };
   } else if (state === "TREND_ACCEPTED") {
-    output.reasons.push(`${breakout?.holdCloses ?? 0}/${TAILTREND_CONFIG.breakoutHoldCloses} 个确认收盘留在旧边界外`);
+    output.reasons.push(`${breakout?.holdCloses ?? 0}/${TAILTREND_CONFIG.breakoutHoldCloses} 个确认收盘留在冻结缓冲线 ${moneyless(breakout?.threshold)} 外`);
     output.nextCondition = { targetState: "TRAILING_EXIT", label: "趋势退出线", condition: `日线收盘跌破 10 日低点 ${moneyless(management?.trailingExit)}`, distanceAtr: distance(management?.trailingExit) };
   } else if (state === "BREAKOUT_CANDIDATE") {
     const remaining = Math.max(0, TAILTREND_CONFIG.breakoutHoldCloses - (breakout?.holdCloses ?? 1));
@@ -447,15 +640,24 @@ function stateExplanation(state, context) {
     output.reasons.push("此前发生下沿破位，当前回到下尾附近并较前收盘改善");
     output.nextCondition = { targetState: "LOWER_TAIL_RECLAIMED", label: "下沿收复", condition: `日线收盘重新站上 ${moneyless(map.lowerTailTop)} 并出现反转确认`, distanceAtr: distance(map.lowerTailTop) };
   } else if (state === "LOWER_TAIL_RECLAIMED") {
-    output.reasons.push(`盘中触及下尾后，收盘重新站上 ${moneyless(map.lowerTailTop)}`);
+    output.reasons.push(`盘中触及下尾后，收盘重新站上冻结边界 ${moneyless(lockedLower?.boundary ?? map.lowerTailTop)}`);
+    if (lockedLower?.stableSessions >= TAILTREND_CONFIG.lowerBoundaryStableSessions) {
+      output.reasons.push(`结构低点已稳定 ${lockedLower.stableSessions} 个交易日`);
+    }
     output.reasons.push(current.close > current.open ? "收盘高于开盘" : `收盘高于前收盘 ${moneyless(previous.close)}`);
     output.nextCondition = { targetState: "UPPER_TAIL_DECISION", label: "第一管理区", condition: `先观察中轴 ${moneyless(map.midpoint)}，再看上尾决策区`, distanceAtr: distance(map.midpoint) };
   } else if (state === "UPPER_TAIL_REJECTED") {
     output.reasons.push(`盘中触及上尾后，收盘退回 ${moneyless(map.upperTailBottom)} 下方`);
     output.nextCondition = { targetState: "RANGE_MIDDLE", label: "均值回归管理", condition: `先观察中轴 ${moneyless(map.midpoint)}；做空仍需独立资格核验`, distanceAtr: distance(map.midpoint) };
   } else if (state === "LOWER_TAIL_FALLING") {
-    output.reasons.push(`收盘仍在下尾上界 ${moneyless(map.lowerTailTop)} 下方，未形成收复`);
-    output.nextCondition = { targetState: "LOWER_TAIL_RECLAIMED", label: "下沿收复", condition: `收盘站回 ${moneyless(map.lowerTailTop)} 且出现反转确认`, distanceAtr: distance(map.lowerTailTop) };
+    const boundary = lockedLower?.boundary ?? map.lowerTailTop;
+    const stable = lockedLower?.stableSessions ?? 0;
+    output.reasons.push(reasonCode === "NEW_LOW_REQUIRES_STABILITY"
+      ? `当天形成新结构低点，禁止把同日反弹误记为收复`
+      : reasonCode === "STRUCTURE_RESET"
+        ? `收盘跌破旧结构低点 1 ATR，已在新区间重新锁定`
+        : `冻结下沿 ${moneyless(boundary)}；结构稳定 ${stable}/${TAILTREND_CONFIG.lowerBoundaryStableSessions} 日`);
+    output.nextCondition = { targetState: "LOWER_TAIL_RECLAIMED", label: "下沿收复", condition: `结构低点稳定满 ${TAILTREND_CONFIG.lowerBoundaryStableSessions} 日后，收盘站回冻结边界 ${moneyless(boundary)} 并出现反转确认`, distanceAtr: distance(boundary) };
   } else if (state === "UPPER_TAIL_DECISION") {
     const breakoutFloor = map.rangeHigh + TAILTREND_CONFIG.breakoutBufferAtr * atr;
     output.reasons.push(`收盘位于上尾决策区 ${moneyless(map.upperTailBottom)}–${moneyless(map.rangeHigh)}`);
@@ -474,6 +676,33 @@ function stateExplanation(state, context) {
 
 function moneyless(value) {
   return Number.isFinite(value) ? Number(value.toFixed(3)).toString() : "待计算";
+}
+
+function atrTailComparison(state, map, current, previous, atr) {
+  const structuralStates = new Set([
+    "EVENT_QUARANTINE", "BREAKOUT_CANDIDATE", "TREND_ACCEPTED", "BREAKOUT_FAILED", "LOWER_TAIL_BREAKDOWN",
+  ]);
+  const width = Math.min(TAILTREND_CONFIG.atrTailWidth * atr, map.width * 0.45);
+  const lowerTailTop = map.rangeLow + width;
+  const upperTailBottom = map.rangeHigh - width;
+  let comparisonState = state;
+  if (!structuralStates.has(state)) {
+    const reversalUp = current.close > current.open || current.close > previous.close;
+    const reversalDown = current.close < current.open || current.close < previous.close;
+    if (current.low <= lowerTailTop && current.close > lowerTailTop && current.low >= map.rangeLow && reversalUp) comparisonState = "LOWER_TAIL_RECLAIMED";
+    else if (current.high >= upperTailBottom && current.close < upperTailBottom && reversalDown) comparisonState = "UPPER_TAIL_REJECTED";
+    else if (current.close <= lowerTailTop) comparisonState = "LOWER_TAIL_FALLING";
+    else if (current.close >= upperTailBottom) comparisonState = "UPPER_TAIL_DECISION";
+    else comparisonState = "RANGE_MIDDLE";
+  }
+  return {
+    state: comparisonState,
+    bucket: STATE_META[comparisonState]?.bucket ?? "EDGE_OBSERVE",
+    k: TAILTREND_CONFIG.atrTailWidth,
+    lowerTailTop: round(lowerTailTop, 3),
+    upperTailBottom: round(upperTailBottom, 3),
+    shadowOnly: true,
+  };
 }
 
 export function analyzeBars(inputRows, options = {}) {
@@ -512,52 +741,53 @@ export function analyzeBars(inputRows, options = {}) {
   const daysToEvent = eventDistance(current.date, options.eventDate);
   const eventQuarantine = (Number.isFinite(gapAtr) && gapAtr > TAILTREND_CONFIG.gapQuarantineAtr)
     || (Number.isFinite(daysToEvent) && daysToEvent >= 0 && daysToEvent <= TAILTREND_CONFIG.eventQuarantineCalendarDays);
-  const breakout = recentBreakoutContext(bars, atrs, index);
+  const replay = replayStateMemory(bars, atrs, options);
+  const structural = replay.structural;
   const breakdown = recentBreakdown(bars, atrs, index);
   const previousClose = previous.close;
-  const breakoutFloor = map.rangeHigh + TAILTREND_CONFIG.breakoutBufferAtr * atr;
-  const breakdownFloor = map.rangeLow - TAILTREND_CONFIG.breakoutBufferAtr * atr;
-  const lowerReclaim = current.low <= map.lowerTailTop && current.close > map.lowerTailTop
-    && (current.close > current.open || current.close > previousClose);
   const upperReject = current.high >= map.upperTailBottom && current.close < map.upperTailBottom
     && (current.close < current.open || current.close < previousClose);
 
   let state = "RANGE_MIDDLE";
-  let breakoutEvidence = null;
+  let breakoutEvidence = structural?.breakout ?? null;
   if (eventQuarantine) state = "EVENT_QUARANTINE";
-  else if (breakout.failure) {
-    state = "BREAKOUT_FAILED";
-    breakoutEvidence = breakout.failure;
-  } else if (breakout.accepted) {
-    state = "TREND_ACCEPTED";
-    breakoutEvidence = breakout.accepted;
-  } else if (current.close >= breakoutFloor || breakout.candidate) {
-    state = "BREAKOUT_CANDIDATE";
-    breakoutEvidence = breakout.candidate;
-  } else if (current.close <= breakdownFloor) state = "LOWER_TAIL_BREAKDOWN";
-  else if (breakdown && current.close <= map.lowerTailTop && current.close > previousClose) state = "DOWNTREND_COVER_ZONE";
-  else if (lowerReclaim) state = "LOWER_TAIL_RECLAIMED";
+  else if (structural?.state === "LOWER_TAIL_FALLING"
+    && breakdown && current.close <= map.lowerTailTop && current.close > previousClose) state = "DOWNTREND_COVER_ZONE";
+  else if (structural?.state) state = structural.state;
   else if (upperReject) state = "UPPER_TAIL_REJECTED";
-  else if (current.close <= map.lowerTailTop) state = "LOWER_TAIL_FALLING";
   else if (current.close >= map.upperTailBottom) state = "UPPER_TAIL_DECISION";
+
+  const lockedLower = structural?.lower ?? replay.memory.lower;
+  const signalMap = lockedLower ? {
+    rangeHigh: lockedLower.rangeHigh,
+    rangeLow: lockedLower.rangeLow,
+    width: lockedLower.rangeHigh - lockedLower.rangeLow,
+    lowerTailTop: lockedLower.boundary,
+    midpoint: lockedLower.rangeLow + (lockedLower.rangeHigh - lockedLower.rangeLow) * 0.5,
+    upperTailBottom: lockedLower.rangeHigh - (lockedLower.rangeHigh - lockedLower.rangeLow) * TAILTREND_CONFIG.tailFraction,
+  } : map;
 
   const avgVolume = mean(bars.slice(index - 19, index + 1).map((bar) => bar.volume));
   const avgTurnover = mean(bars.slice(index - 19, index + 1).map((bar) => bar.turnover));
   const volumeRatio = Number.isFinite(current.volume) && avgVolume > 0 ? current.volume / avgVolume : null;
   const rangePosition = (current.close - map.rangeLow) / map.width;
   const meta = STATE_META[state];
+  const atrComparison = atrTailComparison(state, map, current, previous, atr);
   const context = { weeklyRegime: regime, hvPercentile, volumeRatio, breakout: breakoutEvidence };
   const priority = priorityAnalysis(state, context);
-  const management = managementFor(state, map, bars, index, atr, breakoutEvidence);
+  const management = managementFor(state, signalMap, bars, index, atr, breakoutEvidence);
   const explanation = stateExplanation(state, {
     current,
     previous,
-    map,
+    map: signalMap,
     atr,
     breakout: breakoutEvidence,
     management,
     gapAtr,
     daysToEvent,
+    lowerLock: lockedLower,
+    reasonCode: structural?.reasonCode,
+    trailingExit: structural?.trailingExit,
   });
   const blockers = [];
   const overextended = state === "TREND_ACCEPTED" && (breakoutEvidence?.extensionAtr ?? 0) > TAILTREND_CONFIG.maximumTrendExtensionAtr;
@@ -601,6 +831,10 @@ export function analyzeBars(inputRows, options = {}) {
     nextCondition: explanation.nextCondition,
     signalDirection: candidateModule === "us_short" ? "SHORT"
       : ["tail_core", "pure_trend"].includes(candidateModule) ? "LONG" : "OBSERVE",
+    comparisonStates: {
+      pct: state,
+      atr: atrComparison.state,
+    },
     dataStatus: options.dataStatus ?? "FRESH",
     bars: bars.length,
     close: round(current.close, 3),
@@ -618,6 +852,44 @@ export function analyzeBars(inputRows, options = {}) {
     liquidityBand: liquidityBand(avgTurnover),
     eventDate: options.eventDate ?? null,
     daysToEvent,
+    holdingRule: state === "EVENT_QUARANTINE" ? {
+      policy: "PRE_FUNDED_EVENT_GAP",
+      gapReserveMultiplier: TAILTREND_CONFIG.eventGapReserveMultiplier,
+      action: "已有仓位须在事件前一完整交易日确认放大的跳空预算；未确认则不新增风险，也不把普通10日低点当成事件日市价单。",
+    } : null,
+    eventRiskPolicy: Number.isFinite(daysToEvent)
+      && daysToEvent >= 0
+      && daysToEvent <= TAILTREND_CONFIG.eventRiskLookaheadCalendarDays ? {
+        policy: "PRE_FUNDED_EVENT_GAP",
+        gapReserveMultiplier: TAILTREND_CONFIG.eventGapReserveMultiplier,
+        appliesWithinCalendarDays: TAILTREND_CONFIG.eventRiskLookaheadCalendarDays,
+      } : null,
+    stateMemory: replay.memory,
+    stateMemorySource: replay.coldStart ? "COLD_REPLAY" : "PREVIOUS_SNAPSHOT",
+    locked: {
+      lowerBoundary: round(replay.memory.lower?.boundary, 3),
+      upperBoundary: round(replay.memory.upper?.boundary, 3),
+      atrAtLock: round(replay.memory.upper?.atrAtLock ?? replay.memory.lower?.atrAtLock, 3),
+      lockedAt: replay.memory.upper?.lockedAt ?? replay.memory.lower?.lockedAt ?? null,
+      lockedBy: replay.memory.upper?.lockedBy ?? replay.memory.lower?.lockedBy ?? null,
+      lowerStableSessions: replay.memory.lower?.stableSessions ?? null,
+    },
+    signalBoundary: structural?.lower ? {
+      side: "LOWER",
+      boundary: round(structural.lower.boundary, 3),
+      structuralLow: round(structural.lower.rangeLow, 3),
+      atrAtLock: round(structural.lower.atrAtLock, 3),
+      lockedAt: structural.lower.lockedAt,
+      stableSessions: structural.lower.stableSessions,
+      reasonCode: structural.reasonCode,
+    } : breakoutEvidence ? {
+      side: "UPPER",
+      boundary: round(breakoutEvidence.boundary, 3),
+      threshold: round(breakoutEvidence.threshold, 3),
+      atrAtLock: round(breakoutEvidence.atrAtLock, 3),
+      lockedAt: breakoutEvidence.lockedAt,
+      reasonCode: structural?.reasonCode ?? null,
+    } : null,
     tailMap: {
       provider: "rolling_range",
       version: `${current.date}:60:20`,
@@ -629,8 +901,12 @@ export function analyzeBars(inputRows, options = {}) {
       upperTailBottom: round(map.upperTailBottom, 3),
       rangeHigh: round(map.rangeHigh, 3),
     },
+    atrTailMap: atrComparison,
     breakout: breakoutEvidence ? {
       boundary: round(breakoutEvidence.boundary, 3),
+      threshold: round(breakoutEvidence.threshold, 3),
+      atrAtLock: round(breakoutEvidence.atrAtLock, 3),
+      lockedAt: breakoutEvidence.lockedAt,
       holdCloses: breakoutEvidence.holdCloses,
       extensionAtr: round(breakoutEvidence.extensionAtr, 2),
       overextended,
@@ -685,12 +961,33 @@ export function calculateRiskPlan(input) {
   if (module === "us_short" && weekly === "UP") weeklyMultiplier = 0.5;
   const drawdownFactor = drawdownMultiplier(drawdown);
   const volatilityFactor = volatilityMultiplier(input.hvPercentile);
-  const finalIdeaRiskPct = rule.ideaCap * drawdownFactor * volatilityFactor * weeklyMultiplier;
-  const tradeRiskPct = finalIdeaRiskPct * rule.sleeve;
-  const reservedRiskPct = finalIdeaRiskPct * rule.reserve;
+  const pressureGroup = Math.min(drawdownFactor, volatilityFactor, weeklyMultiplier);
+  const wantedIdeaRiskPct = rule.ideaCap * pressureGroup;
   const stressPerShare = Number.isFinite(entry) && Number.isFinite(stop)
     ? Math.abs(entry - stop) + gapReserve + slippageReserve
     : null;
+  const portfolioHeadroom = Math.max(0, 0.0125 - existingHeat);
+  const clusterHeadroom = Math.max(0, 0.006 - clusterHeat);
+  const advTurnover = Number(input.averageTurnover20);
+  let liquidityCapShares = null;
+  let liquidityHeadroom = Number.POSITIVE_INFINITY;
+  if (Number.isFinite(advTurnover) && advTurnover > 0 && Number.isFinite(entry) && entry > 0) {
+    liquidityCapShares = Math.floor((advTurnover * 0.01) / entry);
+    if (equity > 0 && Number.isFinite(stressPerShare) && stressPerShare > 0 && rule.sleeve > 0) {
+      liquidityHeadroom = (liquidityCapShares * stressPerShare) / equity / rule.sleeve;
+    }
+  }
+  const circuitBreaker = fullStopsToday >= 2 || dailyLoss >= 0.01;
+  const capacityCandidates = [
+    { key: pressureGroup < 1 ? "pressure_group" : "base", value: wantedIdeaRiskPct },
+    { key: "portfolio_headroom", value: portfolioHeadroom },
+    { key: "cluster_headroom", value: clusterHeadroom },
+    { key: "liquidity", value: liquidityHeadroom },
+  ];
+  const binding = capacityCandidates.reduce((lowest, candidate) => candidate.value < lowest.value ? candidate : lowest);
+  const finalIdeaRiskPct = circuitBreaker ? 0 : Math.max(0, binding.value);
+  const tradeRiskPct = finalIdeaRiskPct * rule.sleeve;
+  const reservedRiskPct = finalIdeaRiskPct * rule.reserve;
 
   if (!equity) blockers.push("账户权益必须大于 0");
   if (![entry, stop].every(Number.isFinite) || entry <= 0 || stop <= 0) blockers.push("入场与硬止损必须是有效价格");
@@ -708,27 +1005,26 @@ export function calculateRiskPlan(input) {
   if (module === "pure_trend" && weeklyMultiplier === 0) blockers.push("纯趋势机会必须与周线同向");
   if (fullStopsToday >= 2) blockers.push("当日已出现两个完整止损，停止新开仓");
   if (dailyLoss >= 0.01) blockers.push("当日已实现亏损达到权益 1%，停止新开仓");
-  if (existingHeat + finalIdeaRiskPct > 0.015) blockers.push("加入后组合计划风险超过 1.50% 硬上限");
-  else if (existingHeat + finalIdeaRiskPct > 0.0125) warnings.push("加入后组合计划风险超过 1.25% 正常上限");
-  if (clusterHeat + finalIdeaRiskPct > 0.0075) blockers.push("加入后同集群风险超过 0.75% 硬上限");
-  else if (clusterHeat + finalIdeaRiskPct > 0.006) warnings.push("加入后同集群风险超过 0.60% 警戒线");
+  if (existingHeat >= 0.015) blockers.push("组合计划风险已达到 1.50% 硬上限");
+  else if (portfolioHeadroom <= 0 && wantedIdeaRiskPct > 0) blockers.push("组合计划风险已无 1.25% 正常额度");
+  else if (portfolioHeadroom < wantedIdeaRiskPct) warnings.push("风险已裁剪到组合 1.25% 正常上限的剩余额度");
+  if (clusterHeat >= 0.0075) blockers.push("同集群风险已达到 0.75% 硬上限");
+  else if (clusterHeadroom <= 0 && wantedIdeaRiskPct > 0) blockers.push("同集群风险已无 0.60% 正常额度");
+  else if (clusterHeadroom < wantedIdeaRiskPct) warnings.push("风险已裁剪到同集群 0.60% 正常额度");
+  if (!Number.isFinite(advTurnover) || advTurnover <= 0) warnings.push("缺少20日平均成交额，流动性上限未启用");
+  else if (liquidityHeadroom < wantedIdeaRiskPct) warnings.push("风险已裁剪到近20日平均成交额 1% 的流动性上限");
 
-  const plannedLoss = equity * tradeRiskPct;
+  const budgetedLoss = equity * tradeRiskPct;
   let shares = blockers.length || !Number.isFinite(stressPerShare) || stressPerShare <= 0
     ? 0
-    : Math.floor(plannedLoss / stressPerShare);
-  const advTurnover = Number(input.averageTurnover20);
-  let liquidityCapShares = null;
-  if (Number.isFinite(advTurnover) && advTurnover > 0 && Number.isFinite(entry) && entry > 0) {
-    liquidityCapShares = Math.floor((advTurnover * 0.01) / entry);
-    if (shares > liquidityCapShares) {
-      shares = liquidityCapShares;
-      warnings.push("股数已降至近20日平均成交额 1% 以下");
-    }
-  }
+    : Math.floor(budgetedLoss / stressPerShare);
+  if (Number.isFinite(liquidityCapShares)) shares = Math.min(shares, liquidityCapShares);
   if (!blockers.length && shares < 1) blockers.push("压力损失下可承担股数不足 1 股");
 
   const uniqueBlockers = [...new Set(blockers)];
+  if (uniqueBlockers.length) shares = 0;
+  const plannedLoss = Number.isFinite(stressPerShare) ? shares * stressPerShare : 0;
+  const bindingConstraint = circuitBreaker ? "circuit_breaker" : uniqueBlockers.length ? "hard_gate" : binding.key;
   return {
     module,
     moduleLabel: rule.label,
@@ -738,6 +1034,7 @@ export function calculateRiskPlan(input) {
     tradeRiskPct: round(tradeRiskPct * 100, 3),
     reservedRiskPct: round(reservedRiskPct * 100, 3),
     ideaRiskDollars: round(equity * finalIdeaRiskPct, 2),
+    budgetedLoss: round(budgetedLoss, 2),
     plannedLoss: round(plannedLoss, 2),
     stressPerShare: round(stressPerShare, 3),
     shares,
@@ -747,7 +1044,23 @@ export function calculateRiskPlan(input) {
       drawdown: drawdownFactor,
       volatility: volatilityFactor,
       weekly: weeklyMultiplier,
+      pressureGroup,
     },
+    riskDiagnostics: {
+      mDrawdown: drawdownFactor,
+      mHv: volatilityFactor,
+      mWeekly: weeklyMultiplier,
+      groupA: pressureGroup,
+      headroomPortfolioPct: round(portfolioHeadroom * 100, 3),
+      headroomClusterPct: round(clusterHeadroom * 100, 3),
+      headroomLiquidityPct: Number.isFinite(liquidityHeadroom) ? round(liquidityHeadroom * 100, 3) : null,
+      circuitBreaker,
+      wantedIdeaRiskPct: round(wantedIdeaRiskPct * 100, 3),
+      finalIdeaRiskPct: round(finalIdeaRiskPct * 100, 3),
+      effectiveTradeRiskPct: equity > 0 ? round((plannedLoss / equity) * 100, 3) : 0,
+      bindingConstraint,
+    },
+    bindingConstraint,
     blockers: uniqueBlockers,
     warnings,
   };
@@ -755,10 +1068,14 @@ export function calculateRiskPlan(input) {
 
 export function updateAuditLedger(previousLedger, records, latestBars, options = {}) {
   const horizons = [1, 3, 5, 10];
-  const retentionDays = Math.max(10, Number(options.retentionDays) || 30);
   const source = previousLedger?.schema === "traderhome_tailtrend_audit_v1" ? previousLedger : { entries: [] };
+  const inheritedEpoch = source.activeEpochId ?? (options.epochId ? "legacy_pre_v0_3" : "default");
+  const activeEpochId = options.epochId ?? inheritedEpoch;
   const barLookup = latestBars instanceof Map ? latestBars : new Map(Object.entries(latestBars ?? {}));
-  const entries = (source.entries ?? []).map((entry) => JSON.parse(JSON.stringify(entry)));
+  const entries = (source.entries ?? []).map((entry) => ({
+    ...JSON.parse(JSON.stringify(entry)),
+    epochId: entry.epochId ?? inheritedEpoch,
+  }));
   const idSet = new Set(entries.map((entry) => entry.id));
 
   for (const entry of entries) {
@@ -819,11 +1136,12 @@ export function updateAuditLedger(previousLedger, records, latestBars, options =
   for (const record of records ?? []) {
     const originDate = dateOnly(record.tradingDate);
     if (!originDate || !record.symbol) continue;
-    const id = `${originDate}:${record.symbol}`;
+    const id = `${activeEpochId}:${originDate}:${record.symbol}`;
     if (idSet.has(id)) continue;
     const alertReference = finite(record.management?.entryReference) ?? finite(record.close);
     entries.push({
       id,
+      epochId: activeEpochId,
       originDate,
       symbol: record.symbol,
       state: record.state,
@@ -835,7 +1153,14 @@ export function updateAuditLedger(previousLedger, records, latestBars, options =
       stateReason: [...(record.stateReason ?? [])],
       blockers: [...(record.blockers ?? [])],
       transition: record.change ?? null,
+      prevState: record.prevState ?? record.change?.from ?? null,
+      previousObservationDate: record.previousObservationDate ?? record.change?.comparisonDate ?? null,
+      transitionReason: [...(record.transitionReason ?? record.stateReason ?? [])],
       nextCondition: record.nextCondition ?? null,
+      locked: record.locked ?? null,
+      signalBoundary: record.signalBoundary ?? null,
+      comparisonStates: record.comparisonStates ?? null,
+      riskFactors: record.riskFactors ?? null,
       execution: {
         alertReference: round(alertReference, 3),
         nextTradableReference: null,
@@ -858,16 +1183,24 @@ export function updateAuditLedger(previousLedger, records, latestBars, options =
     idSet.add(id);
   }
 
-  const dates = [...new Set(entries.map((entry) => entry.originDate))].sort().reverse().slice(0, retentionDays);
+  const dates = [...new Set(entries.filter((entry) => entry.epochId === activeEpochId).map((entry) => entry.originDate))].sort().reverse();
   const kept = entries
-    .filter((entry) => dates.includes(entry.originDate))
     .sort((left, right) => right.originDate.localeCompare(left.originDate) || left.symbol.localeCompare(right.symbol));
+  const epochs = Object.values(kept.reduce((groups, entry) => {
+    const key = entry.epochId ?? "unknown";
+    groups[key] ??= { epochId: key, entries: 0, dates: new Set() };
+    groups[key].entries += 1;
+    groups[key].dates.add(entry.originDate);
+    return groups;
+  }, {})).map((item) => ({ epochId: item.epochId, entries: item.entries, daysCollected: item.dates.size }));
   return {
     schema: "traderhome_tailtrend_audit_v1",
     version: 1,
     frameworkVersion: TAILTREND_CONFIG.version,
+    activeEpochId,
+    epochs,
     horizons,
-    retentionDays,
+    retentionPolicy: "APPEND_BY_TRADING_DAY_NO_TRUNCATION",
     updatedAt: options.updatedAt ?? new Date().toISOString(),
     daysCollected: dates.length,
     entries: kept,
