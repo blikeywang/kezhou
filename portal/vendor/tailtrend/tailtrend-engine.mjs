@@ -2,7 +2,7 @@ const DAY_MS = 86_400_000;
 
 export const TAILTREND_CONFIG = Object.freeze({
   schema: "traderhome_tailtrend_snapshot_v1",
-  version: "0.1.0",
+  version: "0.2.0",
   tailLookback: 60,
   tailFraction: 0.20,
   atrPeriod: 20,
@@ -49,13 +49,13 @@ export const STATE_META = Object.freeze({
     newPositionAllowed: false,
   },
   BREAKOUT_CANDIDATE: {
-    bucket: "TREND_ACCEPTANCE_WATCH",
+    bucket: "BREAKOUT_CANDIDATE_WATCH",
     label: "突破候选",
     action: "等待日线接受，不追完整仓位",
     newPositionAllowed: false,
   },
   TREND_ACCEPTED: {
-    bucket: "TREND_ACCEPTANCE_WATCH",
+    bucket: "TREND_ACCEPTED_WATCH",
     label: "趋势已接受",
     action: "纯趋势仓候选；过度伸展则等待",
     newPositionAllowed: true,
@@ -97,7 +97,8 @@ export const STATE_META = Object.freeze({
 
 export const BUCKET_META = Object.freeze({
   TAIL_RECLAIM_WATCH: { label: "下沿收复", tone: "positive" },
-  TREND_ACCEPTANCE_WATCH: { label: "趋势接受", tone: "trend" },
+  BREAKOUT_CANDIDATE_WATCH: { label: "突破候选", tone: "watch" },
+  TREND_ACCEPTED_WATCH: { label: "趋势已接受", tone: "trend" },
   BREAKOUT_FAILURE_WATCH: { label: "突破失败 / 上沿拒绝", tone: "negative" },
   BREAKDOWN_RISK: { label: "下沿破位", tone: "danger" },
   EVENT_QUARANTINE: { label: "事件隔离", tone: "event" },
@@ -313,29 +314,44 @@ function recentBreakdown(bars, atrs, currentIndex, window = 20) {
   return null;
 }
 
-function statePriority(state, context) {
+function priorityAnalysis(state, context) {
   const weekly = context.weeklyRegime;
   const hv = context.hvPercentile ?? 50;
   const volume = context.volumeRatio ?? 1;
-  let score = 0;
+  const components = [];
+  const add = (label, points, reason) => {
+    if (!points) return;
+    components.push({ label, points: round(points, 1), reason });
+  };
   if (state === "LOWER_TAIL_RECLAIMED") {
-    score = 56 + (weekly === "UP" ? 16 : weekly === "RANGE" ? 8 : 0) + clamp(volume - 1, 0, 1.5) * 8;
+    add("状态基础", 56, "日线触及下尾后重新收复边界");
+    add("周线环境", weekly === "UP" ? 16 : weekly === "RANGE" ? 8 : 0, weekly === "UP" ? "周线向上" : "周线震荡");
+    add("成交量确认", clamp(volume - 1, 0, 1.5) * 8, `量比 ${round(volume, 2)}×`);
   } else if (state === "TREND_ACCEPTED") {
-    score = 62 + (weekly === "UP" ? 18 : 0) + Math.min(10, (context.breakout?.holdCloses ?? 0) * 5);
-    if ((context.breakout?.extensionAtr ?? 0) > 1) score -= 22;
+    add("状态基础", 62, "突破已满足收盘接受规则");
+    add("周线环境", weekly === "UP" ? 18 : 0, "周线与趋势同向");
+    add("收盘保持", Math.min(10, (context.breakout?.holdCloses ?? 0) * 5), `${context.breakout?.holdCloses ?? 0} 个确认收盘`);
+    add("过度伸展", (context.breakout?.extensionAtr ?? 0) > 1 ? -22 : 0, "距旧边界超过 1 ATR");
   } else if (state === "BREAKOUT_CANDIDATE") {
-    score = 48 + (weekly === "UP" ? 15 : 0) + Math.min(9, volume * 4);
+    add("状态基础", 48, "已越过突破缓冲，但接受尚未完成");
+    add("周线环境", weekly === "UP" ? 15 : 0, "周线向上");
+    add("成交量背景", Math.min(9, volume * 4), `量比 ${round(volume, 2)}×`);
   } else if (state === "UPPER_TAIL_REJECTED" || state === "BREAKOUT_FAILED") {
-    score = 55 + (weekly === "DOWN" ? 16 : weekly === "RANGE" ? 8 : 0);
+    add("状态基础", 55, state === "BREAKOUT_FAILED" ? "突破后回到旧区间" : "上尾触及后收盘拒绝");
+    add("周线环境", weekly === "DOWN" ? 16 : weekly === "RANGE" ? 8 : 0, weekly === "DOWN" ? "周线向下" : "周线震荡");
   } else if (state === "LOWER_TAIL_BREAKDOWN") {
-    score = 58 + (weekly === "DOWN" ? 18 : 0);
+    add("状态基础", 58, "收盘跌破下沿缓冲");
+    add("周线环境", weekly === "DOWN" ? 18 : 0, "周线向下");
   } else if (state === "EVENT_QUARANTINE") {
-    score = 100;
+    add("隔离优先", 100, "事件或大跳空需要先人工处理");
   } else if (state === "LOWER_TAIL_FALLING" || state === "UPPER_TAIL_DECISION" || state === "DOWNTREND_COVER_ZONE") {
-    score = 35;
+    add("边缘观察", 35, "已靠近边缘，但尚无可执行确认");
   }
-  if (hv > 90 && state !== "EVENT_QUARANTINE") score -= 10;
-  return Math.round(clamp(score, 0, 100));
+  if (components.some((component) => component.points > 0) && hv > 90 && state !== "EVENT_QUARANTINE") {
+    add("高波动降级", -10, `HV 历史百分位 p${round(hv, 0)}`);
+  }
+  const raw = components.reduce((sum, component) => sum + component.points, 0);
+  return { total: Math.round(clamp(raw, 0, 100)), components };
 }
 
 function marketFromSymbol(symbol) {
@@ -399,6 +415,65 @@ function managementFor(state, map, bars, index, atr, breakout) {
     secondZone: null,
     exitMethod: STATE_META[state].action,
   };
+}
+
+function stateExplanation(state, context) {
+  const { current, previous, map, atr, breakout, management, gapAtr, daysToEvent } = context;
+  const distance = (price) => Number.isFinite(price) && Number.isFinite(atr) && atr > 0
+    ? round(Math.abs(price - current.close) / atr, 2)
+    : null;
+  const output = { reasons: [], nextCondition: null };
+  if (state === "EVENT_QUARANTINE") {
+    if (Number.isFinite(gapAtr) && gapAtr > TAILTREND_CONFIG.gapQuarantineAtr) {
+      output.reasons.push(`开盘缺口 ${round(gapAtr, 2)} ATR，超过 ${TAILTREND_CONFIG.gapQuarantineAtr} ATR 隔离线`);
+    }
+    if (Number.isFinite(daysToEvent) && daysToEvent >= 0) output.reasons.push(`距已知事件 ${daysToEvent} 个日历日`);
+    output.nextCondition = { targetState: "REASSESS", label: "事件后重算", condition: "事件完成且形成新的完整日线后重新计算，不沿用普通 ATR 仓位", distanceAtr: null };
+  } else if (state === "BREAKOUT_FAILED") {
+    output.reasons.push(`此前越过 ${moneyless(breakout?.boundary)} 的突破未能留在旧区间外`);
+    output.nextCondition = { targetState: "RANGE_REASSESS", label: "旧区间内重评", condition: "先退出趋势袖套，再等待新的边缘状态", distanceAtr: null };
+  } else if (state === "TREND_ACCEPTED") {
+    output.reasons.push(`${breakout?.holdCloses ?? 0}/${TAILTREND_CONFIG.breakoutHoldCloses} 个确认收盘留在旧边界外`);
+    output.nextCondition = { targetState: "TRAILING_EXIT", label: "趋势退出线", condition: `日线收盘跌破 10 日低点 ${moneyless(management?.trailingExit)}`, distanceAtr: distance(management?.trailingExit) };
+  } else if (state === "BREAKOUT_CANDIDATE") {
+    const remaining = Math.max(0, TAILTREND_CONFIG.breakoutHoldCloses - (breakout?.holdCloses ?? 1));
+    output.reasons.push(`收盘已越过旧上沿与 ${TAILTREND_CONFIG.breakoutBufferAtr} ATR 缓冲，但接受窗口尚未完成`);
+    output.nextCondition = { targetState: "TREND_ACCEPTED", label: "趋势已接受", condition: `3 日窗口内还需 ${remaining} 个收盘留在边界外`, closesRemaining: remaining, distanceAtr: null };
+  } else if (state === "LOWER_TAIL_BREAKDOWN") {
+    const floor = map.rangeLow - TAILTREND_CONFIG.breakoutBufferAtr * atr;
+    output.reasons.push(`收盘低于下沿破位线 ${moneyless(floor)}`);
+    output.nextCondition = { targetState: "DOWNTREND_COVER_ZONE", label: "空头回补观察", condition: `重新靠近或收复下尾上界 ${moneyless(map.lowerTailTop)}`, distanceAtr: distance(map.lowerTailTop) };
+  } else if (state === "DOWNTREND_COVER_ZONE") {
+    output.reasons.push("此前发生下沿破位，当前回到下尾附近并较前收盘改善");
+    output.nextCondition = { targetState: "LOWER_TAIL_RECLAIMED", label: "下沿收复", condition: `日线收盘重新站上 ${moneyless(map.lowerTailTop)} 并出现反转确认`, distanceAtr: distance(map.lowerTailTop) };
+  } else if (state === "LOWER_TAIL_RECLAIMED") {
+    output.reasons.push(`盘中触及下尾后，收盘重新站上 ${moneyless(map.lowerTailTop)}`);
+    output.reasons.push(current.close > current.open ? "收盘高于开盘" : `收盘高于前收盘 ${moneyless(previous.close)}`);
+    output.nextCondition = { targetState: "UPPER_TAIL_DECISION", label: "第一管理区", condition: `先观察中轴 ${moneyless(map.midpoint)}，再看上尾决策区`, distanceAtr: distance(map.midpoint) };
+  } else if (state === "UPPER_TAIL_REJECTED") {
+    output.reasons.push(`盘中触及上尾后，收盘退回 ${moneyless(map.upperTailBottom)} 下方`);
+    output.nextCondition = { targetState: "RANGE_MIDDLE", label: "均值回归管理", condition: `先观察中轴 ${moneyless(map.midpoint)}；做空仍需独立资格核验`, distanceAtr: distance(map.midpoint) };
+  } else if (state === "LOWER_TAIL_FALLING") {
+    output.reasons.push(`收盘仍在下尾上界 ${moneyless(map.lowerTailTop)} 下方，未形成收复`);
+    output.nextCondition = { targetState: "LOWER_TAIL_RECLAIMED", label: "下沿收复", condition: `收盘站回 ${moneyless(map.lowerTailTop)} 且出现反转确认`, distanceAtr: distance(map.lowerTailTop) };
+  } else if (state === "UPPER_TAIL_DECISION") {
+    const breakoutFloor = map.rangeHigh + TAILTREND_CONFIG.breakoutBufferAtr * atr;
+    output.reasons.push(`收盘位于上尾决策区 ${moneyless(map.upperTailBottom)}–${moneyless(map.rangeHigh)}`);
+    output.nextCondition = { targetState: "BREAKOUT_CANDIDATE", label: "突破候选", condition: `收盘越过 ${moneyless(breakoutFloor)}；若收盘退回上尾下方则转为拒绝`, distanceAtr: distance(breakoutFloor) };
+  } else if (state === "RANGE_MIDDLE") {
+    const lowerDistance = Math.max(0, (current.close - map.lowerTailTop) / atr);
+    const upperDistance = Math.max(0, (map.upperTailBottom - current.close) / atr);
+    output.reasons.push(`收盘位于下尾上界 ${moneyless(map.lowerTailTop)} 与上尾下界 ${moneyless(map.upperTailBottom)} 之间`);
+    output.nextCondition = lowerDistance <= upperDistance
+      ? { targetState: "LOWER_TAIL_RECLAIMED", label: "下沿观察区", condition: `距下尾上界 ${round(lowerDistance, 2)} ATR；触及后仍需收盘收复`, distanceAtr: round(lowerDistance, 2) }
+      : { targetState: "UPPER_TAIL_DECISION", label: "上沿决策区", condition: `距上尾下界 ${round(upperDistance, 2)} ATR`, distanceAtr: round(upperDistance, 2) };
+  }
+  if (!output.reasons.length) output.reasons.push(STATE_META[state]?.action ?? "等待更多完整日线");
+  return output;
+}
+
+function moneyless(value) {
+  return Number.isFinite(value) ? Number(value.toFixed(3)).toString() : "待计算";
 }
 
 export function analyzeBars(inputRows, options = {}) {
@@ -472,7 +547,18 @@ export function analyzeBars(inputRows, options = {}) {
   const rangePosition = (current.close - map.rangeLow) / map.width;
   const meta = STATE_META[state];
   const context = { weeklyRegime: regime, hvPercentile, volumeRatio, breakout: breakoutEvidence };
+  const priority = priorityAnalysis(state, context);
   const management = managementFor(state, map, bars, index, atr, breakoutEvidence);
+  const explanation = stateExplanation(state, {
+    current,
+    previous,
+    map,
+    atr,
+    breakout: breakoutEvidence,
+    management,
+    gapAtr,
+    daysToEvent,
+  });
   const blockers = [];
   const overextended = state === "TREND_ACCEPTED" && (breakoutEvidence?.extensionAtr ?? 0) > TAILTREND_CONFIG.maximumTrendExtensionAtr;
   if (state === "BREAKOUT_CANDIDATE") blockers.push("日线接受尚未完成");
@@ -489,6 +575,8 @@ export function analyzeBars(inputRows, options = {}) {
     && !(meta.riskModule === "pure_trend" && regime !== "UP")
     && !(meta.riskModule === "us_short" && market !== "US")
     && state !== "EVENT_QUARANTINE";
+  const candidateModule = meta.riskModule
+    ?? (state === "BREAKOUT_CANDIDATE" ? "pure_trend" : state === "EVENT_QUARANTINE" ? "event" : null);
 
   return {
     schemaVersion: TAILTREND_CONFIG.version,
@@ -504,9 +592,15 @@ export function analyzeBars(inputRows, options = {}) {
     label: meta.label,
     action: meta.action,
     newPositionAllowed: allowed,
-    candidateModule: meta.riskModule ?? null,
+    candidateModule,
     riskModule: allowed ? meta.riskModule ?? null : null,
-    priority: statePriority(state, context),
+    shortQualified: meta.riskModule === "us_short" ? market === "US" && options.borrowVerified === true : null,
+    priority: priority.total,
+    priorityBreakdown: priority.components,
+    stateReason: explanation.reasons,
+    nextCondition: explanation.nextCondition,
+    signalDirection: candidateModule === "us_short" ? "SHORT"
+      : ["tail_core", "pure_trend"].includes(candidateModule) ? "LONG" : "OBSERVE",
     dataStatus: options.dataStatus ?? "FRESH",
     bars: bars.length,
     close: round(current.close, 3),
@@ -584,6 +678,7 @@ export function calculateRiskPlan(input) {
   const dailyLoss = Math.max(0, Number(input.dailyRealizedLossPct) || 0) / 100;
   const blockers = [];
   const warnings = [];
+  const signalGate = input.signalGate && typeof input.signalGate === "object" ? input.signalGate : null;
   let weeklyMultiplier = 1;
   if (module === "pure_trend" && weekly !== "UP") weeklyMultiplier = 0;
   if (module === "tail_core" && weekly === "DOWN") weeklyMultiplier = 0.5;
@@ -600,6 +695,14 @@ export function calculateRiskPlan(input) {
   if (!equity) blockers.push("账户权益必须大于 0");
   if (![entry, stop].every(Number.isFinite) || entry <= 0 || stop <= 0) blockers.push("入场与硬止损必须是有效价格");
   if (Number.isFinite(entry) && Number.isFinite(stop) && entry === stop) blockers.push("入场与硬止损不能相同");
+  if (signalGate) {
+    if (signalGate.expectedModule && signalGate.expectedModule !== module) blockers.push("策略袖套与状态机不一致，不允许手动绕开");
+    if (signalGate.newPositionAllowed !== true) blockers.push(`状态机禁止新仓${signalGate.stateLabel ? `：${signalGate.stateLabel}` : ""}`);
+    if (!['FRESH', 'LOCAL'].includes(signalGate.dataStatus)) blockers.push(`数据状态 ${signalGate.dataStatus ?? "UNKNOWN"}，不得计算新仓股数`);
+    if (signalGate.state === "EVENT_QUARANTINE" || signalGate.eventClear === false) blockers.push("事件或跳空隔离尚未解除");
+    if (module === "us_short" && signalGate.shortQualified !== true) blockers.push("借券、成本、市场与账户做空资格尚未全部核验");
+    for (const item of signalGate.blockers ?? []) blockers.push(`状态阻断：${item}`);
+  }
   if (module === "event") blockers.push("事件隔离状态不得使用普通 ATR 仓位公式");
   if (drawdownFactor === 0) blockers.push("账户回撤达到 10%，暂停新增风险并审计");
   if (module === "pure_trend" && weeklyMultiplier === 0) blockers.push("纯趋势机会必须与周线同向");
@@ -625,10 +728,11 @@ export function calculateRiskPlan(input) {
   }
   if (!blockers.length && shares < 1) blockers.push("压力损失下可承担股数不足 1 股");
 
+  const uniqueBlockers = [...new Set(blockers)];
   return {
     module,
     moduleLabel: rule.label,
-    allowed: blockers.length === 0,
+    allowed: uniqueBlockers.length === 0,
     equity: round(equity, 2),
     ideaRiskPct: round(finalIdeaRiskPct * 100, 3),
     tradeRiskPct: round(tradeRiskPct * 100, 3),
@@ -644,8 +748,129 @@ export function calculateRiskPlan(input) {
       volatility: volatilityFactor,
       weekly: weeklyMultiplier,
     },
-    blockers,
+    blockers: uniqueBlockers,
     warnings,
+  };
+}
+
+export function updateAuditLedger(previousLedger, records, latestBars, options = {}) {
+  const horizons = [1, 3, 5, 10];
+  const retentionDays = Math.max(10, Number(options.retentionDays) || 30);
+  const source = previousLedger?.schema === "traderhome_tailtrend_audit_v1" ? previousLedger : { entries: [] };
+  const barLookup = latestBars instanceof Map ? latestBars : new Map(Object.entries(latestBars ?? {}));
+  const entries = (source.entries ?? []).map((entry) => JSON.parse(JSON.stringify(entry)));
+  const idSet = new Set(entries.map((entry) => entry.id));
+
+  for (const entry of entries) {
+    const reference = finite(entry.execution?.alertReference);
+    if (!Number.isFinite(reference) || reference <= 0) continue;
+    const rawBars = barLookup.get(entry.symbol);
+    const unseenBars = normalizeBars(Array.isArray(rawBars) ? rawBars : rawBars ? [rawBars] : [])
+      .filter((bar) => bar.date > entry.originDate && (!entry.forward?.lastObservedDate || bar.date > entry.forward.lastObservedDate));
+    entry.execution = {
+      alertReference: reference,
+      nextTradableReference: null,
+      slippagePct: null,
+      referenceDate: null,
+      ...(entry.execution ?? {}),
+    };
+    for (const bar of unseenBars) {
+      const open = finite(bar.open);
+      const high = finite(bar.high);
+      const low = finite(bar.low);
+      if (![open, high, low].every(Number.isFinite)) continue;
+      const upPct = ((high - reference) / reference) * 100;
+      const downPct = ((low - reference) / reference) * 100;
+      const direction = entry.direction ?? "OBSERVE";
+      const favorablePct = direction === "LONG" ? upPct : direction === "SHORT" ? -downPct : null;
+      const adversePct = direction === "LONG" ? downPct : direction === "SHORT" ? -upPct : null;
+      const sessions = (entry.forward?.sessions ?? 0) + 1;
+      const running = entry.forward?.running ?? { mfePct: null, maePct: null, maxUpPct: null, maxDownPct: null };
+      running.maxUpPct = round(Math.max(Number(running.maxUpPct) || 0, upPct), 3);
+      running.maxDownPct = round(Math.min(Number(running.maxDownPct) || 0, downPct), 3);
+      if (Number.isFinite(favorablePct)) running.mfePct = round(Math.max(Number(running.mfePct) || 0, favorablePct), 3);
+      if (Number.isFinite(adversePct)) running.maePct = round(Math.min(Number(running.maePct) || 0, adversePct), 3);
+      entry.forward = {
+        ...entry.forward,
+        sessions,
+        lastObservedDate: bar.date,
+        running,
+        horizons: { ...(entry.forward?.horizons ?? {}) },
+      };
+      if (horizons.includes(sessions)) {
+        entry.forward.horizons[String(sessions)] = {
+          asOf: bar.date,
+          mfePct: direction === "OBSERVE" ? null : running.mfePct,
+          maePct: direction === "OBSERVE" ? null : running.maePct,
+          maxUpPct: running.maxUpPct,
+          maxDownPct: running.maxDownPct,
+        };
+      }
+      if (sessions === 1 && entry.execution.nextTradableReference === null) {
+        const rawGapPct = ((open - reference) / reference) * 100;
+        const slippagePct = direction === "SHORT" ? -rawGapPct : rawGapPct;
+        entry.execution.nextTradableReference = round(open, 3);
+        entry.execution.slippagePct = round(slippagePct, 3);
+        entry.execution.referenceDate = bar.date;
+      }
+    }
+  }
+
+  for (const record of records ?? []) {
+    const originDate = dateOnly(record.tradingDate);
+    if (!originDate || !record.symbol) continue;
+    const id = `${originDate}:${record.symbol}`;
+    if (idSet.has(id)) continue;
+    const alertReference = finite(record.management?.entryReference) ?? finite(record.close);
+    entries.push({
+      id,
+      originDate,
+      symbol: record.symbol,
+      state: record.state,
+      bucket: record.bucket,
+      priority: record.priority,
+      direction: record.signalDirection ?? "OBSERVE",
+      newPositionAllowed: record.newPositionAllowed === true,
+      dataStatus: record.dataStatus,
+      stateReason: [...(record.stateReason ?? [])],
+      blockers: [...(record.blockers ?? [])],
+      transition: record.change ?? null,
+      nextCondition: record.nextCondition ?? null,
+      execution: {
+        alertReference: round(alertReference, 3),
+        nextTradableReference: null,
+        slippagePct: null,
+        referenceDate: null,
+      },
+      forward: {
+        sessions: 0,
+        lastObservedDate: null,
+        running: { mfePct: null, maePct: null, maxUpPct: null, maxDownPct: null },
+        horizons: Object.fromEntries(horizons.map((horizon) => [String(horizon), null])),
+      },
+      gates: {
+        eventOrGap: record.state === "EVENT_QUARANTINE",
+        shortQualification: record.candidateModule === "us_short" ? record.shortQualified === true : null,
+        cluster: null,
+      },
+      manualOverride: null,
+    });
+    idSet.add(id);
+  }
+
+  const dates = [...new Set(entries.map((entry) => entry.originDate))].sort().reverse().slice(0, retentionDays);
+  const kept = entries
+    .filter((entry) => dates.includes(entry.originDate))
+    .sort((left, right) => right.originDate.localeCompare(left.originDate) || left.symbol.localeCompare(right.symbol));
+  return {
+    schema: "traderhome_tailtrend_audit_v1",
+    version: 1,
+    frameworkVersion: TAILTREND_CONFIG.version,
+    horizons,
+    retentionDays,
+    updatedAt: options.updatedAt ?? new Date().toISOString(),
+    daysCollected: dates.length,
+    entries: kept,
   };
 }
 

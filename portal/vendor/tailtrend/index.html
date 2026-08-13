@@ -44,7 +44,7 @@
 
     <section class="tt-section" id="scanner"><div class="tt-wrap">
       <div class="tt-section__head">
-        <div><div class="tt-kicker">DAILY STATE BOARD</div><h2>先分桶，再在同类机会里排序</h2><p>优先级只用于安排复核顺序，不是胜率或收益预测。点击一行查看尾部地图、管理区和阻断条件。</p></div>
+        <div><div class="tt-kicker">DAILY STATE BOARD</div><h2>先分桶，再在同类机会里排序</h2><p>突破候选与趋势已接受分开显示。优先级只用于安排复核顺序，不是胜率或收益预测；点击一行查看分数构成、变化原因和下一条件。</p></div>
         <div class="tt-search"><label for="symbolSearch">查找标的</label><input id="symbolSearch" type="search" placeholder="SPXC / NVDA / 名称"></div>
       </div>
       <div id="bucketFilters" class="tt-filters" aria-label="状态筛选"></div>
@@ -58,8 +58,18 @@
         <aside id="recordDetail" class="tt-detail" aria-live="polite">
           <div class="tt-empty">选择一个标的查看完整状态。</div>
         </aside>
+        <button id="detailBackdrop" class="tt-detail-backdrop" type="button" aria-label="关闭标的详情" hidden></button>
       </div>
       <div id="scannerError" class="tt-alert error" hidden></div>
+    </div></section>
+
+    <section class="tt-section tt-audit-section" id="audit"><div class="tt-wrap">
+      <div class="tt-section__head">
+        <div><div class="tt-kicker">DAILY AUDIT LEDGER</div><h2>先积累证据，再讨论调参</h2><p>账本只记录真实刷新产生的状态、原因、下一交易日参考和派生 MFE/MAE；不会补造尚未发生的 5–10 日结果。</p></div>
+        <span id="auditProgress" class="tt-private">读取中</span>
+      </div>
+      <div id="auditSummary" class="tt-audit-summary"><div class="tt-empty">正在读取审计账本…</div></div>
+      <div id="auditChanges" class="tt-audit-changes"></div>
     </div></section>
 
     <section class="tt-section tt-cadence-section" id="cadence"><div class="tt-wrap">
@@ -67,10 +77,10 @@
       <h2>不需要不停扫描全市场</h2>
       <p class="tt-lead">正式状态用慢频率确认；只有候选靠近边界、已有持仓和硬风险需要更快。MVP 暂不启用 60 分钟探针，先积累日线影子样本。</p>
       <div class="tt-cadence">
-        <article><span>WEEKLY</span><strong>周末全池重建</strong><p>重画尾部地图、周线环境、行业集群与相关性。</p></article>
+        <article><span>WEEKLY · MANUAL</span><strong>周末全池复核</strong><p>当前人工复核股票池、周线环境、行业集群与相关性。</p></article>
         <article><span>AFTER CLOSE</span><strong>每日全池正式判定</strong><p>更新 ATR/HV，确认收复、突破接受、失败与退出。</p></article>
-        <article><span>PREMARKET</span><strong>只复核持仓与候选</strong><p>检查事件、跳空、风险预算与止损是否仍有效。</p></article>
-        <article><span>EVENT-DRIVEN</span><strong>盘中只盯边界提醒</strong><p>不让盘中噪声推翻日线失效规则；持仓硬风险实时。</p></article>
+        <article><span>PREMARKET · PLANNED</span><strong>只复核持仓与候选</strong><p>尚未开发；未来检查事件、跳空、风险预算与止损。</p></article>
+        <article><span>INTRADAY · PLANNED</span><strong>盘中只盯边界提醒</strong><p>尚未开发；未来也不允许盘中噪声推翻日线规则。</p></article>
       </div>
       <div class="tt-fast-lane"><b>60 分钟快速探针 · 暂停启用</b><span>未来若回测通过，只允许日线已是突破候选的标的先用计划趋势风险的 25% 探针；回到旧区间立即退出，余下风险等日线确认。</span></div>
     </div></section>
@@ -83,7 +93,7 @@
       <div class="tt-risk-grid">
         <form id="riskForm" class="tt-risk-form">
           <label><span>账户权益 USD</span><input id="riskEquity" type="number" min="0" step="1000" value="100000"></label>
-          <label><span>策略袖套</span><select id="riskModule"><option value="tail_core">尾部核心 · 总想法0.40%中的60%</option><option value="pure_trend">纯趋势 · 上限0.20%</option><option value="us_short">美股做空 · 上限0.15%</option><option value="event">事件隔离 · 普通公式禁用</option></select></label>
+          <label><span>策略袖套 · 由状态锁定</span><select id="riskModule" disabled aria-describedby="riskModuleLock"><option value="tail_core">尾部核心 · 总想法0.40%中的60%</option><option value="pure_trend">纯趋势 · 上限0.20%</option><option value="us_short">美股做空 · 上限0.15%</option><option value="event">事件隔离 · 普通公式禁用</option></select><small id="riskModuleLock" class="tt-field-note">不可手动绕开状态机</small></label>
           <label><span>参考入场价</span><input id="riskEntry" type="number" min="0" step="0.01"></label>
           <label><span>硬止损价</span><input id="riskStop" type="number" min="0" step="0.01"></label>
           <label><span>跳空准备金 / 股</span><input id="riskGap" type="number" min="0" step="0.01" value="0"></label>
@@ -129,7 +139,7 @@
       </div>
     </div></section>
   </main>
-  <footer class="tt-wrap tt-footer"><span>TailTrend Lab v0.1 · TraderHome independent research system</span><span>数据来源：Longbridge Securities · 仅派生状态</span></footer>
+  <footer class="tt-wrap tt-footer"><span>TailTrend Lab v0.2 · TraderHome independent research system</span><span>数据来源：Longbridge Securities · 仅派生状态</span></footer>
   <script type="module" src="/tailtrend/tailtrend-app.mjs"></script>
 </body>
 </html>

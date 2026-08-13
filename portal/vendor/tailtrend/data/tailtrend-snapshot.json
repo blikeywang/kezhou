@@ -1,8 +1,8 @@
 {
   "schema": "traderhome_tailtrend_snapshot_v1",
-  "version": 1,
-  "frameworkVersion": "0.1.0",
-  "asOf": "2026-08-13T03:40:32.354Z",
+  "version": 2,
+  "frameworkVersion": "0.2.0",
+  "asOf": "2026-08-13T06:33:16.438Z",
   "tradingDate": "2026-08-12",
   "mode": "complete",
   "source": "Longbridge Securities",
@@ -20,7 +20,7 @@
     "blocked": 4,
     "bucketCounts": {
       "TAIL_RECLAIM_WATCH": 2,
-      "TREND_ACCEPTANCE_WATCH": 2,
+      "BREAKOUT_CANDIDATE_WATCH": 2,
       "BREAKOUT_FAILURE_WATCH": 2,
       "EDGE_OBSERVE": 9,
       "NO_TRADE_MIDDLE": 15
@@ -50,7 +50,7 @@
   "researchStatus": "shadow_test_not_validated",
   "records": [
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "COST.US",
       "ticker": "COST",
       "name": "Costco Wholesale",
@@ -65,7 +65,26 @@
       "newPositionAllowed": true,
       "candidateModule": "tail_core",
       "riskModule": "tail_core",
+      "shortQualified": null,
       "priority": 56,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 56,
+          "reason": "日线触及下尾后重新收复边界"
+        }
+      ],
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上 943.556",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 1000.252，再看上尾决策区",
+        "distanceAtr": 2.65
+      },
+      "signalDirection": "LONG",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 949.575,
@@ -105,11 +124,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:25.709Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:06.820Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": false,
+        "reason": "盘中触及下尾后，收盘重新站上 943.556；收盘高于开盘"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "WMT.US",
       "ticker": "WMT",
       "name": "Walmart",
@@ -124,7 +150,26 @@
       "newPositionAllowed": true,
       "candidateModule": "tail_core",
       "riskModule": "tail_core",
+      "shortQualified": null,
       "priority": 56,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 56,
+          "reason": "日线触及下尾后重新收复边界"
+        }
+      ],
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上 112.463",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 120.972，再看上尾决策区",
+        "distanceAtr": 1.85
+      },
+      "signalDirection": "LONG",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 116.01,
@@ -168,11 +213,18 @@
         "timing": "before",
         "label": "2027 财年第 2 季度业绩披露"
       },
-      "refreshedAt": "2026-08-13T03:40:22.747Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:11.222Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": false,
+        "reason": "盘中触及下尾后，收盘重新站上 112.463；收盘高于开盘"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "BAC.US",
       "ticker": "BAC",
       "name": "Bank of America",
@@ -181,13 +233,42 @@
       "market": "US",
       "tradingDate": "2026-08-12",
       "state": "BREAKOUT_CANDIDATE",
-      "bucket": "TREND_ACCEPTANCE_WATCH",
+      "bucket": "BREAKOUT_CANDIDATE_WATCH",
       "label": "突破候选",
       "action": "等待日线接受，不追完整仓位",
       "newPositionAllowed": false,
-      "candidateModule": null,
+      "candidateModule": "pure_trend",
       "riskModule": null,
+      "shortQualified": null,
       "priority": 67,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 48,
+          "reason": "已越过突破缓冲，但接受尚未完成"
+        },
+        {
+          "label": "周线环境",
+          "points": 15,
+          "reason": "周线向上"
+        },
+        {
+          "label": "成交量背景",
+          "points": 3.6,
+          "reason": "量比 0.9×"
+        }
+      ],
+      "stateReason": [
+        "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      ],
+      "nextCondition": {
+        "targetState": "TREND_ACCEPTED",
+        "label": "趋势已接受",
+        "condition": "3 日窗口内还需 1 个收盘留在边界外",
+        "closesRemaining": 1,
+        "distanceAtr": null
+      },
+      "signalDirection": "LONG",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 64.81,
@@ -235,11 +316,18 @@
       ],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:11.308Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:58.040Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "BREAKOUT_CANDIDATE",
+        "changed": false,
+        "reason": "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "JPM.US",
       "ticker": "JPM",
       "name": "JPMorgan Chase",
@@ -248,13 +336,42 @@
       "market": "US",
       "tradingDate": "2026-08-12",
       "state": "BREAKOUT_CANDIDATE",
-      "bucket": "TREND_ACCEPTANCE_WATCH",
+      "bucket": "BREAKOUT_CANDIDATE_WATCH",
       "label": "突破候选",
       "action": "等待日线接受，不追完整仓位",
       "newPositionAllowed": false,
-      "candidateModule": null,
+      "candidateModule": "pure_trend",
       "riskModule": null,
+      "shortQualified": null,
       "priority": 65,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 48,
+          "reason": "已越过突破缓冲，但接受尚未完成"
+        },
+        {
+          "label": "周线环境",
+          "points": 15,
+          "reason": "周线向上"
+        },
+        {
+          "label": "成交量背景",
+          "points": 2.4,
+          "reason": "量比 0.61×"
+        }
+      ],
+      "stateReason": [
+        "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      ],
+      "nextCondition": {
+        "targetState": "TREND_ACCEPTED",
+        "label": "趋势已接受",
+        "condition": "3 日窗口内还需 1 个收盘留在边界外",
+        "closesRemaining": 1,
+        "distanceAtr": null
+      },
+      "signalDirection": "LONG",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 365.18,
@@ -302,11 +419,18 @@
       ],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:08.829Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:52.768Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "BREAKOUT_CANDIDATE",
+        "changed": false,
+        "reason": "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "HD.US",
       "ticker": "HD",
       "name": "Home Depot",
@@ -321,7 +445,25 @@
       "newPositionAllowed": false,
       "candidateModule": "us_short",
       "riskModule": null,
+      "shortQualified": false,
       "priority": 55,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 55,
+          "reason": "上尾触及后收盘拒绝"
+        }
+      ],
+      "stateReason": [
+        "盘中触及上尾后，收盘退回 344.475 下方"
+      ],
+      "nextCondition": {
+        "targetState": "RANGE_MIDDLE",
+        "label": "均值回归管理",
+        "condition": "先观察中轴 322.908；做空仍需独立资格核验",
+        "distanceAtr": 2.33
+      },
+      "signalDirection": "SHORT",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 343.43,
@@ -367,11 +509,18 @@
         "timing": "before",
         "label": "2027 财年第 2 季度业绩披露"
       },
-      "refreshedAt": "2026-08-13T03:40:26.932Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:09.343Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_REJECTED",
+        "changed": false,
+        "reason": "盘中触及上尾后，收盘退回 344.475 下方"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "V.US",
       "ticker": "V",
       "name": "Visa",
@@ -386,7 +535,25 @@
       "newPositionAllowed": false,
       "candidateModule": "us_short",
       "riskModule": null,
+      "shortQualified": false,
       "priority": 55,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 55,
+          "reason": "上尾触及后收盘拒绝"
+        }
+      ],
+      "stateReason": [
+        "盘中触及上尾后，收盘退回 360.29 下方"
+      ],
+      "nextCondition": {
+        "targetState": "RANGE_MIDDLE",
+        "label": "均值回归管理",
+        "condition": "先观察中轴 340.836；做空仍需独立资格核验",
+        "distanceAtr": 2.47
+      },
+      "signalDirection": "SHORT",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 359.42,
@@ -428,11 +595,18 @@
       ],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:13.442Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:00.142Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_REJECTED",
+        "changed": false,
+        "reason": "盘中触及上尾后，收盘退回 360.29 下方"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "CVX.US",
       "ticker": "CVX",
       "name": "Chevron",
@@ -447,7 +621,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 192.052–198.87"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 199.964；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.77
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 196.6,
@@ -487,11 +679,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:31.641Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:12.417Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 192.052–198.87"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "DIA.US",
       "ticker": "DIA",
       "name": "SPDR Djia",
@@ -506,7 +705,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 535.603–546.75"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 548.186；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.92
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 537.15,
@@ -546,11 +763,18 @@
       "blockers": [],
       "role": "benchmark",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:41.452Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:20.784Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 535.603–546.75"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "IWM.US",
       "ticker": "IWM",
       "name": "iShares Russell 2000",
@@ -565,7 +789,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 296.444–303.06"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 304.119；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.33
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 302.71,
@@ -605,11 +847,18 @@
       "blockers": [],
       "role": "benchmark",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:42.611Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:17.445Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 296.444–303.06"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "LLY.US",
       "ticker": "LLY",
       "name": "Eli Lilly",
@@ -624,7 +873,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 1195.334–1249.45"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 1259.485；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.98
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 1220.28,
@@ -664,11 +931,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:18.416Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:03.543Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 1195.334–1249.45"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "MA.US",
       "ticker": "MA",
       "name": "Mastercard",
@@ -683,7 +957,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 559.713–583.709"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 586.591；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 2.33
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 559.73,
@@ -723,11 +1015,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:16.005Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:59.458Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 559.713–583.709"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "NVDA.US",
       "ticker": "NVDA",
       "name": "NVIDIA",
@@ -742,7 +1041,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 223.561–232.001"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 233.874；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.31
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 224.09,
@@ -786,11 +1103,18 @@
         "timing": "after",
         "label": "2027 财年第 2 季度业绩披露"
       },
-      "refreshedAt": "2026-08-13T03:39:48.850Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:27.408Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 223.561–232.001"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "SPY.US",
       "ticker": "SPY",
       "name": "SPDR S&P 500",
@@ -805,7 +1129,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 764.796–776.85"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 778.912；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.78
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 772.49,
@@ -845,11 +1187,18 @@
       "blockers": [],
       "role": "benchmark",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:47.614Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:18.176Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 764.796–776.85"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "XOM.US",
       "ticker": "XOM",
       "name": "ExxonMobil",
@@ -864,7 +1213,25 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 157.934–163.68"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 164.629；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.29
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 159.75,
@@ -904,11 +1271,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:27.903Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:09.253Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 157.934–163.68"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "MSFT.US",
       "ticker": "MSFT",
       "name": "Microsoft",
@@ -923,7 +1297,30 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘位于上尾决策区 480.824–513.73"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 517.337；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.73
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 492.43,
@@ -963,11 +1360,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:46.633Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:24.986Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 480.824–513.73"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "AAPL.US",
       "ticker": "AAPL",
       "name": "Apple",
@@ -982,7 +1386,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 287.655 与上尾下界 330.109 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.73 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.73
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 302.25,
@@ -1022,11 +1438,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:44.018Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:23.049Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 287.655 与上尾下界 330.109 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "AMD.US",
       "ticker": "AMD",
       "name": "AMD",
@@ -1041,7 +1464,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 431.634 与上尾下界 546.456 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.5 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.5
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 482.93,
@@ -1081,11 +1516,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:56.182Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:33.902Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 431.634 与上尾下界 546.456 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "AMZN.US",
       "ticker": "AMZN",
       "name": "Amazon",
@@ -1100,7 +1542,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 237.88 与上尾下界 274.87 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 0.88 ATR",
+        "distanceAtr": 0.88
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 267.28,
@@ -1114,7 +1568,7 @@
       "distanceToUpperTailAtr": 0.88,
       "gapAtr": 0.11,
       "volumeRatio": 0.61,
-      "averageTurnover20": 12731614408,
+      "averageTurnover20": 12731614654,
       "liquidityBand": "HIGH",
       "eventDate": null,
       "daysToEvent": null,
@@ -1140,11 +1594,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:00.022Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:49.385Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 237.88 与上尾下界 274.87 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "AVGO.US",
       "ticker": "AVGO",
       "name": "Broadcom",
@@ -1159,7 +1620,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 383.986 与上尾下界 466.652 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.98 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.98
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 416.05,
@@ -1203,11 +1676,18 @@
         "timing": "after",
         "label": "2026 财年第 3 季度业绩披露"
       },
-      "refreshedAt": "2026-08-13T03:39:52.345Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:29.192Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 383.986 与上尾下界 466.652 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "CRM.US",
       "ticker": "CRM",
       "name": "Salesforce",
@@ -1222,7 +1702,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 159.214 与上尾下界 197.897 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 0.59 ATR",
+        "distanceAtr": 0.59
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 193.32,
@@ -1266,11 +1758,18 @@
         "timing": "after",
         "label": "2027 财年第 2 季度业绩披露"
       },
-      "refreshedAt": "2026-08-13T03:40:05.936Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:51.727Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 159.214 与上尾下界 197.897 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "GOOGL.US",
       "ticker": "GOOGL",
       "name": "Alphabet",
@@ -1285,7 +1784,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 333.593 与上尾下界 389.672 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.84 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.84
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 343.54,
@@ -1325,11 +1836,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:57.705Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:35.816Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 333.593 与上尾下界 389.672 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "GS.US",
       "ticker": "GS",
       "name": "Goldman Sachs",
@@ -1344,7 +1862,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 966.594 与上尾下界 1107.141 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 2.13 ATR",
+        "distanceAtr": 2.13
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 1037.21,
@@ -1384,11 +1914,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:23.737Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:58.044Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 966.594 与上尾下界 1107.141 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "META.US",
       "ticker": "META",
       "name": "Meta Platforms",
@@ -1403,7 +1940,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 556.808 与上尾下界 653.762 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.97 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.97
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 578.85,
@@ -1443,11 +1992,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:02.261Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:47.164Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 556.808 与上尾下界 653.762 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "MU.US",
       "ticker": "MU",
       "name": "Micron Tech",
@@ -1462,7 +2018,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 772.614 与上尾下界 1134.215 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.79 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.79
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 911.29,
@@ -1502,11 +2070,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:53.606Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:31.092Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 772.614 与上尾下界 1134.215 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "NFLX.US",
       "ticker": "NFLX",
       "name": "Netflix",
@@ -1521,7 +2096,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 70.36 与上尾下界 86.2 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.63 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.63
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 74.21,
@@ -1561,11 +2148,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:03.848Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:43.417Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 70.36 与上尾下界 86.2 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "ORCL.US",
       "ticker": "ORCL",
       "name": "Oracle",
@@ -1580,7 +2174,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 141.475 与上尾下界 222.399 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.49 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.49
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 153.28,
@@ -1620,11 +2226,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:08.941Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:52.910Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 141.475 与上尾下界 222.399 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "QQQ.US",
       "ticker": "QQQ",
       "name": "Invesco QQQ Trust",
@@ -1639,7 +2252,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 678.477 与上尾下界 730.489 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 0.49 ATR",
+        "distanceAtr": 0.49
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 723.7,
@@ -1679,11 +2304,18 @@
       "blockers": [],
       "role": "benchmark",
       "event": null,
-      "refreshedAt": "2026-08-13T03:39:38.355Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:18.695Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 678.477 与上尾下界 730.489 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "SPXC.US",
       "ticker": "SPXC",
       "name": "SPX Technologies",
@@ -1698,7 +2330,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 200.272 与上尾下界 238.378 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.81 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.81
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 218.18,
@@ -1738,11 +2382,18 @@
       "blockers": [],
       "role": "case-study",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:32.353Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:16.436Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 200.272 与上尾下界 238.378 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "TSLA.US",
       "ticker": "TSLA",
       "name": "Tesla",
@@ -1757,7 +2408,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 327.024 与上尾下界 415.956 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.03 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.03
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 327.51,
@@ -1797,11 +2460,18 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:16.498Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:32:47.033Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 327.024 与上尾下界 415.956 之间"
+      }
     },
     {
-      "schemaVersion": "0.1.0",
+      "schemaVersion": "0.2.0",
       "symbol": "UNH.US",
       "ticker": "UNH",
       "name": "Unitedhealth",
@@ -1816,7 +2486,19 @@
       "newPositionAllowed": false,
       "candidateModule": null,
       "riskModule": null,
+      "shortQualified": null,
       "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 390.394 与上尾下界 443.814 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.36 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.36
+      },
+      "signalDirection": "OBSERVE",
       "dataStatus": "FRESH",
       "bars": 360,
       "close": 405.59,
@@ -1856,8 +2538,15 @@
       "blockers": [],
       "role": "research",
       "event": null,
-      "refreshedAt": "2026-08-13T03:40:21.647Z",
-      "source": "Longbridge Securities"
+      "refreshedAt": "2026-08-13T06:33:03.476Z",
+      "source": "Longbridge Securities",
+      "change": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 390.394 与上尾下界 443.814 之间"
+      }
     }
   ],
   "disclaimer": "研究影子运行，不是投资建议，不自动下单。状态与参数尚未完成样本外验证。"

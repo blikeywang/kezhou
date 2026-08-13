@@ -9,7 +9,9 @@ import { promisify } from "node:util";
 import {
   TAILTREND_CONFIG,
   analyzeBars,
+  normalizeBars,
   summarizeSnapshot,
+  updateAuditLedger,
 } from "../../portal/vendor/tailtrend/tailtrend-engine.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -18,6 +20,7 @@ const projectDir = resolve(scriptDir, "../..");
 const dataDir = resolve(projectDir, "portal/vendor/tailtrend/data");
 const snapshotPath = resolve(dataDir, "tailtrend-snapshot.json");
 const historyPath = resolve(dataDir, "run-history.json");
+const auditPath = resolve(dataDir, "tailtrend-audit.json");
 const universePath = resolve(scriptDir, "universe.json");
 
 function dateInZone(timeZone, date = new Date()) {
@@ -204,21 +207,23 @@ const outcomes = await pooled(universe.symbols, 4, async (item) => {
         refreshedAt: new Date().toISOString(),
         source: "Longbridge Securities",
       },
+      auditBars: normalizeBars(rows).slice(-20),
       error: null,
     };
   } catch (error) {
     const message = errorText(error);
     completed += 1;
     console.warn(`${String(completed).padStart(2, "0")}/${symbols.length} ${item.symbol} ERROR ${message}`);
-    return { record: staleRecord(previousBySymbol.get(item.symbol), message, todayEt), error: `${item.symbol}: ${message}` };
+    return { record: staleRecord(previousBySymbol.get(item.symbol), message, todayEt), auditBars: [], error: `${item.symbol}: ${message}` };
   }
 });
 
-const records = outcomes.map((item) => item.record).filter(Boolean);
+let records = outcomes.map((item) => item.record).filter(Boolean);
 const errors = outcomes.map((item) => item.error).filter(Boolean);
 const order = [
   "TAIL_RECLAIM_WATCH",
-  "TREND_ACCEPTANCE_WATCH",
+  "TREND_ACCEPTED_WATCH",
+  "BREAKOUT_CANDIDATE_WATCH",
   "BREAKOUT_FAILURE_WATCH",
   "BREAKDOWN_RISK",
   "EVENT_QUARANTINE",
@@ -228,17 +233,40 @@ const order = [
 records.sort((left, right) => order.indexOf(left.bucket) - order.indexOf(right.bucket)
   || right.priority - left.priority || left.symbol.localeCompare(right.symbol));
 
-const transitions = records.flatMap((record) => {
-  const prior = previousBySymbol.get(record.symbol);
-  return prior && prior.state !== record.state
-    ? [{ symbol: record.symbol, from: prior.state, to: record.state, at: record.tradingDate }]
-    : [];
-});
-const summary = summarizeSnapshot(records);
 const tradingDate = records.map((row) => row.tradingDate).filter(Boolean).sort().at(-1) ?? todayEt;
+const runHistory = await readJson(historyPath, { schema: "traderhome_tailtrend_run_history_v2", records: [] });
+const priorRun = (runHistory.records ?? [])
+  .filter((item) => item.tradingDate < tradingDate && Array.isArray(item.symbols))
+  .sort((left, right) => right.tradingDate.localeCompare(left.tradingDate))[0] ?? null;
+const comparisonRows = priorRun?.symbols
+  ?? (previous.tradingDate && previous.tradingDate < tradingDate ? previous.records ?? [] : []);
+const comparisonDate = priorRun?.tradingDate
+  ?? (previous.tradingDate && previous.tradingDate < tradingDate ? previous.tradingDate : null);
+const comparisonBySymbol = new Map(comparisonRows.map((row) => [row.symbol, row]));
+records = records.map((record) => {
+  const prior = comparisonBySymbol.get(record.symbol);
+  return {
+    ...record,
+    change: {
+      comparisonDate,
+      from: prior?.state ?? null,
+      to: record.state,
+      changed: Boolean(prior && prior.state !== record.state),
+      reason: (record.stateReason ?? []).join("；") || record.action,
+    },
+  };
+});
+const transitions = records.flatMap((record) => record.change.changed ? [{
+  symbol: record.symbol,
+  from: record.change.from,
+  to: record.state,
+  at: record.tradingDate,
+  reason: record.change.reason,
+}] : []);
+const summary = summarizeSnapshot(records);
 const snapshot = {
   schema: TAILTREND_CONFIG.schema,
-  version: 1,
+  version: 2,
   frameworkVersion: TAILTREND_CONFIG.version,
   asOf: new Date().toISOString(),
   tradingDate,
@@ -272,7 +300,9 @@ const snapshot = {
   disclaimer: "研究影子运行，不是投资建议，不自动下单。状态与参数尚未完成样本外验证。",
 };
 
-const runHistory = await readJson(historyPath, { schema: "traderhome_tailtrend_run_history_v1", records: [] });
+runHistory.schema = "traderhome_tailtrend_run_history_v2";
+runHistory.version = 2;
+runHistory.frameworkVersion = TAILTREND_CONFIG.version;
 runHistory.records = [
   {
     asOf: snapshot.asOf,
@@ -281,13 +311,36 @@ runHistory.records = [
     summary,
     dataQuality: snapshot.dataQuality,
     transitions,
+    symbols: records.map((record) => ({
+      symbol: record.symbol,
+      state: record.state,
+      bucket: record.bucket,
+      priority: record.priority,
+      priorityBreakdown: record.priorityBreakdown,
+      dataStatus: record.dataStatus,
+      newPositionAllowed: record.newPositionAllowed,
+      stateReason: record.stateReason,
+      nextCondition: record.nextCondition,
+      blockers: record.blockers,
+    })),
   },
   ...(runHistory.records ?? []).filter((item) => item.tradingDate !== tradingDate),
 ].slice(0, 90);
 
+const previousAudit = await readJson(auditPath, { schema: "traderhome_tailtrend_audit_v1", entries: [] });
+const auditBars = new Map(outcomes
+  .filter((item) => item.record?.symbol && item.auditBars?.length)
+  .map((item) => [item.record.symbol, item.auditBars]));
+const auditLedger = updateAuditLedger(previousAudit, records, auditBars, {
+  retentionDays: 30,
+  updatedAt: snapshot.asOf,
+});
+
 await mkdir(dataDir, { recursive: true });
 await writeFile(snapshotPath, `${JSON.stringify(snapshot, null, 2)}\n`, "utf8");
 await writeFile(historyPath, `${JSON.stringify(runHistory, null, 2)}\n`, "utf8");
+await writeFile(auditPath, `${JSON.stringify(auditLedger, null, 2)}\n`, "utf8");
 console.log(`wrote ${snapshotPath}`);
+console.log(`auditDays=${auditLedger.daysCollected} auditEntries=${auditLedger.entries.length}`);
 console.log(`fresh=${snapshot.dataQuality.fresh} cached=${snapshot.dataQuality.cached} stale=${snapshot.dataQuality.stale} errors=${errors.length}`);
 console.log(`buckets=${JSON.stringify(summary.bucketCounts)}`);

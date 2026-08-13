@@ -14,4 +14,6 @@ The refresh uses the authenticated local Longbridge CLI and requests 360 forward
 
 The initial universe is deliberately small and liquid so the shadow test is easy to inspect. Change `universe.json` only as a versioned research decision. A failed refresh can carry the prior derived row as `CACHED` or `STALE`, but cached rows are forced to `newPositionAllowed=false`.
 
-The website is a monitoring and position-sizing aid, not an automatic trading system. Account inputs remain in browser memory and are never sent to TraderHome.
+The website is a monitoring and position-sizing aid, not an automatic trading system. Account inputs remain in browser memory and are never sent to TraderHome. The position calculator inherits the selected record's state, freshness, event and short-qualification gates; a blocked state always returns zero shares, and the strategy sleeve is not user-switchable.
+
+`tailtrend-audit.json` is a derived, append-by-trading-day shadow ledger. It starts each symbol with a real baseline and fills the next-session reference plus 1/3/5/10-session MFE/MAE only when later daily bars arrive. It never backfills invented observations and does not contain the source OHLCV rows.

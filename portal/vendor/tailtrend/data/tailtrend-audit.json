@@ -1,0 +1,1708 @@
+{
+  "schema": "traderhome_tailtrend_audit_v1",
+  "version": 1,
+  "frameworkVersion": "0.2.0",
+  "horizons": [
+    1,
+    3,
+    5,
+    10
+  ],
+  "retentionDays": 30,
+  "updatedAt": "2026-08-13T06:33:16.438Z",
+  "daysCollected": 1,
+  "entries": [
+    {
+      "id": "2026-08-12:AAPL.US",
+      "originDate": "2026-08-12",
+      "symbol": "AAPL.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 287.655 与上尾下界 330.109 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 287.655 与上尾下界 330.109 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.73 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.73
+      },
+      "execution": {
+        "alertReference": 302.25,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:AMD.US",
+      "originDate": "2026-08-12",
+      "symbol": "AMD.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 431.634 与上尾下界 546.456 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 431.634 与上尾下界 546.456 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.5 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.5
+      },
+      "execution": {
+        "alertReference": 482.93,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:AMZN.US",
+      "originDate": "2026-08-12",
+      "symbol": "AMZN.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 237.88 与上尾下界 274.87 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 237.88 与上尾下界 274.87 之间"
+      },
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 0.88 ATR",
+        "distanceAtr": 0.88
+      },
+      "execution": {
+        "alertReference": 267.28,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:AVGO.US",
+      "originDate": "2026-08-12",
+      "symbol": "AVGO.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 383.986 与上尾下界 466.652 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 383.986 与上尾下界 466.652 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.98 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.98
+      },
+      "execution": {
+        "alertReference": 416.05,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:BAC.US",
+      "originDate": "2026-08-12",
+      "symbol": "BAC.US",
+      "state": "BREAKOUT_CANDIDATE",
+      "bucket": "BREAKOUT_CANDIDATE_WATCH",
+      "priority": 67,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      ],
+      "blockers": [
+        "日线接受尚未完成"
+      ],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "BREAKOUT_CANDIDATE",
+        "changed": false,
+        "reason": "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      },
+      "nextCondition": {
+        "targetState": "TREND_ACCEPTED",
+        "label": "趋势已接受",
+        "condition": "3 日窗口内还需 1 个收盘留在边界外",
+        "closesRemaining": 1,
+        "distanceAtr": null
+      },
+      "execution": {
+        "alertReference": 64.81,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:COST.US",
+      "originDate": "2026-08-12",
+      "symbol": "COST.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 56,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上 943.556",
+        "收盘高于开盘"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": false,
+        "reason": "盘中触及下尾后，收盘重新站上 943.556；收盘高于开盘"
+      },
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 1000.252，再看上尾决策区",
+        "distanceAtr": 2.65
+      },
+      "execution": {
+        "alertReference": 949.575,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:CRM.US",
+      "originDate": "2026-08-12",
+      "symbol": "CRM.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 159.214 与上尾下界 197.897 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 159.214 与上尾下界 197.897 之间"
+      },
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 0.59 ATR",
+        "distanceAtr": 0.59
+      },
+      "execution": {
+        "alertReference": 193.32,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:CVX.US",
+      "originDate": "2026-08-12",
+      "symbol": "CVX.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 192.052–198.87"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 192.052–198.87"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 199.964；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.77
+      },
+      "execution": {
+        "alertReference": 196.6,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:DIA.US",
+      "originDate": "2026-08-12",
+      "symbol": "DIA.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 535.603–546.75"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 535.603–546.75"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 548.186；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.92
+      },
+      "execution": {
+        "alertReference": 537.15,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:GOOGL.US",
+      "originDate": "2026-08-12",
+      "symbol": "GOOGL.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 333.593 与上尾下界 389.672 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 333.593 与上尾下界 389.672 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.84 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.84
+      },
+      "execution": {
+        "alertReference": 343.54,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:GS.US",
+      "originDate": "2026-08-12",
+      "symbol": "GS.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 966.594 与上尾下界 1107.141 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 966.594 与上尾下界 1107.141 之间"
+      },
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 2.13 ATR",
+        "distanceAtr": 2.13
+      },
+      "execution": {
+        "alertReference": 1037.21,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:HD.US",
+      "originDate": "2026-08-12",
+      "symbol": "HD.US",
+      "state": "UPPER_TAIL_REJECTED",
+      "bucket": "BREAKOUT_FAILURE_WATCH",
+      "priority": 55,
+      "direction": "SHORT",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及上尾后，收盘退回 344.475 下方"
+      ],
+      "blockers": [
+        "借券、成本与账户做空权限尚未核验"
+      ],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_REJECTED",
+        "changed": false,
+        "reason": "盘中触及上尾后，收盘退回 344.475 下方"
+      },
+      "nextCondition": {
+        "targetState": "RANGE_MIDDLE",
+        "label": "均值回归管理",
+        "condition": "先观察中轴 322.908；做空仍需独立资格核验",
+        "distanceAtr": 2.33
+      },
+      "execution": {
+        "alertReference": 343.43,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": false,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:IWM.US",
+      "originDate": "2026-08-12",
+      "symbol": "IWM.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 296.444–303.06"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 296.444–303.06"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 304.119；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.33
+      },
+      "execution": {
+        "alertReference": 302.71,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:JPM.US",
+      "originDate": "2026-08-12",
+      "symbol": "JPM.US",
+      "state": "BREAKOUT_CANDIDATE",
+      "bucket": "BREAKOUT_CANDIDATE_WATCH",
+      "priority": 65,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      ],
+      "blockers": [
+        "日线接受尚未完成"
+      ],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "BREAKOUT_CANDIDATE",
+        "changed": false,
+        "reason": "收盘已越过旧上沿与 0.25 ATR 缓冲，但接受窗口尚未完成"
+      },
+      "nextCondition": {
+        "targetState": "TREND_ACCEPTED",
+        "label": "趋势已接受",
+        "condition": "3 日窗口内还需 1 个收盘留在边界外",
+        "closesRemaining": 1,
+        "distanceAtr": null
+      },
+      "execution": {
+        "alertReference": 365.18,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:LLY.US",
+      "originDate": "2026-08-12",
+      "symbol": "LLY.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 1195.334–1249.45"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 1195.334–1249.45"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 1259.485；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.98
+      },
+      "execution": {
+        "alertReference": 1220.28,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:MA.US",
+      "originDate": "2026-08-12",
+      "symbol": "MA.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 559.713–583.709"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 559.713–583.709"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 586.591；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 2.33
+      },
+      "execution": {
+        "alertReference": 559.73,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:META.US",
+      "originDate": "2026-08-12",
+      "symbol": "META.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 556.808 与上尾下界 653.762 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 556.808 与上尾下界 653.762 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.97 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.97
+      },
+      "execution": {
+        "alertReference": 578.85,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:MSFT.US",
+      "originDate": "2026-08-12",
+      "symbol": "MSFT.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 480.824–513.73"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 480.824–513.73"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 517.337；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.73
+      },
+      "execution": {
+        "alertReference": 492.43,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:MU.US",
+      "originDate": "2026-08-12",
+      "symbol": "MU.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 772.614 与上尾下界 1134.215 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 772.614 与上尾下界 1134.215 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.79 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.79
+      },
+      "execution": {
+        "alertReference": 911.29,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:NFLX.US",
+      "originDate": "2026-08-12",
+      "symbol": "NFLX.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 70.36 与上尾下界 86.2 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 70.36 与上尾下界 86.2 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.63 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.63
+      },
+      "execution": {
+        "alertReference": 74.21,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:NVDA.US",
+      "originDate": "2026-08-12",
+      "symbol": "NVDA.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 223.561–232.001"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 223.561–232.001"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 233.874；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.31
+      },
+      "execution": {
+        "alertReference": 224.09,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:ORCL.US",
+      "originDate": "2026-08-12",
+      "symbol": "ORCL.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 141.475 与上尾下界 222.399 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 141.475 与上尾下界 222.399 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.49 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.49
+      },
+      "execution": {
+        "alertReference": 153.28,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:QQQ.US",
+      "originDate": "2026-08-12",
+      "symbol": "QQQ.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 678.477 与上尾下界 730.489 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 678.477 与上尾下界 730.489 之间"
+      },
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 0.49 ATR",
+        "distanceAtr": 0.49
+      },
+      "execution": {
+        "alertReference": 723.7,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:SPXC.US",
+      "originDate": "2026-08-12",
+      "symbol": "SPXC.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 200.272 与上尾下界 238.378 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 200.272 与上尾下界 238.378 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.81 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.81
+      },
+      "execution": {
+        "alertReference": 218.18,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:SPY.US",
+      "originDate": "2026-08-12",
+      "symbol": "SPY.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 764.796–776.85"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 764.796–776.85"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 778.912；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.78
+      },
+      "execution": {
+        "alertReference": 772.49,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:TSLA.US",
+      "originDate": "2026-08-12",
+      "symbol": "TSLA.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 327.024 与上尾下界 415.956 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 327.024 与上尾下界 415.956 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.03 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.03
+      },
+      "execution": {
+        "alertReference": 327.51,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:UNH.US",
+      "originDate": "2026-08-12",
+      "symbol": "UNH.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 390.394 与上尾下界 443.814 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 390.394 与上尾下界 443.814 之间"
+      },
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.36 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.36
+      },
+      "execution": {
+        "alertReference": 405.59,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:V.US",
+      "originDate": "2026-08-12",
+      "symbol": "V.US",
+      "state": "UPPER_TAIL_REJECTED",
+      "bucket": "BREAKOUT_FAILURE_WATCH",
+      "priority": 55,
+      "direction": "SHORT",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及上尾后，收盘退回 360.29 下方"
+      ],
+      "blockers": [
+        "借券、成本与账户做空权限尚未核验"
+      ],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_REJECTED",
+        "changed": false,
+        "reason": "盘中触及上尾后，收盘退回 360.29 下方"
+      },
+      "nextCondition": {
+        "targetState": "RANGE_MIDDLE",
+        "label": "均值回归管理",
+        "condition": "先观察中轴 340.836；做空仍需独立资格核验",
+        "distanceAtr": 2.47
+      },
+      "execution": {
+        "alertReference": 359.42,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": false,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:WMT.US",
+      "originDate": "2026-08-12",
+      "symbol": "WMT.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 56,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上 112.463",
+        "收盘高于开盘"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": false,
+        "reason": "盘中触及下尾后，收盘重新站上 112.463；收盘高于开盘"
+      },
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 120.972，再看上尾决策区",
+        "distanceAtr": 1.85
+      },
+      "execution": {
+        "alertReference": 116.01,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "2026-08-12:XOM.US",
+      "originDate": "2026-08-12",
+      "symbol": "XOM.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 157.934–163.68"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": null,
+        "from": null,
+        "to": "UPPER_TAIL_DECISION",
+        "changed": false,
+        "reason": "收盘位于上尾决策区 157.934–163.68"
+      },
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 164.629；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.29
+      },
+      "execution": {
+        "alertReference": 159.75,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    }
+  ]
+}

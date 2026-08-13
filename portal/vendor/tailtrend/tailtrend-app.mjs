@@ -9,6 +9,7 @@ const $ = (selector) => document.querySelector(selector);
 const state = {
   snapshot: null,
   history: null,
+  audit: null,
   selected: null,
   filter: "ALL",
   search: "",
@@ -55,7 +56,7 @@ function renderHeader() {
   $("#snapshotMode").textContent = snapshot.mode === "complete" ? "完整日线快照" : "部分数据降级";
   $("#snapshotDate").textContent = `截至 ${snapshot.tradingDate}`;
   $("#metricUniverse").textContent = snapshot.universe.published;
-  const edgeBuckets = ["TAIL_RECLAIM_WATCH", "TREND_ACCEPTANCE_WATCH", "BREAKOUT_FAILURE_WATCH", "BREAKDOWN_RISK", "EVENT_QUARANTINE"];
+  const edgeBuckets = ["TAIL_RECLAIM_WATCH", "BREAKOUT_CANDIDATE_WATCH", "TREND_ACCEPTED_WATCH", "BREAKOUT_FAILURE_WATCH", "BREAKDOWN_RISK", "EVENT_QUARANTINE"];
   $("#metricEdges").textContent = snapshot.records.filter((row) => edgeBuckets.includes(row.bucket)).length;
   $("#metricMiddle").textContent = snapshot.summary.bucketCounts.NO_TRADE_MIDDLE ?? 0;
   $("#metricFresh").textContent = `${quality.fresh}/${snapshot.universe.requested}`;
@@ -98,15 +99,15 @@ function renderRows() {
     const position = Math.max(0, Math.min(100, record.rangePositionPct ?? 50));
     const selected = state.selected?.symbol === record.symbol;
     return `<tr data-symbol="${escapeHtml(record.symbol)}" aria-selected="${selected}">
-      <td><div class="tt-symbol"><strong>${escapeHtml(record.ticker)}</strong><small>${escapeHtml(record.name)}</small></div></td>
-      <td><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span><small class="tt-cell-sub">复核优先级 ${record.priority}</small></td>
-      <td><div class="tt-position"><div class="tt-position__bar"><i style="left:${position}%"></i></div><small class="tt-cell-sub">60日区间 ${number(record.rangePositionPct, 0)}%</small></div></td>
-      <td><b>${escapeHtml(weeklyLabel(record.weeklyRegime))}</b><small class="tt-cell-sub">ATR ${number(record.atrPct)}% · HV p${number(record.hvPercentile, 0)}</small></td>
-      <td class="tt-action">${escapeHtml(record.action)}${record.blockers?.length ? `<small class="tt-cell-sub">${escapeHtml(record.blockers[0])}</small>` : ""}</td>
-      <td><span class="tt-fresh ${dataClass(record.dataStatus)}">${escapeHtml(record.dataStatus)}</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)}</small></td>
+      <td data-label="标的"><div class="tt-symbol"><strong>${escapeHtml(record.ticker)}</strong><small>${escapeHtml(record.name)}</small></div></td>
+      <td data-label="状态"><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span><small class="tt-cell-sub">复核优先级 ${record.priority}</small></td>
+      <td data-label="位置"><div class="tt-position"><div class="tt-position__bar"><i style="left:${position}%"></i></div><small class="tt-cell-sub">60日区间 ${number(record.rangePositionPct, 0)}%</small></div></td>
+      <td data-label="周线 / 波动"><b>${escapeHtml(weeklyLabel(record.weeklyRegime))}</b><small class="tt-cell-sub">ATR ${number(record.atrPct)}% · HV p${number(record.hvPercentile, 0)}</small></td>
+      <td data-label="动作" class="tt-action">${escapeHtml(record.action)}${record.blockers?.length ? `<small class="tt-cell-sub">${escapeHtml(record.blockers[0])}</small>` : ""}</td>
+      <td data-label="数据"><span class="tt-fresh ${dataClass(record.dataStatus)}">${escapeHtml(record.dataStatus)}</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)}</small></td>
     </tr>`;
   }).join("");
-  body.querySelectorAll("tr[data-symbol]").forEach((row) => row.addEventListener("click", () => selectRecord(row.dataset.symbol)));
+  body.querySelectorAll("tr[data-symbol]").forEach((row) => row.addEventListener("click", () => selectRecord(row.dataset.symbol, { openDetail: true })));
 }
 
 function managementRows(record) {
@@ -121,15 +122,43 @@ function managementRows(record) {
   return rows;
 }
 
+function changeMarkup(record) {
+  const change = record.change;
+  const comparison = change?.comparisonDate;
+  const priorLabel = change?.from ? STATE_META[change.from]?.label ?? change.from : null;
+  const headline = !comparison
+    ? "首份审计基线，暂无昨日对照"
+    : change.changed
+      ? `${comparison}：${priorLabel} → ${record.label}`
+      : `较 ${comparison} 状态未变化`;
+  const reasons = record.stateReason?.length ? record.stateReason : [change?.reason ?? record.action];
+  return `<div class="tt-explain"><div><span>较昨日变化</span><strong>${escapeHtml(headline)}</strong></div><ul>${reasons.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`;
+}
+
+function nextConditionMarkup(record) {
+  const next = record.nextCondition;
+  if (!next) return "";
+  const distance = Number.isFinite(next.distanceAtr) ? ` · 约 ${number(next.distanceAtr, 2)} ATR` : "";
+  return `<div class="tt-next"><span>距离下一状态 / 管理条件</span><strong>${escapeHtml(next.label ?? next.targetState)}</strong><p>${escapeHtml(next.condition)}${escapeHtml(distance)}</p></div>`;
+}
+
+function priorityMarkup(record) {
+  const components = record.priorityBreakdown ?? [];
+  if (!components.length) return '<div class="tt-priority-list"><span>优先级构成尚未写入该快照。</span></div>';
+  return `<div class="tt-priority-list">${components.map((component) => `<div><span>${escapeHtml(component.label)}<small>${escapeHtml(component.reason)}</small></span><b class="${component.points < 0 ? "negative" : ""}">${component.points > 0 ? "+" : ""}${number(component.points, 1)}</b></div>`).join("")}</div>`;
+}
+
 function detailMarkup(record, compact = false) {
   const map = record.tailMap;
   if (!map) {
-    return `<div class="tt-detail__title"><div><small>${escapeHtml(record.symbol)}</small><h3>${escapeHtml(record.name)}</h3><span class="tt-state tone-muted">${escapeHtml(record.label)}</span></div><div class="tt-priority"><span>有效日线</span><b>${record.bars ?? 0}</b></div></div><div class="tt-detail__verdict tone-muted">${escapeHtml(record.action)}</div><div class="tt-detail__plan"><h4>无法生成地图</h4><ul>${(record.blockers ?? []).map((item) => `<li class="tt-blocker">${escapeHtml(item)}</li>`).join("")}</ul></div>`;
+    return `<button class="tt-detail-close" type="button" aria-label="关闭标的详情">关闭</button><div class="tt-detail__title"><div><small>${escapeHtml(record.symbol)}</small><h3>${escapeHtml(record.name)}</h3><span class="tt-state tone-muted">${escapeHtml(record.label)}</span></div><div class="tt-priority"><span>有效日线</span><b>${record.bars ?? 0}</b></div></div><div class="tt-detail__verdict tone-muted">${escapeHtml(record.action)}</div><div class="tt-detail__plan"><h4>无法生成地图</h4><ul>${(record.blockers ?? []).map((item) => `<li class="tt-blocker">${escapeHtml(item)}</li>`).join("")}</ul></div>`;
   }
   const position = Math.max(0, Math.min(100, record.rangePositionPct ?? 50));
   const blockers = record.blockers?.length ? record.blockers : ["无额外阻断；仍需人工确认事件、成本与组合相关性"];
-  return `<div class="tt-detail__title"><div><small>${escapeHtml(record.symbol)} · ${escapeHtml(record.sector)}</small><h3>${escapeHtml(record.name)}</h3><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span></div><div class="tt-priority"><span>复核优先级</span><b>${record.priority}</b></div></div>
+  return `<button class="tt-detail-close" type="button" aria-label="关闭标的详情">关闭</button><div class="tt-detail__title"><div><small>${escapeHtml(record.symbol)} · ${escapeHtml(record.sector)}</small><h3>${escapeHtml(record.name)}</h3><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span></div><div class="tt-priority"><span>复核优先级</span><b>${record.priority}</b></div></div>
     <div class="tt-detail__verdict ${toneFor(record)}">${escapeHtml(record.action)}</div>
+    ${changeMarkup(record)}
+    ${nextConditionMarkup(record)}
     <div class="tt-map"><div class="tt-map__labels"><span>${money(map.rangeLow)}</span><span>中轴 ${money(map.midpoint)}</span><span>${money(map.rangeHigh)}</span></div><div class="tt-map__track"><span></span><span></span><span></span><i style="left:${position}%"></i></div></div>
     <div class="tt-detail-grid">
       <div><span>正式收盘</span><b>${money(record.close)}</b></div>
@@ -141,19 +170,29 @@ function detailMarkup(record, compact = false) {
     </div>
     <div class="tt-detail__plan"><h4>预先写下的管理方式</h4><ul>${managementRows(record).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
     <div class="tt-detail__plan"><h4>阻断 / 复核</h4><ul>${blockers.map((item) => `<li class="${record.blockers?.length ? "tt-blocker" : ""}">${escapeHtml(item)}</li>`).join("")}</ul></div>
+    <div class="tt-detail__plan"><h4>优先级构成 · 只用于复核排序</h4>${priorityMarkup(record)}</div>
     ${compact ? "" : `<div class="tt-detail__plan"><h4>地图版本</h4><ul><li>${escapeHtml(map.version)} · prior completed bars only</li><li>数据：${escapeHtml(record.dataStatus)} · ${escapeHtml(record.source)}</li></ul></div>`}`;
 }
 
-function selectRecord(symbol) {
+function closeDetail() {
+  document.body.classList.remove("tt-detail-open");
+  $("#detailBackdrop").hidden = true;
+}
+
+function selectRecord(symbol, { openDetail = false } = {}) {
   const record = state.snapshot.records.find((item) => item.symbol === symbol);
   if (!record) return;
   state.selected = record;
   $("#recordDetail").innerHTML = detailMarkup(record);
+  $("#recordDetail").querySelector(".tt-detail-close")?.addEventListener("click", closeDetail);
+  document.body.classList.toggle("tt-detail-open", openDetail);
+  $("#detailBackdrop").hidden = !openDetail;
   populateRisk(record);
   renderRows();
 }
 
 function chosenModule(record) {
+  if (record.candidateModule) return record.candidateModule;
   if (record.riskModule) return record.riskModule;
   if (record.state === "EVENT_QUARANTINE") return "event";
   if (["BREAKOUT_CANDIDATE", "TREND_ACCEPTED", "BREAKOUT_FAILED"].includes(record.state)) return "pure_trend";
@@ -193,12 +232,22 @@ function calculateAndRenderRisk() {
     fullStopsToday: formNumber("#riskStops"),
     dailyRealizedLossPct: formNumber("#riskDailyLoss"),
     averageTurnover20: record?.averageTurnover20,
+    signalGate: record ? {
+      expectedModule: chosenModule(record),
+      newPositionAllowed: record.newPositionAllowed,
+      state: record.state,
+      stateLabel: record.label,
+      dataStatus: record.dataStatus,
+      eventClear: record.state !== "EVENT_QUARANTINE",
+      shortQualified: record.shortQualified,
+      blockers: record.blockers,
+    } : null,
   });
   const notes = [
     ...plan.blockers.map((item) => ({ text: item, block: true })),
     ...plan.warnings.map((item) => ({ text: item, block: false })),
   ];
-  $("#riskOutput").innerHTML = `<div class="tt-risk-verdict"><div><span>${escapeHtml(record?.symbol ?? "未选择标的")} · ${escapeHtml(plan.moduleLabel)}</span><h3>${plan.allowed ? "压力预算允许" : "当前禁止新仓"}</h3><small class="tt-cell-sub">最终结果以全部组合、事件与执行闸门为准</small></div><div><b>${plan.shares}</b><span>股</span></div></div>
+  $("#riskOutput").innerHTML = `<div class="tt-risk-verdict"><div><span>${escapeHtml(record?.symbol ?? "未选择标的")} · ${escapeHtml(plan.moduleLabel)}</span><h3>${plan.allowed ? "状态闸门通过 · 待人工复核" : "当前禁止新仓"}</h3><small class="tt-cell-sub">该股数只是压力上限；事件、组合相关性、可成交性与实际账户仍需人工确认</small></div><div><b>${plan.shares}</b><span>股</span></div></div>
     <div class="tt-risk-metrics">
       <div><span>${plan.allowed ? "本袖套计划亏损" : "闸门通过后的风险预算"}</span><strong>${money(plan.plannedLoss)}</strong></div>
       <div><span>每股压力损失</span><strong>${money(plan.stressPerShare)}</strong></div>
@@ -208,6 +257,34 @@ function calculateAndRenderRisk() {
       <div><span>风险乘数</span><strong>${number(plan.multipliers.drawdown, 2)} × ${number(plan.multipliers.volatility, 2)} × ${number(plan.multipliers.weekly, 2)}</strong></div>
     </div>
     <div class="tt-risk-notes">${notes.length ? notes.map((item) => `<div class="tt-risk-note ${item.block ? "block" : ""}">${escapeHtml(item.text)}</div>`).join("") : '<div class="tt-risk-note">未触发账户级阻断；这不代表策略已有正期望。</div>'}</div>`;
+}
+
+function renderAudit() {
+  const ledger = state.audit ?? { entries: [], daysCollected: 0 };
+  const entries = ledger.entries ?? [];
+  const days = ledger.daysCollected ?? new Set(entries.map((entry) => entry.originDate)).size;
+  const trackedSignals = entries.filter((entry) => entry.direction !== "OBSERVE").length;
+  const nextReferences = entries.filter((entry) => Number.isFinite(entry.execution?.nextTradableReference)).length;
+  const completedFive = entries.filter((entry) => entry.forward?.horizons?.["5"]).length;
+  const skippedLargeMoves = entries.filter((entry) => entry.direction === "OBSERVE"
+    && Math.max(Math.abs(entry.forward?.running?.maxUpPct ?? 0), Math.abs(entry.forward?.running?.maxDownPct ?? 0)) >= 5).length;
+  $("#auditProgress").textContent = `${Math.min(days, 10)}/10 个交易日`;
+  $("#auditSummary").innerHTML = [
+    ["真实交易日", days, "目标先积累 5–10 日"],
+    ["方向性观察", trackedSignals, "含被硬闸门阻断的影子候选"],
+    ["次日参考", nextReferences, "用于计算提醒到下一可交易日偏差"],
+    ["5日结果", completedFive, "派生 MFE / MAE 已完成"],
+    ["主动放弃后大幅运行", skippedLargeMoves, "中部/观察状态后绝对波动 ≥5%"],
+  ].map(([label, value, note]) => `<article><span>${escapeHtml(label)}</span><strong>${value}</strong><small>${escapeHtml(note)}</small></article>`).join("");
+
+  const daysHistory = state.history?.records ?? [];
+  $("#auditChanges").innerHTML = daysHistory.slice(0, 5).map((run) => {
+    const transitions = run.transitions ?? [];
+    const body = transitions.length
+      ? `<ul>${transitions.map((item) => `<li><b>${escapeHtml(item.symbol)}</b> ${escapeHtml(STATE_META[item.from]?.label ?? item.from)} → ${escapeHtml(STATE_META[item.to]?.label ?? item.to)}<small>${escapeHtml(item.reason ?? "等待原因记录")}</small></li>`).join("")}</ul>`
+      : '<p>这是首份审计基线，或相对上一交易日没有状态变化；不补造历史转换。</p>';
+    return `<article><div><span>${escapeHtml(run.tradingDate)}</span><b>${transitions.length} 个状态变化</b></div>${body}</article>`;
+  }).join("") || '<div class="tt-empty">尚无真实日更记录。</div>';
 }
 
 function parseCsv(text) {
@@ -242,21 +319,26 @@ async function handleImport(file) {
 
 async function load() {
   try {
-    const [snapshotResponse, historyResponse] = await Promise.all([
+    const [snapshotResponse, historyResponse, auditResponse] = await Promise.all([
       fetch("/tailtrend/data/tailtrend-snapshot.json", { cache: "no-store", credentials: "omit" }),
       fetch("/tailtrend/data/run-history.json", { cache: "no-store", credentials: "omit" }),
+      fetch("/tailtrend/data/tailtrend-audit.json", { cache: "no-store", credentials: "omit" }),
     ]);
     if (!snapshotResponse.ok) throw new Error(`snapshot HTTP ${snapshotResponse.status}`);
     state.snapshot = await snapshotResponse.json();
     state.history = historyResponse.ok ? await historyResponse.json() : { records: [] };
+    state.audit = auditResponse.ok ? await auditResponse.json() : { entries: [], daysCollected: 0 };
     if (state.snapshot.schema !== "traderhome_tailtrend_snapshot_v1") throw new Error("unknown TailTrend snapshot schema");
     renderHeader();
     renderFilters();
     renderRows();
-    const preferred = state.snapshot.records.find((record) => record.symbol === "SPXC.US")
-      ?? state.snapshot.records.find((record) => record.newPositionAllowed)
+    renderAudit();
+    const eligible = state.snapshot.records.filter((record) => record.newPositionAllowed === true && record.dataStatus === "FRESH");
+    const reviewable = state.snapshot.records.filter((record) => record.bucket !== "NO_TRADE_MIDDLE" && record.dataStatus === "FRESH");
+    const preferred = [...eligible].sort((left, right) => right.priority - left.priority)[0]
+      ?? [...reviewable].sort((left, right) => right.priority - left.priority)[0]
       ?? state.snapshot.records[0];
-    if (preferred) selectRecord(preferred.symbol);
+    if (preferred) selectRecord(preferred.symbol, { openDetail: false });
   } catch (error) {
     $("#scannerError").hidden = false;
     $("#scannerError").textContent = `无法读取 TailTrend 快照：${error instanceof Error ? error.message : String(error)}`;
@@ -274,5 +356,9 @@ $("#riskForm").addEventListener("submit", (event) => {
 });
 $("#riskForm").addEventListener("input", () => calculateAndRenderRisk());
 $("#barFile").addEventListener("change", (event) => handleImport(event.target.files?.[0]));
+$("#detailBackdrop").addEventListener("click", closeDetail);
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeDetail();
+});
 
 load();

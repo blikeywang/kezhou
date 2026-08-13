@@ -299,6 +299,7 @@ class PortalBuildTests(unittest.TestCase):
             "tailtrend/tailtrend-engine.mjs",
             "tailtrend/data/tailtrend-snapshot.json",
             "tailtrend/data/run-history.json",
+            "tailtrend/data/tailtrend-audit.json",
         ]
         for rel in expected:
             self.assertTrue((self.site / rel).exists(), rel)
@@ -307,6 +308,8 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("TailTrend Lab", page)
         self.assertIn('id="scannerRows"', page)
         self.assertIn('id="riskForm"', page)
+        self.assertIn('id="riskModule" disabled', page)
+        self.assertIn('id="auditSummary"', page)
         self.assertIn('id="barFile"', page)
         self.assertIn("触及 ≠ 信号", page)
         self.assertIn("不自动下单", page)
@@ -316,10 +319,14 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('credentials: "omit"', app)
         self.assertNotIn("localStorage", app)
         self.assertIn("calculateRiskPlan", app)
+        self.assertIn("signalGate", app)
+        self.assertIn("record.newPositionAllowed", app)
         engine = (self.site / "tailtrend" / "tailtrend-engine.mjs").read_text(encoding="utf-8")
         self.assertIn("LOWER_TAIL_RECLAIMED", engine)
         self.assertIn("TREND_ACCEPTED", engine)
         self.assertIn("EVENT_QUARANTINE", engine)
+        self.assertIn("策略袖套与状态机不一致", engine)
+        self.assertIn("traderhome_tailtrend_audit_v1", engine)
 
         snapshot = json.loads((self.site / "tailtrend" / "data" / "tailtrend-snapshot.json").read_text())
         self.assertEqual(snapshot["schema"], "traderhome_tailtrend_snapshot_v1")
@@ -329,6 +336,15 @@ class PortalBuildTests(unittest.TestCase):
         self.assertFalse(snapshot["privacy"]["accountDataPublished"])
         self.assertFalse(snapshot["privacy"]["automaticOrders"])
         self.assertNotIn("barsData", snapshot)
+        self.assertTrue(all("priorityBreakdown" in row for row in snapshot["records"]))
+        self.assertTrue(all("stateReason" in row for row in snapshot["records"]))
+        self.assertTrue(all("nextCondition" in row for row in snapshot["records"]))
+        audit = json.loads((self.site / "tailtrend" / "data" / "tailtrend-audit.json").read_text())
+        self.assertEqual(audit["schema"], "traderhome_tailtrend_audit_v1")
+        self.assertNotIn("bars", audit)
+        css = (self.site / "tailtrend" / "tailtrend.css").read_text(encoding="utf-8")
+        self.assertIn(".tt-table tbody tr", css)
+        self.assertIn(".tt-detail-open .tt-detail", css)
         self.assertEqual(self.manifest["routes"]["tailtrend"], "/tailtrend/")
         self.assertEqual(self.manifest["privacy"]["tailtrendRuntime"], "derived_snapshot_and_browser_memory_only")
         self.assertFalse(self.manifest["privacy"]["tailtrendRawBarsPublished"])

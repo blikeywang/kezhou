@@ -8,6 +8,7 @@ import {
   drawdownMultiplier,
   normalizeBars,
   summarizeSnapshot,
+  updateAuditLedger,
   volatilityMultiplier,
   wilderAtrSeries,
 } from "./vendor/tailtrend/tailtrend-engine.mjs";
@@ -87,8 +88,13 @@ test("breakout candidate, acceptance, and failure are separate daily-close state
   const accepted = analyzeBars(withLast(candidateRows, [{ open: 121, high: 123, low: 120, close: 122 }]), { symbol: "TREND.US" });
   const failed = analyzeBars(withLast(candidateRows, [{ open: 120, high: 120.5, low: 114, close: 115 }]), { symbol: "TREND.US" });
   assert.equal(candidate.state, "BREAKOUT_CANDIDATE");
+  assert.equal(candidate.bucket, "BREAKOUT_CANDIDATE_WATCH");
   assert.equal(candidate.newPositionAllowed, false);
+  assert.equal(candidate.candidateModule, "pure_trend");
+  assert.equal(candidate.nextCondition.targetState, "TREND_ACCEPTED");
+  assert.equal(candidate.priority, Math.round(candidate.priorityBreakdown.reduce((sum, item) => sum + item.points, 0)));
   assert.equal(accepted.state, "TREND_ACCEPTED");
+  assert.equal(accepted.bucket, "TREND_ACCEPTED_WATCH");
   assert.ok(accepted.breakout.holdCloses >= TAILTREND_CONFIG.breakoutHoldCloses);
   assert.equal(failed.state, "BREAKOUT_FAILED");
 });
@@ -179,6 +185,119 @@ test("missing stop never becomes a zero-price stress calculation", () => {
   assert.equal(plan.stressPerShare, null);
   assert.equal(plan.shares, 0);
   assert.ok(plan.blockers.some((item) => item.includes("硬止损")));
+});
+
+test("signal-state, freshness, and locked-module gates override an otherwise valid share calculation", () => {
+  const candidate = calculateRiskPlan({
+    module: "pure_trend",
+    equity: 100_000,
+    entry: 100,
+    stop: 95,
+    hvPercentile: 50,
+    weeklyRegime: "UP",
+    signalGate: {
+      expectedModule: "pure_trend",
+      newPositionAllowed: false,
+      state: "BREAKOUT_CANDIDATE",
+      stateLabel: "突破候选",
+      dataStatus: "FRESH",
+      eventClear: true,
+      blockers: ["日线接受尚未完成"],
+    },
+  });
+  assert.equal(candidate.allowed, false);
+  assert.equal(candidate.shares, 0);
+  assert.ok(candidate.blockers.some((item) => item.includes("状态机禁止新仓")));
+  assert.ok(candidate.blockers.some((item) => item.includes("日线接受尚未完成")));
+
+  const bypass = calculateRiskPlan({
+    module: "tail_core",
+    equity: 100_000,
+    entry: 100,
+    stop: 95,
+    hvPercentile: 50,
+    weeklyRegime: "UP",
+    signalGate: {
+      expectedModule: "us_short",
+      newPositionAllowed: true,
+      state: "UPPER_TAIL_REJECTED",
+      stateLabel: "上沿拒绝",
+      dataStatus: "STALE",
+      eventClear: true,
+      shortQualified: false,
+    },
+  });
+  assert.equal(bypass.allowed, false);
+  assert.equal(bypass.shares, 0);
+  assert.ok(bypass.blockers.some((item) => item.includes("手动绕开")));
+  assert.ok(bypass.blockers.some((item) => item.includes("STALE")));
+
+  const unqualifiedShort = calculateRiskPlan({
+    module: "us_short",
+    equity: 100_000,
+    entry: 100,
+    stop: 105,
+    hvPercentile: 50,
+    weeklyRegime: "DOWN",
+    signalGate: {
+      expectedModule: "us_short",
+      newPositionAllowed: true,
+      state: "UPPER_TAIL_REJECTED",
+      stateLabel: "上沿拒绝",
+      dataStatus: "FRESH",
+      eventClear: true,
+      shortQualified: false,
+    },
+  });
+  assert.equal(unqualifiedShort.allowed, false);
+  assert.equal(unqualifiedShort.shares, 0);
+  assert.ok(unqualifiedShort.blockers.some((item) => item.includes("做空资格")));
+});
+
+test("audit ledger records only real future sessions and does not double count same-day refreshes", () => {
+  const record = {
+    symbol: "TEST.US",
+    tradingDate: "2026-01-02",
+    state: "LOWER_TAIL_RECLAIMED",
+    bucket: "TAIL_RECLAIM_WATCH",
+    priority: 72,
+    signalDirection: "LONG",
+    newPositionAllowed: true,
+    dataStatus: "FRESH",
+    stateReason: ["下沿收复"],
+    blockers: [],
+    management: { entryReference: 100 },
+  };
+  const baseline = updateAuditLedger(null, [record], new Map([["TEST.US", {
+    date: "2026-01-02", open: 99, high: 102, low: 98, close: 101,
+  }]]), { updatedAt: "2026-01-02T22:00:00Z" });
+  assert.equal(baseline.daysCollected, 1);
+  assert.equal(baseline.entries[0].forward.sessions, 0);
+  assert.equal(baseline.entries[0].forward.horizons["1"], null);
+
+  const nextDay = updateAuditLedger(baseline, [], new Map([["TEST.US", {
+    date: "2026-01-05", open: 101, high: 106, low: 97, close: 104,
+  }]]), { updatedAt: "2026-01-05T22:00:00Z" });
+  assert.equal(nextDay.entries[0].forward.sessions, 1);
+  assert.equal(nextDay.entries[0].execution.nextTradableReference, 101);
+  assert.equal(nextDay.entries[0].execution.slippagePct, 1);
+  assert.equal(nextDay.entries[0].forward.horizons["1"].mfePct, 6);
+  assert.equal(nextDay.entries[0].forward.horizons["1"].maePct, -3);
+
+  const sameDayRerun = updateAuditLedger(nextDay, [], new Map([["TEST.US", {
+    date: "2026-01-05", open: 102, high: 108, low: 96, close: 105,
+  }]]), { updatedAt: "2026-01-05T23:00:00Z" });
+  assert.equal(sameDayRerun.entries[0].forward.sessions, 1);
+  assert.equal(sameDayRerun.entries[0].forward.horizons["1"].mfePct, 6);
+
+  const catchUp = updateAuditLedger(sameDayRerun, [], new Map([["TEST.US", [
+    { date: "2026-01-05", open: 101, high: 106, low: 97, close: 104 },
+    { date: "2026-01-06", open: 104, high: 107, low: 102, close: 106 },
+    { date: "2026-01-07", open: 106, high: 109, low: 103, close: 108 },
+  ]]]), { updatedAt: "2026-01-07T22:00:00Z" });
+  assert.equal(catchUp.entries[0].forward.sessions, 3);
+  assert.equal(catchUp.entries[0].forward.horizons["3"].asOf, "2026-01-07");
+  assert.equal(catchUp.entries[0].forward.horizons["3"].mfePct, 9);
 });
 
 test("snapshot summary preserves separate state buckets instead of a mixed score", () => {
