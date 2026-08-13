@@ -14,6 +14,8 @@ The product should reduce unstructured action, not increase the number of signal
 
 **IncomeOS is also deliberately outside the three-stage workflow.** It converts variable weekly cash entering IBKR into a browser-local allocation plan, then evaluates growth cycles and cash-secured-put candidates. It cannot write to the broker, consume margin, or turn a stale/static option quote into an executable order.
 
+**TailTrend Lab is also deliberately outside the three-stage workflow.** It maps forward-adjusted regular-session daily candles into mutually exclusive tail, middle, breakout, failure, breakdown and event states. It is a shadow-test scanner and browser-local position-sizing aid, not a fourth vote inside EV Desk and not an order service.
+
 ## 2. Product contracts
 
 | Workspace | Input | Output | Reject / downgrade when |
@@ -28,10 +30,13 @@ Independent system contract:
 |---|---|---|---|
 | NQ Flow Console | Entitled NQ/MNQ trades, L2 depth, feed health, and v1.6.4 Bridge events | Flow confirmation, data health, and execution-authority prompt | Data is missing, stale, rebuilding, not entitled, or strategy version does not match 1.6.4 |
 | IncomeOS | Actual weekly contribution, account value, isolated put reserve, current single-stock exposure, and derived market snapshot | Dynamic dollar allocation, growth-cycle evidence, and cash-secured-put gate | Snapshot is stale, bid/ask is missing, valuation/event gate fails, or assignment breaches concentration limits |
+| TailTrend Lab | Longbridge closed daily candles, event calendar, versioned tail map, and browser-memory account risk inputs | State bucket, management zones, blockers, and stress-sized share count | Price is in the middle, confirmation is incomplete, data is stale, event/gap quarantine is active, or portfolio risk vetoes the trade |
 
 The public `/flow/` route is a labelled simulated preview. Paid market data, provider credentials, user entitlements, and live WebSocket sessions remain on the separately authenticated service.
 
 The public `/incomeos/` route stores account inputs and font preference only in browser local storage. Published market data is a derived read-only snapshot. The current option comparison uses last trades for research; a missing executable bid/ask is a hard rejection, not an invitation to estimate a fill.
+
+The public `/tailtrend/` route publishes no raw candles, positions, account ledger or credentials. Its position-size form and optional OHLC import use browser memory only. Formal state transitions use completed daily closes; the intraday fast lane remains disabled until separately validated.
 
 Scores never cross these boundaries:
 
@@ -73,7 +78,7 @@ The three core workflow workspaces receive a shared stage bar containing:
 - its explicit boundary;
 - the next workspace.
 
-NQ Flow and IncomeOS receive the shared TraderHome navigation but no stage number and no automatic handoff. This keeps both visibly available without turning order-flow confirmation or long-term allocation into a hidden fourth vote inside the three existing systems.
+NQ Flow, IncomeOS and TailTrend receive the shared TraderHome navigation but no stage number and no automatic handoff. This keeps them visibly available without turning order-flow confirmation, long-term allocation or the tail/trend state machine into a hidden fourth vote inside the three existing systems.
 
 Future authenticated versions should persist a handoff object instead of asking the user to re-enter context:
 
@@ -99,6 +104,7 @@ Peer consultation uses URL fragments for the static deployment. Exact time, pric
 - Review accent: cyan and green — evidence reconstruction and verified behavior change.
 - Independent Flow accent: teal — real-time data health and execution authority.
 - Independent IncomeOS accent: cyan/violet — capital allocation, compounding, and gate status.
+- Independent TailTrend accent: mint/teal — edge location, confirmation, waiting, and risk veto.
 - Amber: uncertainty / waiting / incomplete evidence.
 - Red: invalidation, downside, failed gate, or evidence risk.
 
@@ -133,5 +139,6 @@ Useful product metrics for the next backend stage:
 - Evidence coverage: candles, self-review, rights-cleared expert cases.
 - Flow feed uptime, stale-frame rate, entitlement failures, and v1.6.4 Bridge version mismatches, reported separately from the three-stage funnel.
 - IncomeOS weekly-plan completion, allocation drift, stale-snapshot rejections, concentration-gate rejections, and realized assignment exposure, also reported separately.
+- TailTrend state transitions, false-reclaim rate, breakout candidate-to-acceptance rate, stale/event rejections, execution slippage, and module-level drawdown, also reported separately.
 
 These are more informative than raw page views or short-term user P&L.

@@ -9,6 +9,7 @@
     : path.indexOf("/flow/") === 0 ? "flow"
     : path.indexOf("/incomeos-whole/") === 0 ? "incomeosWhole"
     : path.indexOf("/incomeos/") === 0 ? "incomeos"
+    : path.indexOf("/tailtrend/") === 0 ? "tailtrend"
     : path.indexOf("/standards/") === 0 ? "standards" : "home";
   document.documentElement.setAttribute("data-th-stage", section);
 
@@ -20,6 +21,7 @@
     ["flow", "/flow/", "NQ 订单流"],
     ["incomeos", "/incomeos/", "IncomeOS"],
     ["incomeosWhole", "/incomeos-whole/", "IncomeOS 整股"],
+    ["tailtrend", "/tailtrend/", "TailTrend"],
     ["standards", "/standards/", "证据标准"]
   ];
   var stages = {

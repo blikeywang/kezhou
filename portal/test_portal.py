@@ -29,6 +29,7 @@ class PortalBuildTests(unittest.TestCase):
             "flow/index.html",
             "incomeos/index.html",
             "incomeos-whole/index.html",
+            "tailtrend/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -56,15 +57,16 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 6)
+        self.assertEqual(manifest["version"], 7)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeos"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeosWhole"]["partOfCoreWorkflow"])
+        self.assertFalse(manifest["independentSystems"]["tailtrend"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
@@ -288,6 +290,49 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("allocateWholeShareOrders", engine)
         self.assertEqual(self.manifest["routes"]["incomeosWhole"], "/incomeos-whole/")
         self.assertEqual(self.manifest["privacy"]["incomeosWholeRuntime"], "browser_local_whole_shares_only")
+
+    def test_tailtrend_is_a_derived_daily_close_shadow_system(self):
+        expected = [
+            "tailtrend/index.html",
+            "tailtrend/tailtrend.css",
+            "tailtrend/tailtrend-app.mjs",
+            "tailtrend/tailtrend-engine.mjs",
+            "tailtrend/data/tailtrend-snapshot.json",
+            "tailtrend/data/run-history.json",
+        ]
+        for rel in expected:
+            self.assertTrue((self.site / rel).exists(), rel)
+
+        page = (self.site / "tailtrend" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("TailTrend Lab", page)
+        self.assertIn('id="scannerRows"', page)
+        self.assertIn('id="riskForm"', page)
+        self.assertIn('id="barFile"', page)
+        self.assertIn("触及 ≠ 信号", page)
+        self.assertIn("不自动下单", page)
+        self.assertIn("海龟交易法是趋势跟踪策略", page)
+
+        app = (self.site / "tailtrend" / "tailtrend-app.mjs").read_text(encoding="utf-8")
+        self.assertIn('credentials: "omit"', app)
+        self.assertNotIn("localStorage", app)
+        self.assertIn("calculateRiskPlan", app)
+        engine = (self.site / "tailtrend" / "tailtrend-engine.mjs").read_text(encoding="utf-8")
+        self.assertIn("LOWER_TAIL_RECLAIMED", engine)
+        self.assertIn("TREND_ACCEPTED", engine)
+        self.assertIn("EVENT_QUARANTINE", engine)
+
+        snapshot = json.loads((self.site / "tailtrend" / "data" / "tailtrend-snapshot.json").read_text())
+        self.assertEqual(snapshot["schema"], "traderhome_tailtrend_snapshot_v1")
+        self.assertEqual(snapshot["source"], "Longbridge Securities")
+        self.assertEqual(snapshot["signalTimeframe"], "daily_close")
+        self.assertFalse(snapshot["privacy"]["rawBarsPublished"])
+        self.assertFalse(snapshot["privacy"]["accountDataPublished"])
+        self.assertFalse(snapshot["privacy"]["automaticOrders"])
+        self.assertNotIn("barsData", snapshot)
+        self.assertEqual(self.manifest["routes"]["tailtrend"], "/tailtrend/")
+        self.assertEqual(self.manifest["privacy"]["tailtrendRuntime"], "derived_snapshot_and_browser_memory_only")
+        self.assertFalse(self.manifest["privacy"]["tailtrendRawBarsPublished"])
+        self.assertFalse(self.manifest["privacy"]["tailtrendAutomaticOrders"])
 
     def _flow_javascript(self) -> str:
         return "\n".join(

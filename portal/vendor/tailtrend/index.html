@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="TraderHome TailTrend Lab：用日线收盘状态统一观察尾部均值回归、趋势接受、突破失败、事件隔离与账户风险预算。">
+  <title>TailTrend Lab · 尾部与趋势影子观察 | TraderHome</title>
+  <link rel="stylesheet" href="/tailtrend/tailtrend.css">
+</head>
+<body class="tailtrend">
+  <main class="tt-main">
+    <section class="tt-wrap tt-hero">
+      <div class="tt-hero__copy">
+        <div class="tt-kicker">TRADERHOME · TAILTREND LAB · SHADOW TEST</div>
+        <h1>只在边缘行动。<br><span>趋势被接受时，才把赢家留下。</span></h1>
+        <p>同一套状态机协调下沿收复、上沿兑现、突破延续、失败反转与事件隔离。正式状态只用日线收盘确认；区间中部默认空仓，账户风险预算拥有最终否决权。</p>
+        <div class="tt-actions">
+          <a class="tt-button primary" href="#scanner">查看今日状态 →</a>
+          <a class="tt-button" href="#risk">计算压力仓位</a>
+          <a class="tt-button" href="#cadence">查看运行频率</a>
+        </div>
+        <div class="tt-hero__rules">
+          <span>触及 ≠ 信号</span><span>中部不开新仓</span><span>一个想法一个总风险</span><span>只给赢家加仓</span>
+        </div>
+      </div>
+      <div class="tt-hero__status" aria-live="polite">
+        <div class="tt-statusline"><span id="snapshotMode" class="tt-live-dot">读取中</span><b id="snapshotDate">—</b></div>
+        <div class="tt-orbit" aria-hidden="true"><i></i><i></i><i></i><strong>DAILY<br>CLOSE</strong></div>
+        <dl class="tt-source-list">
+          <div><dt>行情源</dt><dd>Longbridge Securities</dd></div>
+          <div><dt>口径</dt><dd>前复权 · 正常交易时段 · 日线</dd></div>
+          <div><dt>执行</dt><dd>研究影子运行 · 不自动下单</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="tt-wrap tt-health" id="health" aria-label="数据健康">
+      <div><span>扫描池</span><strong id="metricUniverse">—</strong><small>初始液态美股池</small></div>
+      <div><span>边缘候选</span><strong id="metricEdges">—</strong><small>分状态，不混成总分</small></div>
+      <div><span>中部等待</span><strong id="metricMiddle">—</strong><small>现金也是正式仓位</small></div>
+      <div><span>数据健康</span><strong id="metricFresh">—</strong><small id="metricQuality">—</small></div>
+      <div><span>状态变化</span><strong id="metricTransitions">—</strong><small>相对上一份日线快照</small></div>
+    </section>
+
+    <section class="tt-section" id="scanner"><div class="tt-wrap">
+      <div class="tt-section__head">
+        <div><div class="tt-kicker">DAILY STATE BOARD</div><h2>先分桶，再在同类机会里排序</h2><p>优先级只用于安排复核顺序，不是胜率或收益预测。点击一行查看尾部地图、管理区和阻断条件。</p></div>
+        <div class="tt-search"><label for="symbolSearch">查找标的</label><input id="symbolSearch" type="search" placeholder="SPXC / NVDA / 名称"></div>
+      </div>
+      <div id="bucketFilters" class="tt-filters" aria-label="状态筛选"></div>
+      <div class="tt-board">
+        <div class="tt-table-wrap">
+          <table class="tt-table">
+            <thead><tr><th>标的</th><th>状态</th><th>位置</th><th>周线 / 波动</th><th>今天应做什么</th><th>数据</th></tr></thead>
+            <tbody id="scannerRows"><tr><td colspan="6" class="tt-empty">正在读取派生快照…</td></tr></tbody>
+          </table>
+        </div>
+        <aside id="recordDetail" class="tt-detail" aria-live="polite">
+          <div class="tt-empty">选择一个标的查看完整状态。</div>
+        </aside>
+      </div>
+      <div id="scannerError" class="tt-alert error" hidden></div>
+    </div></section>
+
+    <section class="tt-section tt-cadence-section" id="cadence"><div class="tt-wrap">
+      <div class="tt-kicker">SLOW DECISION · FAST ALERT · REAL-TIME RISK</div>
+      <h2>不需要不停扫描全市场</h2>
+      <p class="tt-lead">正式状态用慢频率确认；只有候选靠近边界、已有持仓和硬风险需要更快。MVP 暂不启用 60 分钟探针，先积累日线影子样本。</p>
+      <div class="tt-cadence">
+        <article><span>WEEKLY</span><strong>周末全池重建</strong><p>重画尾部地图、周线环境、行业集群与相关性。</p></article>
+        <article><span>AFTER CLOSE</span><strong>每日全池正式判定</strong><p>更新 ATR/HV，确认收复、突破接受、失败与退出。</p></article>
+        <article><span>PREMARKET</span><strong>只复核持仓与候选</strong><p>检查事件、跳空、风险预算与止损是否仍有效。</p></article>
+        <article><span>EVENT-DRIVEN</span><strong>盘中只盯边界提醒</strong><p>不让盘中噪声推翻日线失效规则；持仓硬风险实时。</p></article>
+      </div>
+      <div class="tt-fast-lane"><b>60 分钟快速探针 · 暂停启用</b><span>未来若回测通过，只允许日线已是突破候选的标的先用计划趋势风险的 25% 探针；回到旧区间立即退出，余下风险等日线确认。</span></div>
+    </div></section>
+
+    <section class="tt-section" id="risk"><div class="tt-wrap">
+      <div class="tt-section__head">
+        <div><div class="tt-kicker">ACCOUNT RISK VETO</div><h2>信号决定“是否值得看”，风险预算决定“能做多大”</h2><p>账户输入只在当前浏览器内存计算，不保存、不上传。选择上方标的会带入参考入场、硬止损、HV 与周线状态。</p></div>
+        <span class="tt-private">LOCAL ONLY · 不连接券商</span>
+      </div>
+      <div class="tt-risk-grid">
+        <form id="riskForm" class="tt-risk-form">
+          <label><span>账户权益 USD</span><input id="riskEquity" type="number" min="0" step="1000" value="100000"></label>
+          <label><span>策略袖套</span><select id="riskModule"><option value="tail_core">尾部核心 · 总想法0.40%中的60%</option><option value="pure_trend">纯趋势 · 上限0.20%</option><option value="us_short">美股做空 · 上限0.15%</option><option value="event">事件隔离 · 普通公式禁用</option></select></label>
+          <label><span>参考入场价</span><input id="riskEntry" type="number" min="0" step="0.01"></label>
+          <label><span>硬止损价</span><input id="riskStop" type="number" min="0" step="0.01"></label>
+          <label><span>跳空准备金 / 股</span><input id="riskGap" type="number" min="0" step="0.01" value="0"></label>
+          <label><span>滑点准备金 / 股</span><input id="riskSlippage" type="number" min="0" step="0.01" value="0.05"></label>
+          <label><span>账户高点回撤 %</span><input id="riskDrawdown" type="number" min="0" max="100" step="0.1" value="0"></label>
+          <label><span>已有组合计划风险 %</span><input id="riskHeat" type="number" min="0" max="100" step="0.01" value="0"></label>
+          <label><span>同一集群已有风险 %</span><input id="riskCluster" type="number" min="0" max="100" step="0.01" value="0"></label>
+          <label><span>今日完整止损次数</span><input id="riskStops" type="number" min="0" step="1" value="0"></label>
+          <label><span>今日已实现亏损 / 权益 %</span><input id="riskDailyLoss" type="number" min="0" max="100" step="0.1" value="0"></label>
+          <button class="tt-button primary" type="submit">重新计算压力仓位</button>
+        </form>
+        <div id="riskOutput" class="tt-risk-output"><div class="tt-empty">先从状态表选择一个有结构失效位的候选。</div></div>
+      </div>
+    </div></section>
+
+    <section class="tt-section tt-local-section"><div class="tt-wrap tt-local-grid">
+      <div>
+        <div class="tt-kicker">LOCAL RESEARCH SLOT</div>
+        <h2>临时测试自定义股票，不把原始K线上传</h2>
+        <p class="tt-lead">导入 Longbridge JSON 或含 time/open/high/low/close/volume/turnover 的 CSV。文件只在本页内存解析，刷新页面即清除。</p>
+        <div class="tt-import-controls">
+          <label><span>标的代码</span><input id="importSymbol" value="CUSTOM.US" autocomplete="off"></label>
+          <label class="tt-file"><span>选择 JSON / CSV</span><input id="barFile" type="file" accept=".json,.csv,application/json,text/csv"></label>
+        </div>
+        <div id="importStatus" class="tt-alert">尚未导入文件。</div>
+      </div>
+      <div id="importResult" class="tt-import-result"><div class="tt-empty">本地分析结果会显示在这里。</div></div>
+    </div></section>
+
+    <section class="tt-section tt-method"><div class="tt-wrap">
+      <div class="tt-kicker">METHOD · BOUNDARIES · WHAT TO TEST</div>
+      <h2>接下来几天，重点看错在哪里</h2>
+      <div class="tt-method-grid">
+        <article><b>状态误判</b><p>下沿收复是否过早？突破候选到接受是否太慢？上沿拒绝有没有把普通回撤误判成做空候选？</p></article>
+        <article><b>参数敏感</b><p>60日区间、20%尾部、0.25 ATR 接受门槛与10日低点退出只是固定研究起点，先记录、暂不追求历史最优。</p></article>
+        <article><b>漏掉的走势</b><p>记录 V 形反转、无回踩直线突破、慢趋势、事件跳空和大跌后急弹，判断该新增状态还是接受有意放弃。</p></article>
+        <article><b>实际可执行性</b><p>比较提醒到可成交价的偏差、隔夜跳空、滑点、借券与集群同时止损；不要只看信号方向。</p></article>
+      </div>
+      <div class="tt-disclaimer">
+        <strong>研究边界</strong>
+        <p>TailTrend Lab 不是原版海龟交易法，而是尾部均值回归与趋势跟踪的统一研究框架；当前参数尚未完成 walk-forward、成本与样本外验证。页面只发布 Longbridge 日线的派生状态，不提供实时价格或自动交易。</p>
+        <p>本输出内容仅供参考，不构成投资建议。海龟交易法是趋势跟踪策略，在震荡行情中可能频繁止损，历史表现不代表未来收益。投资有风险，入市需谨慎。</p>
+      </div>
+    </div></section>
+  </main>
+  <footer class="tt-wrap tt-footer"><span>TailTrend Lab v0.1 · TraderHome independent research system</span><span>数据来源：Longbridge Securities · 仅派生状态</span></footer>
+  <script type="module" src="/tailtrend/tailtrend-app.mjs"></script>
+</body>
+</html>

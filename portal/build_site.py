@@ -30,6 +30,7 @@ CANONICAL_ROUTES = {
     "flow/index.html": "/flow/",
     "incomeos/index.html": "/incomeos/",
     "incomeos-whole/index.html": "/incomeos-whole/",
+    "tailtrend/index.html": "/tailtrend/",
     "standards/index.html": "/standards/",
 }
 
@@ -143,6 +144,10 @@ def build(output: Path) -> dict:
     shutil.copytree(PORTAL / "vendor" / "incomeos", output / "incomeos")
     _prepare_incomeos_whole(output)
 
+    # TailTrend Lab publishes only derived daily-close states. Raw bars,
+    # account inputs and broker credentials never enter the static bundle.
+    shutil.copytree(PORTAL / "vendor" / "tailtrend", output / "tailtrend")
+
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
 
@@ -153,7 +158,7 @@ def build(output: Path) -> dict:
 
     manifest = {
         "name": "TraderHome",
-        "version": 6,
+        "version": 7,
         "coreWorkflowVersion": 3,
         "routes": {
             "home": "/",
@@ -163,6 +168,7 @@ def build(output: Path) -> dict:
             "flow": "/flow/",
             "incomeos": "/incomeos/",
             "incomeosWhole": "/incomeos-whole/",
+            "tailtrend": "/tailtrend/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -192,6 +198,13 @@ def build(output: Path) -> dict:
                 "route": "/incomeos-whole/",
                 "partOfCoreWorkflow": False,
             },
+            "tailtrend": {
+                "input": "longbridge_forward_adjusted_regular_session_daily_ohlcv_and_local_browser_risk_inputs",
+                "output": "tail_trend_state_bucket_management_zone_and_stress_position_size",
+                "rejects": "middle_zone_unconfirmed_breakout_event_gap_stale_data_or_risk_gate_failure",
+                "route": "/tailtrend/",
+                "partOfCoreWorkflow": False,
+            },
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
         "privacy": {
@@ -205,6 +218,10 @@ def build(output: Path) -> dict:
             "incomeosBrokerConnection": False,
             "incomeosAccountInputsStored": "browser_local_storage_only",
             "incomeosPublishedData": "derived_read_only_snapshot",
+            "tailtrendRuntime": "derived_snapshot_and_browser_memory_only",
+            "tailtrendRawBarsPublished": False,
+            "tailtrendAccountDataStored": False,
+            "tailtrendAutomaticOrders": False,
         },
     }
     (output / "traderhome-manifest.json").write_text(

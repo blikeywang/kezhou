@@ -8,6 +8,7 @@ on:
     paths:
       - "pipeline/daily/**"
       - "portal/**"
+      - "tools/tailtrend/**"
       - "docs/METHODS_AND_SOURCES.md"
       - "docs/TRADERHOME_PRODUCT_SYSTEM.md"
       - "README.md"
@@ -48,8 +49,8 @@ jobs:
       - name: Run TraderHome portal tests
         run: python -m unittest portal.test_portal
 
-      - name: Run TradeReview engine tests
-        run: node --test portal/test_review_engine.mjs portal/test_review_community.mjs portal/test_incomeos_engine.mjs
+      - name: Run browser engine tests
+        run: node --test portal/test_review_engine.mjs portal/test_review_community.mjs portal/test_incomeos_engine.mjs portal/test_tailtrend_engine.mjs
 
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py

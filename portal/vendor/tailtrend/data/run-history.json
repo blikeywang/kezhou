@@ -1,0 +1,37 @@
+{
+  "schema": "traderhome_tailtrend_run_history_v1",
+  "records": [
+    {
+      "asOf": "2026-08-13T03:40:32.354Z",
+      "tradingDate": "2026-08-12",
+      "mode": "complete",
+      "summary": {
+        "records": 30,
+        "actionable": 2,
+        "blocked": 4,
+        "bucketCounts": {
+          "TAIL_RECLAIM_WATCH": 2,
+          "TREND_ACCEPTANCE_WATCH": 2,
+          "BREAKOUT_FAILURE_WATCH": 2,
+          "EDGE_OBSERVE": 9,
+          "NO_TRADE_MIDDLE": 15
+        },
+        "stateCounts": {
+          "LOWER_TAIL_RECLAIMED": 2,
+          "BREAKOUT_CANDIDATE": 2,
+          "UPPER_TAIL_REJECTED": 2,
+          "UPPER_TAIL_DECISION": 9,
+          "RANGE_MIDDLE": 15
+        }
+      },
+      "dataQuality": {
+        "fresh": 30,
+        "cached": 0,
+        "stale": 0,
+        "missing": 0,
+        "errors": []
+      },
+      "transitions": []
+    }
+  ]
+}
