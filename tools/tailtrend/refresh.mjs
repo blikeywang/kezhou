@@ -62,7 +62,13 @@ async function buildMetadata(universe) {
   let engineDirty = true;
   try {
     const commit = await execFileAsync("git", ["rev-parse", "HEAD"], { cwd: projectDir });
-    const status = await execFileAsync("git", ["status", "--porcelain", "--untracked-files=no"], { cwd: projectDir });
+    const status = await execFileAsync("git", [
+      "status", "--porcelain", "--untracked-files=no", "--",
+      "portal/vendor/tailtrend/tailtrend-engine.mjs",
+      "tools/tailtrend/refresh.mjs",
+      "tools/tailtrend/snapshot-store.mjs",
+      "tools/tailtrend/universe.json",
+    ], { cwd: projectDir });
     gitCommit = commit.stdout.trim();
     engineDirty = Boolean(status.stdout.trim());
   } catch (error) {
