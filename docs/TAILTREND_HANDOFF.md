@@ -6,7 +6,7 @@
 >
 > 线上地址：<https://traderhome-histroy.xyz/tailtrend/>
 >
-> 核心提交：[`c6a2e0c`](https://github.com/blikeywang/kezhou/commit/c6a2e0c572f7a3d0213351ebeff0df240a8e8497)
+> v0.3 引擎提交：[`3f92b77`](https://github.com/blikeywang/kezhou/commit/3f92b77)；快照版本修正：[`6eee6c0`](https://github.com/blikeywang/kezhou/commit/6eee6c0)
 >
 > 当前定位：研究与监控工具，不是自动交易系统
 
@@ -219,9 +219,9 @@ Longbridge 被选为 v0.1 研究行情源，是因为现有环境已有受控认
 ### 7.4 构建与部署
 
 - 功能分支：`codex/tail-trend-lab`；
-- 核心提交：`c6a2e0c feat(portal): add TailTrend shadow lab`；
-- 已快进到 `main` 并由 GitHub Actions/Pages 部署；
-- 部署工作流：<https://github.com/blikeywang/kezhou/actions/runs/31665450746>；
+- v0.1 基线提交：`c6a2e0c feat(portal): add TailTrend shadow lab`；
+- v0.3 核心提交：`3f92b77 feat(tailtrend): freeze state boundaries and audit snapshots`；快照版本修正：`6eee6c0 fix(tailtrend): scope engine dirty metadata`；
+- `main` 由 GitHub Actions/Pages 持续构建；最新运行以[部署工作流](https://github.com/blikeywang/kezhou/actions/workflows/daily.yml)为准；
 - 线上路由：<https://traderhome-histroy.xyz/tailtrend/>。
 
 ### 7.5 首轮评审后已修复
@@ -251,9 +251,9 @@ Longbridge 被选为 v0.1 研究行情源，是因为现有环境已有受控认
 
 ### 8.1 自动测试
 
-首版发布前通过 49 项回归测试；首轮评审后又增加了状态硬闸门、模块绕开、做空资格和审计账本防重复测试。以最新 CI/本地测试输出为准。
+v0.3 本地共通过 66 项回归测试。以最新 CI 输出为最终门禁。
 
-- TailTrend 引擎：11 项；
+- TailTrend 引擎、风险与快照存储：28 项；
 - 原有 IncomeOS / TradeReview 浏览器引擎：27 项；
 - TraderHome 门户、路由、隐私和构建：11 项。
 
@@ -261,12 +261,16 @@ TailTrend 测试覆盖：
 
 - 数据清洗和 Wilder ATR；
 - “触及”与“收复”必须分开；
+- 阶梯式新低、冻结下沿、1 ATR 重置与 40 日过期；
 - 突破候选、趋势接受和突破失败必须分开；
+- 无回踩直线突破、趋势状态持久、10 日退出无当前日自我污染；
+- 冷启动逐字节确定性与上一快照递推一致；
 - 大跳空覆盖普通状态；
 - 非美股不得进入开空候选，美股借券未核验也必须阻断；
-- 回撤缩仓、组合热度、单日熔断与周线否决；
+- 同源压力取最严值、组合/集群/流动性剩余额度裁剪与单日布尔熔断；
 - 尾部核心与趋势预留共享一个总风险；
 - 缺失止损不产生零价格错误；
+- 日快照不可覆盖、缺跑显式记录、审计换 epoch 不丢旧样本且不截断；
 - 汇总结果保持分桶，不混成单一神秘评分。
 
 ### 8.2 浏览器与生产验收
@@ -304,12 +308,25 @@ SPXC 个案：
 
 这体现了当前框架的取舍：它不会因为 SPXC 曾经大跌反弹就追入区间中部；我们要在后续记录中判断这种主动放弃是否合理，还是确实需要一个经过独立验证的快速反弹状态。
 
+### 9.1 v0.3 新计天起点
+
+同一数据日按 v0.3 冷回放后，第一份不可变快照已冻结：
+
+- `dataAsOf`：2026-08-12；`runAt`：2026-08-13T07:25:32Z；
+- 引擎 commit：`6eee6c0b9921dff8ab495ae3bbeca81c3d2f89c0`；`engineDirty=false`；
+- 30/30 `FRESH`，0 错误，`missingDates=[]`；
+- 下沿收复 2（COST、WMT）；趋势已接受 7；上沿拒绝 1；上沿决策 5；下沿仍落 1；中部 14；
+- 只有 DIA、COST、WMT 三个标的通过状态级新仓闸门；其余六个趋势接受标的因距冻结边界超过 1 ATR 被明确阻断；
+- 活跃 v0.3 审计 epoch 从 1 日 / 30 条记录重新计数；旧 v0.2 的 30 条记录保留在 legacy epoch，不混入新统计。
+
+这次“突破候选 2 → 趋势接受 7”的变化不是参数调优，而是修复了接受状态不能持久、确认线比较错误和移动 ATR 的实现缺陷。它必须由后续回放验证，不能据这一日宣称效果改善。
+
 ## 10. 尚未完成或不能声称完成的部分
 
 以下内容仍是明确缺口：
 
 1. **没有策略有效性结论**：尚未完成 walk-forward、样本外、成本、滑点、公司行动和幸存者偏差验证。
-2. **v0.3 历史样本仍不足**：旧基线不计入新口径；第一份 v0.3 不可变快照落地后才重新计天，尚不能计算可靠的候选到接受率、假收复率和状态持续时间。
+2. **v0.3 历史样本仍不足**：旧基线不计入新口径；当前只有 1 个 v0.3 不可变交易日，尚不能计算可靠的候选到接受率、假收复率和状态持续时间。
 3. **没有自动 Longbridge 日更**：刷新需要可信电脑手动运行，GitHub Pages 只部署已提交快照。
 4. **没有盘前/盘中提醒**：事件复核和边界提醒的产品规则已写下，但通知服务尚未实现。
 5. **没有实时行情或 60 分钟探针**：快速通道当前关闭。

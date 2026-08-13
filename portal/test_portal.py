@@ -298,6 +298,9 @@ class PortalBuildTests(unittest.TestCase):
             "tailtrend/tailtrend-app.mjs",
             "tailtrend/tailtrend-engine.mjs",
             "tailtrend/data/tailtrend-snapshot.json",
+            "tailtrend/data/latest.json",
+            "tailtrend/data/index.json",
+            "tailtrend/data/snapshots/2026-08-12.json",
             "tailtrend/data/run-history.json",
             "tailtrend/data/tailtrend-audit.json",
         ]
@@ -314,6 +317,8 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("触及 ≠ 信号", page)
         self.assertIn("不自动下单", page)
         self.assertIn("海龟交易法是趋势跟踪策略", page)
+        self.assertIn('data-static-fallback="true"', page)
+        self.assertIn("JavaScript 未运行", page)
 
         app = (self.site / "tailtrend" / "tailtrend-app.mjs").read_text(encoding="utf-8")
         self.assertIn('credentials: "omit"', app)
@@ -321,15 +326,26 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("calculateRiskPlan", app)
         self.assertIn("signalGate", app)
         self.assertIn("record.newPositionAllowed", app)
+        self.assertIn('/tailtrend/data/latest.json', app)
+        self.assertIn('/tailtrend/data/index.json', app)
+        self.assertIn("riskConfigFile", app)
+        self.assertNotIn('/tailtrend/data/run-history.json', app)
         engine = (self.site / "tailtrend" / "tailtrend-engine.mjs").read_text(encoding="utf-8")
         self.assertIn("LOWER_TAIL_RECLAIMED", engine)
         self.assertIn("TREND_ACCEPTED", engine)
         self.assertIn("EVENT_QUARANTINE", engine)
         self.assertIn("策略袖套与状态机不一致", engine)
         self.assertIn("traderhome_tailtrend_audit_v1", engine)
+        self.assertIn("pressureGroup", engine)
+        self.assertIn("stateMemory", engine)
 
-        snapshot = json.loads((self.site / "tailtrend" / "data" / "tailtrend-snapshot.json").read_text())
+        snapshot = json.loads((self.site / "tailtrend" / "data" / "latest.json").read_text())
         self.assertEqual(snapshot["schema"], "traderhome_tailtrend_snapshot_v1")
+        self.assertEqual(snapshot["status"], "COMPLETE")
+        self.assertEqual(snapshot["version"], 3)
+        self.assertFalse(snapshot["engineDirty"])
+        self.assertRegex(snapshot["engineVersion"], r"^[0-9a-f]{40}$")
+        self.assertRegex(snapshot["paramsHash"], r"^[0-9a-f]{64}$")
         self.assertEqual(snapshot["source"], "Longbridge Securities")
         self.assertEqual(snapshot["signalTimeframe"], "daily_close")
         self.assertFalse(snapshot["privacy"]["rawBarsPublished"])
@@ -339,8 +355,20 @@ class PortalBuildTests(unittest.TestCase):
         self.assertTrue(all("priorityBreakdown" in row for row in snapshot["records"]))
         self.assertTrue(all("stateReason" in row for row in snapshot["records"]))
         self.assertTrue(all("nextCondition" in row for row in snapshot["records"]))
+        self.assertTrue(all("prevState" in row for row in snapshot["records"]))
+        self.assertTrue(all("stateMemory" in row for row in snapshot["records"]))
+        self.assertTrue(all("comparisonStates" in row for row in snapshot["records"]))
+        self.assertTrue(all("riskFactors" in row for row in snapshot["records"]))
+        index = json.loads((self.site / "tailtrend" / "data" / "index.json").read_text())
+        self.assertEqual(index["schema"], "traderhome_tailtrend_snapshot_index_v1")
+        self.assertEqual(index["latestCompleteDataAsOf"], snapshot["dataAsOf"])
+        self.assertIsInstance(index["missingDates"], list)
+        daily = json.loads((self.site / "tailtrend" / "data" / "snapshots" / f'{snapshot["dataAsOf"]}.json').read_text())
+        self.assertEqual(daily, snapshot)
         audit = json.loads((self.site / "tailtrend" / "data" / "tailtrend-audit.json").read_text())
         self.assertEqual(audit["schema"], "traderhome_tailtrend_audit_v1")
+        self.assertTrue(audit["activeEpochId"].startswith("0.3.0:"))
+        self.assertGreaterEqual(audit["daysCollected"], 1)
         self.assertNotIn("bars", audit)
         css = (self.site / "tailtrend" / "tailtrend.css").read_text(encoding="utf-8")
         self.assertIn(".tt-table tbody tr", css)

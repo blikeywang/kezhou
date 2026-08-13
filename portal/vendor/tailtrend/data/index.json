@@ -1,12 +1,19 @@
 {
-  "schema": "traderhome_tailtrend_run_history_v3",
-  "version": 3,
-  "frameworkVersion": "0.3.0",
-  "records": [
+  "schema": "traderhome_tailtrend_snapshot_index_v1",
+  "version": 1,
+  "updatedAt": "2026-08-13T07:25:32.531Z",
+  "latestDataAsOf": "2026-08-12",
+  "latestCompleteDataAsOf": "2026-08-12",
+  "missingDates": [],
+  "entries": [
     {
-      "asOf": "2026-08-13T07:25:32.531Z",
-      "tradingDate": "2026-08-12",
-      "mode": "complete",
+      "dataAsOf": "2026-08-12",
+      "status": "COMPLETE",
+      "file": "snapshots/2026-08-12.json",
+      "runAt": "2026-08-13T07:25:32.531Z",
+      "engineVersion": "6eee6c0b9921dff8ab495ae3bbeca81c3d2f89c0",
+      "engineSourceHash": "5559412e60c1aa1bba469a278e4252775df2a8860cedb6aa6e1c8c4097b9aa91",
+      "paramsHash": "2c7080ac74091fd89ea5bc01c01db1a4bdeeae52c25ac70333ca38b7d3c7d41b",
       "summary": {
         "records": 30,
         "actionable": 3,
@@ -27,7 +34,7 @@
           "RANGE_MIDDLE": 14
         }
       },
-      "dataQuality": {
+      "health": {
         "fresh": 30,
         "cached": 0,
         "stale": 0,
