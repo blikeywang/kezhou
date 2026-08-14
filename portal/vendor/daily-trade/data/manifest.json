@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "report_date": "2026-08-14",
+  "generated_at": "2026-08-14T15:17:41.413Z",
+  "source_project": "Codex 独立交易流程",
+  "public_boundary": "morning_evening_html_only_no_keys_no_account_private_snapshot",
+  "routes": {
+    "index": "/daily-trade/",
+    "morning": "/daily-trade/reports/2026-08-14/morning.html",
+    "evening": "/daily-trade/reports/2026-08-14/evening.html"
+  }
+}

@@ -32,6 +32,7 @@ CANONICAL_ROUTES = {
     "incomeos/index.html": "/incomeos/",
     "incomeos-whole/index.html": "/incomeos-whole/",
     "tailtrend/index.html": "/tailtrend/",
+    "daily-trade/index.html": "/daily-trade/",
     "standards/index.html": "/standards/",
 }
 
@@ -192,6 +193,12 @@ def build(output: Path) -> dict:
     shutil.copytree(PORTAL / "vendor" / "tailtrend", output / "tailtrend")
     _prepare_tailtrend(output)
 
+    # Daily trade reports publish generated research artifacts only. The source
+    # workflow remains responsible for data freshness, key protection and account privacy.
+    daily_trade_vendor = PORTAL / "vendor" / "daily-trade"
+    if daily_trade_vendor.exists():
+        shutil.copytree(daily_trade_vendor, output / "daily-trade")
+
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
 
@@ -213,6 +220,7 @@ def build(output: Path) -> dict:
             "incomeos": "/incomeos/",
             "incomeosWhole": "/incomeos-whole/",
             "tailtrend": "/tailtrend/",
+            "dailyTrade": "/daily-trade/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -249,6 +257,13 @@ def build(output: Path) -> dict:
                 "route": "/tailtrend/",
                 "partOfCoreWorkflow": False,
             },
+            "dailyTrade": {
+                "input": "codex_trade_reports_after_validation",
+                "output": "morning_and_evening_research_snapshot",
+                "rejects": "validation_error_missing_report_or_private_account_data",
+                "route": "/daily-trade/",
+                "partOfCoreWorkflow": False,
+            },
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
         "privacy": {
@@ -274,6 +289,9 @@ def build(output: Path) -> dict:
             ],
             "personalDataHubPermissions": "read_only",
             "personalDataHubSecretsPublished": False,
+            "dailyTradePublishedData": "morning_and_evening_html_only",
+            "dailyTradeAccountDataPublished": False,
+            "dailyTradeAutomaticOrders": False,
         },
     }
     (output / "traderhome-manifest.json").write_text(

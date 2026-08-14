@@ -30,6 +30,7 @@ class PortalBuildTests(unittest.TestCase):
             "incomeos/index.html",
             "incomeos-whole/index.html",
             "tailtrend/index.html",
+            "daily-trade/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -60,13 +61,14 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(manifest["version"], 7)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeos"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeosWhole"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["tailtrend"]["partOfCoreWorkflow"])
+        self.assertFalse(manifest["independentSystems"]["dailyTrade"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
