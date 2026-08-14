@@ -60,8 +60,9 @@
       <aside class="io-control-panel" aria-label="IncomeOS 本周输入">
         <div class="io-panel-head"><div><span>THIS WEEK</span><strong id="weeklyAmountHero">$1,000</strong></div><small>只保存在当前浏览器</small></div>
         <label class="io-input"><span>本周实际到账</span><div><b>$</b><input id="weeklyContribution" type="number" min="0" step="50" inputmode="decimal" value="1000"></div><small>每周按真正进入 IBKR 的净新增现金填写</small></label>
-        <label class="io-input"><span>IBKR 当前净值（入金前）</span><div><b>$</b><input id="accountValue" type="number" min="0" step="1000" inputmode="decimal" value="0"></div><small>决定账户阶段、动态比例和指派集中度</small></label>
+        <label class="io-input"><span>券商当前净值（入金前）</span><div><b>$</b><input id="accountValue" type="number" min="0" step="1000" inputmode="decimal" value="0"></div><small>决定账户阶段、动态比例和指派集中度</small></label>
         <label class="io-input"><span>已隔离的期权现金</span><div><b>$</b><input id="optionReserve" type="number" min="0" step="100" inputmode="decimal" value="0"></div><small>只填真正愿意被指派的现金；不使用保证金放大</small></label>
+        <div class="io-hub-control"><div class="io-hub-row"><select id="accountProvider" aria-label="只读账户来源"><option value="auto">自动选择券商</option><option value="ibkr">IBKR</option><option value="longbridge">Longbridge</option><option value="binance">Binance</option></select><button class="io-button" id="syncIbkrButton" type="button">同步只读账户</button></div><button class="io-button" id="incomeIbkrLoginButton" type="button" hidden>登录 IBKR Web API</button><small id="ibkrSyncStatus">净值与持仓尚未读取</small></div>
       </aside>
     </section>
 
@@ -86,7 +87,7 @@
           <div class="io-market-strip" id="marketStrip"></div>
           <div class="io-summary-grid">
             <article><span>账户阶段</span><strong id="stageLabel">—</strong><small id="stageDetail">—</small></article>
-            <article><span>入金后净值</span><strong id="postDepositValue">$0</strong><small>用于阶段和集中度，不代表已读取 IBKR</small></article>
+            <article><span>入金后净值</span><strong id="postDepositValue">$0</strong><small id="accountValueSource">手工输入；可从本机券商只读同步</small></article>
             <article><span>本周美元买入</span><strong><b id="orderCount">0</b> 笔</strong><small>支持 IBKR 碎股 / 按美元买入</small></article>
             <article><span>可复核期权</span><strong><b id="optionOrders">0</b> 笔</strong><small>通过全部闸门才出现；默认不强行交易</small></article>
           </div>
@@ -129,7 +130,7 @@
           <div class="io-overview-grid">
             <article class="io-panel"><span class="io-label">CURRENT FINDING</span><h3 id="currentFinding">—</h3><p id="currentFindingDetail">—</p></article>
             <article class="io-panel"><span class="io-label">JPM STATUS</span><h3 id="jpmStatus">—</h3><p id="jpmStatusDetail">—</p></article>
-            <article class="io-panel"><span class="io-label">IBKR BOUNDARY</span><h3>现在生成订单，不代替账户同步</h3><p>V1 用你填写的净值和现金计算；接入 IBKR Flex 后，才会自动读取持仓、股息、Call 收益和真实漂移。</p></article>
+            <article class="io-panel"><span class="io-label">IBKR BOUNDARY</span><h3>账户只读，下单仍由你确认</h3><p>本机中枢可同步净值、现金与持仓，但没有交易权限；页面不会替你下单。</p></article>
           </div>
           <div class="io-subhead score-head"><span>LEADERS</span><h3>本周质量 + 估值前 8</h3><p>高质量不等于期权也适合；期权另看独立闸门。</p></div>
           <div class="io-leader-grid" id="leaderCards"></div>
@@ -224,7 +225,7 @@
           <div class="io-data-quality" id="dataQuality"></div>
           <div class="io-data-grid">
             <article><span>01 · 已接</span><h3>Longbridge 市场与基本面</h3><p>现价、十年月线、财报、EPS 预期修正、业绩超预期、五年估值分位、期权 Greeks/OI/盘口与财报日历。</p></article>
-            <article><span>02 · 下一步</span><h3>IBKR Flex Query</h3><p>自动读取净值、现金、完整持仓、税基、股息、期权盈亏和 100 股覆盖状态，替代手工账户输入。</p></article>
+            <article><span>02 · 已接</span><h3>IBKR 本机只读账户</h3><p>读取净值、现金、购买力、完整持仓与持仓盈亏；未开放下单权限。</p></article>
             <article><span>03 · 回测缺口</span><h3>历史期权面</h3><p>需要 Point-in-Time bid/ask、IV、Greeks、OI、公司行动和指派记录，才能真实比较 10/15/20 Delta。</p></article>
             <article><span>04 · 研究增强</span><h3>完整预期与股息历史</h3><p>需要更长的分析师修正快照、逐期股息增长、payout/FCF 与税费模型，减少幸存者偏差。</p></article>
           </div>
@@ -236,7 +237,7 @@
 
   <footer class="io-wrap io-footer">
     <span>IncomeOS · TraderHome 独立长期资金系统</span>
-    <p>研究与教育工具，不构成投资建议。账户输入仅保存在浏览器；页面不连接 IBKR、不持有交易权限。</p>
+    <p>研究与教育工具，不构成投资建议。账户数据仅经本机只读中枢处理；网页不持有交易权限。</p>
     <a href="/standards/">证据标准</a>
   </footer>
   <script type="module" src="/incomeos/incomeos-app.mjs"></script>

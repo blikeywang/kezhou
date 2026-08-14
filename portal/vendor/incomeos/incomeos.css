@@ -122,6 +122,14 @@ body.incomeos a { color: inherit; }
 .io-input b { color: var(--io-muted); text-align: right; }
 .io-input input { width: 100%; min-width: 0; border: 0; outline: 0; padding: 9px 12px 9px 7px; background: transparent; color: var(--io-text); font: 750 1rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .io-input small { color: #6f8298; font-size: .66rem; }
+.io-hub-control { display: grid; gap: 7px; margin-top: 16px; }
+.io-hub-row { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 7px; }
+.io-hub-row select { min-width: 0; min-height: 40px; padding: 0 10px; border: 1px solid var(--io-line); border-radius: 8px; color: var(--io-text); background: var(--io-panel); font: inherit; font-size: .78rem; cursor: pointer; }
+.io-hub-control .io-button { width: 100%; min-height: 40px; padding-inline: 10px; color: var(--io-text); cursor: pointer; }
+.io-hub-control .io-button:disabled { opacity: .55; cursor: wait; }
+.io-hub-control small { color: var(--io-muted); font-size: .66rem; line-height: 1.45; }
+.io-hub-control small.is-ready { color: var(--io-green); }
+.io-hub-control small.is-error { color: var(--io-red); }
 
 .io-section { padding-block: 82px; border-top: 1px solid rgba(148,163,184,.12); }
 .io-section.darker { background: rgba(2,8,15,.34); }

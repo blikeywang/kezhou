@@ -1,0 +1,6 @@
+fastapi==0.116.1
+cryptography==50.0.0
+ib_async==2.0.1
+httpx==0.28.1
+longbridge==4.4.3
+uvicorn[standard]==0.35.0

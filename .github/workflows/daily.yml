@@ -1,7 +1,6 @@
 name: daily-refresh
 
-# 每天刷新一次数据 → 重算衍生曲线 → 注入 app.html → 部署到 GitHub Pages。
-# 用户永远打开的是静态页;不做实时查询。
+# 每天刷新公开衍生数据并部署 GitHub Pages。私人实时行情与账户数据只由本机 Personal Data Hub 提供。
 on:
   push:
     branches: [main]
@@ -9,6 +8,7 @@ on:
       - "pipeline/daily/**"
       - "portal/**"
       - "tools/tailtrend/**"
+      - "personal-data-hub/**"
       - "docs/METHODS_AND_SOURCES.md"
       - "docs/TRADERHOME_PRODUCT_SYSTEM.md"
       - "README.md"
@@ -41,13 +41,16 @@ jobs:
           node-version: "22"
 
       - name: Install deps
-        run: pip install -r pipeline/daily/requirements.txt
+        run: pip install -r pipeline/daily/requirements.txt -r personal-data-hub/requirements-dev.txt
 
       - name: Run V2.1 regression tests
         run: python -m unittest pipeline.daily.test_v21
 
       - name: Run TraderHome portal tests
         run: python -m unittest portal.test_portal
+
+      - name: Run Personal Data Hub tests
+        run: PYTHONPATH=personal-data-hub python -m unittest discover -s personal-data-hub/tests -v
 
       - name: Run browser engine tests
         run: node --test portal/test_review_engine.mjs portal/test_review_community.mjs portal/test_incomeos_engine.mjs portal/test_tailtrend_engine.mjs

@@ -118,6 +118,53 @@ button { letter-spacing: 0; }
 .rv-button--danger { color: #ffc5ca; border-color: #5e3238; background: transparent; }
 .rv-button:disabled { opacity: .45; cursor: not-allowed; }
 
+.rv-provider-picker {
+  display: inline-grid;
+  grid-template-columns: auto minmax(116px, 1fr);
+  align-items: center;
+  min-height: 38px;
+  gap: 8px;
+  padding: 0 9px;
+  border: 1px solid var(--rv-line);
+  border-radius: 6px;
+  background: var(--rv-surface-2);
+  color: var(--rv-muted);
+  font-size: 11px;
+}
+
+.rv-provider-picker select {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--rv-text);
+  background: transparent;
+  font: inherit;
+  font-weight: 720;
+  cursor: pointer;
+}
+
+.rv-provider-picker input {
+  width: 220px;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--rv-text);
+  background: transparent;
+  font: inherit;
+  font-weight: 680;
+}
+
+.rv-provider-picker[hidden] { display: none; }
+
+.rv-hub-state {
+  margin: 12px 0 0;
+  color: var(--rv-muted);
+  font-size: 11px;
+}
+
+.rv-hub-state.is-ready { color: var(--rv-green); }
+.rv-hub-state.is-error { color: var(--rv-red); }
+
 .rv-import {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(320px, .75fr);
@@ -700,6 +747,7 @@ button { letter-spacing: 0; }
   .rv-header h1 { font-size: 29px; }
   .rv-header__actions .rv-button { width: 100%; }
   .rv-import__actions .rv-button { flex: 1 1 100%; }
+  .rv-provider-picker { width: 100%; grid-template-columns: auto 1fr; }
   .rv-prescription { padding: 17px; }
   .rv-prescription__proof { grid-template-columns: 1fr; }
   .rv-kpis article { padding: 13px; }

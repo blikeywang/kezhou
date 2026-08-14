@@ -52,7 +52,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertFalse((self.site / "review" / "data" / "review-data.json").exists())
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
         self.assertFalse(manifest["privacy"]["privateTradeLedgerPublished"])
-        self.assertEqual(manifest["privacy"]["reviewRuntime"], "browser_local")
+        self.assertEqual(manifest["privacy"]["reviewRuntime"], "browser_local_with_optional_personal_data_hub")
         self.assertEqual(manifest["privacy"]["reviewDemo"], "optional_synthetic")
 
     def test_professional_product_contracts_and_evidence_standard(self):
@@ -77,6 +77,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("原始记录仅在本页内存处理", review)
         self.assertIn("查看完整教学案例", review)
         self.assertIn("连接自托管 API", review)
+        self.assertIn("从券商读取", review)
+        self.assertIn("Longbridge", review)
+        self.assertIn("Binance", review)
+        self.assertTrue((self.site / "assets" / "personal-data-hub.mjs").exists())
 
     def test_review_runtime_is_published_as_a_local_first_bundle(self):
         expected = [
@@ -102,12 +106,14 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("战友会诊", review)
         self.assertIn('id="coachChart"', review)
         self.assertIn('id="createFeedbackButton"', review)
+        self.assertIn('id="connectPersonalHubButton"', review)
         self.assertIn("导出聚合报告", review)
         self.assertNotIn("$420", review)
         app = (self.site / "review" / "review-app.mjs").read_text(encoding="utf-8")
         self.assertIn("normalizeTradeRecords", app)
         self.assertIn("createExportReport", app)
         self.assertIn("credentials: \"omit\"", app)
+        self.assertIn("personalHubFetch", app)
 
     def test_custom_domain_is_preserved(self):
         self.assertEqual((self.site / "CNAME").read_text().strip(), "traderhome-histroy.xyz")
@@ -121,6 +127,7 @@ class PortalBuildTests(unittest.TestCase):
             "decision/data/intraday-coaches.js",
             "decision/data/plan-gate-model.js",
             "decision/data/market-snapshots/NQ.json",
+            "decision/data/market-snapshots/ES.json",
             "decision/data/market-snapshots/MSFT.json",
             "decision/vendor/lightweight-charts.standalone.production.js",
             "decision/arena-worker/src/engine.js",
@@ -144,6 +151,8 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("主计划是回踩 98 入场、95 止损、104 目标", app)
         self.assertIn("62分不是 62% 胜率", app)
         self.assertIn("把 NQ 放入等待清单", app)
+        self.assertIn('value="ES"', app)
+        self.assertIn("个人数据中枢", app)
 
         competition = json.loads((self.site / "decision" / "data" / "index-coach-competition.json").read_text())
         self.assertEqual(competition["schema"], "ev_desk_index_coach_competition_v1")
@@ -205,6 +214,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('data-color-theme="amber"', page)
         self.assertIn('data-color-theme="daylight"', page)
         self.assertIn('id="incomeosTopbar"', page)
+        self.assertIn('id="syncIbkrButton"', page)
         self.assertIn('class="io-wrap io-global-controls"', page)
         self.assertNotIn('class="io-appearance-control"', page)
         self.assertIn('id="operationHistoryRecords"', page)
@@ -227,6 +237,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("operation-history.json", app)
         self.assertIn('"daylight"', app)
         self.assertIn("syncTopbarOffset", app)
+        self.assertIn("syncIbkrAccount", app)
         self.assertNotIn("window.scrollTo", app)
 
         css = (self.site / "incomeos" / "incomeos.css").read_text(encoding="utf-8")
@@ -255,7 +266,10 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("allocation", operation_history["records"][0])
         self.assertEqual(self.manifest["routes"]["incomeos"], "/incomeos/")
         self.assertEqual(self.manifest["privacy"]["incomeosRuntime"], "browser_local")
-        self.assertFalse(self.manifest["privacy"]["incomeosBrokerConnection"])
+        self.assertEqual(self.manifest["privacy"]["incomeosBrokerConnection"], "local_readonly_via_personal_data_hub")
+        self.assertIn("ibkr_client_portal_web_api", self.manifest["privacy"]["personalDataHubSources"])
+        self.assertNotIn("ibkr_tws_api", self.manifest["privacy"]["personalDataHubSources"])
+        self.assertFalse(self.manifest["privacy"]["personalDataHubSecretsPublished"])
 
     def test_incomeos_whole_is_a_complete_integer_only_copy(self):
         expected = [
@@ -283,6 +297,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('data-tab="backtest"', page)
         self.assertNotIn("估算碎股", page)
         self.assertIn('src="/incomeos-whole/incomeos-app.mjs"', page)
+        self.assertIn('id="syncIbkrButton"', page)
 
         app = (self.site / "incomeos-whole" / "incomeos-app.mjs").read_text(encoding="utf-8")
         engine = (self.site / "incomeos-whole" / "incomeos-engine.mjs").read_text(encoding="utf-8")

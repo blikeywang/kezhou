@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.traderhome.ibkr-client-portal</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/java</string>
+    <string>-server</string>
+    <string>-Dvertx.disableDnsResolver=true</string>
+    <string>-Djava.net.preferIPv4Stack=true</string>
+    <string>-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory</string>
+    <string>-Dnologback.statusListenerClass=ch.qos.logback.core.status.OnConsoleStatusListener</string>
+    <string>-cp</string>
+    <string>__GATEWAY__/root:__GATEWAY__/dist/ibgroup.web.core.iblink.router.clientportal.gw.jar:__GATEWAY__/build/lib/runtime/*</string>
+    <string>ibgroup.web.core.clientportal.gw.GatewayStart</string>
+    <string>--conf</string>
+    <string>../root/conf.yaml</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>__GATEWAY__</string>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>ThrottleInterval</key>
+  <integer>15</integer>
+  <key>StandardOutPath</key>
+  <string>__HOME__/.traderhome/logs/ibkr-client-portal.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/.traderhome/logs/ibkr-client-portal-error.log</string>
+</dict>
+</plist>

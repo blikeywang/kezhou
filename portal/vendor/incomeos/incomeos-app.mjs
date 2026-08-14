@@ -4,12 +4,24 @@ import {
   portfolioContributionPlan,
   wholeShareContributionPlan,
 } from "./incomeos-engine.mjs";
+import {
+  connectPersonalHub,
+  consumeHubCredentials,
+  hasPersonalHubToken,
+  openIbkrWebLogin,
+  personalHubFetch,
+  personalHubStatus,
+} from "/assets/personal-data-hub.mjs";
 
 const WHOLE_SHARE_MODE = document.body.dataset.executionMode === "whole";
 const STORAGE_KEY = WHOLE_SHARE_MODE ? "traderhome-incomeos-whole-plan-v1" : "traderhome-incomeos-plan-v2";
 const FONT_KEY = "traderhome-incomeos-font-scale";
 const FONT_FAMILY_KEY = "traderhome-incomeos-font-family";
 const COLOR_THEME_KEY = "traderhome-incomeos-color-theme";
+const HUB_SYNC_INTENT_KEY = "traderhome-incomeos-ibkr-sync-v1";
+const HUB_PROVIDER_KEY = "traderhome-incomeos-provider-v1";
+const receivedHubCredentials = consumeHubCredentials();
+const HUB_PROVIDER_LABELS = { ibkr: "IBKR", longbridge: "Longbridge", binance: "Binance" };
 const TAB_IDS = ["report", "overview", "ranking", "portfolio", "calls", "puts", "risk", "backtest", "data"];
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -26,6 +38,8 @@ const state = {
   search: "",
   detailTicker: null,
   topbarObserver: null,
+  ibkrAccount: null,
+  accountProvider: null,
 };
 
 function syncTopbarOffset() {
@@ -49,6 +63,98 @@ function currentInput() {
     carryCash: WHOLE_SHARE_MODE ? Math.max(0, Number($("#carryCash")?.value) || 0) : 0,
     cashBuffer: WHOLE_SHARE_MODE ? Math.max(0, Number($("#cashBuffer")?.value) || 0) : 0,
   };
+}
+
+function setIbkrSyncStatus(message, kind = "") {
+  const target = $("#ibkrSyncStatus");
+  if (!target) return;
+  target.textContent = message;
+  target.classList.toggle("is-ready", kind === "ready");
+  target.classList.toggle("is-error", kind === "error");
+}
+
+function summaryValue(summary, field) {
+  if (Number.isFinite(summary?.[field])) return summary[field];
+  for (const currency of ["BASE", "USD", ...Object.keys(summary?.currencies || {})]) {
+    const value = summary?.currencies?.[currency]?.[field];
+    if (Number.isFinite(value)) return value;
+  }
+  return null;
+}
+
+async function probeIncomeHub() {
+  try {
+    const health = await personalHubStatus(true);
+    const ibkr = health.providers?.ibkr;
+    const longbridge = health.providers?.longbridge;
+    const binance = health.providers?.binance;
+    const picker = $("#accountProvider");
+    const saved = sessionStorage.getItem(HUB_PROVIDER_KEY);
+    if (HUB_PROVIDER_LABELS[saved]) picker.value = saved;
+    else if (picker.value === "auto") picker.value = ibkr?.available ? "ibkr" : longbridge?.available ? "longbridge" : binance?.account_available ? "binance" : "auto";
+    const ready = [ibkr?.available && "IBKR", longbridge?.available && "Longbridge", binance?.account_available && "Binance 账户"].filter(Boolean);
+    $("#incomeIbkrLoginButton").hidden = !ibkr?.authentication_required;
+    setIbkrSyncStatus(
+      ready.length ? `${ready.join(" / ")} 只读同步已就绪` : ibkr?.authentication_required ? "IBKR 等待今日登录与 2FA" : "个人数据中枢已运行，等待券商只读会话",
+      ready.length ? "ready" : "",
+    );
+  } catch (error) {
+    $("#incomeIbkrLoginButton").hidden = true;
+    setIbkrSyncStatus(error.message, "error");
+  }
+}
+
+async function syncIbkrAccount() {
+  const picker = $("#accountProvider");
+  let selected = HUB_PROVIDER_LABELS[picker.value] ? picker.value : "";
+  if (!selected) {
+    try {
+      const health = await personalHubStatus(true);
+      selected = health.providers?.ibkr?.available ? "ibkr" : health.providers?.longbridge?.available ? "longbridge" : health.providers?.binance?.account_available ? "binance" : "ibkr";
+      picker.value = selected;
+    } catch {
+      selected = "ibkr";
+    }
+  }
+  const providerLabel = HUB_PROVIDER_LABELS[selected];
+  sessionStorage.setItem(HUB_PROVIDER_KEY, selected);
+  if (!hasPersonalHubToken()) {
+    sessionStorage.setItem(HUB_SYNC_INTENT_KEY, "1");
+    connectPersonalHub(`${location.origin}${location.pathname}?ibkr_sync=1`);
+    return;
+  }
+  const button = $("#syncIbkrButton");
+  button.disabled = true;
+  button.textContent = "正在同步…";
+  setIbkrSyncStatus("正在读取净值、现金与持仓…");
+  try {
+    const [summary, positions] = await Promise.all([
+      personalHubFetch(`/api/v1/account/summary?provider=${selected}`, { timeout: 20_000 }),
+      personalHubFetch(`/api/v1/account/positions?provider=${selected}`, { timeout: 20_000 }),
+    ]);
+    const netLiquidation = summaryValue(summary, "net_liquidation");
+    if (!Number.isFinite(netLiquidation) || netLiquidation <= 0) throw new Error(`${providerLabel} 未返回可用的账户净值`);
+    state.ibkrAccount = {
+      netLiquidation,
+      totalCash: summaryValue(summary, "total_cash"),
+      availableFunds: summaryValue(summary, "available_funds"),
+      buyingPower: summaryValue(summary, "buying_power"),
+      positions: Array.isArray(positions.positions) ? positions.positions : [],
+      asOf: summary.as_of,
+    };
+    state.accountProvider = providerLabel;
+    $("#accountValue").value = String(Math.round(netLiquidation * 100) / 100);
+    sessionStorage.removeItem(HUB_SYNC_INTENT_KEY);
+    if (new URLSearchParams(location.search).has("ibkr_sync")) history.replaceState(null, "", location.pathname);
+    if (state.data) renderAll();
+    const cash = Number.isFinite(state.ibkrAccount.totalCash) ? ` · 现金 ${formatMoney(state.ibkrAccount.totalCash)}` : "";
+    setIbkrSyncStatus(`${providerLabel} 已同步 · ${state.ibkrAccount.positions.length} 个持仓${cash}`, "ready");
+  } catch (error) {
+    setIbkrSyncStatus(error.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "同步只读账户";
+  }
 }
 
 function setFontScale(value) {
@@ -208,6 +314,9 @@ function renderReport(data, plan) {
   $("#stageLabel").textContent = plan.stage.label;
   $("#stageDetail").textContent = plan.stage.detail;
   $("#postDepositValue").textContent = formatMoney(plan.postDepositValue);
+  $("#accountValueSource").textContent = state.ibkrAccount
+    ? `${state.accountProvider || "券商"} 只读同步 · ${state.ibkrAccount.positions.length} 个持仓`
+    : "手工输入；可从本机券商只读同步";
   $("#projectedPutReserve").textContent = formatMoney(plan.projectedOptionReserve);
   $("#optionOrders").textContent = plan.executablePut ? "1" : "0";
   renderAllocation(plan);
@@ -297,7 +406,7 @@ function renderOverview(data) {
   const modules = [
     [WHOLE_SHARE_MODE ? "整数股操作单" : "周五操作单", WHOLE_SHARE_MODE ? "把本周入金转成完整股数与现金余款" : "把本周入金转成今天的美元订单"], ["Top 50", "71 个候选每周竞争 50 个席位"], ["组合引擎", "把高分变成受行业与仓位约束的组合"],
     ["Sell Call", "100 股、Delta、IV 与事件闸门"], ["Sell Put", "底层、期权和账户容量三层闸门"], ["Risk Engine", "账户阶段、集中度和现金约束"],
-    ["回测 / 基准", "与 SPY、QQQI、JEPI、JEPQ、SPYI 比较"], ["数据室", "数据覆盖、缺口与外部源"], ["IBKR 边界", "手工输入到 Flex Query 的升级路径"],
+    ["回测 / 基准", "与 SPY、QQQI、JEPI、JEPQ、SPYI 比较"], ["数据室", "数据覆盖、缺口与外部源"], ["券商边界", "本机只读同步，下单仍由你确认"],
   ];
   $("#moduleMap").innerHTML = modules.map(([name, detail], index) => `<article><span>${String(index + 1).padStart(2, "0")}</span><h3>${name}</h3><p>${detail}</p></article>`).join("");
   const qualified = data.assets.find((asset) => asset.rank && asset.status !== "VALUATION_WAIT" && asset.kind === "Stock");
@@ -363,7 +472,10 @@ function gateText(option) {
 function renderCalls(data) {
   $("#callRows").innerHTML = data.options.map((row) => {
     const call = row.call;
-    return `<tr><td><strong>#${row.rank ?? "—"} · ${row.ticker}</strong><small>${escapeHtml(call.contract)}</small></td><td>${call.dte}</td><td>${call.delta?.toFixed(3) ?? "—"}<small>目标 ${call.targetDelta?.toFixed(2) ?? "—"}</small></td><td>${call.ivHv?.toFixed(2) ?? "—"}</td><td>${number(call.oi)}</td><td>${call.bid !== null ? `${call.bid.toFixed(2)} / ${call.ask.toFixed(2)}` : "—"}</td><td>${pct(call.spreadPct)}</td><td>${pct(call.annualizedPremium)}</td><td><span class="io-state ${call.action.startsWith("REVIEW") ? "pass" : "wait"}">${optionLabel(call.action)}</span><small>${escapeHtml(gateText(call))}</small></td></tr>`;
+    const position = state.ibkrAccount?.positions.find((item) => String(item.symbol).replace(/\s.+$/, "") === row.ticker && item.asset_class === "STK");
+    const shares = Math.max(0, Number(position?.quantity) || 0), covered = Math.floor(shares / 100);
+    const coverage = state.ibkrAccount ? `${state.accountProvider || "券商"} ${number(shares, 2)} 股 · ${covered} 手可覆盖` : gateText(call);
+    return `<tr><td><strong>#${row.rank ?? "—"} · ${row.ticker}</strong><small>${escapeHtml(call.contract)}</small></td><td>${call.dte}</td><td>${call.delta?.toFixed(3) ?? "—"}<small>目标 ${call.targetDelta?.toFixed(2) ?? "—"}</small></td><td>${call.ivHv?.toFixed(2) ?? "—"}</td><td>${number(call.oi)}</td><td>${call.bid !== null ? `${call.bid.toFixed(2)} / ${call.ask.toFixed(2)}` : "—"}</td><td>${pct(call.spreadPct)}</td><td>${pct(call.annualizedPremium)}</td><td><span class="io-state ${call.action.startsWith("REVIEW") && (!state.ibkrAccount || covered > 0) ? "pass" : "wait"}">${state.ibkrAccount && covered === 0 ? "持仓不足" : optionLabel(call.action)}</span><small>${escapeHtml(coverage)}</small></td></tr>`;
   }).join("");
 }
 
@@ -406,7 +518,7 @@ function renderRisk(data, plan) {
     data.market.valuation >= 80 ? `市场估值热度 ${data.market.valuation}/100，避免一次性放大高估值公司。` : null,
     `${data.assets.filter((asset) => asset.status === "VALUATION_WAIT" && asset.selectedTop50).length} 个 Top 50 标的处于自身估值等待。`,
     data.optionDataQuality.errors.length ? `期权数据缺口：${data.optionDataQuality.errors.join("；")}` : null,
-    "尚未接入 IBKR Flex，现有持仓漂移、税基和 Covered Call 覆盖状态需要手工复核。",
+    state.ibkrAccount ? `${state.accountProvider || "券商"} 已只读同步 ${state.ibkrAccount.positions.length} 个持仓；税基、股息和期权历史仍需账单证据。` : "券商账户尚未同步，现有持仓漂移和 Covered Call 覆盖状态需要手工复核。",
   ].filter(Boolean);
   $("#riskWarnings").innerHTML = warnings.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
@@ -427,9 +539,12 @@ function renderDataRoom(data) {
     ["历史 ≥ 36 月", `${data.dataQuality.historical}/${data.universe.candidateCount}`, "2016 至今前复权月线"],
     ["财报 / 预期", `${data.dataQuality.fundamentals}/${data.universe.candidateCount}`, "ETF 按不适用计为已覆盖"],
     ["双边期权", `${data.optionDataQuality.usable}/${data.optionDataQuality.scanned}`, `${data.optionDataQuality.callsWithMarket} Call + ${data.optionDataQuality.putsWithMarket} Put 有盘口`],
+    ["券商账户", state.ibkrAccount ? `${state.accountProvider} · ${state.ibkrAccount.positions.length} 持仓` : "未同步", state.ibkrAccount ? `只读净值 ${formatMoney(state.ibkrAccount.netLiquidation)}` : "需本机只读数据会话"],
   ];
   $("#dataQuality").innerHTML = cards.map(([label, value, detail]) => `<article><span>${label}</span><strong>${value}</strong><p>${detail}</p></article>`).join("");
-  $("#dataLimitations").innerHTML = [...data.limitations, ...data.dataQuality.errors, ...data.optionDataQuality.errors].map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  const limitations = [...data.limitations, ...data.dataQuality.errors, ...data.optionDataQuality.errors]
+    .filter((item) => !(state.ibkrAccount && /(IBKR|券商).*(未|尚未|手工)/i.test(item)));
+  $("#dataLimitations").innerHTML = limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
 
 function renderAll() {
@@ -456,7 +571,16 @@ function bindEvents() {
   $$('[data-font-scale]').forEach((button) => button.addEventListener("click", () => setFontScale(button.dataset.fontScale)));
   $$('[data-font-family]').forEach((button) => button.addEventListener("click", () => setFontFamily(button.dataset.fontFamily)));
   $$('[data-color-theme]').forEach((button) => button.addEventListener("click", () => setColorTheme(button.dataset.colorTheme)));
-  ["#weeklyContribution", "#accountValue", "#optionReserve", ...(WHOLE_SHARE_MODE ? ["#carryCash", "#cashBuffer"] : [])].forEach((selector) => $(selector)?.addEventListener("input", () => state.data && renderAll()));
+  ["#weeklyContribution", "#accountValue", "#optionReserve", ...(WHOLE_SHARE_MODE ? ["#carryCash", "#cashBuffer"] : [])].forEach((selector) => $(selector)?.addEventListener("input", () => {
+    if (selector === "#accountValue" && state.ibkrAccount && Math.abs(Number($(selector).value) - state.ibkrAccount.netLiquidation) > .01) state.ibkrAccount = null;
+    if (state.data) renderAll();
+  }));
+  $("#syncIbkrButton")?.addEventListener("click", syncIbkrAccount);
+  $("#incomeIbkrLoginButton")?.addEventListener("click", openIbkrWebLogin);
+  window.addEventListener("focus", () => {
+    if (!$("#incomeIbkrLoginButton")?.hidden) window.setTimeout(probeIncomeHub, 500);
+  });
+  $("#accountProvider")?.addEventListener("change", (event) => sessionStorage.setItem(HUB_PROVIDER_KEY, event.target.value));
   $("#rankingFilters").addEventListener("click", (event) => {
     const button = event.target.closest("button[data-filter]");
     if (!button) return;
@@ -488,6 +612,7 @@ async function init() {
   setFontFamily(localStorage.getItem(FONT_FAMILY_KEY) ?? "system");
   setColorTheme(localStorage.getItem(COLOR_THEME_KEY) ?? "ocean");
   bindEvents();
+  probeIncomeHub();
   syncTopbarOffset();
   if ("ResizeObserver" in window) {
     state.topbarObserver = new ResizeObserver(syncTopbarOffset);
@@ -508,6 +633,10 @@ async function init() {
     const hash = location.hash.replace("#", "");
     setTab(TAB_IDS.includes(hash) ? hash : "report", false);
     if (hash.startsWith("history-")) requestAnimationFrame(() => document.getElementById(hash)?.scrollIntoView());
+    if (
+      hasPersonalHubToken()
+      && (receivedHubCredentials || sessionStorage.getItem(HUB_SYNC_INTENT_KEY) === "1" || new URLSearchParams(location.search).has("ibkr_sync"))
+    ) syncIbkrAccount();
   } catch (error) {
     $("#appError").hidden = false;
     $("#appError").textContent = `IncomeOS 数据加载失败：${error.message}`;

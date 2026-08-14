@@ -17,10 +17,19 @@ import {
   validateCasePacket,
   validateFeedbackPacket,
 } from "./review-community.mjs";
+import {
+  connectPersonalHub,
+  consumeHubCredentials,
+  hasPersonalHubToken,
+  openIbkrWebLogin,
+  personalHubFetch,
+  personalHubStatus,
+} from "/assets/personal-data-hub.mjs";
 
 const byId = id => document.getElementById(id);
 const refs = Object.fromEntries([
   "importView", "resultsView", "tradeFile", "barFile", "tradeDropzone", "chooseTradeButton", "chooseBarButton",
+  "connectPersonalHubButton", "connectPersonalHubImportButton", "ibkrLoginButton", "personalHubProvider", "personalHubState", "binanceSymbolsField", "binanceReviewSymbols",
   "loadSampleButton", "downloadTemplateButton", "openApiButton", "replaceDataButton", "addBarsButton", "exportButton",
   "clearButton", "barFileState", "sourceBadge", "sourceName", "sourceFacts", "sampleStatus", "prescriptionTitle",
   "prescriptionAction", "successMetric", "prescriptionConfidence", "kpiNet", "kpiCurrency", "kpiWinRate", "kpiWinLoss",
@@ -65,6 +74,15 @@ let toastTimer;
 let resizeTimer;
 const OWNED_CASES_KEY = "traderhome-review-owned-cases-v1";
 const FEEDBACKS_KEY = "traderhome-review-private-feedback-v1";
+const HUB_IMPORT_INTENT_KEY = "traderhome-review-hub-import-v1";
+const HUB_PROVIDER_KEY = "traderhome-review-hub-provider-v1";
+const receivedHubCredentials = consumeHubCredentials();
+
+const HUB_PROVIDERS = {
+  ibkr: { label: "IBKR", source: "ibkr_personal_hub" },
+  longbridge: { label: "Longbridge", source: "longbridge_personal_hub" },
+  binance: { label: "Binance", source: "binance_personal_hub" },
+};
 
 const escapeHtml = value => String(value ?? "")
   .replaceAll("&", "&amp;")
@@ -268,7 +286,8 @@ function renderSampleCase() {
 function renderSource() {
   const normalized = state.normalized;
   const analysis = state.analysis;
-  refs.sourceBadge.textContent = state.isSample ? "合成教学样例" : state.source === "self_hosted_api" ? "自托管 API" : "浏览器本地";
+  const personalProvider = Object.values(HUB_PROVIDERS).find(item => item.source === state.source);
+  refs.sourceBadge.textContent = state.isSample ? "合成教学样例" : personalProvider ? `${personalProvider.label} 只读` : state.source === "self_hosted_api" ? "自托管 API" : "浏览器本地";
   refs.sourceBadge.className = `rv-badge${state.isSample ? " is-sample" : ""}`;
   refs.sourceName.textContent = state.sourceName || "未命名数据源";
   const facts = [`${normalized.trades.length} 笔有效`, `${normalized.invalid.length} 行无效`, `${normalized.duplicates} 笔去重`];
@@ -1063,6 +1082,95 @@ async function connectApi() {
   }
 }
 
+function setPersonalHubState(message, kind = "") {
+  refs.personalHubState.textContent = message;
+  refs.personalHubState.classList.toggle("is-ready", kind === "ready");
+  refs.personalHubState.classList.toggle("is-error", kind === "error");
+}
+
+async function probePersonalReviewHub() {
+  try {
+    const health = await personalHubStatus(true);
+    const ibkr = health.providers?.ibkr;
+    const longbridge = health.providers?.longbridge;
+    const binance = health.providers?.binance;
+    const saved = sessionStorage.getItem(HUB_PROVIDER_KEY);
+    if (HUB_PROVIDERS[saved]) refs.personalHubProvider.value = saved;
+    else if (refs.personalHubProvider.value === "auto") {
+      refs.personalHubProvider.value = ibkr?.available ? "ibkr" : longbridge?.available ? "longbridge" : binance?.account_available ? "binance" : "auto";
+    }
+    const ready = [ibkr?.available && "IBKR", longbridge?.available && "Longbridge", binance?.account_available && "Binance 账户"].filter(Boolean);
+    refs.ibkrLoginButton.hidden = !ibkr?.authentication_required;
+    setPersonalHubState(
+      ready.length
+        ? `本机数据中枢已就绪 · ${ready.join(" / ")}`
+        : ibkr?.authentication_required
+          ? "IBKR Web API 已运行 · 请完成今日登录与 2FA"
+          : "本机数据中枢已运行 · 等待券商只读会话",
+      ready.length ? "ready" : "",
+    );
+    syncBinanceSymbolsField();
+  } catch (error) {
+    refs.ibkrLoginButton.hidden = true;
+    setPersonalHubState(`${error.message}。仍可使用文件或自托管 API。`, "error");
+  }
+}
+
+async function loadPersonalHubTrades() {
+  let selected = HUB_PROVIDERS[refs.personalHubProvider.value] ? refs.personalHubProvider.value : "";
+  if (!selected) {
+    try {
+      const health = await personalHubStatus(true);
+      selected = health.providers?.ibkr?.available ? "ibkr" : health.providers?.longbridge?.available ? "longbridge" : health.providers?.binance?.account_available ? "binance" : "ibkr";
+      refs.personalHubProvider.value = selected;
+    } catch {
+      selected = "ibkr";
+    }
+  }
+  const provider = HUB_PROVIDERS[selected];
+  sessionStorage.setItem(HUB_PROVIDER_KEY, selected);
+  if (!hasPersonalHubToken()) {
+    sessionStorage.setItem(HUB_IMPORT_INTENT_KEY, "1");
+    connectPersonalHub(`${location.origin}${location.pathname}?hub_import=1`);
+    return;
+  }
+  const buttons = [refs.connectPersonalHubButton, refs.connectPersonalHubImportButton];
+  buttons.forEach(button => { button.disabled = true; button.textContent = "正在读取…"; });
+  setPersonalHubState(`正在读取 ${provider.label} 成交并配对完整往返…`);
+  try {
+    const params = new URLSearchParams({ days: "90", provider: selected });
+    if (selected === "binance" && refs.binanceReviewSymbols.value.trim()) {
+      params.set("symbols", refs.binanceReviewSymbols.value.trim().toUpperCase());
+    }
+    const payload = await personalHubFetch(`/api/v1/review/trades?${params}`, { timeout: 45_000 });
+    if (!Array.isArray(payload.trades) || !payload.trades.length) {
+      const fills = payload.quality?.fills_read ?? 0;
+      throw new Error(`当前会话读到 ${fills} 笔成交，但没有可配对的完整往返`);
+    }
+    const isPartialWindow = payload.quality?.history_complete === false;
+    const windowLabel = Number.isFinite(Number(payload.window_days)) ? ` · 近 ${payload.window_days} 天` : "";
+    const feeLabel = payload.quality?.fee_coverage === false ? " · 手续费未包含" : "";
+    const sourceName = `${provider.label} 只读${windowLabel} · ${payload.trades.length}笔完整往返${feeLabel}`;
+    await importTradeText(JSON.stringify(payload), sourceName, provider.source, false);
+    setPersonalHubState(
+      `${provider.label} 已读取 · ${payload.trades.length} 笔完整往返${isPartialWindow ? ` · 直连仅近 ${payload.window_days} 天` : windowLabel}${feeLabel}`,
+      "ready",
+    );
+    if (isPartialWindow) showToast(`IBKR 直连只提供近 ${payload.window_days} 天成交；更长历史请导入 Flex Query 或成交文件。`);
+    sessionStorage.removeItem(HUB_IMPORT_INTENT_KEY);
+    if (new URLSearchParams(location.search).has("hub_import")) history.replaceState(null, "", location.pathname);
+  } catch (error) {
+    setPersonalHubState(error.message, "error");
+    showToast(error.message, "error");
+  } finally {
+    buttons.forEach((button, index) => { button.disabled = false; button.textContent = index ? "读取本机券商" : "从券商读取"; });
+  }
+}
+
+function syncBinanceSymbolsField() {
+  refs.binanceSymbolsField.hidden = refs.personalHubProvider.value !== "binance";
+}
+
 function handleError(error) {
   console.error(error);
   showToast(error?.message || "处理数据时发生错误", "error");
@@ -1080,6 +1188,16 @@ refs.exportButton.addEventListener("click", exportReport);
 refs.clearButton.addEventListener("click", clearData);
 refs.openApiButton.addEventListener("click", () => { refs.apiError.textContent = ""; refs.apiDialog.showModal(); });
 refs.connectApiButton.addEventListener("click", connectApi);
+refs.connectPersonalHubButton.addEventListener("click", loadPersonalHubTrades);
+refs.connectPersonalHubImportButton.addEventListener("click", loadPersonalHubTrades);
+refs.ibkrLoginButton.addEventListener("click", openIbkrWebLogin);
+window.addEventListener("focus", () => {
+  if (!refs.ibkrLoginButton.hidden) window.setTimeout(probePersonalReviewHub, 500);
+});
+refs.personalHubProvider.addEventListener("change", () => {
+  sessionStorage.setItem(HUB_PROVIDER_KEY, refs.personalHubProvider.value);
+  syncBinanceSymbolsField();
+});
 refs.closeTradeDialog.addEventListener("click", () => refs.tradeDialog.close());
 refs.openSampleCaseButton.addEventListener("click", () => openTradeReview("DEMO-014"));
 
@@ -1137,3 +1255,8 @@ if ([...refs.reviewTimezone.options].some(option => option.value === browserTime
 state.ownedCaseIds = new Set(loadStoredArray(OWNED_CASES_KEY));
 window.addEventListener("hashchange", () => { try { loadSharedHash(); } catch (error) { handleError(error); } });
 try { loadSharedHash(); } catch (error) { handleError(error); }
+probePersonalReviewHub();
+if (
+  hasPersonalHubToken()
+  && (receivedHubCredentials || sessionStorage.getItem(HUB_IMPORT_INTENT_KEY) === "1" || new URLSearchParams(location.search).has("hub_import"))
+) loadPersonalHubTrades();

@@ -18,6 +18,7 @@
       </div>
       <div class="rv-header__actions">
         <span class="rv-local"><i></i>原始记录仅在本页内存处理</span>
+        <button class="rv-button rv-button--primary" id="connectPersonalHubButton" type="button">从券商读取</button>
         <button class="rv-button" id="openApiButton" type="button">连接自托管 API</button>
       </div>
     </header>
@@ -37,9 +38,14 @@
         </label>
         <div class="rv-import__actions">
           <button class="rv-button rv-button--primary" id="chooseTradeButton" type="button">选择成交文件</button>
+          <label class="rv-provider-picker"><span>只读来源</span><select id="personalHubProvider"><option value="auto">自动选择</option><option value="ibkr">IBKR</option><option value="longbridge">Longbridge</option><option value="binance">Binance</option></select></label>
+          <label class="rv-provider-picker rv-binance-symbols" id="binanceSymbolsField" hidden><span>U本位合约</span><input id="binanceReviewSymbols" type="text" autocomplete="off" spellcheck="false" placeholder="自动发现，或 BTCUSDT,ETHUSDT"></label>
+          <button class="rv-button" id="connectPersonalHubImportButton" type="button">读取本机券商</button>
+          <button class="rv-button" id="ibkrLoginButton" type="button" hidden>登录 IBKR</button>
           <button class="rv-button" id="loadSampleButton" type="button">查看完整教学案例</button>
           <button class="rv-button rv-button--quiet" id="downloadTemplateButton" type="button">下载字段模板</button>
         </div>
+        <p class="rv-hub-state" id="personalHubState">本机只读连接尚未检测</p>
         <p class="rv-format-note">不要直接导入逐笔成交 fills / executions：开仓、加仓和分批平仓尚未聚合时，买卖方向不等于最终持仓方向。</p>
         <p class="rv-sample-note">教学案例为合成记录，包含24笔交易及一笔完整分钟K线重演，不会混入真实历史战绩。</p>
       </div>
