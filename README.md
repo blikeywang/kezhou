@@ -12,6 +12,12 @@ TraderHome V7 保留 V3 的三个核心工作台与产品契约。NQ Flow、Inco
 
 ---
 
+## 场外日线工作台
+
+新增入口 [`/otc/`](https://traderhome-histroy.xyz/otc/)：用户提供的历史场外指数与爆破指数、周期底色、节点和条件式研究计划，保留缺页、过期与未核实映射。公开包位于 `portal/vendor/otc`，仅有白名单研究数据，不含账户、密钥、Desk 付费原文或券商原始K线。可选的 Binance 公开日K与本地导入 CSV 只在浏览器内存使用，不生成订单或收益回测。
+
+快照更新后运行 `python3 -m unittest portal.test_portal` 与 `node --test portal/test_otc_engine.mjs`。门户清单版本为 V8，三个核心工作台契约不变。
+
 ## 目录结构
 
 ```

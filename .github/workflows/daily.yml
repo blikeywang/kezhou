@@ -53,7 +53,7 @@ jobs:
         run: PYTHONPATH=personal-data-hub python -m unittest discover -s personal-data-hub/tests -v
 
       - name: Run browser engine tests
-        run: node --test portal/test_review_engine.mjs portal/test_review_community.mjs portal/test_incomeos_engine.mjs portal/test_tailtrend_engine.mjs
+        run: node --test portal/test_review_engine.mjs portal/test_review_community.mjs portal/test_incomeos_engine.mjs portal/test_tailtrend_engine.mjs portal/test_otc_engine.mjs
 
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py

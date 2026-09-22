@@ -31,6 +31,7 @@ class PortalBuildTests(unittest.TestCase):
             "incomeos-whole/index.html",
             "tailtrend/index.html",
             "daily-trade/index.html",
+            "otc/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -58,10 +59,10 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 7)
+        self.assertEqual(manifest["version"], 8)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade", "otc"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
@@ -69,6 +70,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertFalse(manifest["independentSystems"]["incomeosWhole"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["tailtrend"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["dailyTrade"]["partOfCoreWorkflow"])
+        self.assertFalse(manifest["independentSystems"]["otc"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
@@ -83,6 +85,25 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("Longbridge", review)
         self.assertIn("Binance", review)
         self.assertTrue((self.site / "assets" / "personal-data-hub.mjs").exists())
+
+    def test_otc_public_history_contract(self):
+        page = (self.site / "otc/index.html").read_text()
+        for name in ("chart.css", "chart.mjs", "engine.mjs", "data/snapshot.json"):
+            self.assertTrue((self.site / "otc" / name).is_file())
+        self.assertIn("研究用途，非投资建议", page)
+        self.assertIn("https://traderhome-histroy.xyz/otc/", page)
+        snapshot = json.loads((self.site / "otc/data/snapshot.json").read_text())
+        self.assertEqual(snapshot["schema"], "traderhome_otc_daily_v1")
+        self.assertEqual(snapshot["sourceMode"], "user_provided_only")
+        self.assertFalse(any(snapshot["privacy"].values()))
+        self.assertEqual(snapshot["recordCount"], sum(len(a["points"]) for a in snapshot["assets"]))
+        self.assertEqual(snapshot["dataDate"], max(p["date"] for a in snapshot["assets"] for p in a["points"]))
+        raw = json.dumps(snapshot, ensure_ascii=False)
+        for disallowed in ("/Users/", "TRENDTRADER_API_KEY", "account_id", "api_secret"):
+            self.assertNotIn(disallowed, raw)
+        self.assertIn('href="/otc/"', (self.site / "index.html").read_text())
+        self.assertIn('["otc", "/otc/", "场外日线"]', (self.site / "assets/traderhome-shell.js").read_text())
+        self.assertFalse(self.manifest["privacy"]["otcAutomaticOrders"])
 
     def test_review_runtime_is_published_as_a_local_first_bundle(self):
         expected = [

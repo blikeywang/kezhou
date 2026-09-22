@@ -33,6 +33,7 @@ CANONICAL_ROUTES = {
     "incomeos-whole/index.html": "/incomeos-whole/",
     "tailtrend/index.html": "/tailtrend/",
     "daily-trade/index.html": "/daily-trade/",
+    "otc/index.html": "/otc/",
     "standards/index.html": "/standards/",
 }
 
@@ -199,6 +200,10 @@ def build(output: Path) -> dict:
     if daily_trade_vendor.exists():
         shutil.copytree(daily_trade_vendor, output / "daily-trade")
 
+    # User-provided OTC history only. Runtime price comparisons and local CSV
+    # imports remain in browser memory; no accounts or broker bars are bundled.
+    shutil.copytree(PORTAL / "vendor" / "otc", output / "otc")
+
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
 
@@ -209,7 +214,7 @@ def build(output: Path) -> dict:
 
     manifest = {
         "name": "TraderHome",
-        "version": 7,
+        "version": 8,
         "coreWorkflowVersion": 3,
         "routes": {
             "home": "/",
@@ -221,6 +226,7 @@ def build(output: Path) -> dict:
             "incomeosWhole": "/incomeos-whole/",
             "tailtrend": "/tailtrend/",
             "dailyTrade": "/daily-trade/",
+            "otc": "/otc/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -264,6 +270,13 @@ def build(output: Path) -> dict:
                 "route": "/daily-trade/",
                 "partOfCoreWorkflow": False,
             },
+            "otc": {
+                "input": "user_provided_notion_history_and_optional_browser_local_price_comparison",
+                "output": "daily_cycle_quality_review_and_conditional_research_plan",
+                "rejects": "missing_stale_unverified_mapping_or_unconfirmed_execution_conditions",
+                "route": "/otc/",
+                "partOfCoreWorkflow": False,
+            },
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
         "privacy": {
@@ -292,6 +305,11 @@ def build(output: Path) -> dict:
             "dailyTradePublishedData": "morning_and_evening_html_only",
             "dailyTradeAccountDataPublished": False,
             "dailyTradeAutomaticOrders": False,
+            "otcPublishedData": "allowlisted_user_provided_history_and_research_labels",
+            "otcAccountDataPublished": False,
+            "otcRawBrokerBarsPublished": False,
+            "otcAutomaticOrders": False,
+            "otcPriceRuntime": "optional_public_binance_daily_bars_or_local_csv_in_memory_only",
         },
     }
     (output / "traderhome-manifest.json").write_text(
