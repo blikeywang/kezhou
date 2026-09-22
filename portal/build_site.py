@@ -271,7 +271,7 @@ def build(output: Path) -> dict:
                 "partOfCoreWorkflow": False,
             },
             "otc": {
-                "input": "user_provided_notion_history_and_optional_browser_local_price_comparison",
+                "input": "user_notion_with_authorized_reference_history_and_independent_public_daily_prices",
                 "output": "daily_cycle_quality_review_and_conditional_research_plan",
                 "rejects": "missing_stale_unverified_mapping_or_unconfirmed_execution_conditions",
                 "route": "/otc/",
@@ -305,11 +305,11 @@ def build(output: Path) -> dict:
             "dailyTradePublishedData": "morning_and_evening_html_only",
             "dailyTradeAccountDataPublished": False,
             "dailyTradeAutomaticOrders": False,
-            "otcPublishedData": "allowlisted_user_provided_history_and_research_labels",
+            "otcPublishedData": "user_notion_priority_with_user_authorized_reference_archive",
             "otcAccountDataPublished": False,
             "otcRawBrokerBarsPublished": False,
             "otcAutomaticOrders": False,
-            "otcPriceRuntime": "optional_public_binance_daily_bars_or_local_csv_in_memory_only",
+            "otcPriceRuntime": "scheduled_public_daily_bars_separate_from_unverified_reference_archive_and_memory_only_csv",
         },
     }
     (output / "traderhome-manifest.json").write_text(

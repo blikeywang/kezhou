@@ -88,19 +88,34 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_otc_public_history_contract(self):
         page = (self.site / "otc/index.html").read_text()
-        for name in ("chart.css", "chart.mjs", "engine.mjs", "data/snapshot.json"):
+        for name in ("chart.css", "chart.mjs", "engine.mjs", "data/snapshot.json", "data/prices.json", "data/reference-prices.json"):
             self.assertTrue((self.site / "otc" / name).is_file())
         self.assertIn("研究用途，非投资建议", page)
         self.assertIn("https://traderhome-histroy.xyz/otc/", page)
         snapshot = json.loads((self.site / "otc/data/snapshot.json").read_text())
         self.assertEqual(snapshot["schema"], "traderhome_otc_daily_v1")
-        self.assertEqual(snapshot["sourceMode"], "user_provided_only")
+        self.assertEqual(snapshot["sourceMode"], "user_notion_with_authorized_reference_archive")
         self.assertFalse(any(snapshot["privacy"].values()))
         self.assertEqual(snapshot["recordCount"], sum(len(a["points"]) for a in snapshot["assets"]))
         self.assertEqual(snapshot["dataDate"], max(p["date"] for a in snapshot["assets"] for p in a["points"]))
         raw = json.dumps(snapshot, ensure_ascii=False)
         for disallowed in ("/Users/", "TRENDTRADER_API_KEY", "account_id", "api_secret"):
             self.assertNotIn(disallowed, raw)
+        prices = json.loads((self.site / "otc/data/prices.json").read_text())
+        reference = json.loads((self.site / "otc/data/reference-prices.json").read_text())
+        self.assertEqual(prices["schema"], "traderhome_public_prices_v1")
+        self.assertEqual(reference["schema"], "traderhome_reference_prices_v1")
+        for bundle in (prices, reference):
+            encoded = json.dumps(bundle)
+            for forbidden in ("/Users/", "TRENDTRADER_API_KEY", "account_id", "api_secret", "access_token"):
+                self.assertNotIn(forbidden, encoded)
+            for row in bundle["assets"].values():
+                bars = row.get("bars", [])
+                if bars:
+                    self.assertEqual(row["latestDate"], bars[-1]["date"])
+                    self.assertEqual(len(bars), len({bar["date"] for bar in bars}))
+        self.assertIn('id="priceMode"', page)
+        self.assertIn('id="thresholds"', page)
         self.assertIn('href="/otc/"', (self.site / "index.html").read_text())
         self.assertIn('["otc", "/otc/", "场外日线"]', (self.site / "assets/traderhome-shell.js").read_text())
         self.assertFalse(self.manifest["privacy"]["otcAutomaticOrders"])

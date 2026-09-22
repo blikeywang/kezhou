@@ -3,6 +3,7 @@ export const isoDay=n=>new Date(n).toISOString().slice(0,10);
 export const dayTime=d=>Date.parse(d+'T00:00:00Z');
 export function calendar(start,end){const out=[];for(let d=dayTime(start);d<=dayTime(end);d+=DAY)out.push(isoDay(d));return out;}
 export function atDate(asset,date){return asset.points.filter(p=>p.date<=date).at(-1)||null;}
+export function thresholdState(p){if(!p)return [];return [...(p.otc<1000?['场外低于1000']:[]),...(p.burst<200?['爆破低于200']:[])];}
 export function tier(p){if(!p)return 'missing';if(p.cycle==='进场'&&p.quality==='优质'&&p.otc>=1000&&p.burst>0)return 'focus';if(p.quality==='劣质'||p.otc<1000||p.burst<0)return 'avoid';if(p.cycle==='进场'&&p.day<=3&&p.unit==='天')return 'new';return 'watch';}
 export function planFor(asset,p,asOf,today){
  if(!p)return {title:'没有此前记录',tone:'muted',why:'不能使用后来出现的数据解释这一天。',next:['换一个来源已覆盖的日期。'],invalid:[],missing:['该标的当日来源'],executable:false};
