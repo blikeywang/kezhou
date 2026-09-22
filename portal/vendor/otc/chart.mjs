@@ -12,15 +12,15 @@ function renderList(){
  const items=data.assets.map(a=>({a,p:atDate(a,asOf)})).filter(({a,p})=>a.id.toLowerCase().includes(query)||a.sector.toLowerCase().includes(query)).filter(({p})=>filter==='all'||tier(p)===filter).sort((x,y)=>rank[tier(x.p)]-rank[tier(y.p)]||x.a.id.localeCompare(y.a.id));
  $('count').textContent=items.length+'项';$('assetList').innerHTML=items.map(({a,p})=>`<button class="asset-row ${a.id===assetId?'selected':''}" data-asset="${esc(a.id)}" aria-pressed="${a.id===assetId}"><strong>${esc(a.id)}</strong><span class="${p?.cycle==='进场'?'tone-green':'tone-red'}">${p?fmt(p.otc):'—'}</span><small>${esc(p?.cycle||'未覆盖')} · ${esc(p?.quality||'待定')}</small><small>${tierLabel[tier(p)]}</small></button>`).join('')||'<p class="metadata">无匹配标的。</p>';
 }
-function renderPlan(){
- const a=asset(),p=atDate(a,asOf),plan=planFor(a,p,asOf,today());$('planDate').textContent=p?.date||asOf;
+function renderPlan(viewDate=asOf){
+ const a=asset(),p=atDate(a,viewDate),plan=planFor(a,p,viewDate,today());$('planDate').textContent=p?.date===viewDate?viewDate:viewDate+'（最近记录 '+(p?.date||'无')+'）';
  const list=(title,arr)=>`<div class="plan-block"><h3>${title}</h3><ul>${arr.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`;
  $('planBody').innerHTML=`<div class="verdict tone-${plan.tone}">${esc(plan.title)}</div><p class="why">${esc(plan.why)}</p>${list('下一步确认',plan.next)}${list('撤销 / 失效条件',plan.invalid)}${list('目前不能执行的原因',plan.missing)}${p?`<details class="plan-block"><summary>历史评级依据</summary><p>${esc(p.qualityNote||'历史评级依据不足，维持待定。')}</p></details>`:''}`;
  $('assetTitle').textContent=a.id;$('assetMeta').textContent=a.sector+' · '+(p?p.cycle+'第'+p.day+p.unit:'无历史记录');$('quality').textContent='历史质量 · '+(p?.quality||'待定');
  $('metrics').innerHTML=p?[['场外指数',p.otc,p.otcDelta],['爆破指数',p.burst,p.burstDelta],['来源日',p.date,null]].map(([name,n,d])=>`<div class="metric"><span>${name}</span><strong style="${name==='来源日'?'font-size:18px':''}">${typeof n==='number'?fmt(n):esc(n)}</strong>${name==='来源日'?'<small>非实时状态</small>':`<small class="${d>0?'tone-green':d<0?'tone-red':'tone-muted'}">来源Δ ${delta(d)}${p.deltaDays?' · 间隔'+p.deltaDays+'日':''}</small>`}</div>`).join(''):'<p>该日期尚无记录</p>';
  const context=data.days.find(d=>d.date===p?.date);const source=p?.source?`<a href="${esc(p.source)}" target="_blank" rel="noopener noreferrer">查看当日用户原页</a>`:'历史记录原页链接缺失';
  $('context').innerHTML=`<p>${source} · 数据日 ${esc(p?.date)}。缺失日不会补值。</p><p>资金明细合计 ${fmt(context?.flowSum)} 亿美元；原页总述 ${fmt(context?.flowHeadline)} 亿美元。</p><p class="tone-amber">${esc(context?.flowWarning||'该日资金口径未完整覆盖。')}</p><p>潜力观察：${esc(context?.potential||'该日潜力原文未覆盖')}。价格区间不是止损，需确认标的与交易场所。</p><p>来源复盘（未独立核验）：${esc(context?.review||'未覆盖')}</p><p>风险窗口：退场爆破负转正防反弹，进场跌回200需复评节点。重大事件时点未接入，不代表没有事件风险。</p><p>市场门控：日内大盘不稳时不必操作。<a href="/daily-trade/">结合其他体系与早晚报</a></p>`;
- $('events').innerHTML=a.points.filter(p=>p.date<=asOf&&(p.node||p.transition||p.unconfirmedNode)).slice(-7).reverse().map(p=>`<div class="event"><small>${p.date}</small><span>${p.transition?'转'+p.cycle+(p.gapBefore?'（跨缺页）':''):p.node||'旧标记 / 跨缺页待核'}</span><span>${fmt(p.otc)}</span></div>`).join('')||'<p>截至所选日，没有可展示的节点。不能用未来节点回填。</p>';
+ $('events').innerHTML=a.points.filter(p=>p.date<=viewDate&&(p.node||p.transition||p.unconfirmedNode)).slice(-7).reverse().map(p=>`<div class="event"><small>${p.date}</small><span>${p.transition?'转'+p.cycle+(p.gapBefore?'（跨缺页）':''):p.node||'旧标记 / 跨缺页待核'}</span><span>${fmt(p.otc)}</span></div>`).join('')||'<p>截至所选日，没有可展示的节点。不能用未来节点回填。</p>';
 }
 function chartSvg(){
  const a=asset(),end=asOf,start=span?isoDay(Math.max(dayTime(data.startDate),dayTime(end)-(span-1)*DAY)):data.startDate;
@@ -47,7 +47,7 @@ function chartSvg(){
  $('scrubber').max=Math.max(0,visibleDays.length-1);$('scrubber').value=visibleDays.length-1;hoverIndex=-1;
 }
 function readAt(index){index=Math.max(0,Math.min(visibleDays.length-1,index));hoverIndex=index;const d=visibleDays[index],p=asset().points.find(p=>p.date===d),b=(priceCache.get(assetId)||[]).find(p=>p.date===d),w=$('chart').clientWidth,x=46+(index+.5)*(w-90)/visibleDays.length,line=$('crosshair');if(line){line.setAttribute('x1',x);line.setAttribute('x2',x);line.setAttribute('visibility','visible');}
- $('readout').textContent=d+' · '+(p?`${p.cycle} ${p.day}${p.unit} · 场外 ${p.otc} · 爆破 ${p.burst} · 质量 ${p.quality}`:'原页缺失，不补值')+(b?` · 收盘 ${fmt(b.close)}`:'')+(locked?' · 已锁定':'');$('scrubber').value=index;
+ $('readout').textContent=d+' · '+(p?`${p.cycle} ${p.day}${p.unit} · 场外 ${p.otc} · 爆破 ${p.burst} · 质量 ${p.quality}`:'原页缺失，不补值')+(b?` · 收盘 ${fmt(b.close)}`:'')+(locked?' · 已锁定':'');$('scrubber').value=index;renderPlan(d);
 }
 function render(){
  const p=atDate(asset(),asOf),isPast=asOf<data.dataDate;$('freshness').textContent=(isPast?'历史回看 · ':'')+'最新场外来源 '+data.dataDate+'；当前日期 '+today()+'。'+(data.dataDate<today()?'最新原页缺失，所有标的仅作历史观察。':'来源日期已到今日，仍需独立价格与风险确认。')+(p?.date<asOf?' 所选日期缺页，右侧明确显示最近记录。':'');
