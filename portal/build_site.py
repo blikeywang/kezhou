@@ -34,6 +34,7 @@ CANONICAL_ROUTES = {
     "tailtrend/index.html": "/tailtrend/",
     "daily-trade/index.html": "/daily-trade/",
     "otc/index.html": "/otc/",
+    "desk/index.html": "/desk/",
     "standards/index.html": "/standards/",
 }
 
@@ -204,6 +205,10 @@ def build(output: Path) -> dict:
     # imports remain in browser memory; no accounts or broker bars are bundled.
     shutil.copytree(PORTAL / "vendor" / "otc", output / "otc")
 
+    # Hourly desk is a paper-trading research log. The static page carries no
+    # data; the browser reads the public claude/desk-data branch (simulated account only).
+    shutil.copytree(PORTAL / "vendor" / "desk", output / "desk")
+
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
 
@@ -227,6 +232,7 @@ def build(output: Path) -> dict:
             "tailtrend": "/tailtrend/",
             "dailyTrade": "/daily-trade/",
             "otc": "/otc/",
+            "desk": "/desk/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -270,6 +276,13 @@ def build(output: Path) -> dict:
                 "route": "/daily-trade/",
                 "partOfCoreWorkflow": False,
             },
+            "desk": {
+                "input": "public_crypto_cme_market_data_order_flow_derivatives_and_options_snapshots",
+                "output": "hourly_six_symbol_research_ten_minute_watch_notes_and_paper_trading_ledger",
+                "rejects": "stop_inside_structure_rr_below_gate_cooldown_correlation_or_daily_loss_limit",
+                "route": "/desk/",
+                "partOfCoreWorkflow": False,
+            },
             "otc": {
                 "input": "user_notion_with_authorized_reference_history_and_independent_public_daily_prices",
                 "output": "daily_cycle_quality_review_and_conditional_research_plan",
@@ -310,6 +323,11 @@ def build(output: Path) -> dict:
             "otcRawBrokerBarsPublished": False,
             "otcAutomaticOrders": False,
             "otcPriceRuntime": "scheduled_public_daily_bars_separate_from_unverified_reference_archive_and_memory_only_csv",
+            "deskRuntime": "browser_fetch_of_public_desk_data_branch_json",
+            "deskDataSource": "https://raw.githubusercontent.com/blikeywang/kezhou/refs/heads/claude/desk-data/desk/",
+            "deskAccount": "simulated_paper_trading_only",
+            "deskAccountDataPublished": False,
+            "deskAutomaticOrders": False,
         },
     }
     (output / "traderhome-manifest.json").write_text(

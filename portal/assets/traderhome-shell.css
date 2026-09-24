@@ -16,6 +16,7 @@ html[data-th-stage="review"] { --th-stage: #c4b5fd; }
 html[data-th-stage="flow"] { --th-stage: #2ed0a5; }
 html[data-th-stage="incomeos"] { --th-stage: #5ee8e0; }
 html[data-th-stage="incomeosWhole"] { --th-stage: #fbbf24; }
+html[data-th-stage="desk"] { --th-stage: #f87171; }
 
 .th-shell,
 .th-shell *,
@@ -190,6 +191,14 @@ html[data-th-stage="incomeosWhole"] { --th-stage: #fbbf24; }
 .th-stagebar a:focus-visible {
   outline: 2px solid var(--th-stage);
   outline-offset: 2px;
+}
+
+/* Wide screens: the link row scrolls inside the header instead of widening the page. */
+@media (min-width: 791px) {
+  .th-shell__brand,
+  .th-shell__community { flex-shrink: 0; }
+  .th-shell__nav { min-width: 0; overflow-x: auto; padding-block: 4px; scrollbar-width: none; }
+  .th-shell__nav::-webkit-scrollbar { display: none; }
 }
 
 @media (max-width: 940px) {

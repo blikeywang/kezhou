@@ -32,6 +32,7 @@ class PortalBuildTests(unittest.TestCase):
             "tailtrend/index.html",
             "daily-trade/index.html",
             "otc/index.html",
+            "desk/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -62,7 +63,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(manifest["version"], 8)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade", "otc"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade", "otc", "desk"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
@@ -71,6 +72,7 @@ class PortalBuildTests(unittest.TestCase):
         self.assertFalse(manifest["independentSystems"]["tailtrend"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["dailyTrade"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["otc"]["partOfCoreWorkflow"])
+        self.assertFalse(manifest["independentSystems"]["desk"]["partOfCoreWorkflow"])
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
@@ -430,6 +432,30 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(self.manifest["privacy"]["tailtrendRuntime"], "derived_snapshot_and_browser_memory_only")
         self.assertFalse(self.manifest["privacy"]["tailtrendRawBarsPublished"])
         self.assertFalse(self.manifest["privacy"]["tailtrendAutomaticOrders"])
+
+    def test_desk_is_a_paper_trading_page_reading_the_public_data_branch(self):
+        page = (self.site / "desk" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("六标的小时研判台", page)
+        self.assertIn("模拟盘", page)
+        self.assertIn("不自动下单", page)
+        self.assertIn("https://raw.githubusercontent.com/blikeywang/kezhou/refs/heads/claude/desk-data/desk/", page)
+        self.assertIn("credentials: 'omit'", page)
+        self.assertIn('data-static-fallback="true"', page)
+        self.assertIn("JavaScript 未运行", page)
+        self.assertIn('property="og:url" content="https://traderhome-histroy.xyz/desk/"', page)
+        for sid in ('id="kpis"', 'id="book"', 'id="tl"', 'id="detail"', 'id="p-ledger"', 'id="p-stats"', 'id="p-rules"'):
+            self.assertIn(sid, page)
+        self.assertNotIn("window.claude", page)
+        self.assertNotIn("localStorage", page)
+        # the static bundle ships no desk data; it is fetched from the desk-data branch at runtime
+        self.assertEqual(list((self.site / "desk").rglob("*.json")), [])
+        self.assertEqual(self.manifest["routes"]["desk"], "/desk/")
+        self.assertEqual(self.manifest["independentSystems"]["desk"]["route"], "/desk/")
+        self.assertEqual(self.manifest["privacy"]["deskAccount"], "simulated_paper_trading_only")
+        self.assertFalse(self.manifest["privacy"]["deskAccountDataPublished"])
+        self.assertFalse(self.manifest["privacy"]["deskAutomaticOrders"])
+        self.assertIn('["desk", "/desk/", "小时研判台"]', (self.site / "assets/traderhome-shell.js").read_text())
+        self.assertIn('href="/desk/"', (self.site / "index.html").read_text(encoding="utf-8"))
 
     def _flow_javascript(self) -> str:
         return "\n".join(

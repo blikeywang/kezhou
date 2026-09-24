@@ -12,6 +12,7 @@
     : path.indexOf("/tailtrend/") === 0 ? "tailtrend"
     : path.indexOf("/daily-trade/") === 0 ? "dailyTrade"
     : path.indexOf("/otc/") === 0 ? "otc"
+    : path.indexOf("/desk/") === 0 ? "desk"
     : path.indexOf("/standards/") === 0 ? "standards" : "home";
   document.documentElement.setAttribute("data-th-stage", section);
 
@@ -26,6 +27,7 @@
     ["tailtrend", "/tailtrend/", "TailTrend"],
     ["dailyTrade", "/daily-trade/", "交易早晚报"],
     ["otc", "/otc/", "场外日线"],
+    ["desk", "/desk/", "小时研判台"],
     ["standards", "/standards/", "证据标准"]
   ];
   var stages = {
@@ -74,6 +76,12 @@
       + '<span class="th-stagebar__chip"><b>边界</b> ' + stage.boundary + '</span></div>'
       + '<a class="th-stagebar__next" href="' + stage.next + '">' + stage.nextText + '</a></div>';
     header.insertAdjacentElement("afterend", bar);
+  }
+
+  var nav = header.querySelector(".th-shell__nav");
+  var current = nav.querySelector('[aria-current="page"]');
+  if (current && nav.scrollWidth > nav.clientWidth) {
+    nav.scrollLeft = Math.max(0, current.offsetLeft - nav.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2);
   }
 
   var menu = header.querySelector(".th-shell__menu");

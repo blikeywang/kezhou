@@ -18,6 +18,10 @@ TraderHome V7 保留 V3 的三个核心工作台与产品契约。NQ Flow、Inco
 
 快照更新后运行 `python3 -m unittest portal.test_portal` 与 `node --test portal/test_otc_engine.mjs`。门户清单版本为 V8，三个核心工作台契约不变。
 
+## 六标的小时研判台
+
+入口 [`/desk/`](https://traderhome-histroy.xyz/desk/)：BTC、ETH、黄金、白银、纳指、原油每小时一轮带依据的研判、每 10 分钟盯盘，以及 1 万 U 共用模拟盘的公开账本。静态页位于 `portal/vendor/desk`，本身不含数据；浏览器只读 `claude/desk-data` 分支（`raw.githubusercontent.com/blikeywang/kezhou/refs/heads/claude/desk-data/desk/`）里的公开 JSON。该分支由定时研判任务推送，只保留当天的提交，推送不触发 Pages 构建。全部是模拟盘，不连接交易所或券商账户，不自动下单。
+
 ## 目录结构
 
 ```
