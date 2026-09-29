@@ -1,0 +1,67 @@
+name: publish-traderhome
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'portal/**'
+      - 'prototype/**'
+      - 'tools/market_simulation/**'
+      - '.github/workflows/pages.yml'
+      - 'CNAME'
+  schedule:
+    - cron: '6-56/10 * * * *'
+  workflow_run:
+    workflows: [daily-refresh]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: traderhome-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check public exporter and portal
+        run: |
+          python -m unittest discover -s tools/market_simulation -p 'test_*.py'
+          python -m unittest portal.test_portal
+          node --test portal/test_market_simulation.mjs
+      - name: Build public pages
+        run: python portal/build_site.py --output _site
+      - name: Read paper positions, plans, fills and hourly reviews
+        env:
+          MARKET_SIMULATION_SITE_TOKEN: ${{ secrets.MARKET_SIMULATION_SITE_TOKEN }}
+        run: python tools/market_simulation/export_public.py --output _site/market-simulation/data
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

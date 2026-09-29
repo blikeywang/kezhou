@@ -1,6 +1,6 @@
 name: daily-refresh
 
-# 每天刷新公开衍生数据并部署 GitHub Pages。私人实时行情与账户数据只由本机 Personal Data Hub 提供。
+# 每天刷新公开衍生数据；完成后由 publish-traderhome 统一部署。
 on:
   push:
     branches: [main]
@@ -21,8 +21,6 @@ on:
 
 permissions:
   contents: write           # 提交刷新后的 app.html
-  pages: write              # 部署 Pages
-  id-token: write
 
 concurrency:
   group: daily-refresh
@@ -73,20 +71,3 @@ jobs:
           git add prototype/app.html portal/vendor/otc/data/prices.json
           git commit -m "chore: daily data refresh $(date -u +%F)" || echo "no changes to commit"
           git push || echo "nothing to push"
-
-      - name: Prepare static site
-        run: python portal/build_site.py --output _site
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-  deploy:
-    needs: refresh
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
-      - id: deploy
-        uses: actions/deploy-pages@v4

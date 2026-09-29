@@ -23,13 +23,11 @@ class PortalBuildTests(unittest.TestCase):
             "index.html",
             "history/index.html",
             "review/index.html",
-            "flow/index.html",
             "incomeos/index.html",
             "tailtrend/index.html",
             "daily-trade/index.html",
             "otc/index.html",
             "market-simulation/index.html",
-            "standards/index.html",
         ]
         for rel in expected:
             path = self.site / rel
@@ -40,12 +38,14 @@ class PortalBuildTests(unittest.TestCase):
             self.assertIn('name="theme-color"', html, rel)
             self.assertIn('rel="icon"', html, rel)
 
-        for retired in ("decision", "incomeos-whole"):
+        for retired in ("decision", "incomeos-whole", "flow", "standards"):
             self.assertFalse((self.site / retired).exists(), retired)
-        for rel in ("index.html", "otc/index.html", "standards/index.html", "assets/traderhome-shell.js"):
+        for rel in ("index.html", "otc/index.html", "assets/traderhome-shell.js"):
             contents = (self.site / rel).read_text(encoding="utf-8")
             self.assertNotIn("/decision/", contents, rel)
             self.assertNotIn("/incomeos-whole/", contents, rel)
+            self.assertNotIn("/flow/", contents, rel)
+            self.assertNotIn("/standards/", contents, rel)
 
     def test_history_keeps_generated_data(self):
         html = (self.site / "history" / "index.html").read_text(encoding="utf-8")
@@ -54,22 +54,21 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('property="og:url" content="https://traderhome-histroy.xyz/history/"', html)
         self.assertIn('content="https://traderhome-histroy.xyz/history/og.png"', html)
 
-    def test_market_simulation_preserves_private_cloud_ledger(self):
+    def test_market_simulation_is_public_readonly(self):
         page = (self.site / 'market-simulation/index.html').read_text()
+        script = (self.site / 'market-simulation/workspace.js').read_text()
         self.assertIn('主流市场模拟分析', page)
-        self.assertIn('https://hourly-six-lab-blikey.blikeywang.chatgpt.site/?embed=traderhome', page)
-        self.assertFalse(self.manifest['privacy']['marketSimulationLedgerPublished'])
+        self.assertNotIn('<iframe', page)
+        self.assertTrue(self.manifest['privacy']['marketSimulationLedgerPublished'])
         self.assertFalse(self.manifest['privacy']['marketSimulationCredentialsPublished'])
         self.assertFalse(self.manifest['privacy']['marketSimulationRealOrders'])
-        self.assertFalse(self.manifest['independentSystems']['marketSimulation']['partOfCoreWorkflow'])
-        files = list((self.site / 'market-simulation').iterdir())
-        self.assertEqual({p.name for p in files}, {'index.html', 'workspace.js', 'workspace.css'})
-        script = (self.site / 'market-simulation/workspace.js').read_text()
-        self.assertIn('event.origin !== origin', script)
-        self.assertIn('event.source !== frame.contentWindow', script)
-        for text in (page, script):
-            for secret in ('OAI-Sites-Authorization', 'site_token', 'scheduler_secret', '/workspace/data'):
-                self.assertNotIn(secret, text)
+        self.assertIn('data/latest.json', script)
+        self.assertIn("credentials:'omit'", script)
+        self.assertNotIn("method:'POST'", script)
+        for content in (page, script):
+            for secret in ('OAI-Sites-Authorization', 'site_token', 'scheduler_secret', '/workspace/data', 'chatgpt.site'):
+                self.assertNotIn(secret, content)
+        self.assertTrue((self.site / 'market-simulation/model.mjs').exists())
 
     def test_private_review_ledger_is_not_published(self):
         self.assertFalse((self.site / "review" / "data" / "review-data.json").exists())
@@ -78,15 +77,14 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(manifest["privacy"]["reviewRuntime"], "browser_local_with_optional_personal_data_hub")
         self.assertEqual(manifest["privacy"]["reviewDemo"], "optional_synthetic")
 
-    def test_professional_product_contracts_and_evidence_standard(self):
+    def test_professional_product_contracts(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 10)
+        self.assertEqual(manifest["version"], 11)
         self.assertEqual(manifest["coreWorkflowVersion"], 4)
         self.assertEqual(set(manifest["productContracts"]), {"history", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "tailtrend", "dailyTrade", "otc", "marketSimulation"})
+        self.assertEqual(set(manifest["independentSystems"]), {"incomeos", "tailtrend", "dailyTrade", "otc", "marketSimulation"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
-        self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeos"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["tailtrend"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["dailyTrade"]["partOfCoreWorkflow"])
@@ -94,9 +92,6 @@ class PortalBuildTests(unittest.TestCase):
         self.assertEqual(manifest["evidenceLabels"], ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"])
         home = (self.site / "index.html").read_text(encoding="utf-8")
         self.assertIn("输出契约", home)
-        standards = (self.site / "standards" / "index.html").read_text(encoding="utf-8")
-        for level in (">A<", ">B<", ">C<", ">D<"):
-            self.assertIn(level, standards)
         review = (self.site / "review" / "index.html").read_text(encoding="utf-8")
         self.assertIn("原始记录仅在本页内存处理", review)
         self.assertIn("查看完整教学案例", review)
@@ -175,37 +170,6 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_custom_domain_is_preserved(self):
         self.assertEqual((self.site / "CNAME").read_text().strip(), "traderhome-histroy.xyz")
-
-    def test_flow_is_published_as_an_independent_browser_safe_system(self):
-        flow = (self.site / "flow" / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="flow-root"', flow)
-        self.assertIn("NQ Flow Console", flow)
-        self.assertIn("https://nq-flow-console.blikeywang.chatgpt.site", self._flow_javascript())
-        self.assertIn("SIMULATED FEED", self._flow_javascript())
-        self.assertIn("v1.6.4 BRIDGE", self._flow_javascript())
-        self.assertIn("AUTO HIGHER TIMEFRAME", self._flow_javascript())
-        self.assertIn("FIBO LEVEL TABLE", self._flow_javascript())
-        self.assertIn("nq-flow-font-scale", self._flow_javascript())
-        self.assertIn("nq-flow-fibo-table", self._flow_javascript())
-        self.assertRegex(flow, r'/flow/assets/flow-app-[^"\']+\.js')
-        self.assertRegex(flow, r'/flow/assets/flow-[^"\']+\.css')
-
-        for asset in re.findall(r'(?:src|href)="(/flow/assets/[^"]+)"', flow):
-            self.assertTrue((self.site / asset.removeprefix("/")).exists(), asset)
-
-        snapshot = json.loads((self.site / "flow" / "snapshot.json").read_text())
-        self.assertEqual(snapshot["strategyVersion"], "1.6.4")
-        self.assertEqual(snapshot["bundleMode"], "browser-safe-simulated-preview")
-        self.assertEqual(
-            snapshot["features"],
-            {
-                "adaptiveHigherTimeframe": True,
-                "fontScalePreference": True,
-                "hideableFiboLevelTable": True,
-            },
-        )
-        self.assertEqual(self.manifest["routes"]["flow"], "/flow/")
-        self.assertEqual(self.manifest["privacy"]["flowPublicRuntime"], "simulated_preview")
 
     def test_incomeos_is_published_as_an_independent_browser_local_system(self):
         expected = [

@@ -4,11 +4,11 @@
 >
 > **免责:本产品输出为基于历史相似度的概率描述,不构成任何投资建议。历史相似 ≠ 未来重复。** 详见 [`DISCLAIMER.md`](./DISCLAIMER.md)。
 
-当前状态：**已上线的 TraderHome 历史研究与交易后复盘工作台，配合 NQ Flow、IncomeOS、TailTrend Lab、交易早晚报、场外日线与主流市场模拟分析**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，TradeReview OS 位于 `/review/`，订单流终端位于 `/flow/`，长期资金系统位于 `/incomeos/`，尾部—趋势观察位于 `/tailtrend/`，私密模拟盘入口位于 `/market-simulation/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
+
+当前状态：**已上线的 TraderHome 历史研究与交易后复盘工作台，配合 IncomeOS、TailTrend、交易早晚报、场外日线和公开模拟盘**。线上地址为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。主流市场模拟分析位于 `/market-simulation/`，无需登录；[自动发布说明](docs/MARKET_SIMULATION_PUBLISHING.md)记录了云端检查、小时复核和 GitHub 同步机制。
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
-TraderHome V10 的核心工作流连接历史研究与交易后复盘。各独立研究系统保留自身的输入、输出和边界。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
 
 ---
 
@@ -30,8 +30,8 @@ kezhou/
 ├── portal/                   # TraderHome 同域集成层
 │   ├── home/                 # 统一首页
 │   ├── assets/               # 核心工作台与独立系统共享导航
-│   ├── vendor/               # 浏览器安全的静态 Demo / 派生快照（含 flow / incomeos / tailtrend）
-│   ├── build_site.py         # 生成 /history · /review · /flow · /incomeos · /tailtrend · /market-simulation
+│   ├── vendor/               # 浏览器安全的静态 Demo / 派生快照（含 incomeos / tailtrend / market-simulation）
+│   ├── build_site.py         # 生成 /history · /review · /incomeos · /tailtrend · /market-simulation
 │   └── test_portal.py        # 路由、隐私与域名回归测试
 ├── data/                     # 已算出的真实结果(可作后端回归测试基准样本)
 │   ├── crypto_payload.json   # BTC/ETH/SOL 多配置匹配结果
@@ -82,8 +82,7 @@ python report3.py        # -> report.html
 
 - 加密:Binance 公开 Klines,当前生产页使用 4 小时线。
 - 美股 / 大宗 ETF:Yahoo Finance 日线;GLD、USO 是 ETF 代理,不等于黄金现货或 WTI 连续期货。
-- 网页只发布衍生统计,资产字段 `last` 必须保持 `null`,不提供实时价格。
-- `/flow/` 的公开快照只运行明确标记的模拟流；真实 NQ/MNQ L2、供应商密钥与用户会话留在独立授权服务中。
+- 刻舟求剑历史研究只发布衍生统计，资产字段 `last` 保持 `null`；公开模拟盘单独展示带来源和时间戳的模拟行情及账本。
 - `/incomeos/` 只发布 Longbridge 派生研究快照；本周入金、IBKR 净值、准备金与字体档位仅保存在浏览器。期权最后成交价不等于可成交价，缺 bid/ask 时系统拒绝执行。
 - `/tailtrend/` 使用 Longbridge 前复权、正常时段、已收盘日线生成派生状态；不发布原始K线、账户数据或凭据。压力仓位输入只在当前浏览器内存计算，刷新即清除。
 - 免费接口适合研究展示;商用需改用正规数据商并取得授权。

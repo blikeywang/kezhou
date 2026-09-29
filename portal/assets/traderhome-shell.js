@@ -5,26 +5,23 @@
   var path = window.location.pathname;
   var section = path.indexOf("/history/") === 0 ? "history"
     : path.indexOf("/review/") === 0 ? "review"
-    : path.indexOf("/flow/") === 0 ? "flow"
     : path.indexOf("/incomeos/") === 0 ? "incomeos"
     : path.indexOf("/tailtrend/") === 0 ? "tailtrend"
     : path.indexOf("/daily-trade/") === 0 ? "dailyTrade"
     : path.indexOf("/market-simulation/") === 0 ? "marketSimulation"
     : path.indexOf("/otc/") === 0 ? "otc"
-    : path.indexOf("/standards/") === 0 ? "standards" : "home";
+    : "home";
   document.documentElement.setAttribute("data-th-stage", section);
 
   var links = [
     ["home", "/", "首页"],
     ["history", "/history/", "历史证据"],
     ["review", "/review/", "交易后复盘"],
-    ["flow", "/flow/", "NQ 订单流"],
     ["incomeos", "/incomeos/", "IncomeOS"],
     ["tailtrend", "/tailtrend/", "TailTrend"],
     ["dailyTrade", "/daily-trade/", "交易早晚报"],
     ["otc", "/otc/", "场外日线"],
     ["marketSimulation", "/market-simulation/", "主流市场模拟分析"],
-    ["standards", "/standards/", "证据标准"]
   ];
   var stages = {
     history: {

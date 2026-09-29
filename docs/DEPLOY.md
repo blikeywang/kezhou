@@ -1,7 +1,6 @@
 # 部署与每日刷新 · Deploy & Daily Refresh
 
 **架构：**每天后台刷新刻舟求剑 → 重算衍生曲线 → 注入 `prototype/app.html` → `portal/build_site.py` 汇总所有路由 → 部署静态页。
-`/history/` 只展示归一化衍生分析；`/review/` 发布浏览器安全快照；`/flow/` 发布明确标记的模拟订单流快照，并把真实会话留在独立授权服务中。
 
 ```
 pipeline/daily/
@@ -16,15 +15,14 @@ pipeline/daily/
 
 ## 一、GitHub Pages(自带,零外部依赖 —— 推荐先用这个)
 
-`.github/workflows/daily.yml` 已就绪:每天 06:30 UTC 自动刷新并部署,也可在 Actions 页手动触发。
+`.github/workflows/daily.yml` 每天 00:35 和 06:30 UTC 刷新历史研究。`.github/workflows/pages.yml` 统一部署网站，并每 10 分钟同步公开模拟盘。两者都可在 Actions 页手动触发，详见 [模拟盘发布说明](MARKET_SIMULATION_PUBLISHING.md)。
 
 1. 新建 GitHub 仓库,把整个 `kezhou/` 推上去(见 `docs/PUSH_TO_GITHUB.md`)。
 2. 仓库 **Settings → Pages → Build and deployment → Source 选 "GitHub Actions"**。
 3. 仓库 **Settings → Actions → General → Workflow permissions 选 "Read and write"**(允许 bot 提交刷新后的 app.html)。
-4. 打开 **Actions → daily-refresh → Run workflow** 手动跑一次,几分钟后 Pages 给出网址。
-5. 之后每天自动刷新。
+4. 配置模拟盘读取 Secret 后，打开 **Actions → publish-traderhome → Run workflow** 执行完整发布。
+5. 之后历史研究每天刷新，模拟盘按 10 分钟计划同步；GitHub 调度可能延迟。
 
-产物：`_site/`，包含统一首页、`/history/`、`/review/`、`/flow/`、`/incomeos/`、`/tailtrend/`、`/daily-trade/`、`/otc/`、`/market-simulation/` 与 `/standards/`。刻舟求剑的内容仍从 `prototype/app.html` 生成；统一首页与路由由 `portal/` 管理。TailTrend 的 Longbridge 刷新需在受信任的已认证环境手动运行，GitHub Pages 只部署已审查的派生快照。
 
 ## 二、Cloudflare Pages / Netlify(想用自定义域名更省心)
 
