@@ -1,7 +1,8 @@
+import {renderFlow} from './flow.mjs?v=1';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
 
 const $=id=>document.getElementById(id);
-const fmt=(n,d)=>finite(n)?n.toLocaleString('en-US',{maximumFractionDigits:d??(n<1?6:n<100?3:2),minimumFractionDigits:0}):'—';
+const fmt=(n,d)=>finite(n)?n.toLocaleString('en-US',{maximumFractionDigits:d??(Math.abs(n)<1?6:Math.abs(n)<100?3:2),minimumFractionDigits:0}):'—';
 const cash=n=>finite(n)?(n>0?'+':n<0?'−':'')+'$'+fmt(Math.abs(n),2):'—';
 const color=n=>!finite(n)?'muted':n>=0?'good':'bad-text';
 const dt=(n,short=false)=>finite(n)&&n>0?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Singapore',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',...(short?{}:{second:'2-digit'}),hourCycle:'h23'}).format(n):'尚无记录';
@@ -117,6 +118,7 @@ function renderReviews(){
   const audits=[...(data.review?.history??[])].sort((a,b)=>b.published-a.published);
   const gates=(data.review?.gates??[]).filter((g,i,a)=>i===a.findLastIndex(x=>x.book===g.book&&x.key===g.key&&x.horizon===g.horizon)).filter(g=>g.verdict==='suspended');
   let html='<div class="ms-row"><div><h2>小时模型复核</h2><p>绿标表示该次复核认可交易依据与风险控制，不代表未来盈利。挂起影响指定范围的新入场。</p></div>'+badge(data.review?.schedule?.enabled?'小时任务已启用':'任务状态待确认',data.review?.schedule?.enabled?'good':'warn')+'</div>';
+  html+='<p class="ms-inline-note">BTC / ETH 复核现已接入现货与永续 CVD、币本位 OI；每份结论应注明当时的数据和结构依据。<button data-tab="flow">查看 CVD / OI 图表 ↗</button></p>';
   if(gates.length)html+='<div class="ms-gates">'+gates.map(g=>'<span title="'+E(g.reason)+'">'+badge(g.key+' '+g.horizon+' · 新入场挂起','warn')+'</span>').join('')+'</div>';
   return html+(audits.length?audits.map((r,i)=>'<article class="ms-card ms-review"><div class="ms-review-heading"><h3>'+dt(r.published)+'</h3><span>'+badge('✓ '+r.checks.filter(c=>c.verdict==='green').length+' 项合理','good')+' '+badge('! '+r.checks.filter(c=>c.verdict==='suspended').length+' 项挂起','warn')+'</span></div><p class="ms-prose">'+E(r.summary)+'</p><details'+(i===0?' open':'')+'><summary>逐项依据 · 检查快照 '+dt(r.snapshotRun)+'</summary><div class="ms-checks">'+r.checks.map(c=>'<div class="ms-check"><header>'+badge(c.verdict==='green'?'✓ 合理':'! 挂起',c.verdict==='green'?'good':'warn')+'<span>'+(c.book==='pair'?'组合':'单标的')+' · '+(c.kind==='trade'?'成交 / 持仓':'计划')+'</span><code>'+E(c.id)+'</code></header><p>'+E(c.reason)+'</p></div>').join('')+'</div></details><div class="ms-source">复核编号 '+E(r.id)+' · 原始结果校验 '+E(r.hash?.slice(0,16))+'</div></article>').join(''):empty('尚无小时复核结果，不显示虚构绿标'));
 }
@@ -135,7 +137,7 @@ function renderJournal(){
 }
 function renderPanel(){
   document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===tab);b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false');});
-  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():renderJournal();
+  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
 }
 function singleDetail(r){
   const p=r.plan,h=r.horizon??'10M',current=data.reports.some(x=>x.id===r.id);
@@ -194,7 +196,7 @@ async function refresh(manual=false){
     const version=await versionResponse.json();
     if(version.schema!=='traderhome-public-paper-v1'||!finite(version.publishedAt))throw Error('发布版本无效');
     if(data&&version.publishedAt===data.publishedAt){
-      renderStatus();if(tab==='plans')renderPanel();
+      renderStatus();if(tab==='plans'||tab==='flow')renderPanel();
       if(manual)$('connection').textContent+=' · 已检查，目前没有更新的公开快照。';
       return;
     }

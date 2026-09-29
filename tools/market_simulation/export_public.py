@@ -17,6 +17,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
+from crypto_flow import collect as collect_crypto_flow
 
 ORIGIN = "https://hourly-six-lab-blikey.blikeywang.chatgpt.site"
 SYMBOLS = ("BTC", "ETH", "XAU", "XAG", "NQ", "CL")
@@ -215,6 +216,7 @@ def main():
     token = config.get("site_token") or os.environ.get("MARKET_SIMULATION_SITE_TOKEN", "")
     raw = fetch_source(token)
     public, history = prepare(raw, int(time.time() * 1000))
+    public["cryptoOrderFlow"] = collect_crypto_flow()
     publish(public, history, args.output, (token, config.get("scheduler_secret", "")))
     print(json.dumps({"publishedAt": public["publishedAt"], "executionAt": public["account"]["lastRun"], "singleTrades": len(public["account"]["trades"]), "pairTrades": len(public["pairs"]["account"]["trades"]), "hourlyReviews": len(public["review"].get("history", []))}))
 

@@ -58,3 +58,19 @@ test('missing quotes are never priced as zero, net estimates charge both legs',(
 test('untrusted rationale text is escaped before HTML rendering',()=>{
   assert.equal(escape('<img src=x onerror="alert(1)">'), '&lt;img src=x onerror=&quot;alert(1)&quot;&gt;');
 });
+
+
+// Crypto evidence must age with the observation, independently of page publication.
+import {flowFresh,renderFlow} from './vendor/market-simulation/flow.mjs';
+test('a recently published flow panel cannot mark stale or future observations as current',()=>{
+  assert.equal(flowFresh({status:'ok',through:1000},1300000),false);
+  assert.equal(flowFresh({status:'ok',through:2000},1000),false);
+  assert.equal(flowFresh({status:'unavailable',through:1000},2000),false);
+  assert.equal(flowFresh({status:'ok',through:1000},2000),true);
+});
+test('the flow panel survives an unavailable exchange without inventing a value',()=>{
+  const ui={E:escape,fmt:String,dt:String,badge:s=>s,empty:s=>s,lineChart:()=>{throw Error('Missing source must not be charted');}};
+  const html=renderFlow({assets:[{symbol:'BTC',spot:{status:'unavailable'},perpetual:{status:'unavailable'}}]},ui);
+  assert.ok(html.includes('本轮未取得数据'));
+  assert.ok(!html.includes('NaN'));
+});
