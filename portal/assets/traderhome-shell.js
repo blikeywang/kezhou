@@ -4,10 +4,8 @@
 
   var path = window.location.pathname;
   var section = path.indexOf("/history/") === 0 ? "history"
-    : path.indexOf("/decision/") === 0 ? "decision"
     : path.indexOf("/review/") === 0 ? "review"
     : path.indexOf("/flow/") === 0 ? "flow"
-    : path.indexOf("/incomeos-whole/") === 0 ? "incomeosWhole"
     : path.indexOf("/incomeos/") === 0 ? "incomeos"
     : path.indexOf("/tailtrend/") === 0 ? "tailtrend"
     : path.indexOf("/daily-trade/") === 0 ? "dailyTrade"
@@ -19,11 +17,9 @@
   var links = [
     ["home", "/", "首页"],
     ["history", "/history/", "历史证据"],
-    ["decision", "/decision/app.html", "下单前决策"],
     ["review", "/review/", "交易后复盘"],
     ["flow", "/flow/", "NQ 订单流"],
     ["incomeos", "/incomeos/", "IncomeOS"],
-    ["incomeosWhole", "/incomeos-whole/", "IncomeOS 整股"],
     ["tailtrend", "/tailtrend/", "TailTrend"],
     ["dailyTrade", "/daily-trade/", "交易早晚报"],
     ["otc", "/otc/", "场外日线"],
@@ -33,18 +29,12 @@
   var stages = {
     history: {
       step: "01", label: "RESEARCH · 历史研究", title: "先建立一个可证伪的交易假设",
-      detail: "比较历史相似片段、基准与置信区间，再决定是否值得进入计划阶段。",
+      detail: "比较历史相似片段、基准与置信区间，再用交易后的证据检验原始假设。",
       output: "共识概率 · Edge · 区间 · 稳健性", boundary: "不输出确定走势或买卖指令",
-      next: "/decision/app.html", nextText: "进入下单前计划 →"
-    },
-    decision: {
-      step: "02", label: "PLAN · 下单前决策", title: "把方向观点变成有失效点的条件式计划",
-      detail: "机会榜只分配注意力；触发、位置、赔率和风险预算必须同时过门槛。",
-      output: "触发 · 进场区 · 失效位 · 目标 · R", boundary: "门槛不够时默认空仓",
       next: "/review/", nextText: "查看交易后验证 →"
     },
     review: {
-      step: "03", label: "REVIEW · 交易后复盘", title: "找到最贵的重复错误，并验证它是否真的改变",
+      step: "02", label: "REVIEW · 交易后复盘", title: "找到最贵的重复错误，并验证它是否真的改变",
       detail: "先保留交易员原始判断，再用交易、K线和分级专家证据给出下一阶段唯一动作。",
       output: "成本行为 · 证据单 · 唯一处方 · 成长证明", boundary: "不把相关亏损写成可挽回收益",
       next: "/history/", nextText: "开始下一轮研究 →"

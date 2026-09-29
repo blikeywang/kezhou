@@ -22,13 +22,9 @@ class PortalBuildTests(unittest.TestCase):
         expected = [
             "index.html",
             "history/index.html",
-            "decision/index.html",
-            "decision/app.html",
-            "decision/tos.html",
             "review/index.html",
             "flow/index.html",
             "incomeos/index.html",
-            "incomeos-whole/index.html",
             "tailtrend/index.html",
             "daily-trade/index.html",
             "otc/index.html",
@@ -43,6 +39,13 @@ class PortalBuildTests(unittest.TestCase):
             self.assertIn('rel="canonical"', html, rel)
             self.assertIn('name="theme-color"', html, rel)
             self.assertIn('rel="icon"', html, rel)
+
+        for retired in ("decision", "incomeos-whole"):
+            self.assertFalse((self.site / retired).exists(), retired)
+        for rel in ("index.html", "otc/index.html", "standards/index.html", "assets/traderhome-shell.js"):
+            contents = (self.site / rel).read_text(encoding="utf-8")
+            self.assertNotIn("/decision/", contents, rel)
+            self.assertNotIn("/incomeos-whole/", contents, rel)
 
     def test_history_keeps_generated_data(self):
         html = (self.site / "history" / "index.html").read_text(encoding="utf-8")
@@ -77,15 +80,14 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 9)
-        self.assertEqual(manifest["coreWorkflowVersion"], 3)
-        self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade", "otc", "marketSimulation"})
+        self.assertEqual(manifest["version"], 10)
+        self.assertEqual(manifest["coreWorkflowVersion"], 4)
+        self.assertEqual(set(manifest["productContracts"]), {"history", "review"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "tailtrend", "dailyTrade", "otc", "marketSimulation"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["incomeos"]["partOfCoreWorkflow"])
-        self.assertFalse(manifest["independentSystems"]["incomeosWhole"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["tailtrend"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["dailyTrade"]["partOfCoreWorkflow"])
         self.assertFalse(manifest["independentSystems"]["otc"]["partOfCoreWorkflow"])
@@ -173,48 +175,6 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_custom_domain_is_preserved(self):
         self.assertEqual((self.site / "CNAME").read_text().strip(), "traderhome-histroy.xyz")
-
-    def test_decision_runtime_is_published_as_a_complete_bundle(self):
-        expected = [
-            "decision/data/expert-evidence.js",
-            "decision/data/coach-training.js",
-            "decision/data/index-coach-competition.js",
-            "decision/data/index-coach-competition.json",
-            "decision/data/intraday-coaches.js",
-            "decision/data/plan-gate-model.js",
-            "decision/data/market-snapshots/NQ.json",
-            "decision/data/market-snapshots/ES.json",
-            "decision/data/market-snapshots/MSFT.json",
-            "decision/vendor/lightweight-charts.standalone.production.js",
-            "decision/arena-worker/src/engine.js",
-        ]
-        for rel in expected:
-            self.assertTrue((self.site / rel).exists(), rel)
-
-        app = (self.site / "decision" / "app.html").read_text(encoding="utf-8")
-        self.assertIn("data/intraday-coaches.js", app)
-        self.assertIn("data/index-coach-competition.js", app)
-        self.assertIn("NQ / ES 过去一年赛", app)
-        self.assertIn("验证与留出没有同时过线就不增加下单权", app)
-        self.assertIn("function openIndexCompetition(id)", app)
-        self.assertIn("NQ 日内计划席", app)
-        self.assertIn("forwardStep(symbol,timeframe,ohlc.data,CARDS)", app)
-        self.assertIn('id="tourLaunch"', app)
-        self.assertIn('id="productTour" hidden', app)
-        self.assertIn("EV Desk 使用教程", app)
-        self.assertIn("以后不再自动弹出", app)
-        self.assertIn("教学示例 · 不是当前交易建议", app)
-        self.assertIn("主计划是回踩 98 入场、95 止损、104 目标", app)
-        self.assertIn("62分不是 62% 胜率", app)
-        self.assertIn("把 NQ 放入等待清单", app)
-        self.assertIn('value="ES"', app)
-        self.assertIn("个人数据中枢", app)
-
-        competition = json.loads((self.site / "decision" / "data" / "index-coach-competition.json").read_text())
-        self.assertEqual(competition["schema"], "ev_desk_index_coach_competition_v1")
-        self.assertEqual(competition["summary"]["roster"], 17)
-        self.assertEqual(len(competition["leaderboard"]), 17)
-        self.assertTrue(competition["meta"]["quality"]["nq_one_minute_path_audit"]["available"])
 
     def test_flow_is_published_as_an_independent_browser_safe_system(self):
         flow = (self.site / "flow" / "index.html").read_text(encoding="utf-8")
@@ -326,41 +286,6 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("ibkr_client_portal_web_api", self.manifest["privacy"]["personalDataHubSources"])
         self.assertNotIn("ibkr_tws_api", self.manifest["privacy"]["personalDataHubSources"])
         self.assertFalse(self.manifest["privacy"]["personalDataHubSecretsPublished"])
-
-    def test_incomeos_whole_is_a_complete_integer_only_copy(self):
-        expected = [
-            "incomeos-whole/index.html",
-            "incomeos-whole/incomeos.css",
-            "incomeos-whole/incomeos-app.mjs",
-            "incomeos-whole/incomeos-engine.mjs",
-            "incomeos-whole/data/incomeos-full.json",
-            "incomeos-whole/data/operation-history.json",
-        ]
-        for rel in expected:
-            self.assertTrue((self.site / rel).exists(), rel)
-
-        page = (self.site / "incomeos-whole" / "index.html").read_text(encoding="utf-8")
-        self.assertIn('data-execution-mode="whole"', page)
-        self.assertIn('id="carryCash"', page)
-        self.assertIn('id="cashBuffer"', page)
-        self.assertIn('id="weeklyContribution" type="number" min="0" step="50" inputmode="decimal" value="1900"', page)
-        self.assertIn("整数股操作单", page)
-        self.assertIn("同一套 IncomeOS", page)
-        self.assertIn("Sell Call", page)
-        self.assertIn("Sell Put", page)
-        self.assertIn('data-tab="overview"', page)
-        self.assertIn('data-tab="ranking"', page)
-        self.assertIn('data-tab="backtest"', page)
-        self.assertNotIn("估算碎股", page)
-        self.assertIn('src="/incomeos-whole/incomeos-app.mjs"', page)
-        self.assertIn('id="syncIbkrButton"', page)
-
-        app = (self.site / "incomeos-whole" / "incomeos-app.mjs").read_text(encoding="utf-8")
-        engine = (self.site / "incomeos-whole" / "incomeos-engine.mjs").read_text(encoding="utf-8")
-        self.assertIn("wholeShareContributionPlan", app)
-        self.assertIn("allocateWholeShareOrders", engine)
-        self.assertEqual(self.manifest["routes"]["incomeosWhole"], "/incomeos-whole/")
-        self.assertEqual(self.manifest["privacy"]["incomeosWholeRuntime"], "browser_local_whole_shares_only")
 
     def test_tailtrend_is_a_derived_daily_close_shadow_system(self):
         expected = [

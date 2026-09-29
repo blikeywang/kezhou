@@ -1,7 +1,7 @@
 # 部署与每日刷新 · Deploy & Daily Refresh
 
 **架构：**每天后台刷新刻舟求剑 → 重算衍生曲线 → 注入 `prototype/app.html` → `portal/build_site.py` 汇总所有路由 → 部署静态页。
-`/history/` 只展示归一化衍生分析；`/decision/` 与 `/review/` 发布浏览器安全快照；`/flow/` 发布明确标记的模拟订单流快照，并把真实会话留在独立授权服务中。
+`/history/` 只展示归一化衍生分析；`/review/` 发布浏览器安全快照；`/flow/` 发布明确标记的模拟订单流快照，并把真实会话留在独立授权服务中。
 
 ```
 pipeline/daily/
@@ -24,7 +24,7 @@ pipeline/daily/
 4. 打开 **Actions → daily-refresh → Run workflow** 手动跑一次,几分钟后 Pages 给出网址。
 5. 之后每天自动刷新。
 
-产物：`_site/`，包含统一首页、`/history/`、`/decision/`、`/review/`、`/flow/`、`/incomeos/`、`/incomeos-whole/`、`/tailtrend/` 与 `/standards/`。刻舟求剑的内容仍从 `prototype/app.html` 生成；统一首页与路由由 `portal/` 管理。TailTrend 的 Longbridge 刷新需在受信任的已认证环境手动运行，GitHub Pages 只部署已审查的派生快照。
+产物：`_site/`，包含统一首页、`/history/`、`/review/`、`/flow/`、`/incomeos/`、`/tailtrend/`、`/daily-trade/`、`/otc/`、`/market-simulation/` 与 `/standards/`。刻舟求剑的内容仍从 `prototype/app.html` 生成；统一首页与路由由 `portal/` 管理。TailTrend 的 Longbridge 刷新需在受信任的已认证环境手动运行，GitHub Pages 只部署已审查的派生快照。
 
 ## 二、Cloudflare Pages / Netlify(想用自定义域名更省心)
 

@@ -2,26 +2,24 @@
 
 ## 1. North star
 
-TraderHome is one evidence-led trading workflow with three bounded workspaces:
+TraderHome is one evidence-led trading workflow with two bounded workspaces:
 
 1. **Kezhou / Research** — turn current market shape into a falsifiable historical hypothesis.
-2. **EV Desk / Plan** — turn a directional hypothesis into a conditional plan with invalidation and risk.
-3. **TradeReview OS / Growth** — turn completed execution into evidence review, a coach redo, a measurable growth stage, and an owner-controlled consultation case.
+2. **TradeReview OS / Growth** — turn completed execution into evidence review, a coach redo, a measurable growth stage, and an owner-controlled consultation case.
 
 The product should reduce unstructured action, not increase the number of signals a user consumes.
 
-**NQ Flow Console / Live Flow is deliberately outside this three-stage workflow.** It is an independent intraday observation and execution-authority system for NQ/MNQ order flow plus the Fibo OTE v1.6.4 Bridge. It must not silently alter Kezhou statistics, EV Desk gates, or TradeReview diagnoses.
+**NQ Flow Console / Live Flow is deliberately outside this research/review workflow.** It is an independent intraday observation and execution-authority system for NQ/MNQ order flow plus the Fibo OTE v1.6.4 Bridge. It must not silently alter Kezhou statistics or TradeReview diagnoses.
 
-**IncomeOS is also deliberately outside the three-stage workflow.** It converts variable weekly cash entering IBKR into a browser-local allocation plan, then evaluates growth cycles and cash-secured-put candidates. It cannot write to the broker, consume margin, or turn a stale/static option quote into an executable order.
+**IncomeOS is also deliberately outside the research/review workflow.** It converts variable weekly cash entering IBKR into a browser-local allocation plan, then evaluates growth cycles and cash-secured-put candidates. It cannot write to the broker, consume margin, or turn a stale/static option quote into an executable order.
 
-**TailTrend Lab is also deliberately outside the three-stage workflow.** It maps forward-adjusted regular-session daily candles into mutually exclusive tail, middle, breakout, failure, breakdown and event states. It is a shadow-test scanner and browser-local position-sizing aid, not a fourth vote inside EV Desk and not an order service.
+**TailTrend Lab is also deliberately outside the research/review workflow.** It maps forward-adjusted regular-session daily candles into mutually exclusive tail, middle, breakout, failure, breakdown and event states. It is a shadow-test scanner and browser-local position-sizing aid, with its own evidence and risk boundaries; it is not an order service.
 
 ## 2. Product contracts
 
 | Workspace | Input | Output | Reject / downgrade when |
 |---|---|---|---|
 | Kezhou | Closed historical candles + current pattern window | Consensus probability, Edge, interval, robustness, analogs | Stale data, weak sample, or method conflict |
-| EV Desk | Symbol, timeframe, current structure, risk budget | Trigger, entry zone, invalidation, target, R, or no-trade | Direction, location, or reward/risk gate fails |
 | TradeReview OS | Authorized trades, candles, original self-review | Evidence review, coach redo, one action, growth proof, optional consultation case | Evidence is incomplete or rights are unclear |
 
 Independent system contract:
@@ -41,7 +39,6 @@ The public `/tailtrend/` route publishes no raw candles, positions, account ledg
 Scores never cross these boundaries:
 
 - Kezhou trust score is evidence completeness, not a buy rating.
-- EV Desk opportunity score is plan completeness, not win probability.
 - TradeReview behavior score is within-person progress evidence, not a personality label.
 
 ## 3. Shared evidence language
@@ -71,14 +68,14 @@ Method transfer must identify itself as level D. Paul Wei behavior sequencing ma
 
 ## 4. Cross-product handoff
 
-The three core workflow workspaces receive a shared stage bar containing:
+The two core workflow workspaces receive a shared stage bar containing:
 
 - the current decision question;
 - the product's valid output;
 - its explicit boundary;
 - the next workspace.
 
-NQ Flow, IncomeOS and TailTrend receive the shared TraderHome navigation but no stage number and no automatic handoff. This keeps them visibly available without turning order-flow confirmation, long-term allocation or the tail/trend state machine into a hidden fourth vote inside the three existing systems.
+NQ Flow, IncomeOS and TailTrend receive the shared TraderHome navigation but no stage number and no automatic handoff. This keeps them visibly available without turning order-flow confirmation, long-term allocation or the tail/trend state machine into an implicit change to the core research and review systems.
 
 Future authenticated versions should persist a handoff object instead of asking the user to re-enter context:
 
@@ -100,7 +97,6 @@ Peer consultation uses URL fragments for the static deployment. Exact time, pric
 
 - Base: midnight navy, cool neutral panels, restrained borders.
 - Research accent: cyan — evidence and uncertainty.
-- Plan accent: green — conditional action and risk gates.
 - Review accent: cyan and green — evidence reconstruction and verified behavior change.
 - Independent Flow accent: teal — real-time data health and execution authority.
 - Independent IncomeOS accent: cyan/violet — capital allocation, compounding, and gate status.
@@ -130,14 +126,13 @@ The public site is a demonstrator. Discord / Telegram will handle category reque
 
 Useful product metrics for the next backend stage:
 
-- Research → Plan handoff rate.
-- Percentage of plans rejected by explicit gates.
-- Percentage of plans with trigger + invalidation + risk recorded.
+- Research → Review handoff rate.
+
 - Percentage of closed trades self-reviewed before system reveal.
 - 10-trade prescription completion rate.
 - Change in target behavior frequency after prescription.
 - Evidence coverage: candles, self-review, rights-cleared expert cases.
-- Flow feed uptime, stale-frame rate, entitlement failures, and v1.6.4 Bridge version mismatches, reported separately from the three-stage funnel.
+- Flow feed uptime, stale-frame rate, entitlement failures, and v1.6.4 Bridge version mismatches, reported separately from the research/review workflow.
 - IncomeOS weekly-plan completion, allocation drift, stale-snapshot rejections, concentration-gate rejections, and realized assignment exposure, also reported separately.
 - TailTrend state transitions, false-reclaim rate, breakout candidate-to-acceptance rate, stale/event rejections, execution slippage, and module-level drawdown, also reported separately.
 

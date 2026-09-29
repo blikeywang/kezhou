@@ -4,11 +4,11 @@
 >
 > **免责:本产品输出为基于历史相似度的概率描述,不构成任何投资建议。历史相似 ≠ 未来重复。** 详见 [`DISCLAIMER.md`](./DISCLAIMER.md)。
 
-当前状态：**已上线的 TraderHome 三阶段工作流 + NQ Flow / IncomeOS / IncomeOS 整股 / TailTrend Lab 四套独立系统 + 每日刷新流水线 + 可复现算法说明**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，EV Desk 位于 `/decision/app.html`，TradeReview OS 位于 `/review/`，独立订单流终端位于 `/flow/`，长期资金系统位于 `/incomeos/` 与 `/incomeos-whole/`，尾部—趋势影子观察位于 `/tailtrend/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
+当前状态：**已上线的 TraderHome 历史研究与交易后复盘工作台，配合 NQ Flow、IncomeOS、TailTrend Lab、交易早晚报、场外日线与主流市场模拟分析**。线上页为 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/)。根目录是统一门户，刻舟求剑位于 `/history/`，TradeReview OS 位于 `/review/`，订单流终端位于 `/flow/`，长期资金系统位于 `/incomeos/`，尾部—趋势观察位于 `/tailtrend/`，私密模拟盘入口位于 `/market-simulation/`。完整来源、计算口径与局限见 [`docs/METHODS_AND_SOURCES.md`](./docs/METHODS_AND_SOURCES.md)。
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
-TraderHome V7 保留 V3 的三个核心工作台与产品契约。NQ Flow、IncomeOS、整股版与 TailTrend Lab 均不占用 01–03 阶段编号：TailTrend 用日线收盘状态统一尾部反转、趋势接受、突破失败、事件隔离与风险预算；它不连接券商或自动下单。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
+TraderHome V10 的核心工作流连接历史研究与交易后复盘。各独立研究系统保留自身的输入、输出和边界。完整产品与视觉规范见 [`docs/TRADERHOME_PRODUCT_SYSTEM.md`](./docs/TRADERHOME_PRODUCT_SYSTEM.md)，公开证据标准位于 `/standards/`。
 
 ---
 
@@ -16,7 +16,7 @@ TraderHome V7 保留 V3 的三个核心工作台与产品契约。NQ Flow、Inco
 
 新增入口 [`/otc/`](https://traderhome-histroy.xyz/otc/)：用户提供的历史场外指数与爆破指数、周期底色、节点和条件式研究计划，保留缺页、过期与未核实映射。公开包位于 `portal/vendor/otc`，仅有白名单研究数据，不含账户、密钥、Desk 付费原文或券商原始K线。可选的 Binance 公开日K与本地导入 CSV 只在浏览器内存使用，不生成订单或收益回测。
 
-快照更新后运行 `python3 -m unittest portal.test_portal` 与 `node --test portal/test_otc_engine.mjs`。门户清单版本为 V8，三个核心工作台契约不变。
+快照更新后运行 `python3 -m unittest portal.test_portal` 与 `node --test portal/test_otc_engine.mjs`。门户清单版本为 V10，核心工作流为历史研究与交易后复盘。
 
 ## 目录结构
 
@@ -29,9 +29,9 @@ kezhou/
 │   └── report_light.html     # 报告 · 浅色杂志版
 ├── portal/                   # TraderHome 同域集成层
 │   ├── home/                 # 统一首页
-│   ├── assets/               # 三阶段工作台与独立系统共享导航
+│   ├── assets/               # 核心工作台与独立系统共享导航
 │   ├── vendor/               # 浏览器安全的静态 Demo / 派生快照（含 flow / incomeos / tailtrend）
-│   ├── build_site.py         # 生成 /history · /decision · /review · /flow · /incomeos · /tailtrend
+│   ├── build_site.py         # 生成 /history · /review · /flow · /incomeos · /tailtrend · /market-simulation
 │   └── test_portal.py        # 路由、隐私与域名回归测试
 ├── data/                     # 已算出的真实结果(可作后端回归测试基准样本)
 │   ├── crypto_payload.json   # BTC/ETH/SOL 多配置匹配结果
@@ -48,7 +48,7 @@ kezhou/
 └── docs/
     ├── BUILD_SPEC.md         # 产品实现与支付接入说明书(架构/引擎/数据/账务/Stripe·支付宝·加密)
     ├── METHODS_AND_SOURCES.md# 线上图表的数据来源、算法口径、阅读方式与局限
-    ├── TRADERHOME_PRODUCT_SYSTEM.md # 三阶段产品边界、独立系统边界与统一视觉规范
+    ├── TRADERHOME_PRODUCT_SYSTEM.md # 核心产品边界、独立系统边界与统一视觉规范
     ├── FEATURES_v2.md        # 功能补充设计:数据刷新 / 检索校验 / 收藏夹 / 逐年季节性 / 讲解层 / 内容分层
     ├── ANALYTICS.md          # 埋点与后台统计:事件字典 / 转化漏斗 / 付费归因 / 存储与隐私
     ├── PAYMENTS.md           # 支付设计:闲鱼卡密 / Stripe / 加密 tx-hash 核验 + 统一权益
@@ -61,7 +61,7 @@ kezhou/
 
 ## 快速开始
 
-**只想看产品**：打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、下单前决策、交易后复盘、独立 NQ 订单流、IncomeOS 或 TailTrend Lab。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
+**只想看产品**：打开 [traderhome-histroy.xyz](https://traderhome-histroy.xyz/) 选择历史证据、交易后复盘、NQ 订单流、IncomeOS、TailTrend Lab 或主流市场模拟分析。刻舟求剑仍可直接打开 `prototype/app.html`，支持中英、深浅主题和“讲解”模式。
 
 **重新生成图表与原型**(需 Python 3 + `matplotlib numpy`):
 
