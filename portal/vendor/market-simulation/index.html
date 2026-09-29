@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>主流市场模拟分析 | TraderHome</title>
+  <meta name="description" content="BTC、ETH、黄金、白银、纳指与原油模拟盘：10 分钟检查、小时云端复核，以及 10M 至周线的独立计划与仓位记录。">
+  <link rel="stylesheet" href="/market-simulation/workspace.css">
+</head>
+<body>
+  <main class="simulation-workspace">
+    <div class="simulation-toolbar"><div><span class="simulation-label">PAPER · CLOUD WORKSPACE</span><h1>主流市场模拟分析</h1></div><div class="simulation-actions"><span id="connectionStatus" role="status">正在连接私密工作台</span><button id="reloadWorkspace" type="button">重新连接</button><a href="https://hourly-six-lab-blikey.blikeywang.chatgpt.site/" target="_blank" rel="noopener noreferrer">在新窗口打开</a></div></div>
+    <div class="simulation-access" id="accessNotice"><p>使用创建模拟盘的 ChatGPT 账号登录。若下方无法显示，先在新窗口打开工作台，登录后再点“重新连接”。</p><small>后台独立运行：每 10 分钟检查和执行计划，每小时由云端模型复核。持仓、历史交易和绿标记录均从同一云端账本读取。</small></div>
+    <iframe id="marketWorkspace" title="主流市场模拟分析私密工作台" src="https://hourly-six-lab-blikey.blikeywang.chatgpt.site/?embed=traderhome" referrerpolicy="no-referrer"></iframe>
+  </main>
+  <script src="/market-simulation/workspace.js" defer></script>
+</body>
+</html>

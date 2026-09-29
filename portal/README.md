@@ -32,3 +32,5 @@ bars remain in browser memory, are not persisted, and cannot create broker order
 
 Discord and Telegram invitations remain visibly unconfigured until the owner adds
 real invite URLs; the build never invents or redirects to an unrelated community.
+
+`/market-simulation/` embeds the owner-private 主流市场模拟分析 cloud workspace. It carries no credentials, raw bars or ledger in the static build. A verified origin/source handshake marks the embedded app as connected; the new-window link supports browsers that restrict embedded authentication. Ten-minute execution and hourly ChatGPT model review run in the existing cloud services.

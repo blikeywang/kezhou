@@ -34,6 +34,7 @@ CANONICAL_ROUTES = {
     "tailtrend/index.html": "/tailtrend/",
     "daily-trade/index.html": "/daily-trade/",
     "otc/index.html": "/otc/",
+    "market-simulation/index.html": "/market-simulation/",
     "standards/index.html": "/standards/",
 }
 
@@ -203,6 +204,7 @@ def build(output: Path) -> dict:
     # User-provided OTC history only. Runtime price comparisons and local CSV
     # imports remain in browser memory; no accounts or broker bars are bundled.
     shutil.copytree(PORTAL / "vendor" / "otc", output / "otc")
+    shutil.copytree(PORTAL / "vendor" / "market-simulation", output / "market-simulation")
 
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
@@ -214,7 +216,7 @@ def build(output: Path) -> dict:
 
     manifest = {
         "name": "TraderHome",
-        "version": 8,
+        "version": 9,
         "coreWorkflowVersion": 3,
         "routes": {
             "home": "/",
@@ -227,6 +229,7 @@ def build(output: Path) -> dict:
             "tailtrend": "/tailtrend/",
             "dailyTrade": "/daily-trade/",
             "otc": "/otc/",
+            "marketSimulation": "/market-simulation/",
             "standards": "/standards/",
         },
         "productContracts": {
@@ -235,6 +238,7 @@ def build(output: Path) -> dict:
             "review": {"output": "costly_behavior_evidence_trade_one_action_growth", "rejects": "insufficient_evidence"},
         },
         "independentSystems": {
+            "marketSimulation": {"input": "authenticated_private_paper_market_workspace", "output": "ten_minute_execution_hourly_model_review_multiple_horizon_plans", "rejects": "missing_authentication_stale_data_or_suspended_plan_scope", "route": "/market-simulation/", "partOfCoreWorkflow": False},
             "flow": {
                 "input": "nq_mnq_trades_l2_and_v164_bridge",
                 "output": "flow_confirmation_and_execution_authority",
@@ -280,6 +284,10 @@ def build(output: Path) -> dict:
         },
         "evidenceLabels": ["DATA", "DERIVED", "FORWARD", "METHOD_DEMO"],
         "privacy": {
+            "marketSimulationRuntime": "private_authenticated_cloud_workspace",
+            "marketSimulationLedgerPublished": False,
+            "marketSimulationCredentialsPublished": False,
+            "marketSimulationRealOrders": False,
             "privateTradeLedgerPublished": False,
             "reviewRuntime": "browser_local_with_optional_personal_data_hub",
             "reviewDemo": "optional_synthetic",

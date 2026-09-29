@@ -32,6 +32,7 @@ class PortalBuildTests(unittest.TestCase):
             "tailtrend/index.html",
             "daily-trade/index.html",
             "otc/index.html",
+            "market-simulation/index.html",
             "standards/index.html",
         ]
         for rel in expected:
@@ -50,6 +51,23 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('property="og:url" content="https://traderhome-histroy.xyz/history/"', html)
         self.assertIn('content="https://traderhome-histroy.xyz/history/og.png"', html)
 
+    def test_market_simulation_preserves_private_cloud_ledger(self):
+        page = (self.site / 'market-simulation/index.html').read_text()
+        self.assertIn('主流市场模拟分析', page)
+        self.assertIn('https://hourly-six-lab-blikey.blikeywang.chatgpt.site/?embed=traderhome', page)
+        self.assertFalse(self.manifest['privacy']['marketSimulationLedgerPublished'])
+        self.assertFalse(self.manifest['privacy']['marketSimulationCredentialsPublished'])
+        self.assertFalse(self.manifest['privacy']['marketSimulationRealOrders'])
+        self.assertFalse(self.manifest['independentSystems']['marketSimulation']['partOfCoreWorkflow'])
+        files = list((self.site / 'market-simulation').iterdir())
+        self.assertEqual({p.name for p in files}, {'index.html', 'workspace.js', 'workspace.css'})
+        script = (self.site / 'market-simulation/workspace.js').read_text()
+        self.assertIn('event.origin !== origin', script)
+        self.assertIn('event.source !== frame.contentWindow', script)
+        for text in (page, script):
+            for secret in ('OAI-Sites-Authorization', 'site_token', 'scheduler_secret', '/workspace/data'):
+                self.assertNotIn(secret, text)
+
     def test_private_review_ledger_is_not_published(self):
         self.assertFalse((self.site / "review" / "data" / "review-data.json").exists())
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
@@ -59,10 +77,10 @@ class PortalBuildTests(unittest.TestCase):
 
     def test_professional_product_contracts_and_evidence_standard(self):
         manifest = json.loads((self.site / "traderhome-manifest.json").read_text())
-        self.assertEqual(manifest["version"], 8)
+        self.assertEqual(manifest["version"], 9)
         self.assertEqual(manifest["coreWorkflowVersion"], 3)
         self.assertEqual(set(manifest["productContracts"]), {"history", "decision", "review"})
-        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade", "otc"})
+        self.assertEqual(set(manifest["independentSystems"]), {"flow", "incomeos", "incomeosWhole", "tailtrend", "dailyTrade", "otc", "marketSimulation"})
         self.assertNotIn("flow", manifest["productContracts"])
         self.assertNotIn("incomeos", manifest["productContracts"])
         self.assertFalse(manifest["independentSystems"]["flow"]["partOfCoreWorkflow"])
