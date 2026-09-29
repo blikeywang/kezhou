@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
-from crypto_flow import STEP, LAG, Client, align, collect_asset, divergences, stream, window
+from crypto_flow import STEP, LAG, HOUR, Client, align, collect_asset, stream, window
+from crypto_pivots import hourly_structure
 
 START = 1_790_000_100_000 // STEP * STEP
 
@@ -37,7 +38,6 @@ class CryptoFlowTests(unittest.TestCase):
         self.assertEqual(dropped, 70)
         self.assertEqual(rows[0]['cvd'], 4)
         self.assertEqual(window(rows, 12, True)['status'], 'insufficient')
-        self.assertEqual(divergences(rows), [])
 
     def test_oi_is_coin_quantity_not_price_driven_usd_valuation(self):
         f, c, o = data()
@@ -52,39 +52,6 @@ class CryptoFlowTests(unittest.TestCase):
         self.assertEqual(w['oiStatus'], 'incomplete')
         self.assertNotIn('oiPct', w)
         self.assertEqual(w['status'], 'ok')
-
-    def test_divergence_is_known_before_confirmation_not_a_backfilled_entry(self):
-        f, c, o = data(52)
-        f[48][1:3] = ['300', '0']
-        c[49][4] = '103'
-        c[49][2] = '104'
-        rows, _ = align(f, c, o, START+52*STEP+LAG, True)
-        first = divergences(rows[:49])[-1]
-        self.assertEqual(first['kind'], 'bullish')
-        self.assertEqual(first['status'], 'candidate')
-        self.assertNotIn('confirmedAt', first)
-        later = divergences(rows)[-1]
-        self.assertEqual(later['observedAt'], first['observedAt'])
-        self.assertEqual(later['status'], 'confirmed')
-        self.assertGreater(later['confirmedAt'], later['observedAt'])
-        rows[-1]['close'] = 97
-        self.assertEqual(divergences(rows)[-1]['status'], 'invalidated')
-
-    def test_a_late_breakout_cannot_revive_an_expired_candidate(self):
-        f, c, o = data(64)
-        f[48][1:3] = ['300', '0']
-        c[-1][2], c[-1][4] = '104', '103'
-        rows, _ = align(f, c, o, START+64*STEP+LAG, True)
-        event = next(e for e in divergences(rows) if e['observedAt'] == rows[48]['time'])
-        self.assertEqual(event['status'], 'expired')
-        self.assertNotIn('confirmedAt', event)
-
-    def test_lower_price_low_does_not_count_as_bullish_absorption(self):
-        f, c, o = data(49)
-        f[-1][1:3] = ['300', '0']
-        c[-1][3] = '97'
-        rows, _ = align(f, c, o, START+49*STEP+LAG, True)
-        self.assertEqual(divergences(rows), [])
 
     def test_stale_data_has_no_actionable_divergence(self):
         f, c, o = data(49)
@@ -115,6 +82,30 @@ class CryptoFlowTests(unittest.TestCase):
             self.assertEqual(result[name]['status'], 'unavailable')
             self.assertEqual(result[name]['windows'], {})
             self.assertNotIn('private internal', str(result))
+
+    def test_spot_pivots_reference_exact_same_hour_perpetual_oi(self):
+        class Offline:
+            def get(self, *args): raise OSError('short window unavailable')
+            history = get
+        rows = [dict(time=START+i*HOUR, low=price, high=price+10,
+                     close=price+5, cvd=-i*3, cvdAnchor=START)
+                for i, price in enumerate([105, 104, 100, 103, 104, 102, 106, 107])]
+        perp = [{**r, 'oi':1000+i, 'oiUsd':2000+i} for i, r in enumerate(rows)]
+        # An adjacent OI sample must not fill the missing exact-hour sample.
+        del perp[5]['oi']
+        now = rows[-1]['time']+LAG
+        with patch('crypto_flow.collect_hourly', side_effect=[
+                hourly_structure(rows, now), hourly_structure(perp, now)]):
+            result = collect_asset('BTC', now, Offline())
+        spot = result['spot']['hourly']
+        pair = next(p for p in spot['comparisons'] if p['kind']=='low')
+        self.assertEqual(pair['a']['time'], rows[2]['time'])
+        self.assertEqual(pair['a']['oi'], 1002)
+        self.assertIsNone(pair['b']['oi'])
+        self.assertIsNone(pair['oiChange'])
+        self.assertEqual(pair['signal'], 'bullish_absorption')
+        self.assertEqual(spot['series'][6]['oi'], 1006)
+        self.assertIn('不是现货持仓量', spot['oiScope'])
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="BTC、ETH、黄金、白银、纳指与原油的公开模拟盘：交易计划、持仓、历史成交、成本结构与小时模型复核。">
-<title>主流市场模拟分析 · TraderHome</title><link rel="stylesheet" href="/market-simulation/workspace.css?v=3"></head>
+<title>主流市场模拟分析 · TraderHome</title><link rel="stylesheet" href="/market-simulation/workspace.css?v=4"></head>
 <body class="ms-page"><main class="ms-wrap" id="main">
 <header class="ms-hero"><div><p class="ms-eyebrow"><span class="ms-dot"></span> TRADERHOME / PAPER MARKETS</p><h1>主流市场模拟分析<span class="ms-pill">公开模拟盘</span></h1><p class="ms-subtitle">跟踪市场，记录每一步判断。10 分钟检查交易，每小时复核，保留完整成交账本。</p></div><div class="ms-actions"><button id="refresh" type="button">↻ 更新页面</button><button id="download" type="button" disabled>导出模拟账本 ↓</button></div></header>
 <div id="connection" class="ms-notice" role="status" aria-live="polite">正在读取公开模拟盘…</div><div id="status" class="ms-status"></div>
@@ -10,4 +10,4 @@
 <button data-tab="plans" class="active" aria-current="page">交易计划</button><button data-tab="positions">当前持仓 <span id="openCount">0</span></button><button data-tab="closed">历史成交 <span id="closedCount">0</span></button><button data-tab="reviews">小时复核</button><button data-tab="flow">CVD / OI</button><button data-tab="journal">研判记录</button></nav><section id="panel" aria-live="polite"></section></div>
 <footer class="ms-footer"><p>仅模拟交易。盈亏包含模型规定的费用和滑点；期货连续合约作为价格代理。单标的与组合各有独立初始资金，不合并计算收益率。</p><p>云端检查独立运行，关闭电脑不影响。网页读取已发布数据，每分钟检查新快照；GitHub 按 10 分钟计划发布，调度可能延迟。过期报价、计划和复核会单独标记。</p><a href="https://github.com/blikeywang/kezhou/actions/workflows/pages.yml" target="_blank" rel="noopener noreferrer">查看发布记录 ↗</a></footer>
 </main><dialog id="detail" class="ms-dialog"><header><strong id="detailTitle">研判详情</strong><button id="closeDetail" aria-label="关闭详情">✕</button></header><div id="detailBody"></div></dialog>
-<noscript><p class="ms-notice">页面需要 JavaScript 展示持仓和图表。无需登录，可直接下载 <a href="data/latest.json">公开模拟账本</a>。</p></noscript><script type="module" src="/market-simulation/workspace.js?v=3"></script></body></html>
+<noscript><p class="ms-notice">页面需要 JavaScript 展示持仓和图表。无需登录，可直接下载 <a href="data/latest.json">公开模拟账本</a>。</p></noscript><script type="module" src="/market-simulation/workspace.js?v=4"></script></body></html>

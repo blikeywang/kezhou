@@ -1,4 +1,4 @@
-import {renderFlow} from './flow.mjs?v=1';
+import {renderFlow,updateFlowChoice} from './flow.mjs?v=2';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
 
 const $=id=>document.getElementById(id);
@@ -21,8 +21,8 @@ const pairReport=p=>data.pairs.reports.find(r=>r.pair===p);
 const reviewMark=c=>c?badge((c.verdict==='green'?'✓ 合理':'! 挂起提示')+(Date.now()-c.published>5400000?' · 复核已旧':''),c.verdict==='green'&&Date.now()-c.published<=5400000?'good':'warn'):badge('待复核');
 const action=(kind,id,label)=>'<button type="button" data-action="'+kind+'" data-id="'+E(id)+'">'+label+'</button>';
 
-function lineChart(points,marks=[],title='价格结构',candles=false){
-  const rows=points.filter(p=>finite(p.time)&&finite(p.value)).slice(-90);
+function lineChart(points,marks=[],title='价格结构',candles=false,limit=90){
+  const rows=points.filter(p=>finite(p.time)&&finite(p.value)).slice(-limit);
   if(rows.length<2)return empty('可用完整行情不足，暂不绘图');
   const clean=marks.filter(m=>finite(m.value)&&m.value>0),W=760,H=270,left=12,right=118,top=22,bottom=32,pw=W-left-right,ph=H-top-bottom;
   const values=rows.flatMap(p=>candles?[p.high,p.low]:[p.value]).filter(finite).concat(clean.map(m=>m.value));
@@ -39,6 +39,7 @@ function lineChart(points,marks=[],title='价格结构',candles=false){
     body+='<polyline points="'+rows.map((p,i)=>x(i)+','+y(p.value)).join(' ')+'" fill="none" stroke="#72ddc1" stroke-width="2.2"/>';
     rows.forEach((p,i)=>{body+='<circle cx="'+x(i)+'" cy="'+y(p.value)+'" r="5" fill="transparent"><title>'+E(dt(p.time)+' · '+fmt(p.value))+'</title></circle>';});
   }
+  rows.forEach((p,i)=>{if(p.pointLabel){const py=y(finite(p.markValue)?p.markValue:p.value);body+='<circle cx="'+x(i)+'" cy="'+py+'" r="5" fill="#f0bf70" stroke="#111c2a" stroke-width="2"/><text x="'+(x(i)+7)+'" y="'+(py-8)+'" style="fill:#f0bf70;font-size:14px;font-weight:700">'+E(p.pointLabel)+'</text>';}});
   let lastLabel=-100;
   clean.sort((a,b)=>b.value-a.value).forEach(m=>{const py=y(m.value),ly=Math.min(H-bottom-3,Math.max(py,lastLabel+17));lastLabel=ly;const c=m.color??'#c9b984';
     body+='<path d="M'+left+' '+py+'H'+(left+pw)+'" stroke="'+c+'" stroke-width="1" stroke-dasharray="5 4" opacity=".8"/><text class="chart-label" x="'+(left+pw+9)+'" y="'+(ly-3)+'" style="fill:'+c+'">'+E(m.label)+' '+fmt(m.value)+'</text>';
@@ -118,7 +119,7 @@ function renderReviews(){
   const audits=[...(data.review?.history??[])].sort((a,b)=>b.published-a.published);
   const gates=(data.review?.gates??[]).filter((g,i,a)=>i===a.findLastIndex(x=>x.book===g.book&&x.key===g.key&&x.horizon===g.horizon)).filter(g=>g.verdict==='suspended');
   let html='<div class="ms-row"><div><h2>小时模型复核</h2><p>绿标表示该次复核认可交易依据与风险控制，不代表未来盈利。挂起影响指定范围的新入场。</p></div>'+badge(data.review?.schedule?.enabled?'小时任务已启用':'任务状态待确认',data.review?.schedule?.enabled?'good':'warn')+'</div>';
-  html+='<p class="ms-inline-note">BTC / ETH 复核现已接入现货与永续 CVD、币本位 OI；每份结论应注明当时的数据和结构依据。<button data-tab="flow">查看 CVD / OI 图表 ↗</button></p>';
+  html+='<p class="ms-inline-note">BTC / ETH 按 1H 价格拐点 A/B 比较连续 CVD 与同一时点 OI；每份结论注明两点时间、取值和结构依据。<button data-tab="flow">查看 CVD / OI 图表 ↗</button></p>';
   if(gates.length)html+='<div class="ms-gates">'+gates.map(g=>'<span title="'+E(g.reason)+'">'+badge(g.key+' '+g.horizon+' · 新入场挂起','warn')+'</span>').join('')+'</div>';
   return html+(audits.length?audits.map((r,i)=>'<article class="ms-card ms-review"><div class="ms-review-heading"><h3>'+dt(r.published)+'</h3><span>'+badge('✓ '+r.checks.filter(c=>c.verdict==='green').length+' 项合理','good')+' '+badge('! '+r.checks.filter(c=>c.verdict==='suspended').length+' 项挂起','warn')+'</span></div><p class="ms-prose">'+E(r.summary)+'</p><details'+(i===0?' open':'')+'><summary>逐项依据 · 检查快照 '+dt(r.snapshotRun)+'</summary><div class="ms-checks">'+r.checks.map(c=>'<div class="ms-check"><header>'+badge(c.verdict==='green'?'✓ 合理':'! 挂起',c.verdict==='green'?'good':'warn')+'<span>'+(c.book==='pair'?'组合':'单标的')+' · '+(c.kind==='trade'?'成交 / 持仓':'计划')+'</span><code>'+E(c.id)+'</code></header><p>'+E(c.reason)+'</p></div>').join('')+'</div></details><div class="ms-source">复核编号 '+E(r.id)+' · 原始结果校验 '+E(r.hash?.slice(0,16))+'</div></article>').join(''):empty('尚无小时复核结果，不显示虚构绿标'));
 }
@@ -221,7 +222,7 @@ document.addEventListener('click',event=>{
   else if(b.dataset.page){journalPage+=Number(b.dataset.page);renderPanel();}
 });
 document.addEventListener('change',event=>{
-  const e=event.target;if(!e.dataset.filter)return;
+  const e=event.target;if(e.dataset.flowKey){updateFlowChoice(e.dataset.flowKey,e.dataset.flowField,e.value);renderPanel();return;}if(!e.dataset.filter)return;
   if(e.dataset.filter==='tradeBook')tradeBook=e.value;
   if(e.dataset.filter==='tradeHorizon')tradeHorizon=e.value;
   if(e.dataset.filter==='journalSymbol'){journalSymbol=e.value;journalPage=0;}

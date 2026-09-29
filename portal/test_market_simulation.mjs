@@ -61,7 +61,7 @@ test('untrusted rationale text is escaped before HTML rendering',()=>{
 
 
 // Crypto evidence must age with the observation, independently of page publication.
-import {flowFresh,renderFlow} from './vendor/market-simulation/flow.mjs';
+import {flowFresh,renderFlow,compareFlowPoints} from './vendor/market-simulation/flow.mjs';
 test('a recently published flow panel cannot mark stale or future observations as current',()=>{
   assert.equal(flowFresh({status:'ok',through:1000},1300000),false);
   assert.equal(flowFresh({status:'ok',through:2000},1000),false);
@@ -71,6 +71,21 @@ test('a recently published flow panel cannot mark stale or future observations a
 test('the flow panel survives an unavailable exchange without inventing a value',()=>{
   const ui={E:escape,fmt:String,dt:String,badge:s=>s,empty:s=>s,lineChart:()=>{throw Error('Missing source must not be charted');}};
   const html=renderFlow({assets:[{symbol:'BTC',spot:{status:'unavailable'},perpetual:{status:'unavailable'}}]},ui);
-  assert.ok(html.includes('本轮未取得数据'));
+  assert.ok(html.includes('本轮未取得连续 1H 历史'));
   assert.ok(!html.includes('NaN'));
+});
+
+
+test('hourly price-point comparisons span days and sample OI at A and B',()=>{
+  const a={time:3600000,low:90,high:100,cvd:100,oi:1000,cvdAnchor:0};
+  const b={time:73*3600000,low:95,high:105,cvd:-50,oi:1100,cvdAnchor:0};
+  const r=compareFlowPoints(a,b,'low');
+  assert.equal(r.signal,'bullish_absorption');assert.equal(r.cvdChange,-150);
+  assert.equal(r.elapsedHours,72);assert.equal(r.oiChange,100);
+  assert.equal(compareFlowPoints(a,{...b,cvdAnchor:3600000},'low').comparable,false);
+  assert.equal(compareFlowPoints(a,{...b,oi:null},'low').oiChange,null);
+});
+test('hourly evidence freshness follows the latest complete hourly bar',()=>{
+  assert.equal(flowFresh({status:'ok',intervalMs:3600000,through:3600000},7200000),true);
+  assert.equal(flowFresh({status:'ok',intervalMs:3600000,through:3600000},9000000),false);
 });
