@@ -1,3 +1,4 @@
+import {renderReviewCards} from './reviews.mjs?v=1';
 import {renderFlow,updateFlowChoice} from './flow.mjs?v=2';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
 
@@ -115,14 +116,8 @@ function renderClosed(){
   if(!trades.length)return html+empty('此筛选下暂无已平仓记录');
   return html+'<div class="ms-table-wrap"><table class="ms-table"><thead><tr><th>交易</th><th>入场时间 / 出场时间</th><th>入场 / 出场</th><th>原止损 / 止盈</th><th>净损益</th><th>出场原因 / 复核</th><th>记录</th></tr></thead><tbody>'+trades.map(t=>'<tr><td><b>'+E(t.book==='pair'?PAIRS[t.pair]??t.pair:t.symbol+' '+side(t.side))+'</b><small>'+E(tradeHorizonOf(t))+' · '+E(t.book==='pair'?'双腿组合':t.strategy)+'</small></td><td>'+dt(t.opened,true)+'<small>'+dt(t.closed,true)+'</small></td><td>'+fmt(t.entryRatio??t.entry)+'<small>'+(t.book==='pair'?'双腿出场见详情':fmt(t.exit))+'</small></td><td>'+fmt(t.stopRatio??t.stop)+'<small>'+fmt(t.targetRatio??t.target)+'</small></td><td class="'+color(t.pnl)+'"><b>'+cash(t.pnl)+'</b>'+(finite(t.r)?'<small>'+fmt(t.r,2)+'R</small>':'')+'</td><td>'+E(t.reason??'')+'<small>'+reviewMark(review(t.book,t.id))+'</small></td><td>'+action('trade',t.id,'查看逻辑 ↗')+'</td></tr>').join('')+'</tbody></table></div>';
 }
-function renderReviews(){
-  const audits=[...(data.review?.history??[])].sort((a,b)=>b.published-a.published);
-  const gates=(data.review?.gates??[]).filter((g,i,a)=>i===a.findLastIndex(x=>x.book===g.book&&x.key===g.key&&x.horizon===g.horizon)).filter(g=>g.verdict==='suspended');
-  let html='<div class="ms-row"><div><h2>小时模型复核</h2><p>绿标表示该次复核认可交易依据与风险控制，不代表未来盈利。挂起影响指定范围的新入场。</p></div>'+badge(data.review?.schedule?.enabled?'小时任务已启用':'任务状态待确认',data.review?.schedule?.enabled?'good':'warn')+'</div>';
-  html+='<p class="ms-inline-note">BTC / ETH 按 1H 价格拐点 A/B 比较连续 CVD 与同一时点 OI；每份结论注明两点时间、取值和结构依据。<button data-tab="flow">查看 CVD / OI 图表 ↗</button></p>';
-  if(gates.length)html+='<div class="ms-gates">'+gates.map(g=>'<span title="'+E(g.reason)+'">'+badge(g.key+' '+g.horizon+' · 新入场挂起','warn')+'</span>').join('')+'</div>';
-  return html+(audits.length?audits.map((r,i)=>'<article class="ms-card ms-review"><div class="ms-review-heading"><h3>'+dt(r.published)+'</h3><span>'+badge('✓ '+r.checks.filter(c=>c.verdict==='green').length+' 项合理','good')+' '+badge('! '+r.checks.filter(c=>c.verdict==='suspended').length+' 项挂起','warn')+'</span></div><p class="ms-prose">'+E(r.summary)+'</p><details'+(i===0?' open':'')+'><summary>逐项依据 · 检查快照 '+dt(r.snapshotRun)+'</summary><div class="ms-checks">'+r.checks.map(c=>'<div class="ms-check"><header>'+badge(c.verdict==='green'?'✓ 合理':'! 挂起',c.verdict==='green'?'good':'warn')+'<span>'+(c.book==='pair'?'组合':'单标的')+' · '+(c.kind==='trade'?'成交 / 持仓':'计划')+'</span><code>'+E(c.id)+'</code></header><p>'+E(c.reason)+'</p></div>').join('')+'</div></details><div class="ms-source">复核编号 '+E(r.id)+' · 原始结果校验 '+E(r.hash?.slice(0,16))+'</div></article>').join(''):empty('尚无小时复核结果，不显示虚构绿标'));
-}
+function renderReviews(){return renderReviewCards(data,{dt,badge,empty});}
+
 async function loadHistory(){
   if(history||historyError)return;historyError='loading';
   try{const response=await fetch(new URL('data/history.json?v='+data.publishedAt,import.meta.url),{cache:'no-store',credentials:'omit',redirect:'error'});if(!response.ok)throw Error();

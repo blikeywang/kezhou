@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {reviewSections,reviewTarget,reviewFresh,renderReviewCards} from './vendor/market-simulation/reviews.mjs';
 import {quote,chartBars,planState,currentGate,lastCheck,legTargets,conditionalPrices,escape,estimatedNet,tradeHorizonOf} from './vendor/market-simulation/model.mjs';
 
 test('legacy hourly trades retain their original horizon after the ten-minute migration',()=>{
@@ -88,4 +89,28 @@ test('hourly price-point comparisons span days and sample OI at A and B',()=>{
 test('hourly evidence freshness follows the latest complete hourly bar',()=>{
   assert.equal(flowFresh({status:'ok',intervalMs:3600000,through:3600000},7200000),true);
   assert.equal(flowFresh({status:'ok',intervalMs:3600000,through:3600000},9000000),false);
+});
+
+test('review boxes retain evidence and separate only explicit topic boundaries',()=>{
+  assert.deepEqual(reviewSections('说明。BTC：低点 A。ETH：低点 B。'),[
+    {title:'复核总览',text:'说明。'},{title:'BTC',text:'低点 A。'},{title:'ETH',text:'低点 B。'}]);
+  assert.deepEqual(reviewSections('【结论】挂起。【依据】BTC和ETH数据冲突。【下一步】等待新柱。'),[
+    {title:'结论',text:'挂起。'},{title:'依据',text:'BTC和ETH数据冲突。'},{title:'下一步',text:'等待新柱。'}]);
+  assert.equal(reviewSections('BTC 与 ETH 比较中的 OI 值不能代替方向判断。').length,1);
+});
+test('review targets remain identifiable after a plan has left the current snapshot',()=>{
+  assert.equal(reviewTarget({book:'pair',id:'pair:pairs-1.0:ETH-BTC:100'},{pairs:{}}).name,'ETH / BTC');
+  assert.equal(reviewTarget({book:'single',id:'plan:BTC:4H:100'},{}).horizon,'4H');
+});
+test('a fresh publication cannot turn an expired review into current approval',()=>{
+  const ui={dt:String,badge:(s,t)=>'<mark class="'+(t??'')+'">'+s+'</mark>',empty:String,now:6_000_000};
+  const data={publishedAt:ui.now,review:{history:[{id:'old',published:1,snapshotRun:1,summary:'【BTC】<script>bad</script>',checks:[{id:'plan:BTC:1H:1',book:'single',kind:'plan',verdict:'green',reason:'<img src=x>'}]}]}};
+  const html=renderReviewCards(data,ui);
+  assert.equal(reviewFresh(data.review.history[0],ui.now),false);
+  assert.equal(reviewFresh({published:ui.now+1},ui.now),false);
+  assert.match(html,/旧绿标不代表当前/);
+  assert.match(html,/✓ 合理 · 当时结论/);
+  assert.ok(!html.includes('class="good"'));
+  assert.ok(!html.includes('<script>bad</script>'));
+  assert.ok(html.includes('&lt;img src=x&gt;'));
 });
