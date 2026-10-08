@@ -102,6 +102,7 @@ function tradePreview(t){
   if(isPair)html+='<p class="ms-reason">'+t.legs.map(l=>E(side(l.side)+' '+l.symbol+' '+fmt(l.quantity)+' '+INSTRUMENTS[l.symbol].unit+' @ '+fmt(l.entry))).join('　/　')+'</p>';
   else html+='<p class="ms-reason">'+E(t.strategy)+' · '+fmt(t.quantity)+' '+E(INSTRUMENTS[t.symbol].unit)+'</p>';
   html+=tradeLevels(t)+'<div class="ms-stat-line"><span>估算平仓净损益 <b class="'+color(net)+'">'+cash(net)+'</b></span><span>初始风险 <b>$'+fmt(t.risk)+'</b></span></div>';
+  if(t.exitRequest)html+='<p class="ms-inline-note">'+badge('已请求退出 · 等待执行','warn')+' 请求于 '+dt(t.exitRequest.published)+'。等待请求之后的新完整执行柱，实际成交会记入历史账本。</p>';
   if(stale)html+='<p class="ms-chart-caption warn-text">报价滞后，估算损益不代表当前可成交结果。</p>';
   const g=gate(t.book,isPair?t.pair:t.symbol,tradeHorizonOf(t));if(g?.verdict==='suspended')html+='<p>'+badge('该范围暂停新入场 · 原仓保护继续','warn')+'</p>';
   if(isPair){const r=pairReport(t.pair);html+=lineChart((r?.history??[]).map(p=>({...p,value:p.ratio})),[{value:t.entryRatio,label:'入场',color:'#8cb7ff'},{value:t.stopRatio,label:'止损',color:'#ec919a'},{value:t.targetRatio,label:'止盈',color:'#76d9b9'}],'组合比值与原始保护价');}
@@ -169,6 +170,7 @@ function pairDetail(r,t){
 }
 function tradeDetail(t){
   let html=tradeLevels(t)+'<div class="ms-stat-line"><span>入场时间 <b>'+dt(t.opened)+'</b></span><span>初始风险 <b>$'+fmt(t.risk)+'</b></span>'+(t.closed?'<span>出场时间 <b>'+dt(t.closed)+'</b></span><span>已实现净损益 <b class="'+color(t.pnl)+'">'+cash(t.pnl)+'</b></span>':'')+'</div>';
+  if(t.exitRequest)html+='<section class="ms-detail-section"><h4>模型退出请求</h4>'+badge(t.closed?'仓位已平':'等待新完整柱执行',t.closed?'good':'warn')+'<p class="ms-prose">'+E(t.exitRequest.reason)+'</p><p class="ms-source">请求时间 '+dt(t.exitRequest.published)+' · 研判 '+E(t.exitRequest.reviewId)+'。提交与实际成交分别记录。</p></section>';
   if(t.book==='pair'){
     html+='<div class="ms-table-wrap"><table class="ms-table"><thead><tr><th>方向 / 标的</th><th>数量</th><th>入场</th><th>出场</th><th>双边费用</th><th>净损益</th></tr></thead><tbody>'+t.legs.map(l=>'<tr><td>'+side(l.side)+' '+l.symbol+'</td><td>'+fmt(l.quantity)+' '+E(INSTRUMENTS[l.symbol].unit)+'</td><td>'+fmt(l.entry)+'</td><td>'+fmt(l.exit)+'</td><td>$'+fmt(l.entryFee+(l.exitFee??0))+'</td><td>'+cash(l.pnl)+'</td></tr>').join('')+'</tbody></table></div><section class="ms-detail-section"><h4>入场时冻结的依据</h4><p class="ms-prose">'+E(t.snapshot?.reason)+'</p><p class="ms-source">研判发布时间 '+dt(t.snapshot?.published)+' · 校验 '+E(t.snapshot?.hash)+'</p></section>';
     if(!t.closed){const r=pairReport(t.pair);if(r)html+='<section class="ms-detail-section"><h4>当前双腿结构（原始比值保护价保持不变）</h4>'+pairDetail(r,t)+'</section>';}
