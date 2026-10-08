@@ -1,0 +1,44 @@
+name: market-publication-clock
+
+on:
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: Bounded clock duration (10–330 minutes)
+        default: '330'
+        type: string
+      continue_clock:
+        description: Continue the cloud publication clock
+        default: true
+        type: boolean
+  schedule:
+    - cron: '17 */6 * * *'
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: market-publication-clock
+  cancel-in-progress: true
+
+jobs:
+  clock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Request public snapshots every ten minutes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOCK_MINUTES: ${{ inputs.minutes || '330' }}
+          CONTINUE_CLOCK: ${{ github.event_name == 'schedule' || inputs.continue_clock }}
+        run: |
+          args=(--repository "$GITHUB_REPOSITORY" --minutes "$CLOCK_MINUTES")
+          if [ "$CONTINUE_CLOCK" = 'true' ]; then args+=(--continue-clock); fi
+          python tools/market_simulation/publication_clock.py "${args[@]}"

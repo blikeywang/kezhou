@@ -1,4 +1,5 @@
 import {renderReviewCards} from './reviews.mjs?v=1';
+import {renderPerformance,modelTime} from './performance.mjs?v=1';
 import {renderFlow,updateFlowChoice} from './flow.mjs?v=2';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
 
@@ -61,11 +62,13 @@ function accountCard(book,title){
 function renderStatus(){
   if(!data)return;
   const now=Date.now(),exec=data.cloud?.lastScheduledSuccess??data.account.lastRun,latest=data.review?.history?.[0],stale=data.markets.filter(m=>quote(m,now).stale);
-  $('status').innerHTML='<span>云端检查 <b>'+dt(exec)+'</b> · '+age(exec)+'</span><span>模型复核 <b>'+dt(latest?.published)+'</b></span><span>页面发布 <b>'+dt(data.publishedAt)+'</b> · UTC+8</span>';
+  const model=modelTime(data);
+  $('status').innerHTML='<span>交易检查 <b>'+dt(exec)+'</b> · '+age(exec)+'</span><span>模型研判 <b>'+dt(model||null)+'</b> · '+age(model)+'</span><span>小时复核 <b>'+dt(latest?.published)+'</b></span><span>页面发布 <b>'+dt(data.publishedAt)+'</b> · '+age(data.publishedAt)+' · UTC+8</span>';
   const notes=[];
   if(now-data.publishedAt>1500000)notes.push('公开快照发布于 '+age(data.publishedAt)+'，正在等待下一次同步');
   if(!exec||now-exec>1500000)notes.push('云端交易检查超过预期间隔');
   if(!latest||now-latest.published>5400000)notes.push('小时模型复核尚未更新');
+  if(!model||now-model>5400000)notes.push('模型交易研判未持续更新；规则检查与模型研判是两个步骤');
   if(stale.length)notes.push(stale.map(m=>m.symbol).join(' / ')+' 的执行行情滞后或不可用；下方显示最后有效报价');
   $('connection').className='ms-notice'+(notes.length?' warn':'');
   $('connection').textContent=notes.join('。')+(notes.length?'。':'无需登录 · 模拟盘云端运行中 · 页面数据会自动更新');
@@ -133,15 +136,17 @@ function renderJournal(){
 }
 function renderPanel(){
   document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===tab);b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false');});
-  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
+  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='performance'?renderPerformance(data,{fmt,cash,dt,badge}):tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
 }
 function singleDetail(r){
   const p=r.plan,h=r.horizon??'10M',current=data.reports.some(x=>x.id===r.id);
   const marks=p?[{value:p.entry,label:'入场',color:'#8cb7ff'},{value:p.stop,label:'止损',color:'#ec919a'},{value:p.target,label:'止盈',color:'#76d9b9'}]:[{value:r.levels?.support,label:'支撑'},{value:r.levels?.resistance,label:'阻力'},{value:r.costMap?.vwap??r.levels?.vwap,label:'成本',color:'#8cb7ff'}];
   let html='<p class="ms-prose">'+E(r.summary)+'</p>'+levels(p?[['计划入场',p.entryZone?p.entryZone.map(v=>fmt(v)).join(' – '):fmt(p.entry)],['原始止损',fmt(p.stop),'bad-text'],['目标止盈',fmt(p.target),'good']]:[['支撑',fmt(r.levels?.support)],['成交重心',fmt(r.costMap?.vwap??r.levels?.vwap)],['阻力',fmt(r.levels?.resistance)]]);
+  if(r.auction?.previous?.tpo){const ref=r.auction.previous.tpo;marks.push({value:ref.val,label:'TPO VAL',color:'#d4b97b'},{value:ref.poc,label:'TPO POC',color:'#d4b97b'},{value:ref.vah,label:'TPO VAH',color:'#d4b97b'});}
   if(current)html+=candles(r.chartBars?.length?r.chartBars:chartBars(market(r.symbol),h,Date.now()),marks,r.symbol+' '+h+' 价格与计划')+'<p class="ms-chart-caption">最新可用的完整 '+h+' K 线与本次研判价位。悬停蜡烛可读价格；历史研判不借用后续行情补画当时图形。</p>';
   html+='<div class="ms-two"><section class="ms-detail-section"><h4>下一步行为</h4><p class="ms-prose">'+E(r.action)+'</p>'+(p?'<p class="ms-source">执行窗口 '+dt(p.notBefore??r.published)+' — '+dt(p.expires)+'</p>':'')+'</section><section class="ms-detail-section"><h4>失效与相反证据</h4><p class="ms-prose">'+E(r.counter)+'</p></section></div>';
   if(r.costMap)html+='<section class="ms-detail-section"><h4>市场成本位置</h4>'+levels([['VWAP',fmt(r.costMap.vwap)],['成交密集区 POC*',fmt(r.costMap.poc)],['价值区',fmt(r.costMap.val)+' — '+fmt(r.costMap.vah)]])+'<p class="ms-source">'+E(r.costMap.reason)+' · OHLCV 估算，不代表实际市场持仓成本。</p></section>';
+  if(r.auction){const a=r.auction,p=a.previous,t=p.tpo,v=p.vp;html+='<section class="ms-detail-section"><h4>TPO与拍卖状态</h4>'+levels([['位置',E(a.location)],['接受 / 拒绝',E(a.state)],['价值迁移',E(a.migration)],['前日TPO VAL / POC / VAH',t?[t.val,t.poc,t.vah].map(x=>fmt(x)).join(' / '):'历史不足'],['前日VP* VAL / POC / VAH',v?[v.val,v.poc,v.vah].map(x=>fmt(x)).join(' / '):'成交量不足'],['30M完整块',p.blocks+' / '+p.expectedBlocks]])+'<p class="ms-prose">'+E(a.reason)+'</p><p class="ms-source">'+E(a.session)+' · '+dt(p.from)+' — '+dt(p.through)+'<br>'+E(p.reason)+' 前三周等较长分布尚未取得完整源历史，不冒充已有数据。</p></section>';}
   html+='<section class="ms-detail-section"><h4>判断依据</h4><div class="ms-checks">'+(r.factors??[]).map(f=>'<div class="ms-check"><header><strong>'+E(f.name)+'</strong><span>'+E(f.value)+'</span></header><p>'+E(f.reason)+'</p></div>').join('')+'</div></section>';
   const g=gate('single',r.symbol,h);if(g)html+='<section class="ms-detail-section"><h4>当前复核范围</h4>'+badge(g.verdict==='suspended'?'新入场挂起':'已通过复核',g.verdict==='suspended'?'warn':'good')+'<p class="ms-prose">'+E(g.reason)+'</p></section>';
   return html+source(r)+'<div class="ms-source">发布时间 '+dt(r.published)+' · 版本 '+E(r.version)+'<br>原始研判校验 '+E(r.hash)+'</div>';
@@ -192,7 +197,7 @@ async function refresh(manual=false){
     const version=await versionResponse.json();
     if(version.schema!=='traderhome-public-paper-v1'||!finite(version.publishedAt))throw Error('发布版本无效');
     if(data&&version.publishedAt===data.publishedAt){
-      renderStatus();if(tab==='plans'||tab==='flow')renderPanel();
+      renderStatus();if(tab!=='journal')renderPanel();
       if(manual)$('connection').textContent+=' · 已检查，目前没有更新的公开快照。';
       return;
     }

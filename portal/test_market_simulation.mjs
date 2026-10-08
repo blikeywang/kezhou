@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {performance,groups,modelTime} from './vendor/market-simulation/performance.mjs';
 import {reviewSections,reviewTarget,reviewFresh,renderReviewCards} from './vendor/market-simulation/reviews.mjs';
 import {quote,chartBars,planState,currentGate,lastCheck,legTargets,conditionalPrices,escape,estimatedNet,tradeHorizonOf} from './vendor/market-simulation/model.mjs';
 
@@ -7,6 +8,17 @@ test('legacy hourly trades retain their original horizon after the ten-minute mi
   assert.equal(tradeHorizonOf({version:'rules-1.0',executionIntervalMs:300000}),'1H');
   assert.equal(tradeHorizonOf({version:'rules-2.1.1-cost-10m'}),'10M');
   assert.equal(tradeHorizonOf({horizon:'4H'}),'4H');
+});
+
+test('strategy statistics use settled net profit without charging fees twice',()=>{
+ const rows=[{opened:1,closed:2,pnl:90,entryFee:5,exitFee:5},{opened:3,closed:4,pnl:-110,entryFee:5,exitFee:5},{opened:5,pnl:1000}];
+ const s=performance(rows,1,86400001);assert.equal(s.closed,2);assert.equal(s.winRate,.5);assert.equal(s.net,-20);assert.equal(s.expectancy,-10);assert.equal(s.costs,20);assert.equal(s.entriesPerDay,3);
+ assert.equal(performance([],1,2).winRate,null);assert.equal(performance([{opened:1,closed:10,pnl:90}],1,9).closed,0);
+ assert.equal(groups(rows,t=>t.closed?'closed':'open',1,86400001).length,2);
+});
+test('model time survives the limited recent report window and excludes rules',()=>{
+ assert.equal(modelTime({model:{published:10},reports:[{published:99,version:'rules'}]}),10);
+ assert.equal(modelTime({reports:[{origin:'model',published:9},{published:99}]}),9);
 });
 
 test('a recent fetch cannot disguise an old market bar',()=>{

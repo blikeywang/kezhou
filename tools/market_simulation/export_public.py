@@ -33,14 +33,21 @@ FACTOR = fields("name vote weight value reason")
 COST = fields("valid reason from through bars volumeCoverage totalVolume vwap sigma poc val vah rowSize")
 SETUP = {**fields("stage name reason side boundary triggeredAt confirmedAt stop target netRR"), "map": COST}
 PLAN = fields("entry stop target side notBefore expires riskFraction maxHoldMs") | {"entryZone": [True]}
+VALUE_AREA = fields("poc val vah")
+AUCTION_PROFILE = {**fields("valid reason from through complete blocks expectedBlocks rowSize vwap"),
+                   "tpo": VALUE_AREA, "vp": VALUE_AREA,
+                   "rows": [fields("price count volume")], "singlePrints": [fields("low high")]}
+AUCTION = {**fields("version through session state side location migration reason"),
+           "current": AUCTION_PROFILE, "previous": AUCTION_PROFILE, "levels": [fields("price label")]}
 REPORT = {
     **fields("id symbol horizon hour published dataThrough price direction regime score agreement stale summary counter action strategy source sourceUrl caveat hash version intervalMs origin"),
     "levels": fields("support resistance vwap ema20 ema50 atr rsi"), "plan": PLAN,
     "factors": [FACTOR], "costMap": COST, "setup": SETUP, "blockers": [True],
     "modelReview": fields("id thesis pairs validUntil"), "chartBars": [BAR],
+    "auction": AUCTION,
 }
 ENTRY = {**fields("version published dataThrough summary action counter score agreement plannedEntry source sourceUrl hash"),
-         "factors": [FACTOR], "costMap": COST, "setup": SETUP}
+         "factors": [FACTOR], "costMap": COST, "setup": SETUP, "auction": AUCTION}
 TRADE = {
     **fields("horizon maxHoldMs id reportId symbol strategy side quantity entry stop target opened processed risk entryFee closed exit exitFee pnl r reason version processedThrough exitLogic exitBarStart exitBarEnd executionIntervalMs"),
     "entrySnapshot": ENTRY, "events": [fields("time kind reason price pnl reportId")],
@@ -148,6 +155,7 @@ def prepare(raw: dict, published_at: int) -> tuple[dict, dict]:
                   "pendingPlans": [r for r in pairs if pending(r, pair_consumed)],
                   **project(raw["pairs"], fields("equity unrealized gross maxDrawdown") | {"stalePairs": [True]})},
         "cloud": cloud, "review": review,
+        "model": project(raw.get("model", {}), fields("id published reviewId")),
         "history": {"file": "history.json", "singleCount": len(reports), "pairCount": len(pairs),
                     "from": min((r["published"] for r in reports + pairs), default=as_of), "through": max((r["published"] for r in reports + pairs), default=as_of),
                     "scope": "最近约 60 小时短线研判及最多 60 份各长周期研判；成交账本保留全部记录。"},
