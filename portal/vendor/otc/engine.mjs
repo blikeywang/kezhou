@@ -3,8 +3,9 @@ export const isoDay=n=>new Date(n).toISOString().slice(0,10);
 export const dayTime=d=>Date.parse(d+'T00:00:00Z');
 export function calendar(start,end){const out=[];for(let d=dayTime(start);d<=dayTime(end);d+=DAY)out.push(isoDay(d));return out;}
 export function atDate(asset,date){return asset.points.filter(p=>p.date<=date).at(-1)||null;}
+export function cycleLabel(p){if(!p)return '无历史记录';return Number.isFinite(p.day)?p.cycle+'第'+p.day+p.unit:p.cycle+'（周期'+(p.unit==='月'?'月数':'天数')+'缺失）';}
 export function thresholdState(p){if(!p)return [];return [...(p.otc<1000?['场外低于1000']:[]),...(p.burst<200?['爆破低于200']:[])];}
-export function tier(p){if(!p)return 'missing';if(p.cycle==='进场'&&p.quality==='优质'&&p.otc>=1000&&p.burst>0)return 'focus';if(p.quality==='劣质'||p.otc<1000||p.burst<0)return 'avoid';if(p.cycle==='进场'&&p.day<=3&&p.unit==='天')return 'new';return 'watch';}
+export function tier(p){if(!p)return 'missing';if(p.cycle==='进场'&&p.quality==='优质'&&p.otc>=1000&&p.burst>0)return 'focus';if(p.quality==='劣质'||p.otc<1000||p.burst<0)return 'avoid';if(p.cycle==='进场'&&Number.isFinite(p.day)&&p.day<=3&&p.unit==='天')return 'new';return 'watch';}
 export function planFor(asset,p,asOf,today){
  if(!p)return {title:'没有此前记录',tone:'muted',why:'不能使用后来出现的数据解释这一天。',next:['换一个来源已覆盖的日期。'],invalid:[],missing:['该标的当日来源'],executable:false};
  const missing=[];if(p.date<asOf)missing.push(asOf+'来源缺失，当前显示'+p.date);if(p.date<today)missing.push('不是今日数据，先补齐最新原页');if(!p.source)missing.push('原始页面链接缺失');if(asset.mapping==='unverified')missing.push('产品身份、交易所和完整合约未核实');
@@ -15,7 +16,7 @@ export function planFor(asset,p,asOf,today){
   if(p.otc<1000){title='进场标签，强度仍不足';tone='amber';why='场外指数仍低于1000；新周期或动能回升不足以单独支持追涨。';}
   else if(p.quality==='劣质'){title='回避单边追涨';tone='red';why='本周期历史节点质量较差，日常小幅上涨不能改写评级。';}
   else if(p.quality==='优质'&&p.burst>0){title='多头研究优先复核';tone='green';why='进场周期、场外高于1000，历史质量较好；这只是研究顺序，不是当前买点。';}
-  else {title=p.day<=3?'新周期，等待展开':'观察，不急于确认';tone='amber';why=p.quality==='待定'?'缺少本周期足够的关键节点，尚不能确认质量。':'周期仍在进场，但历史质量存疑或短期动能不足。';}
+  else {title=Number.isFinite(p.day)&&p.day<=3?'新周期，等待展开':'观察，不急于确认';tone='amber';why=p.quality==='待定'?'缺少本周期足够的关键节点，尚不能确认质量。':'周期仍在进场，但历史质量存疑或短期动能不足。';}
   next=['等待价格结构与独立信号同向；确认进场条件和失效位后再讨论风险预算。',p.burst>200?'若后续爆破从200以上跌回200以下，记录节点场外值，与同周期前节点比较。':'观察爆破能否展开；上穿200本身不升级质量。'];
   invalid=['转退场、场外跌至1000下方或新节点恶化时，撤销多头优先观察。','价格结构失效或市场门控不允许时，不以场外评级覆盖风险。'];
  }else{

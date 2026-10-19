@@ -1,8 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {atDate,calendar,planFor,parseBars,tier,dayTime,DAY,thresholdState} from './vendor/otc/engine.mjs';
+import {atDate,calendar,planFor,parseBars,tier,dayTime,DAY,thresholdState,cycleLabel} from './vendor/otc/engine.mjs';
 const snapshot=JSON.parse(fs.readFileSync(new URL('./vendor/otc/data/snapshot.json',import.meta.url),'utf8'));
+
+test('missing cycle counts stay unknown in labels and never imply a new cycle',()=>{
+ assert.equal(cycleLabel({cycle:'退场',day:null,unit:'天'}),'退场（周期天数缺失）');
+ assert.equal(cycleLabel({cycle:'进场',day:null,unit:'月'}),'进场（周期月数缺失）');
+ assert.equal(cycleLabel({cycle:'退场',day:10,unit:'天'}),'退场第10天');
+ assert.equal(cycleLabel(null),'无历史记录');
+ const p={date:'2026-10-16',cycle:'进场',day:null,unit:'天',quality:'待定',otc:1100,burst:10};
+ assert.equal(tier(p),'watch');
+ assert.equal(planFor({mapping:'verified'},p,p.date,p.date).title,'观察，不急于确认');
+});
 
 test('as-of selection never uses a future point',()=>{
  const asset={points:[{date:'2026-09-18'},{date:'2026-09-20'}]};
