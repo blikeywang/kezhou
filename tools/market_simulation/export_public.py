@@ -31,14 +31,15 @@ def fields(names: str) -> dict:
 BAR = fields("time open high low close volume")
 FACTOR = fields("name vote weight value reason")
 COST = fields("valid reason from through bars volumeCoverage totalVolume vwap sigma poc val vah rowSize")
-SETUP = {**fields("stage name reason side boundary triggeredAt confirmedAt stop target netRR"), "map": COST}
+SETUP = {**fields("stage name reason eventId side boundary triggeredAt confirmedAt stop target netRR"), "map": COST}
 PLAN = fields("entry stop target side notBefore expires riskFraction maxHoldMs") | {"entryZone": [True]}
 VALUE_AREA = fields("poc val vah")
-AUCTION_PROFILE = {**fields("valid reason from through complete blocks expectedBlocks rowSize vwap"),
+AUCTION_PROFILE = {**fields("valid reason from through complete blocks expectedBlocks blockMinutes rowSize vwap"),
                    "tpo": VALUE_AREA, "vp": VALUE_AREA,
                    "rows": [fields("price count volume")], "singlePrints": [fields("low high")]}
 AUCTION = {**fields("version through session state side location migration reason"),
-           "current": AUCTION_PROFILE, "previous": AUCTION_PROFILE, "levels": [fields("price label")]}
+           "current": AUCTION_PROFILE, "previous": AUCTION_PROFILE, "levels": [fields("price label")],
+           "event": {**fields("id anchor confirmed side"), "profile": AUCTION_PROFILE}}
 REPORT = {
     **fields("id symbol horizon hour published dataThrough price direction regime score agreement stale summary counter action strategy source sourceUrl caveat hash version intervalMs origin"),
     "levels": fields("support resistance vwap ema20 ema50 atr rsi"), "plan": PLAN,
@@ -146,7 +147,7 @@ def prepare(raw: dict, published_at: int) -> tuple[dict, dict]:
     public = {
         "schema": "traderhome-public-paper-v1", "paper": True,
         "publishedAt": published_at, "serverTime": as_of,
-        "publication": {"intervalMinutes": 10, "provider": "GitHub Actions", "commit": os.environ.get("GITHUB_SHA", ""), "runId": os.environ.get("GITHUB_RUN_ID", "")},
+        "publication": {"intervalMinutes": 10, "provider": "GitHub Actions", "commit": os.environ.get("GITHUB_SHA", ""), "runId": os.environ.get("GITHUB_RUN_ID", ""), "executionOutcome": os.environ.get("PAPER_CYCLE_OUTCOME", "unknown")},
         "markets": markets, "account": account,
         **project(raw, fields("equity unrealized risk maxDrawdown running")),
         "reports": latest(reports, lambda r: (r["symbol"], r.get("horizon", "10M"))),

@@ -50,9 +50,16 @@ jobs:
           node --test portal/test_market_simulation.mjs
       - name: Build public pages
         run: python portal/build_site.py --output _site
+      - name: Execute current paper plans before publication
+        id: paper_cycle
+        continue-on-error: true
+        env:
+          MARKET_SIMULATION_SITE_TOKEN: ${{ secrets.MARKET_SIMULATION_SITE_TOKEN }}
+        run: python tools/market_simulation/run_cycle.py
       - name: Read paper positions, plans, fills and hourly reviews
         env:
           MARKET_SIMULATION_SITE_TOKEN: ${{ secrets.MARKET_SIMULATION_SITE_TOKEN }}
+          PAPER_CYCLE_OUTCOME: ${{ steps.paper_cycle.outcome }}
         run: python tools/market_simulation/export_public.py --output _site/market-simulation/data
       - uses: actions/upload-pages-artifact@v3
         with:

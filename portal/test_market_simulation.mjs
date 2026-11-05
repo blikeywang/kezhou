@@ -1,6 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {performance,groups,modelTime} from './vendor/market-simulation/performance.mjs';
+import {pipelineHealth,pipelineNotice} from './vendor/market-simulation/health.mjs';
+test('fresh publication and heartbeat never conceal a stalled paper ledger',()=>{
+ const now=10_000_000,data={publishedAt:now,account:{lastRun:1},cloud:{connected:true,lastScheduledSuccess:now},model:{published:1},review:{history:[{published:1}]}};
+ assert.equal(pipelineHealth(data,now)[0].healthy,false);
+ assert.equal(pipelineHealth(data,now)[3].healthy,true);
+ assert.match(pipelineNotice(data,now).join(''),/页面已发布，但交易检查停滞/);
+ assert.equal(pipelineHealth({...data,account:{lastRun:now+1}},now)[0].healthy,false);
+ assert.ok(pipelineNotice({...data,publication:{executionOutcome:'failure'}},now).some(x=>x.includes('执行失败')));
+});
 import {reviewSections,reviewTarget,reviewFresh,renderReviewCards} from './vendor/market-simulation/reviews.mjs';
 import {quote,chartBars,planState,currentGate,lastCheck,legTargets,conditionalPrices,escape,estimatedNet,tradeHorizonOf} from './vendor/market-simulation/model.mjs';
 
