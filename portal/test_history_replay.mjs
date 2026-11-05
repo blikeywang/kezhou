@@ -44,12 +44,19 @@ test('future OHLC and volume are completely omitted until revealed', () => {
 });
 
 test('normalization uses the same match-start close for every OHLC field', () => {
-  const s = replay.cases.dtw[0];
+  const s = {start:1,end:2,bars:[
+    [1000,98,102,97,100,7], [2000,100,105,99,104,8],
+    [3000,104,108,103,107,9], [4000,107,110,106,108,10],
+  ]};
   const normalized = M.seriesData(s,10,true);
   assert.ok(normalized.candles);
   assert.ok(Math.abs(normalized.price[s.start].close-100) < 1e-10);
   assert.ok(Math.abs(normalized.price[s.start].open-s.bars[s.start][1]/s.bars[s.start][4]*100) < 1e-10);
   assert.deepEqual(normalized.volume,M.seriesData(s,10,false).volume);
+  s.bars[2][1] = null;
+  const line = M.seriesData(s,10,true);
+  assert.equal(line.candles,false);
+  assert.ok(Math.abs(line.price[s.start].value-100) < 1e-10);
 });
 
 test('invalid candles fall back to true closes and never get clamped or fabricated', () => {
@@ -105,4 +112,23 @@ test('axis labels stay compact and use the source exchange timezone', () => {
   assert.equal(M.axisLabel(time,'day','America/New_York'),'11/04');
   assert.equal(M.axisLabel(time,'time','UTC'),'00:00');
   for (const kind of ['year','month','day','time']) assert.ok(M.axisLabel(time,kind,'UTC').length<=7);
+});
+
+test('long daily coverage is real and does not backfill pre-launch futures or newer ETFs', () => {
+  for (const symbol of ['NDX','SPX','SPY','AAPL']) {
+    const a = data.assets[symbol];
+    assert.equal(a.health.requestedStart,'1998-01-01');
+    assert.equal(a.health.historyStart,'1998-01-02');
+    assert.ok(a.health.bars > 7000,symbol);
+    assert.ok(a.seasyears.some(row=>row[0]===1998),symbol);
+  }
+  assert.ok(data.assets.NQ.health.historyStart>='1999-06-21');
+  assert.ok(data.assets.ES.health.historyStart>='1998-01-01');
+  assert.ok(data.assets.QQQ.health.historyStart>='1999-03-10');
+  for (const a of Object.values(data.assets)) {
+    const start = Date.parse(a.health.historyStart)/1000;
+    for (const method of ['corr','dtw']) for (const s of a.replay.cases[method]) {
+      assert.ok(s.bars.every(row=>row[0]>=start),a.k);
+    }
+  }
 });

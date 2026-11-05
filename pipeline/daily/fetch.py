@@ -6,7 +6,7 @@
 """
 from __future__ import annotations
 import json, math, time, urllib.request, urllib.error
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import quote, urlencode
 from zoneinfo import ZoneInfo
 from universe import load_names
@@ -29,6 +29,7 @@ LAST_ENDPOINT = {}
 LAST_QUALITY = {}
 LAST_HISTORY = {}
 YAHOO_BASES = ("https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com")
+DAILY_HISTORY_START = "1998-01-01"
 
 
 def _prices(close, low, allow_separate_close=False):
@@ -161,14 +162,27 @@ def _parse_yahoo(d, now=None, quality=None, history=None):
     return [r[0] for r in rows], [r[4] for r in rows], [r[3] for r in rows]
 
 
-def fetch_yahoo(symbol, rng="15y", interval="1d"):
+def fetch_yahoo(symbol, rng=None, interval="1d", start=DAILY_HISTORY_START):
+    now = int(time.time())
+    params = {"interval": interval, "includeAdjustedClose": "true"}
+    if rng is not None:
+        params["range"] = rng
+    else:
+        params.update(period1=int(datetime.fromisoformat(start).replace(tzinfo=timezone.utc).timestamp()),
+                      period2=now)
     errors = []
     for base in YAHOO_BASES:
         url = (f"{base}/v8/finance/chart/{quote(symbol, safe='')}?"
-               + urlencode({"range": rng, "interval": interval, "includeAdjustedClose": "true"}))
+               + urlencode(params))
         try:
             quality, history = {}, {}
-            data = _parse_yahoo(_get(url), quality=quality, history=history)
+            raw = _get(url)
+            result = raw.get("chart", {}).get("result") or []
+            granularity = result[0].get("meta", {}).get("dataGranularity") if result else None
+            if granularity and granularity != interval:
+                raise ValueError(f"Requested {interval}, received {granularity}")
+            data = _parse_yahoo(raw, now=now, quality=quality, history=history)
+            history["requestedStart"] = start if rng is None else None
             LAST_ENDPOINT[symbol] = base
             LAST_QUALITY[symbol] = quality
             LAST_HISTORY[symbol] = history

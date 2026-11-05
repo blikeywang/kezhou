@@ -290,6 +290,11 @@ def attach_previous(asset, old_asset):
     if not old_asset:
         asset["change"] = {"available": False}
         return asset
+    new_start = (asset.get("health") or {}).get("historyStart")
+    old_start = (old_asset.get("health") or {}).get("historyStart")
+    if new_start and old_start and new_start < old_start:
+        asset["change"] = {"available": False, "historyExpanded": True, "previousStart": old_start}
+        return asset
     old_t = old_asset.get("trust")
     if not old_t:
         try:

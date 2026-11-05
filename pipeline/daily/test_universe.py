@@ -8,6 +8,7 @@ import sys
 import unittest
 from contextlib import redirect_stdout
 from datetime import datetime, timezone
+from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -126,8 +127,43 @@ class CompletedCandlesTests(unittest.TestCase):
         self.assertIn("/%5ENDX?", calls[0])
         self.assertIn("query2", calls[1])
 
+    def test_default_daily_request_uses_fixed_1998_start_not_a_rolling_range(self):
+        now = stamp("2026-11-05T08:00:00")
+        with patch.object(fetch, "_get", return_value=yahoo_payload()) as get, \
+             patch.object(fetch.time, "time", return_value=now):
+            fetch.fetch_yahoo("^NDX")
+        query = parse_qs(urlparse(get.call_args.args[0]).query)
+        self.assertEqual(query["period1"], [str(stamp("1998-01-01T00:00:00"))])
+        self.assertEqual(query["period2"], [str(now)])
+        self.assertEqual(query["interval"], ["1d"])
+        self.assertNotIn("range", query)
+        self.assertEqual(fetch.LAST_HISTORY["^NDX"]["requestedStart"], "1998-01-01")
+
+    def test_explicit_range_remains_available_without_claiming_1998(self):
+        with patch.object(fetch, "_get", return_value=yahoo_payload()) as get:
+            fetch.fetch_yahoo("AAPL", rng="1y")
+        query = parse_qs(urlparse(get.call_args.args[0]).query)
+        self.assertEqual(query["range"], ["1y"])
+        self.assertNotIn("period1", query)
+        self.assertIsNone(fetch.LAST_HISTORY["AAPL"]["requestedStart"])
+
+    def test_upstream_monthly_aggregation_cannot_pass_as_daily_candles(self):
+        payload = yahoo_payload()
+        payload["chart"]["result"][0]["meta"]["dataGranularity"] = "1mo"
+        with patch.object(fetch, "_get", return_value=payload):
+            with self.assertRaisesRegex(RuntimeError, "received 1mo"):
+                fetch.fetch_yahoo("^NDX")
+
 
 class EvidenceTests(unittest.TestCase):
+    def test_extended_history_is_not_reported_as_a_market_probability_change(self):
+        old = {"health":{"historyStart":"2011-11-01"},"trust":{"p":50,"edge":0}}
+        new = {"health":{"historyStart":"1998-01-02"},"trust":{"p":60,"edge":10}}
+        build.attach_previous(new, old)
+        self.assertFalse(new["change"]["available"])
+        self.assertTrue(new["change"]["historyExpanded"])
+        self.assertNotIn("p", new["change"])
+
     def test_low_sample_never_inflates_effective_count_or_grade(self):
         prim = {"condC": [[1, .9, 0, 0, 0]] * 5, "condD": [[1, .9, 0, 0, 0]] * 5,
                 "bas": [[1, .5, 0]] * 5, "nCorr": 2, "nDtw": 3, "robust": 100,

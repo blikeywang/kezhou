@@ -19,6 +19,9 @@ def load_names() -> dict:
         for key in ("nz", "ne", "ticker", "kind"):
             if not meta.get(key):
                 raise ValueError(f"Missing {key}: {symbol}")
+        reference = meta.get("historyReference")
+        if reference and (reference not in names or names[reference]["kind"] != "index"):
+            raise ValueError(f"History reference must be a separate index: {symbol}")
     return names
 
 

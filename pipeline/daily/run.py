@@ -119,14 +119,15 @@ def main(self_test=False):
             asset = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
             asset["replay"] = replay.build_replay(
                 sym, grp, P, ts, close, fetch_meta.get("history"), fetch_meta["source"], meta["ticker"])
-            build.attach_previous(asset, old_assets.get(sym))
             asset["health"] = {
                 "status": data_status(ts[-1], grp), "asof": P["refRange"][1], "generatedAt": generated_at,
                 "asofTimestamp": ts[-1], "historyStart": build._date(ts[0]),
                 "interval": "4h" if grp == "crypto" else "1d",
                 "bars": len(close), "source": fetch_meta["source"], "endpoint": fetch_meta["endpoint"],
                 "quality": fetch_meta.get("quality", {}),
+                "requestedStart": (fetch_meta.get("history") or {}).get("requestedStart"),
             }
+            build.attach_previous(asset, old_assets.get(sym))
             assets[sym] = asset
             prims[sym] = P; seasons[sym] = S; grp_by[sym] = grp
             print(f"  {sym:5} {grp:9} bars={len(close):6} corr={P['corrRange']} "

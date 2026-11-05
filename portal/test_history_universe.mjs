@@ -106,3 +106,27 @@ test('published statistics always belong to the selected instrument', () => {
     assert.equal(asset.last, null);
   }
 });
+
+test('early market context stays a separate index instead of spliced futures prices', () => {
+  const {context:c} = browser();
+  const nq = c.catData(c.findSymbol('NQ'));
+  const originalReplay = nq.replay;
+  nq.health.requestedStart = '1998-01-01';
+  nq.health.historyStart = '2000-09-18';
+  const note = c.historyScopeHTML(c.findSymbol('NQ'),nq);
+  assert.ok(note.includes('1998-01-01'));
+  assert.ok(note.includes('2000-09-18'));
+  assert.ok(note.includes('1999-06-21'));
+  assert.ok(note.includes('?symbol=NDX'));
+  assert.equal(nq.replay,originalReplay);
+  assert.notEqual(c.catData(c.findSymbol('NDX')),nq);
+  assert.equal(c.findSymbol('ES').historyReference,'SPX');
+  assert.equal(c.historyScopeHTML(c.findSymbol('BTC'),c.D.assets.BTC),'');
+});
+
+test('a larger sampling scope is not presented as a probability movement', () => {
+  const {context:c} = browser();
+  const html = c.changeHTML({change:{available:false,historyExpanded:true}});
+  assert.ok(html.includes('历史样本范围已扩展'));
+  assert.equal(html.includes(' pp'),false);
+});
