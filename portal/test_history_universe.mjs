@@ -7,7 +7,8 @@ const root = new URL('../', import.meta.url);
 const html = readFileSync(new URL('prototype/app.html', root), 'utf8');
 const snapshot = JSON.parse(html.match(/<script id="APPDATA"[^>]*>(.*?)<\/script>/s)[1]);
 const names = JSON.parse(readFileSync(new URL('pipeline/daily/meta.json', root), 'utf8')).names;
-const source = html.slice(html.indexOf('var D=JSON.parse'), html.lastIndexOf('</script>'));
+const scriptStart = html.indexOf('var D=JSON.parse');
+const source = html.slice(scriptStart, html.indexOf('</script>', scriptStart));
 
 function browser(saved = {}, search = '') {
   const cats = {};

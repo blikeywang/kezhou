@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
-import build, inject  # noqa: E402
+import build, inject, replay  # noqa: E402
 
 UI_PATCH = os.path.join(os.path.dirname(__file__), "ui-explanations.patch")
 UI_MARKER = 'data-methods-version="2026-07-10"'
@@ -89,7 +89,8 @@ def get_ohlc(sym, grp, self_test):
     ts, close, low = fetch.fetch_symbol(sym)
     source = "Binance" if grp == "crypto" else "Yahoo Finance"
     return ts, close, low, {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source),
-                            "quality": fetch.LAST_QUALITY.get(fetch.YAHOO.get(sym), {})}
+                            "quality": fetch.LAST_QUALITY.get(fetch.YAHOO.get(sym), {}),
+                            "history": fetch.LAST_HISTORY.get(fetch.NAMES[sym]["ticker"])}
 
 
 def data_status(last_ts, group, now=None):
@@ -115,15 +116,18 @@ def main(self_test=False):
             ts, close, low, fetch_meta = pending[sym].result()
             P = build.build_prim(ts, close, low, grp)
             S = build.build_season(ts, close, grp)
-            assets[sym] = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
-            build.attach_previous(assets[sym], old_assets.get(sym))
-            assets[sym]["health"] = {
+            asset = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
+            asset["replay"] = replay.build_replay(
+                sym, grp, P, ts, close, fetch_meta.get("history"), fetch_meta["source"], meta["ticker"])
+            build.attach_previous(asset, old_assets.get(sym))
+            asset["health"] = {
                 "status": data_status(ts[-1], grp), "asof": P["refRange"][1], "generatedAt": generated_at,
                 "asofTimestamp": ts[-1], "historyStart": build._date(ts[0]),
                 "interval": "4h" if grp == "crypto" else "1d",
                 "bars": len(close), "source": fetch_meta["source"], "endpoint": fetch_meta["endpoint"],
                 "quality": fetch_meta.get("quality", {}),
             }
+            assets[sym] = asset
             prims[sym] = P; seasons[sym] = S; grp_by[sym] = grp
             print(f"  {sym:5} {grp:9} bars={len(close):6} corr={P['corrRange']} "
                   f"verdict={assets[sym]['vk']:8} ({time.time()-t0:.1f}s)")

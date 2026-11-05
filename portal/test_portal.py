@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import tempfile
 import unittest
@@ -78,6 +79,26 @@ class PortalBuildTests(unittest.TestCase):
             for secret in ('OAI-Sites-Authorization', 'site_token', 'scheduler_secret', '/workspace/data', 'chatgpt.site'):
                 self.assertNotIn(secret, content)
         self.assertTrue((self.site / 'market-simulation/model.mjs').exists())
+
+    def test_history_replays_are_lazy_and_content_addressed(self):
+        page = self.site / "history/index.html"
+        html = page.read_text()
+        data = json.loads(re.search(r'<script id="APPDATA"[^>]*>(.*?)</script>', html, re.S).group(1))
+        for symbol, asset in data["assets"].items():
+            descriptor = asset.get("replay")
+            self.assertIsNotNone(descriptor, symbol)
+            self.assertNotIn("bars", descriptor)
+            payload = (page.parent / descriptor["url"]).read_bytes()
+            snapshot = json.loads(payload)
+            self.assertEqual(snapshot["symbol"], symbol)
+            self.assertEqual(snapshot["asof"], asset["health"]["asofTimestamp"])
+            self.assertIn(hashlib.sha256(payload).hexdigest()[:12], descriptor["url"])
+            self.assertEqual(snapshot["current"]["end"], len(snapshot["current"]["bars"])-1)
+        for name in ("history-replay.js", "history-replay-model.js", "history-replay.css",
+                     "vendor/lightweight-charts/lightweight-charts.standalone.production.js",
+                     "vendor/lightweight-charts/LICENSE", "vendor/lightweight-charts/NOTICE"):
+            self.assertTrue((page.parent / name).is_file(), name)
+        self.assertNotIn('gate(analogSVG(a)', html)
 
     def test_private_review_ledger_is_not_published(self):
         self.assertFalse((self.site / "review" / "data" / "review-data.json").exists())

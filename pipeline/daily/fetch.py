@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """原始行情抓取:加密走 Binance(4h),美股/大宗走 Yahoo(日线,已复权)。
 
-只取「收盘 / 最低」用于衍生分析;返回 (ts秒, close, low)。纯标准库,便于 CI 运行。
+返回 (ts秒, close, low),同时保留同批完成 K 线用于历史核对。纯标准库。
 注意:数据源商用/再分发授权由使用者自行负责(见 docs/PRELAUNCH_CHECKLIST §0)。
 """
 from __future__ import annotations
@@ -27,6 +27,7 @@ BINANCE_BASES = (
 )
 LAST_ENDPOINT = {}
 LAST_QUALITY = {}
+LAST_HISTORY = {}
 YAHOO_BASES = ("https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com")
 
 
@@ -51,7 +52,7 @@ def _get(url, timeout=25, retries=3):
 
 def _fetch_binance_from(base, pair, interval, bars):
     """从一个 Binance 官方入口向前分页;中途失败则整批丢弃。"""
-    out = []  # rows: [openTime_ms, close, low]
+    out = []  # rows: [time_s, open, high, low, close, volume]
     now_ms = int(time.time() * 1000)
     end = now_ms
     endpoint = base.rstrip("/") + "/api/v3/klines"
@@ -68,7 +69,7 @@ def _fetch_binance_from(base, pair, interval, bars):
                 continue
             close, low = float(r[4]), float(r[3])
             _prices(close, low)
-            chunk.append([int(r[0]), close, low])
+            chunk.append([int(r[0]) // 1000, float(r[1]), float(r[2]), low, close, float(r[5])])
         out = chunk + out
         next_end = int(rows[0][0]) - 1
         if next_end >= end:
@@ -82,8 +83,8 @@ def _fetch_binance_from(base, pair, interval, bars):
         raise RuntimeError(f"empty Binance response from {base}")
     if any(out[i][0] >= out[i + 1][0] for i in range(len(out) - 1)):
         raise RuntimeError(f"non-monotonic Binance timestamps from {base}")
-    ts = [int(r[0] / 1000) for r in out]
-    return ts, [r[1] for r in out], [r[2] for r in out]
+    LAST_HISTORY[pair] = {"bars": out, "timeZone": "UTC", "priceBasis": "spot"}
+    return [r[0] for r in out], [r[4] for r in out], [r[3] for r in out]
 
 
 def fetch_binance(pair, interval="4h", bars=12000):
@@ -99,7 +100,7 @@ def fetch_binance(pair, interval="4h", bars=12000):
     raise RuntimeError("all Binance endpoints failed\n" + "\n".join(errors))
 
 
-def _parse_yahoo(d, now=None, quality=None):
+def _parse_yahoo(d, now=None, quality=None, history=None):
     """Use completed daily sessions only; Yahoo may append a live duplicate."""
     now = time.time() if now is None else now
     chart = d["chart"]
@@ -142,11 +143,22 @@ def _parse_yahoo(d, now=None, quality=None):
         # Keep one row per exchange-local session, even when the endpoint appends
         # a regularMarketTime row for the same date. Preserve the session timestamp.
         first_stamp = sessions[day][0] if day in sessions else stamp
-        sessions[day] = (first_stamp, c * ratio, lo * ratio)
+        def field(name, multiplier=1):
+            values = q.get(name) or []
+            value = values[i] if i < len(values) else None
+            if value is None:
+                return None
+            value = float(value) * multiplier
+            return value if math.isfinite(value) and value >= 0 else None
+        sessions[day] = [first_stamp, field("open", ratio), field("high", ratio),
+                         lo * ratio, c * ratio, field("volume")]
     rows = [sessions[day] for day in sorted(sessions)]
     if not rows or any(rows[i][0] >= rows[i + 1][0] for i in range(len(rows) - 1)):
         raise ValueError("empty or non-monotonic completed Yahoo history")
-    return tuple(list(values) for values in zip(*rows))
+    if history is not None:
+        history.update(bars=rows, timeZone=meta["exchangeTimezoneName"],
+                       priceBasis="adjusted" if adj else "source")
+    return [r[0] for r in rows], [r[4] for r in rows], [r[3] for r in rows]
 
 
 def fetch_yahoo(symbol, rng="15y", interval="1d"):
@@ -155,10 +167,11 @@ def fetch_yahoo(symbol, rng="15y", interval="1d"):
         url = (f"{base}/v8/finance/chart/{quote(symbol, safe='')}?"
                + urlencode({"range": rng, "interval": interval, "includeAdjustedClose": "true"}))
         try:
-            quality = {}
-            data = _parse_yahoo(_get(url), quality=quality)
+            quality, history = {}, {}
+            data = _parse_yahoo(_get(url), quality=quality, history=history)
             LAST_ENDPOINT[symbol] = base
             LAST_QUALITY[symbol] = quality
+            LAST_HISTORY[symbol] = history
             return data
         except Exception as exc:  # noqa: BLE001
             errors.append(f"{base}: {exc}")

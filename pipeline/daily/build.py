@@ -2,7 +2,7 @@
 """从原始 OHLC 计算「刻舟求剑」分析,产出与前端 app.html 完全一致的资产结构。
 
 关键:前端(prototype/app.html)的 APPDATA 资产 schema 是唯一真源。本模块复刻它,
-不依赖已过时的 pipeline/app.py、pipeline/appdata.py。全部为衍生统计,不下发原始价。
+不依赖已过时的 pipeline/app.py、pipeline/appdata.py。统计与历史核对共用匹配索引。
 
 复用后端匹配引擎的原语(_zwin/_dtw/_stats)保证「同一套算法、无未来函数」。
 """
@@ -126,6 +126,10 @@ def build_prim(ts, close, low, grp):
         "condC": condC, "condD": condD, "bas": bas,
         "nCorr": len(ch_corr), "nDtw": len(ch_dtw), "robust": robust,
         "nc": nc, "mpC": mpC, "mpD": mpD, "mC": mC[:6], "mD": mD[:6],
+        "matchEnds": {
+            "corr": [[e, corr_by_end[e]] for e in ch_corr[:6]],
+            "dtw": [[e, dtw_by_end[e]] for e in ch_dtw[:6]],
+        },
     }
 
 

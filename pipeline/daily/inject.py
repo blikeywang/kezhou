@@ -29,10 +29,10 @@ def inject(appdata: dict, path: str = APP_HTML) -> None:
     m = _APPDATA_RE.search(h)
     if not m:
         raise RuntimeError("APPDATA block not found in app.html")
-    # 安全校验:绝不下发原始价
+    # Historical candles live in bounded replay snapshots, never in a live-quote field.
     for sym, a in appdata["assets"].items():
         if a.get("last") is not None:
-            raise ValueError(f"{sym}: last price must be null (derived-only site)")
+            raise ValueError(f"{sym}: last price must be null (not a live quote)")
     body = json.dumps(appdata, ensure_ascii=False, separators=(",", ":"))
     h = h[:m.start()] + m.group(1) + body + m.group(3) + h[m.end():]
     open(path, "w", encoding="utf-8").write(h)
