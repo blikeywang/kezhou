@@ -53,7 +53,8 @@ class TrustMetricsTest(unittest.TestCase):
 class FetchFailoverTest(unittest.TestCase):
     def test_binance_failover_and_endpoint(self):
         original_get = fetch._get
-        rows = [[1000, "0", "0", "9", "10"], [2000, "0", "0", "10", "11"]]
+        rows = [[1000, "9", "11", "9", "10", "1", 1999],
+                [2000, "10", "12", "10", "11", "1", 2999]]
         calls = []
 
         def fake_get(url, timeout=25, retries=3):

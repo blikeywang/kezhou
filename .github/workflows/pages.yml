@@ -48,6 +48,7 @@ jobs:
           python -m unittest discover -s tools/market_simulation -p 'test_*.py'
           python -m unittest portal.test_portal
           node --test portal/test_market_simulation.mjs
+          node --test portal/test_history_universe.mjs
       - name: Build public pages
         run: python portal/build_site.py --output _site
       - name: Execute current paper plans before publication

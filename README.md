@@ -9,6 +9,8 @@
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
+2026-11-05：历史规律扩为 **48 个独立数据标的**，涵盖 10 个加密资产、18 只美股、8 个指数/ETF、6 个期货序列、6 个商品基金。新增 NQ、ES、NDX、SPX、QQQ、SPY、TSLA 等；支持全市场搜索、跨市场自选、分类对比排序和直达链接（例如 [`/history/?symbol=NQ`](https://traderhome-histroy.xyz/history/?symbol=NQ)）。期货为日线背景研究，不是分钟级回测。详见 [数据口径](docs/METHODS_AND_SOURCES.md)。
+
 
 ---
 

@@ -8,6 +8,7 @@
 from __future__ import annotations
 import sys, os, time, json, re, argparse, subprocess
 from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
@@ -87,35 +88,50 @@ def get_ohlc(sym, grp, self_test):
     import fetch
     ts, close, low = fetch.fetch_symbol(sym)
     source = "Binance" if grp == "crypto" else "Yahoo Finance"
-    return ts, close, low, {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source)}
+    return ts, close, low, {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source),
+                            "quality": fetch.LAST_QUALITY.get(fetch.YAHOO.get(sym), {})}
+
+
+def data_status(last_ts, group, now=None):
+    max_age = 18 * 3600 if group == "crypto" else 5 * 86400
+    return "stale" if (time.time() if now is None else now) - last_ts > max_age else "fresh"
 
 
 def main(self_test=False):
     names = inject.load_meta_names()               # {sym:{nz,ne,grp}}
     old_assets, old_charts = _load_existing()
     assets, prims, seasons, grp_by = {}, {}, {}, {}
-    failed = []
+    failed, unavailable = [], []
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    # Limit source concurrency; matching and matplotlib stay on the main thread.
+    executor = ThreadPoolExecutor(max_workers=4)
+    pending = {sym: executor.submit(get_ohlc, sym, meta["grp"], self_test) for sym, meta in names.items()}
+    executor.shutdown(wait=False)
+    print(f"fetching {len(names)} symbols (up to 4 concurrent requests) ...", flush=True)
     for sym, meta in names.items():
         grp = meta["grp"]
         t0 = time.time()
         try:
-            ts, close, low, fetch_meta = get_ohlc(sym, grp, self_test)
+            ts, close, low, fetch_meta = pending[sym].result()
             P = build.build_prim(ts, close, low, grp)
             S = build.build_season(ts, close, grp)
             assets[sym] = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
             build.attach_previous(assets[sym], old_assets.get(sym))
             assets[sym]["health"] = {
-                "status": "fresh", "asof": P["refRange"][1], "generatedAt": generated_at,
+                "status": data_status(ts[-1], grp), "asof": P["refRange"][1], "generatedAt": generated_at,
+                "asofTimestamp": ts[-1], "historyStart": build._date(ts[0]),
+                "interval": "4h" if grp == "crypto" else "1d",
                 "bars": len(close), "source": fetch_meta["source"], "endpoint": fetch_meta["endpoint"],
+                "quality": fetch_meta.get("quality", {}),
             }
             prims[sym] = P; seasons[sym] = S; grp_by[sym] = grp
             print(f"  {sym:5} {grp:9} bars={len(close):6} corr={P['corrRange']} "
                   f"verdict={assets[sym]['vk']:8} ({time.time()-t0:.1f}s)")
         except Exception as e:  # noqa: BLE001
+            failed.append(sym)
             # 兜底:该标的沿用上一次的数据,不因单个失败而中断全站
             if sym in old_assets:
-                assets[sym] = dict(old_assets[sym]); failed.append(sym)
+                assets[sym] = dict(old_assets[sym])
                 previous = (old_assets[sym].get("health") or {})
                 asof = previous.get("asof") or old_assets[sym].get("refRange", [None, None])[-1]
                 try:
@@ -126,6 +142,7 @@ def main(self_test=False):
                     asof=asof, generatedAt=generated_at, error=str(e).splitlines()[0][:160])
                 print(f"  {sym:5} FETCH/BUILD FAILED -> keep previous data ({e})")
             else:
+                unavailable.append(sym)
                 print(f"  {sym:5} FAILED and no previous data -> skipped ({e})")
 
     if not prims and not assets:
@@ -146,27 +163,32 @@ def main(self_test=False):
             if ek in old_charts.get(theme, {}):
                 th[ek] = old_charts[theme][ek]
 
-    run_status = "healthy" if not failed else "partial"
+    stale = [s for s, a in assets.items() if a.get("health", {}).get("status") == "stale"]
+    fresh = sum(a.get("health", {}).get("status") == "fresh" for a in assets.values())
+    cached = [s for s in failed if s in assets]
+    run_status = "healthy" if not failed and not stale else "partial"
     run_meta = {"generatedAt": generated_at, "status": run_status,
-                "fresh": len(assets) - len(failed), "cached": len(failed), "failed": failed}
+                "configured": len(names), "available": len(assets), "fresh": fresh,
+                "cached": len(cached), "failed": failed, "unavailable": unavailable, "stale": stale}
     appdata = inject.assemble(assets, charts, run_meta)
     inject.inject(appdata)
     _ensure_ui_explanations()
     _ensure_ui_v21()
-    ok = len(assets) - len(failed)
-    print(f"injected {len(assets)} symbols ({ok} fresh, {len(failed)} kept) into app.html")
+    ok = fresh
+    print(f"injected {len(assets)} symbols ({fresh} fresh, {len(cached)} kept, {len(unavailable)} unavailable) into app.html")
     if failed:
         names_s = ", ".join(failed)
-        print(f"::warning title=Partial data refresh::{names_s} kept previous data")
+        print(f"::warning title=Partial data refresh::{names_s}; cached={len(cached)}, unavailable={len(unavailable)}")
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a", encoding="utf-8") as f:
-            f.write(f"## Kezhou refresh\n\n- Status: **{run_status}**\n- Fresh: **{ok}**\n- Cached/Stale: **{len(failed)}**\n")
+            f.write(f"## Kezhou refresh\n\n- Status: **{run_status}**\n- Fresh: **{ok}**\n- Cached: **{len(cached)}**\n- Unavailable: **{len(unavailable)}**\n- Stale: **{len(stale)}**\n")
             if failed:
-                f.write(f"- Kept previous data: `{', '.join(failed)}`\n")
+                f.write(f"- Failed: `{', '.join(failed)}`\n")
 
 
 if __name__ == "__main__":
+    import matplotlib  # Check chart dependencies before any network work.
     ap = argparse.ArgumentParser()
     ap.add_argument("--self-test", action="store_true", help="synthetic data, no network")
     a = ap.parse_args()

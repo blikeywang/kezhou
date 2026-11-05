@@ -1,124 +1,52 @@
 {
- "cats": {
-  "crypto": [
-   {
-    "k": "BTC",
-    "nz": "比特币",
-    "ne": "Bitcoin",
-    "demo": false,
-    "tmpl": "BTC"
-   },
-   {
-    "k": "ETH",
-    "nz": "以太坊",
-    "ne": "Ethereum",
-    "demo": false,
-    "tmpl": "ETH"
-   },
-   {
-    "k": "SOL",
-    "nz": "Solana",
-    "ne": "Solana",
-    "demo": false,
-    "tmpl": "SOL"
-   }
-  ],
-  "stock": [
-   {
-    "k": "AAPL",
-    "nz": "苹果",
-    "ne": "Apple",
-    "demo": false,
-    "tmpl": "AAPL"
-   },
-   {
-    "k": "NVDA",
-    "nz": "英伟达",
-    "ne": "NVIDIA",
-    "demo": false,
-    "tmpl": "NVDA"
-   }
-  ],
-  "commodity": [
-   {
-    "k": "GLD",
-    "nz": "黄金 GLD",
-    "ne": "Gold (GLD)",
-    "demo": false,
-    "tmpl": "GLD"
-   },
-   {
-    "k": "USO",
-    "nz": "原油 USO",
-    "ne": "Oil (USO)",
-    "demo": false,
-    "tmpl": "USO"
-   }
-  ]
- },
- "icons": {
-  "BTC": "currency-bitcoin",
-  "ETH": "currency-ethereum",
-  "SOL": "sun",
-  "BNB": "hexagon",
-  "XRP": "circle",
-  "ADA": "triangle",
-  "DOGE": "dog",
-  "AVAX": "mountain",
-  "AAPL": "brand-apple",
-  "NVDA": "cpu",
-  "SPY": "chart-candle",
-  "QQQ": "chart-line",
-  "DJI": "building-bank",
-  "IXIC": "chart-histogram",
-  "MSFT": "brand-windows",
-  "TSLA": "car",
-  "AMZN": "brand-amazon",
-  "GOOGL": "brand-google",
-  "META": "brand-meta",
-  "GLD": "coin",
-  "USO": "droplet",
-  "SLV": "coin",
-  "HG": "flame",
-  "NG": "flame",
-  "ZC": "plant",
-  "KC": "coffee"
- },
- "names": {
-  "BTC": {
-   "nz": "比特币",
-   "ne": "Bitcoin",
-   "grp": "crypto"
-  },
-  "ETH": {
-   "nz": "以太坊",
-   "ne": "Ethereum",
-   "grp": "crypto"
-  },
-  "SOL": {
-   "nz": "Solana",
-   "ne": "Solana",
-   "grp": "crypto"
-  },
-  "AAPL": {
-   "nz": "苹果",
-   "ne": "Apple",
-   "grp": "stock"
-  },
-  "NVDA": {
-   "nz": "英伟达",
-   "ne": "NVIDIA",
-   "grp": "stock"
-  },
-  "GLD": {
-   "nz": "黄金 GLD",
-   "ne": "Gold (GLD)",
-   "grp": "commodity"
-  },
-  "USO": {
-   "nz": "原油 USO",
-   "ne": "Oil (USO)",
-   "grp": "commodity"
+  "names": {
+    "BTC": {"nz":"比特币","ne":"Bitcoin","grp":"crypto","provider":"binance","ticker":"BTCUSDT","kind":"spot","icon":"currency-bitcoin"},
+    "ETH": {"nz":"以太坊","ne":"Ethereum","grp":"crypto","provider":"binance","ticker":"ETHUSDT","kind":"spot","icon":"currency-ethereum"},
+    "SOL": {"nz":"Solana","ne":"Solana","grp":"crypto","provider":"binance","ticker":"SOLUSDT","kind":"spot","icon":"sun"},
+    "BNB": {"nz":"币安币","ne":"BNB","grp":"crypto","provider":"binance","ticker":"BNBUSDT","kind":"spot","icon":"hexagon"},
+    "XRP": {"nz":"瑞波币","ne":"XRP","grp":"crypto","provider":"binance","ticker":"XRPUSDT","kind":"spot"},
+    "DOGE": {"nz":"狗狗币","ne":"Dogecoin","grp":"crypto","provider":"binance","ticker":"DOGEUSDT","kind":"spot"},
+    "ADA": {"nz":"Cardano","ne":"Cardano","grp":"crypto","provider":"binance","ticker":"ADAUSDT","kind":"spot"},
+    "AVAX": {"nz":"Avalanche","ne":"Avalanche","grp":"crypto","provider":"binance","ticker":"AVAXUSDT","kind":"spot","icon":"mountain"},
+    "LINK": {"nz":"Chainlink","ne":"Chainlink","grp":"crypto","provider":"binance","ticker":"LINKUSDT","kind":"spot","icon":"link"},
+    "LTC": {"nz":"莱特币","ne":"Litecoin","grp":"crypto","provider":"binance","ticker":"LTCUSDT","kind":"spot"},
+    "AAPL": {"nz":"苹果","ne":"Apple","grp":"stock","provider":"yahoo","ticker":"AAPL","kind":"stock","icon":"brand-apple"},
+    "NVDA": {"nz":"英伟达","ne":"NVIDIA","grp":"stock","provider":"yahoo","ticker":"NVDA","kind":"stock","icon":"cpu"},
+    "MSFT": {"nz":"微软","ne":"Microsoft","grp":"stock","provider":"yahoo","ticker":"MSFT","kind":"stock","icon":"brand-windows"},
+    "AMZN": {"nz":"亚马逊","ne":"Amazon","grp":"stock","provider":"yahoo","ticker":"AMZN","kind":"stock","icon":"brand-amazon"},
+    "GOOGL": {"nz":"谷歌 Alphabet","ne":"Alphabet","grp":"stock","provider":"yahoo","ticker":"GOOGL","kind":"stock","icon":"brand-google"},
+    "META": {"nz":"Meta","ne":"Meta Platforms","grp":"stock","provider":"yahoo","ticker":"META","kind":"stock","icon":"brand-meta"},
+    "TSLA": {"nz":"特斯拉","ne":"Tesla","grp":"stock","provider":"yahoo","ticker":"TSLA","kind":"stock","icon":"car"},
+    "AMD": {"nz":"超威半导体","ne":"AMD","grp":"stock","provider":"yahoo","ticker":"AMD","kind":"stock","icon":"cpu"},
+    "AVGO": {"nz":"博通","ne":"Broadcom","grp":"stock","provider":"yahoo","ticker":"AVGO","kind":"stock","icon":"cpu"},
+    "MU": {"nz":"美光科技","ne":"Micron","grp":"stock","provider":"yahoo","ticker":"MU","kind":"stock","icon":"cpu"},
+    "PLTR": {"nz":"Palantir","ne":"Palantir","grp":"stock","provider":"yahoo","ticker":"PLTR","kind":"stock"},
+    "NFLX": {"nz":"奈飞","ne":"Netflix","grp":"stock","provider":"yahoo","ticker":"NFLX","kind":"stock"},
+    "JPM": {"nz":"摩根大通","ne":"JPMorgan Chase","grp":"stock","provider":"yahoo","ticker":"JPM","kind":"stock","icon":"building-bank"},
+    "GS": {"nz":"高盛","ne":"Goldman Sachs","grp":"stock","provider":"yahoo","ticker":"GS","kind":"stock","icon":"building-bank"},
+    "BAC": {"nz":"美国银行","ne":"Bank of America","grp":"stock","provider":"yahoo","ticker":"BAC","kind":"stock","icon":"building-bank"},
+    "COIN": {"nz":"Coinbase","ne":"Coinbase","grp":"stock","provider":"yahoo","ticker":"COIN","kind":"stock"},
+    "MSTR": {"nz":"Strategy","ne":"Strategy","grp":"stock","provider":"yahoo","ticker":"MSTR","kind":"stock","aliases":["MicroStrategy","微策略"]},
+    "TSM": {"nz":"台积电 ADR","ne":"TSMC ADR","grp":"stock","provider":"yahoo","ticker":"TSM","kind":"stock","icon":"cpu"},
+    "NDX": {"nz":"纳斯达克 100 指数","ne":"Nasdaq 100 Index","grp":"index","provider":"yahoo","ticker":"^NDX","kind":"index","icon":"chart-line","aliases":["纳指","NASDAQ100","US TECH 100","USTECH100","US100","NAS100"]},
+    "SPX": {"nz":"标普 500 指数","ne":"S&P 500 Index","grp":"index","provider":"yahoo","ticker":"^GSPC","kind":"index","icon":"chart-line","aliases":["SP500","US500","标普"]},
+    "DJI": {"nz":"道琼斯工业指数","ne":"Dow Jones Industrial Average","grp":"index","provider":"yahoo","ticker":"^DJI","kind":"index","icon":"building-bank","aliases":["道指","US30","DOW"]},
+    "RUT": {"nz":"罗素 2000 指数","ne":"Russell 2000 Index","grp":"index","provider":"yahoo","ticker":"^RUT","kind":"index","icon":"chart-line","aliases":["Russell","罗素"]},
+    "QQQ": {"nz":"纳指 100 ETF","ne":"Invesco QQQ ETF","grp":"index","provider":"yahoo","ticker":"QQQ","kind":"index_etf","icon":"chart-line"},
+    "SPY": {"nz":"标普 500 ETF","ne":"SPDR S&P 500 ETF","grp":"index","provider":"yahoo","ticker":"SPY","kind":"index_etf","icon":"chart-line"},
+    "IWM": {"nz":"罗素 2000 ETF","ne":"iShares Russell 2000 ETF","grp":"index","provider":"yahoo","ticker":"IWM","kind":"index_etf","icon":"chart-line"},
+    "DIA": {"nz":"道指 ETF","ne":"SPDR Dow Jones ETF","grp":"index","provider":"yahoo","ticker":"DIA","kind":"index_etf","icon":"chart-line"},
+    "NQ": {"nz":"纳指 100 期货","ne":"E-mini Nasdaq 100 Futures","grp":"futures","provider":"yahoo","ticker":"NQ=F","kind":"future","icon":"chart-candle","aliases":["NQ1!","纳指期货"]},
+    "ES": {"nz":"标普 500 期货","ne":"E-mini S&P 500 Futures","grp":"futures","provider":"yahoo","ticker":"ES=F","kind":"future","icon":"chart-candle","aliases":["ES1!","标普期货"]},
+    "YM": {"nz":"道指期货","ne":"E-mini Dow Futures","grp":"futures","provider":"yahoo","ticker":"YM=F","kind":"future","icon":"chart-candle","aliases":["YM1!"]},
+    "RTY": {"nz":"罗素 2000 期货","ne":"E-mini Russell 2000 Futures","grp":"futures","provider":"yahoo","ticker":"RTY=F","kind":"future","icon":"chart-candle","aliases":["RTY1!"]},
+    "GC": {"nz":"黄金期货","ne":"Gold Futures","grp":"futures","provider":"yahoo","ticker":"GC=F","kind":"future","icon":"coin","aliases":["GC1!"]},
+    "SI": {"nz":"白银期货","ne":"Silver Futures","grp":"futures","provider":"yahoo","ticker":"SI=F","kind":"future","icon":"coin","aliases":["SI1!"]},
+    "GLD": {"nz":"黄金 ETF","ne":"SPDR Gold Shares","grp":"commodity","provider":"yahoo","ticker":"GLD","kind":"metal_etf","icon":"coin"},
+    "SLV": {"nz":"白银 ETF","ne":"iShares Silver Trust","grp":"commodity","provider":"yahoo","ticker":"SLV","kind":"metal_etf","icon":"coin"},
+    "USO": {"nz":"原油基金","ne":"United States Oil Fund","grp":"commodity","provider":"yahoo","ticker":"USO","kind":"commodity_fund","icon":"droplet"},
+    "UNG": {"nz":"天然气基金","ne":"United States Natural Gas Fund","grp":"commodity","provider":"yahoo","ticker":"UNG","kind":"commodity_fund","icon":"flame"},
+    "DBC": {"nz":"综合商品基金","ne":"Invesco DB Commodity Index Fund","grp":"commodity","provider":"yahoo","ticker":"DBC","kind":"commodity_fund","icon":"world"},
+    "CPER": {"nz":"铜指数基金","ne":"United States Copper Index Fund","grp":"commodity","provider":"yahoo","ticker":"CPER","kind":"commodity_fund","icon":"bolt"}
   }
- }
 }

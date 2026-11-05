@@ -53,6 +53,15 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('data-trust-version="2.1"', html)
         self.assertIn('property="og:url" content="https://traderhome-histroy.xyz/history/"', html)
         self.assertIn('content="https://traderhome-histroy.xyz/history/og.png"', html)
+        data = json.loads(re.search(r'<script id="APPDATA"[^>]*>(.*?)</script>', html, re.S).group(1))
+        self.assertNotIn("data:image/png;base64,", html)
+        self.assertLess(len(html.encode()), 1_000_000)
+        for theme in ("dark", "light"):
+            for source in data["charts"][theme].values():
+                self.assertTrue(source.startswith("./charts/"))
+                chart = self.site / "history" / source
+                self.assertTrue(chart.is_file(), source)
+                self.assertTrue(chart.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"))
 
     def test_market_simulation_is_public_readonly(self):
         page = (self.site / 'market-simulation/index.html').read_text()

@@ -6,6 +6,7 @@ app.html 是前端唯一真源(经过大量手工精修)。每日刷新只替换
 """
 from __future__ import annotations
 import json, os, re
+from universe import catalogue, load_names
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 APP_HTML = os.path.join(ROOT, "prototype", "app.html")
@@ -16,8 +17,9 @@ _APPDATA_RE = re.compile(r'(<script id="APPDATA"[^>]*>)(.*?)(</script>)', re.S)
 
 def assemble(assets: dict, charts: dict, run_meta: dict | None = None) -> dict:
     """assets: {sym: asset_dict};charts: {'dark':{...},'light':{...}}。cats/icons 取静态 meta。"""
-    meta = json.load(open(META, encoding="utf-8"))
-    return {"assets": assets, "cats": meta["cats"], "icons": meta["icons"],
+    names = load_names()
+    return {"assets": assets, "cats": catalogue(names),
+            "icons": {sym: meta.get("icon", "chart-candle") for sym, meta in names.items()},
             "run": run_meta or {},
             "charts": {"dark": charts["dark"], "light": charts["light"]}}
 
@@ -37,4 +39,4 @@ def inject(appdata: dict, path: str = APP_HTML) -> None:
 
 
 def load_meta_names() -> dict:
-    return json.load(open(META, encoding="utf-8"))["names"]
+    return load_names()

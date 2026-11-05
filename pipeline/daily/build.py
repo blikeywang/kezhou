@@ -28,6 +28,8 @@ CFG = {
                       sea_days=[5, 21, 63], sea_bars=[5, 21, 63],
                       top_k=40, min_sep=20, prefilter=400),
 }
+CFG["index"] = CFG["stock"]
+CFG["futures"] = CFG["stock"]
 
 
 def _date(ts_sec: float) -> str:
@@ -39,6 +41,12 @@ def build_prim(ts, close, low, grp):
     cfg = CFG[grp]
     W, H = cfg["window"], cfg["H"]
     C = np.asarray(close, float); Lo = np.asarray(low, float); n = C.size
+    if len(ts) != n or Lo.size != n or not np.all(np.isfinite(C)) or not np.all(np.isfinite(Lo)):
+        raise ValueError("invalid price series")
+    if np.any(C <= 0) or np.any(Lo <= 0) or (grp != "futures" and np.any(Lo > C * (1 + 1e-6))):
+        raise ValueError("log-price matching requires positive, valid prices")
+    if any(ts[i] >= ts[i + 1] for i in range(n - 1)):
+        raise ValueError("timestamps must be strictly increasing")
     max_h = max(H)
     if n < W + max_h + 2:
         raise ValueError(f"history too short: n={n}, need>{W+max_h+2}")
@@ -188,7 +196,7 @@ def _trust(P, grp):
     agree = (pc - p0) * (pd - p0) > 0 or (abs(pc - p0) <= .01 and abs(pd - p0) <= .01)
     n = min(P.get("nCorr", cfg["top_k"]), P.get("nDtw", cfg["top_k"]))
     # 最小间隔为半窗口;用该比例给出保守“约有效样本量”,不宣称样本完全独立。
-    neff = max(5, round(n * min(1.0, cfg["min_sep"] / cfg["window"])))
+    neff = min(n, max(1, round(n * min(1.0, cfg["min_sep"] / cfg["window"])))) if n else 0
     lo, hi = _wilson(consensus, neff)
     robust = int(P.get("robust", 0))
     sim = P["corrRange"][1]
@@ -203,8 +211,8 @@ def _trust(P, grp):
     score += 10 if sim >= sim_hi else (6 if sim >= sim_mid else 2)
     score += 5 if neff >= 20 else (3 if neff >= 12 else 1)
     # 等级同时要求“证据完整”与最小效应,避免稳定但仅 1–3pp 的 Edge 被称为强方向优势。
-    grade = "strong" if score >= 75 and agree and ae >= .05 else (
-        "moderate" if score >= 50 and ae >= .02 else "weak")
+    grade = "strong" if score >= 75 and agree and ae >= .05 and neff >= 20 else (
+        "moderate" if score >= 50 and ae >= .02 and neff >= 12 else "weak")
     direction = "above" if edge > .02 else ("below" if edge < -.02 else "flat")
     return dict(
         p=round(consensus * 100), pc=round(pc * 100), pd=round(pd * 100),
@@ -246,18 +254,19 @@ def _verdict(condC, condD, bas, corrRange, grp):
 
 
 def build_asset(k, nz, ne, grp, P, S):
-    cfg = CFG[grp]; H = cfg["H"]; n = cfg["top_k"]
+    cfg = CFG[grp]; H = cfg["H"]
+    nc, nd = P.get("nCorr", cfg["top_k"]), P.get("nDtw", cfg["top_k"])
     condC, condD, bas = P["condC"], P["condD"], P["bas"]
     cond = []
     for i, h in enumerate(H):
         c, d, b = condC[i], condD[i], bas[i]
-        cond.append([round(c[1] * 100), round(c[2] * 1000) / 10, _sig(c[1], n, b[1]),
-                     round(d[1] * 100), round(d[2] * 1000) / 10, _sig(d[1], n, b[1]),
+        cond.append([round(c[1] * 100), round(c[2] * 1000) / 10, _sig(c[1], nc, b[1]),
+                     round(d[1] * 100), round(d[2] * 1000) / 10, _sig(d[1], nd, b[1]),
                      round(b[1] * 100), round(b[2] * 1000) / 10,
                      round(c[3] * 1000) / 10, round(c[4] * 1000) / 10])
     sea_keys = [str(x) for x in cfg["sea_days"]]
     season = [[round(S["sum"][key][0] * 100), round(S["sum"][key][1] * 1000) / 10, S["sum"][key][2]] for key in sea_keys]
-    seasyears = [[r[0]] + [(round(x * 1000) / 10 if x is not None else 0) for x in r[1:]] for r in S["py"]]
+    seasyears = [[r[0]] + [(round(x * 1000) / 10 if x is not None else None) for x in r[1:]] for r in S["py"]]
     matches = [[m[0], m[1]] + [round(x * 1000) / 10 for x in m[2:]] for m in P["mC"][:6]]
     vk, vc, qk = _verdict(condC, condD, bas, P["corrRange"], grp)
     mz, me = _morph(P["nc"])
@@ -309,6 +318,8 @@ _TH = {
 _HL = {"crypto": {6: "1d", 30: "5d", 60: "10d", 90: "15d", 180: "30d"},
        "stock": {5: "1w", 10: "2w", 21: "1m", 42: "2m", 63: "3m"}}
 _HL["commodity"] = _HL["stock"]
+_HL["index"] = _HL["stock"]
+_HL["futures"] = _HL["stock"]
 
 
 def _b64(fig, th, plt):
@@ -342,8 +353,9 @@ def _asset_fig(name, P, S, grp, th, plt, np_):
     ax.axhline(50, color=th["fg"], lw=.6, ls=":")
     ax.set_xticks(xs); ax.set_xticklabels([HL[h] for h in H]); ax.set_ylabel("P(up) %")
     ax.set_title(f"② {name} · up probability vs baseline", fontsize=9, loc="left"); ax.legend(fontsize=6.5, frameon=False)
-    ax = axs[2]; yrs = [r[0] for r in S["py"]]
-    vals = [((r[-1] if r[-1] is not None else 0) * 100) for r in S["py"]]
+    ax = axs[2]; complete_years = [r for r in S["py"] if r[-1] is not None]
+    yrs = [r[0] for r in complete_years]
+    vals = [r[-1] * 100 for r in complete_years]
     ax.bar(range(len(yrs)), vals, color=[th["up"] if v >= 0 else th["dn"] for v in vals])
     ax.axhline(0, color=th["fg"], lw=.6); ax.set_xticks(range(len(yrs)))
     ax.set_xticklabels([str(y)[2:] for y in yrs], fontsize=6.5)

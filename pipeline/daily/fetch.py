@@ -5,15 +5,18 @@
 注意:数据源商用/再分发授权由使用者自行负责(见 docs/PRELAUNCH_CHECKLIST §0)。
 """
 from __future__ import annotations
-import json, time, urllib.request, urllib.error
+import json, math, time, urllib.request, urllib.error
+from datetime import datetime
+from urllib.parse import quote, urlencode
+from zoneinfo import ZoneInfo
+from universe import load_names
 
-UA = "Mozilla/5.0 (compatible; KezhouBot/1.0; +https://kezhou.example)"
+UA = "Mozilla/5.0 (compatible; TraderHome/1.0; +https://traderhome-histroy.xyz)"
 
-# v1 标的 → 数据源代码
-CRYPTO = {"BTC": "BTCUSDT", "ETH": "ETHUSDT", "SOL": "SOLUSDT"}
-YAHOO = {"AAPL": "AAPL", "NVDA": "NVDA", "GLD": "GLD", "USO": "USO"}
-GROUP = {"BTC": "crypto", "ETH": "crypto", "SOL": "crypto",
-         "AAPL": "stock", "NVDA": "stock", "GLD": "commodity", "USO": "commodity"}
+NAMES = load_names()
+CRYPTO = {s: m["ticker"] for s, m in NAMES.items() if m["provider"] == "binance"}
+YAHOO = {s: m["ticker"] for s, m in NAMES.items() if m["provider"] == "yahoo"}
+GROUP = {s: m["grp"] for s, m in NAMES.items()}
 
 # Binance 官方文档列出的只读市场数据入口。GitHub 托管机偶尔会被主站点
 # 按地域拒绝,因此优先 data-api,失败后才切到其它官方入口。
@@ -23,6 +26,15 @@ BINANCE_BASES = (
     "https://api.binance.com",
 )
 LAST_ENDPOINT = {}
+LAST_QUALITY = {}
+YAHOO_BASES = ("https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com")
+
+
+def _prices(close, low, allow_separate_close=False):
+    if not all(math.isfinite(v) and v > 0 for v in (close, low)):
+        raise ValueError("prices must be finite and positive for log-price matching")
+    if low > close * (1 + 1e-6) and not allow_separate_close:
+        raise ValueError("low exceeds close")
 
 
 def _get(url, timeout=25, retries=3):
@@ -40,7 +52,8 @@ def _get(url, timeout=25, retries=3):
 def _fetch_binance_from(base, pair, interval, bars):
     """从一个 Binance 官方入口向前分页;中途失败则整批丢弃。"""
     out = []  # rows: [openTime_ms, close, low]
-    end = None
+    now_ms = int(time.time() * 1000)
+    end = now_ms
     endpoint = base.rstrip("/") + "/api/v3/klines"
     while len(out) < bars:
         url = f"{endpoint}?symbol={pair}&interval={interval}&limit=1000"
@@ -49,9 +62,18 @@ def _fetch_binance_from(base, pair, interval, bars):
         rows = _get(url)
         if not rows:
             break
-        chunk = [[int(r[0]), float(r[4]), float(r[3])] for r in rows]
+        chunk = []
+        for r in rows:
+            if int(r[6]) >= now_ms:
+                continue
+            close, low = float(r[4]), float(r[3])
+            _prices(close, low)
+            chunk.append([int(r[0]), close, low])
         out = chunk + out
-        end = chunk[0][0] - 1
+        next_end = int(rows[0][0]) - 1
+        if next_end >= end:
+            raise RuntimeError("Binance pagination did not move backwards")
+        end = next_end
         if len(rows) < 1000:
             break
         time.sleep(0.25)
@@ -70,20 +92,30 @@ def fetch_binance(pair, interval="4h", bars=12000):
     for base in BINANCE_BASES:
         try:
             data = _fetch_binance_from(base, pair, interval, bars)
-            globals()["LAST_BINANCE_BASE"] = base
+            LAST_ENDPOINT[pair] = base
             return data
         except Exception as e:  # noqa: BLE001
             errors.append(f"{base}: {e}")
     raise RuntimeError("all Binance endpoints failed\n" + "\n".join(errors))
 
 
-def fetch_yahoo(symbol, rng="15y", interval="1d"):
-    """Yahoo chart API,复权(adjclose/close 比例)后返回 (ts秒, close, low)。"""
-    url = (f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-           f"?range={rng}&interval={interval}&includeAdjustedClose=true")
-    d = _get(url)
-    res = d["chart"]["result"][0]
-    ts = res["timestamp"]
+def _parse_yahoo(d, now=None, quality=None):
+    """Use completed daily sessions only; Yahoo may append a live duplicate."""
+    now = time.time() if now is None else now
+    chart = d["chart"]
+    if chart.get("error") or not chart.get("result"):
+        raise ValueError("Yahoo chart has no valid result")
+    res = chart["result"][0]
+    ts = res.get("timestamp") or []
+    meta = res["meta"]
+    futures = meta.get("instrumentType") == "FUTURE"
+    tz = ZoneInfo(meta["exchangeTimezoneName"])
+    regular = meta.get("currentTradingPeriod", {}).get("regular", {})
+    # A missing calendar must not turn the current day's partial bar into a close.
+    cutoff = datetime.fromtimestamp(now, tz).date()
+    if regular.get("start") and regular.get("end"):
+        cutoff = (datetime.fromtimestamp(regular["start"], tz).date()
+                  if now < regular["end"] + 900 else None)
     q = res["indicators"]["quote"][0]
     close = q["close"]; low = q["low"]
     adj = None
@@ -91,24 +123,56 @@ def fetch_yahoo(symbol, rng="15y", interval="1d"):
         adj = res["indicators"]["adjclose"][0]["adjclose"]
     except (KeyError, IndexError):
         pass
-    ots, oc, ol = [], [], []
+    sessions = {}
     for i in range(len(ts)):
+        stamp = int(ts[i])
+        day = datetime.fromtimestamp(stamp, tz).date()
+        if stamp > now or (cutoff is not None and day >= cutoff):
+            continue
         c = close[i]; lo = low[i]
         if c is None or lo is None:
             continue
-        ratio = (adj[i] / c) if (adj and adj[i]) else 1.0
-        ots.append(int(ts[i])); oc.append(c * ratio); ol.append(lo * ratio)
-    return ots, oc, ol
+        c, lo = float(c), float(lo)
+        _prices(c, lo, allow_separate_close=futures)
+        if futures and lo > c * (1 + 1e-6) and quality is not None:
+            quality["separateCloseRows"] = quality.get("separateCloseRows", 0) + 1
+        adjusted = adj[i] if adj and i < len(adj) else None
+        ratio = float(adjusted) / c if adjusted is not None else 1.0
+        _prices(c * ratio, lo * ratio, allow_separate_close=futures)
+        # Keep one row per exchange-local session, even when the endpoint appends
+        # a regularMarketTime row for the same date. Preserve the session timestamp.
+        first_stamp = sessions[day][0] if day in sessions else stamp
+        sessions[day] = (first_stamp, c * ratio, lo * ratio)
+    rows = [sessions[day] for day in sorted(sessions)]
+    if not rows or any(rows[i][0] >= rows[i + 1][0] for i in range(len(rows) - 1)):
+        raise ValueError("empty or non-monotonic completed Yahoo history")
+    return tuple(list(values) for values in zip(*rows))
+
+
+def fetch_yahoo(symbol, rng="15y", interval="1d"):
+    errors = []
+    for base in YAHOO_BASES:
+        url = (f"{base}/v8/finance/chart/{quote(symbol, safe='')}?"
+               + urlencode({"range": rng, "interval": interval, "includeAdjustedClose": "true"}))
+        try:
+            quality = {}
+            data = _parse_yahoo(_get(url), quality=quality)
+            LAST_ENDPOINT[symbol] = base
+            LAST_QUALITY[symbol] = quality
+            return data
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"{base}: {exc}")
+    raise RuntimeError("all Yahoo endpoints failed\n" + "\n".join(errors))
 
 
 def fetch_symbol(sym):
     if sym in CRYPTO:
         data = fetch_binance(CRYPTO[sym])
-        LAST_ENDPOINT[sym] = globals().get("LAST_BINANCE_BASE", "Binance")
+        LAST_ENDPOINT[sym] = LAST_ENDPOINT[CRYPTO[sym]]
         return data
     if sym in YAHOO:
         data = fetch_yahoo(YAHOO[sym])
-        LAST_ENDPOINT[sym] = "query1.finance.yahoo.com"
+        LAST_ENDPOINT[sym] = LAST_ENDPOINT[YAHOO[sym]]
         return data
     raise KeyError(f"unknown symbol {sym}")
 

@@ -1,6 +1,6 @@
 # 刻舟求剑：数据来源、计算方法与阅读边界
 
-版本：2026-07-10 · V2.1 可信度层
+版本：2026-11-05 · 48 标的历史研究
 
 本文对应线上静态页面 `prototype/app.html` 与每日生产脚本 `pipeline/daily/`。目标是让任何读者都能追溯：图里每个数字来自哪里、怎样计算、能说明什么、不能说明什么。
 
@@ -22,18 +22,31 @@
 ### 2.1 加密货币
 
 - 来源：[Binance Spot API — Kline/Candlestick Data](https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints#klinecandlestick-data)
-- 标的：BTCUSDT、ETHUSDT、SOLUSDT。
+- 标的：BTC、ETH、SOL、BNB、XRP、DOGE、ADA、AVAX、LINK、LTC，均为 USDT 现货交易对。
 - 粒度：4 小时 OHLC K 线。
 - 当前窗口：最近 60 根，约 10 个自然日。
+- 最多读取 12,000 根，约 5.5 年；剔除 closeTime 尚未到达的未收盘 K 线。实际覆盖范围以页面为准。
 - 用途：收盘价用于形态匹配和前瞻收益，最低价用于计算历史案例的“最低下探”。
 
-### 2.2 美股与大宗商品代理
+### 2.2 美股、指数、期货与商品基金
 
 - 来源：Yahoo Finance 历史日线端点；股票按其复权价格口径处理。
-- 标的：AAPL、NVDA、GLD、USO。
+- 美股 18 个：AAPL、NVDA、MSFT、AMZN、GOOGL、META、TSLA、AMD、AVGO、MU、PLTR、NFLX、JPM、GS、BAC、COIN、MSTR、TSM。
+- 指数 4 个：NDX (`^NDX`)、SPX (`^GSPC`)、DJI (`^DJI`)、RUT (`^RUT`)。
+- 指数 ETF 4 个：QQQ、SPY、IWM、DIA，使用各基金自己的复权历史，不能与指数互换。
+- 期货序列 6 个：NQ、ES、YM、RTY、GC、SI，对应 Yahoo 的 `=F` 历史代码。上游换月、拼接及结算口径会影响统计；不冒充某个到期合约的可成交价格，也不构成分钟级回测。
+- 商品 ETF / 基金 6 个：GLD、SLV、USO、UNG、DBC、CPER。
 - 粒度：日线；当前窗口为最近 40 个交易日。
+- 请求最近 15 年；新上市或上游历史较短的品种只使用实际可取得部分，页面显示起止日期和 K 线数量。
+- 使用交易所时区和上游当前交易时段判断日线是否完成，并保留 15 分钟缓冲。缺少时段信息时，保守排除交易所当地当天数据。期货上游日线按其交易日口径处理，因此可能比股票晚一个日期更新。
+- 上游可能追加同一当地日期的实时行，按交易所日期去重；空值跳过，非正数与非有限值拒绝进入对数匹配。非期货的最低价高于收盘价也拒绝使用。
+- 期货的收盘与日内高低点可能存在结算/拼接口径差异。检测到 `low > close` 时保留两个上游原值、记录行数并显示提示，不把低点改成收盘价，也不凭此宣称已核实该行结算口径；因此最低下探只作上游低点序列的描述，不能验证止损是否可成交。[CME 结算字段说明](https://www.cmegroup.com/trading/about-settlements.html)解释了结算价与成交报价的区别。
 - GLD 是 [SPDR Gold Shares ETF](https://www.ssga.com/us/en/intermediary/etfs/spdr-gold-shares-gld)，是黄金价格的可交易代理，不是黄金现货 XAUUSD。
 - USO 是 [United States Oil Fund](https://www.uscfinvestments.com/uso)，通过期货等工具提供原油敞口，不等于 WTI 现货或连续期货合约；费用、换月和持仓结构会造成跟踪差异。
+- CPER 是 [United States Copper Index Fund](https://www.uscfinvestments.com/cper)，通过铜期货组合追踪其基准，不是铜现货。
+- `US Tech 100` / `NAS100` 搜索别名指向 NDX 参考指数，不代表网站获得了某家 CFD 券商的报价。
+
+全部 48 个标的、中文名、英文名、分类、类型、数据源代码和别名统一维护在 `pipeline/daily/meta.json`。抓取和前端目录从同一份注册表生成。没有完整数据的标的不展示替代分析，旧版“自选代码借用 AAPL/BTC 模板”的路径已移除。
 
 Yahoo Finance 免费端点适合原型与研究演示，不应视为有 SLA 的商用行情源。上游数据可能发生复权修订、缺失、限流或格式变化。
 
@@ -80,9 +93,9 @@ $$
 按相似度排序后贪心选取案例，并要求案例结束点至少相隔半个当前窗口，减少大量重叠窗口重复代表同一段行情。
 
 - 加密货币：最多 50 个案例，最小间隔 30 根 4 小时 K。
-- 美股/ETF：最多 40 个案例，最小间隔 20 个交易日。
+- 美股/指数/期货/ETF：最多 40 个案例，最小间隔 20 个交易日。
 
-这会降低重复，但不能保证样本完全独立。
+这会降低重复，但不能保证样本完全独立。实际案例少于上限时，显著性近似使用各匹配方法的实际案例数，不使用 40/50 的配置上限；约有效样本量不高于实际样本数。
 
 ## 4. 前瞻收益与基准
 
@@ -132,7 +145,7 @@ $$
 
 美股与 ETF 使用交易日近似：1 周、1 月、3 月分别按 5、21、63 根日线计算。
 
-每一年会寻找最接近当前月日的历史 K 线；若偏差超过 5 个自然日则跳过。汇总给出上涨年份占比、中位收益和有效年份数 `n`。
+每一年会寻找最接近当前月日的历史 K 线；若偏差超过 5 个自然日则跳过。汇总给出上涨年份占比、中位收益和有效年份数 `n`。缺少完整前瞻的年份保留为空，不当成零收益；没有有效年份时不显示虚假的 0% 上涨率。
 
 ## 7. 回撤与最低下探不是同一个概念
 
@@ -204,7 +217,7 @@ $$
 - 当前最高相关系数：最多 10 分；
 - 约有效样本量：最多 5 分。
 
-等级为“证据较强 / 中等 / 偏弱”。除分数外，“较强”还要求两种方法同向且 $|Edge|\ge5$ 个百分点；“中等”要求 $|Edge|\ge2$ 个百分点。这样可避免把方法稳定但效应很小的结果称为强方向优势。等级不是买卖评级。
+等级为“证据较强 / 中等 / 偏弱”。除分数外，“较强”还要求两种方法同向、$|Edge|\ge5$ 个百分点且约有效样本量至少 20；“中等”要求 $|Edge|\ge2$ 个百分点且约有效样本量至少 12。这样可避免把样本太少或效应很小的结果称为强方向优势。等级不是买卖评级。
 
 ### 9.6 相比上一版
 
@@ -212,11 +225,14 @@ $$
 
 ### 9.7 数据健康状态
 
-- `Fresh`：本次成功抓取并重新计算；
-- `Cached`：本次抓取失败，沿用最近成功数据且尚未超过 2 天；
-- `Stale`：沿用数据距当前日期超过 2 天。
+- `Fresh`：本次成功抓取、重新计算，且未超过陈旧阈值；
+- `Cached`：抓取失败但有较新的历史缓存；
+- `Stale`：加密最后一根起始时间超过 18 小时，或日线超过 5 个自然日；
+- `Unavailable`：新增标的抓取失败且没有历史缓存，不显示分析。
 
-页面同时显示数据截至日期、K 线数、来源和实际使用的上游端点。任一资产未刷新时，APPDATA 的全局 `run.status` 设为 `partial`，页面显示黄色警告，GitHub Actions 日志也会产生 warning。
+页面同时显示历史起止日期、粒度、K 线数和来源。陈旧阈值是保守的时间规则，不是完整交易所节假日日历；前端也会检查时间，防止停更后永久显示“新数据”。抓取失败的旧缓存还会按 2 日规则保守标记陈旧。任一资产失败（包括无缓存新增标的）或陈旧时，全局 `run.status` 为 `partial`。
+
+发布时 `portal/build_site.py` 将内嵌 PNG 拆成内容哈希命名的图表文件，网页按所选标的加载。源文件仍保持可离线打开，线上不再一次性下载所有标的的深浅色图片。
 
 ## 10. 主要局限
 
@@ -236,7 +252,9 @@ $$
 - 匹配与统计：`pipeline/daily/build.py`
 - 页面数据注入：`pipeline/daily/inject.py`
 - 前端成品：`prototype/app.html`
-- CI 与 Pages 部署：`.github/workflows/daily.yml`
+- 标的注册表：`pipeline/daily/meta.json`，读取和校验入口 `pipeline/daily/universe.py`
+- CI 每日更新：`.github/workflows/daily.yml`；Pages 部署：`.github/workflows/pages.yml`
+- 回归测试：`python -m unittest discover -s pipeline/daily -p 'test_*.py'`、`node --test portal/test_history_universe.mjs`、`python -m unittest portal.test_portal`
 
 运行 `python pipeline/daily/run.py --self-test` 可用合成数据检查全链路。该命令会改写 `prototype/app.html`，因此只应在可还原的工作树中运行。
 
