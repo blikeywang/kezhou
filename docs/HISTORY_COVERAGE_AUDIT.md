@@ -1,6 +1,6 @@
 # Historical Data Coverage Audit
 
-Generated: 2026-11-05T09:34:31Z
+Generated: 2026-11-05T13:22:27Z
 
 Fresh data is not proof of complete lifetime history. No series is certified as fully verified.
 Network genesis is not a market-price start. Provider firstTradeDate is not independent IPO evidence.
@@ -12,27 +12,27 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 
 | Symbol | Series | Actual first | Actual last | Bars | Verified lifecycle reference | Start status | Suspected gaps | OHLC-invalid bars |
 |---|---|---|---|---:|---|---|---:|---:|
-| BTC | base: Binance 4h | 2017-08-17 | 2026-11-05 | 20187 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
+| BTC | base: Binance 4h | 2017-08-17 | 2026-11-05 | 20188 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
 | BTC | primary: Binance 1d | 2017-08-17 | 2026-11-04 | 3367 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | 0 |
 | BTC | usd: Coin Metrics 1d | 2010-07-18 | 2026-11-04 | 5954 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | n/a (close-only) |
-| ETH | base: Binance 4h | 2017-08-17 | 2026-11-05 | 20187 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
+| ETH | base: Binance 4h | 2017-08-17 | 2026-11-05 | 20188 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
 | ETH | primary: Binance 1d | 2017-08-17 | 2026-11-04 | 3367 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | 0 |
 | ETH | usd: Coin Metrics 1d | 2015-08-08 | 2026-11-04 | 4107 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | n/a (close-only) |
-| SOL | base: Binance 4h | 2020-08-11 | 2026-11-05 | 13663 | unverified | unverified | 0 | 0 |
+| SOL | base: Binance 4h | 2020-08-11 | 2026-11-05 | 13664 | unverified | unverified | 0 | 0 |
 | SOL | primary: Binance 1d | 2020-08-11 | 2026-11-04 | 2277 | unverified | unverified | 0 | 0 |
-| BNB | base: Binance 4h | 2017-11-06 | 2026-11-05 | 19702 | unverified | unverified | 16 | 0 |
+| BNB | base: Binance 4h | 2017-11-06 | 2026-11-05 | 19703 | unverified | unverified | 16 | 0 |
 | BNB | primary: Binance 1d | 2017-11-06 | 2026-11-04 | 3286 | unverified | unverified | 0 | 0 |
-| XRP | base: Binance 4h | 2018-05-04 | 2026-11-05 | 18633 | unverified | unverified | 9 | 0 |
+| XRP | base: Binance 4h | 2018-05-04 | 2026-11-05 | 18634 | unverified | unverified | 9 | 0 |
 | XRP | primary: Binance 1d | 2018-05-04 | 2026-11-04 | 3107 | unverified | unverified | 0 | 0 |
-| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-05 | 16077 | unverified | unverified | 2 | 0 |
+| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-05 | 16078 | unverified | unverified | 2 | 0 |
 | DOGE | primary: Binance 1d | 2019-07-05 | 2026-11-04 | 2680 | unverified | unverified | 0 | 0 |
-| ADA | base: Binance 4h | 2018-04-17 | 2026-11-05 | 18736 | unverified | unverified | 9 | 0 |
+| ADA | base: Binance 4h | 2018-04-17 | 2026-11-05 | 18737 | unverified | unverified | 9 | 0 |
 | ADA | primary: Binance 1d | 2018-04-17 | 2026-11-04 | 3124 | unverified | unverified | 0 | 0 |
-| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-05 | 13411 | unverified | unverified | 0 | 0 |
+| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-05 | 13412 | unverified | unverified | 0 | 0 |
 | AVAX | primary: Binance 1d | 2020-09-22 | 2026-11-04 | 2235 | unverified | unverified | 0 | 0 |
-| LINK | base: Binance 4h | 2019-01-16 | 2026-11-05 | 17095 | unverified | unverified | 5 | 0 |
+| LINK | base: Binance 4h | 2019-01-16 | 2026-11-05 | 17096 | unverified | unverified | 5 | 0 |
 | LINK | primary: Binance 1d | 2019-01-16 | 2026-11-04 | 2850 | unverified | unverified | 0 | 0 |
-| LTC | base: Binance 4h | 2017-12-13 | 2026-11-05 | 19480 | unverified | unverified | 16 | 0 |
+| LTC | base: Binance 4h | 2017-12-13 | 2026-11-05 | 19481 | unverified | unverified | 16 | 0 |
 | LTC | primary: Binance 1d | 2017-12-13 | 2026-11-04 | 3249 | unverified | unverified | 0 | 0 |
 | AAPL | base: Yahoo Finance 1d | 1980-12-12 | 2026-11-04 | 11567 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
 | AAPL | primary: Yahoo Finance 1d | 1980-12-12 | 2026-11-04 | 11567 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
