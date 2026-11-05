@@ -94,5 +94,14 @@
     const n = clampReveal(s, reveal);
     return n ? s.bars[s.end + n][4] / s.bars[s.end][4] - 1 : null;
   }
-  return {validate, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn};
+  function axisLabel(time, kind, timeZone) {
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-GB', {
+      timeZone, year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23',
+    }).formatToParts(new Date(time*1000)).map(p => [p.type,p.value]));
+    if (kind === 'year') return parts.year;
+    if (kind === 'month') return parts.year + '/' + parts.month;
+    if (kind === 'time') return parts.hour + ':' + parts.minute;
+    return parts.month + '/' + parts.day;
+  }
+  return {validate, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
 });

@@ -165,8 +165,10 @@
           crosshair:{mode:L.CrosshairMode.Normal},
           rightPriceScale:{borderColor:color('--line2'),minimumWidth:58},
           timeScale:{borderColor:color('--line2'),timeVisible:this.data.interval === '4h',secondsVisible:false,
-            rightOffset:3,shiftVisibleRangeOnNewBar:false,lockVisibleTimeRangeOnResize:true,
-            tickMarkFormatter:time => this.date(time).replace(/\d{4}[\/\-]/,'')},
+            rightOffset:3,shiftVisibleRangeOnNewBar:false,lockVisibleTimeRangeOnResize:true,tickMarkMaxCharacterLength:7,
+            tickMarkFormatter:(time,type) => M.axisLabel(time,
+              type === L.TickMarkType.Year ? 'year' : type === L.TickMarkType.Month ? 'month' :
+                type >= L.TickMarkType.Time ? 'time' : 'day', this.data.timeZone)},
           localization:{locale:this.zh?'zh-CN':'en-US',timeFormatter:time => this.date(time)},
           handleScroll:{mouseWheel:true,pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false},
           handleScale:{axisPressedMouseMove:true,mouseWheel:true,pinch:true},
@@ -186,7 +188,7 @@
         volume.setData(seriesData.volume);
         const markers = L.createSeriesMarkers(price, [
           {time:segment.startTime,position:'aboveBar',color:color('--acc'),shape:'circle',text:this.t('起点','Start')},
-          {time:segment.endTime,position:'aboveBar',color:color('--gold'),shape:'circle',text:this.t('匹配终点','Match end')},
+          {time:segment.endTime,position:'aboveBar',color:color('--gold'),shape:'circle',text:this.t('终点','End')},
         ]);
         const item = {chart,price,volume,markers,segment,pane,index};
         chart.timeScale().subscribeVisibleLogicalRangeChange(range => {

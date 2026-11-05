@@ -97,3 +97,12 @@ test('crypto cases preserve four-hour timestamps rather than resolving by date',
     assert.equal(s.end-s.start+1,60);
   }
 });
+
+test('axis labels stay compact and use the source exchange timezone', () => {
+  const time = Date.parse('2026-11-05T00:00:00Z')/1000;
+  assert.equal(M.axisLabel(time,'year','UTC'),'2026');
+  assert.equal(M.axisLabel(time,'month','UTC'),'2026/11');
+  assert.equal(M.axisLabel(time,'day','America/New_York'),'11/04');
+  assert.equal(M.axisLabel(time,'time','UTC'),'00:00');
+  for (const kind of ['year','month','day','time']) assert.ok(M.axisLabel(time,kind,'UTC').length<=7);
+});
