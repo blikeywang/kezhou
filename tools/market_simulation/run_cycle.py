@@ -5,6 +5,8 @@ import os
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
+import base64
 from export_public import ORIGIN, NoRedirect
 
 AUDIENCE = ORIGIN + '/api/github-run'
@@ -37,8 +39,15 @@ def run():
         raise ValueError('Cloud runner credentials unavailable')
     url = token_url(os.environ.get('ACTIONS_ID_TOKEN_REQUEST_URL', ''))
     for attempt in range(3):
+        stage = 'identity'
         try:
             identity = request_json(urllib.request.Request(url, headers={'Authorization': 'Bearer ' + request_token}), 20)['value']
+            if attempt == 0:
+                # Public identity claims only: never log the token, headers or request URL.
+                segment = identity.split('.')[1]
+                claims = json.loads(base64.urlsafe_b64decode(segment + '=' * (-len(segment) % 4)))
+                print(json.dumps({'runnerIdentity': {k: claims.get(k) for k in ('repository_id', 'repository_owner_id', 'sub', 'ref', 'workflow_ref', 'event_name', 'runner_environment', 'iat', 'nbf', 'exp')}}))
+            stage = 'paper-cycle'
             result = request_json(urllib.request.Request(AUDIENCE, data=b'{}', method='POST', headers={
                 'Authorization': 'Bearer ' + identity, 'OAI-Sites-Authorization': 'Bearer ' + site_token,
                 'Content-Type': 'application/json', 'Accept': 'application/json'}), 100)
@@ -46,7 +55,8 @@ def run():
                 raise ValueError('Paper cycle did not produce a current ledger')
             print(json.dumps({k: result.get(k) for k in ('ok', 'lastRun', 'version', 'freshSymbols', 'openPositions', 'closedTrades')}))
             return
-        except Exception:
+        except Exception as error:
+            print(json.dumps({'stage': stage, 'attempt': attempt + 1, 'errorType': type(error).__name__, 'httpStatus': error.code if isinstance(error, urllib.error.HTTPError) else None}))
             if attempt == 2:
                 raise ValueError('Paper execution failed; check the service status, not the publication timestamp') from None
             time.sleep(15)
