@@ -31,6 +31,7 @@
     }
     get selected() { return this.data.cases[this.state.method][this.state.index]; }
     async load() {
+      this.reloadRequired = false;
       this.root.innerHTML = '<div class="hr-empty" role="status">' + this.t('正在读取历史 K 线...', 'Loading historical candles...') + '</div>';
       try {
         const input = this.options.snapshot;
@@ -41,7 +42,10 @@
           data = snapshots.get(input.url);
           if (!data) {
             const response = await fetch(input.url, {signal:this.abort.signal, credentials:'omit'});
-            if (!response.ok) throw new Error('Snapshot HTTP ' + response.status);
+            if (!response.ok) {
+              this.reloadRequired = response.status === 404;
+              throw new Error('Snapshot HTTP ' + response.status);
+            }
             data = await response.json();
             M.validate(data, this.options.symbol, this.options.asof);
             if (snapshots.size >= 8) snapshots.delete(snapshots.keys().next().value);
@@ -56,11 +60,13 @@
         this.render();
       } catch (error) {
         if (this.destroyed || error.name === 'AbortError') return;
+        const label = this.reloadRequired ? this.t('刷新快照','Reload snapshot') : this.t('重试','Retry');
         this.root.innerHTML = '<div class="hr-empty" role="status">' +
-          this.t('这份快照的 K 线暂不可用，统计结果仍可查看。', 'Candles are unavailable for this snapshot; statistics remain available.') +
-          '<button class="hr-icon" type="button" title="' + this.t('重试', 'Retry') +
-          '" aria-label="' + this.t('重试', 'Retry') + '"><i class="ti ti-refresh" aria-hidden="true"></i></button></div>';
-        this.root.querySelector('button').onclick = () => this.load();
+          (this.reloadRequired ? this.t('这份历史快照已失效或暂时缺失。', 'This historical snapshot has expired or is missing.') :
+            this.t('这份快照的 K 线暂不可用，统计结果仍可查看。', 'Candles are unavailable for this snapshot; statistics remain available.')) +
+          '<button class="hr-icon" type="button" title="' + label +
+          '" aria-label="' + label + '"><i class="ti ti-refresh" aria-hidden="true"></i></button></div>';
+        this.root.querySelector('button').onclick = () => this.reloadRequired ? window.location.reload() : this.load();
       }
     }
     icon(action, name, label) {
