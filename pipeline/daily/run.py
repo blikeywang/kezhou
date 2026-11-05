@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
-import build, inject, replay, cycles  # noqa: E402
+import build, inject, replay, cycles, history_coverage  # noqa: E402
 
 UI_PATCH = os.path.join(os.path.dirname(__file__), "ui-explanations.patch")
 UI_MARKER = 'data-methods-version="2026-07-10"'
@@ -100,6 +100,11 @@ def get_ohlc(sym, grp, self_test):
             details["profileError"] = str(error).splitlines()[0][:160]
     else:
         details["dailyHistory"] = details["history"]
+    if sym in {"BTC", "ETH"}:
+        try:
+            details["referenceHistory"] = fetch.fetch_coinmetrics(sym.lower())
+        except Exception as error:
+            details["referenceError"] = str(error).splitlines()[0][:160]
     return ts, close, low, details
 
 
@@ -112,7 +117,7 @@ def main(self_test=False):
     names = inject.load_meta_names()               # {sym:{nz,ne,grp}}
     old_assets, old_charts = _load_existing()
     assets, prims, seasons, grp_by = {}, {}, {}, {}
-    daily_history = {}
+    daily_history, reference_history = {}, {}
     failed, unavailable = [], []
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     # Limit source concurrency; matching and matplotlib stay on the main thread.
@@ -126,6 +131,13 @@ def main(self_test=False):
         try:
             ts, close, low, fetch_meta = pending[sym].result()
             daily_history[sym] = fetch_meta.get("dailyHistory")
+            reference_history[sym] = fetch_meta.get("referenceHistory")
+            if not self_test:
+                for scope, interval in (("history", "4h" if grp == "crypto" else "1d"),
+                                        ("dailyHistory", "1d"), ("referenceHistory", "1d")):
+                    source_history = fetch_meta.get(scope)
+                    if source_history and "coverage" not in source_history:
+                        source_history["coverage"] = history_coverage.audit(sym, meta, source_history, interval, time.time())
             P = build.build_prim(ts, close, low, grp)
             S = build.build_season(ts, close, grp)
             asset = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
@@ -139,6 +151,7 @@ def main(self_test=False):
                 "quality": fetch_meta.get("quality", {}),
                 "requestedStart": (fetch_meta.get("history") or {}).get("requestedStart"),
             }
+            asset["coverage"] = (fetch_meta.get("history") or {}).get("coverage")
             build.attach_previous(asset, old_assets.get(sym))
             assets[sym] = asset
             prims[sym] = P; seasons[sym] = S; grp_by[sym] = grp
@@ -157,6 +170,8 @@ def main(self_test=False):
                     age = 99
                 assets[sym]["health"] = dict(previous, status="stale" if age > 2 else "cached",
                     asof=asof, generatedAt=generated_at, error=str(e).splitlines()[0][:160])
+                if assets[sym].get("coverage"):
+                    assets[sym]["coverage"] = dict(assets[sym]["coverage"], refreshStatus="cached")
                 print(f"  {sym:5} FETCH/BUILD FAILED -> keep previous data ({e})")
             else:
                 unavailable.append(sym)
@@ -171,8 +186,21 @@ def main(self_test=False):
         for sym, asset in assets.items():
             asset["profiles"] = cycles.refresh_profiles(sym, names[sym], daily_history.get(sym),
                 (old_assets.get(sym) or {}).get("profiles"), now)
+            if sym in {"BTC", "ETH"}:
+                asset["profiles"].update(cycles.refresh_profiles(sym, names[sym], reference_history.get(sym),
+                    (old_assets.get(sym) or {}).get("profiles"), now, series="usd"))
+            asset["dailyCoverage"] = {}
+            for series, source in (("primary", daily_history.get(sym)), ("usd", reference_history.get(sym))):
+                if source:
+                    asset["dailyCoverage"][series] = source["coverage"]
+                else:
+                    previous = (old_assets.get(sym) or {}).get("dailyCoverage", {}).get(series)
+                    if previous:
+                        asset["dailyCoverage"][series] = dict(previous, refreshStatus="cached")
             profile_issues.extend(f"{sym}:{key}" for key, p in asset["profiles"].items() if p["status"] != "fresh")
-        print(f"long profiles: {len(assets)*4-len(profile_issues)} fresh, {len(profile_issues)} cached/stale/unavailable", flush=True)
+        count = sum(len(a["profiles"]) for a in assets.values())
+        print(f"long profiles: {count-len(profile_issues)} fresh, {len(profile_issues)} cached/stale/unavailable", flush=True)
+        history_coverage.write_report(assets, generated_at)
 
     print("rendering charts …")
     charts = build.build_charts(prims, seasons, grp_by) if prims else {"dark": {}, "light": {}}

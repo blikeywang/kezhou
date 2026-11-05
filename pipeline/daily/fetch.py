@@ -7,7 +7,7 @@
 from __future__ import annotations
 import json, math, time, urllib.request, urllib.error
 from datetime import datetime, timezone
-from urllib.parse import quote, urlencode
+from urllib.parse import quote, urlencode, urlparse, parse_qs
 from zoneinfo import ZoneInfo
 from universe import load_names
 
@@ -29,8 +29,9 @@ LAST_ENDPOINT = {}
 LAST_QUALITY = {}
 LAST_HISTORY = {}
 YAHOO_BASES = ("https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com")
-DAILY_HISTORY_START = "1998-01-01"
+DAILY_HISTORY_START = "1900-01-01"
 CRYPTO_HISTORY_START = "2017-01-01"
+COINMETRICS_ENDPOINT = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
 
 
 def _prices(close, low, allow_separate_close=False):
@@ -88,9 +89,12 @@ def _fetch_binance_from(base, pair, interval, bars, start=None):
         raise RuntimeError(f"empty Binance response from {base}")
     if any(out[i][0] >= out[i + 1][0] for i in range(len(out) - 1)):
         raise RuntimeError(f"non-monotonic Binance timestamps from {base}")
-    gaps = sum(out[i + 1][0] - out[i][0] != 14400 for i in range(len(out) - 1)) if interval == "4h" else 0
+    step = {"4h": 14400, "1d": 86400}.get(interval)
+    gaps = sum(out[i + 1][0] - out[i][0] != step for i in range(len(out) - 1)) if step else 0
     LAST_QUALITY[pair] = {"gapCount": gaps} if gaps else {}
-    LAST_HISTORY[pair] = {"bars": out, "timeZone": "UTC", "priceBasis": "spot", "requestedStart": start}
+    LAST_HISTORY[pair] = {"bars": out, "timeZone": "UTC", "priceBasis": "spot", "requestedStart": start,
+                          "source": "Binance", "ticker": pair, "quote": "USDT", "dataKind": "ohlcv",
+                          "sourceUrl": "https://developers.binance.com/docs/binance-spot-api-docs/rest-api/market-data-endpoints"}
     LAST_HISTORY[(pair, interval)] = LAST_HISTORY[pair]
     return [r[0] for r in out], [r[4] for r in out], [r[3] for r in out]
 
@@ -142,6 +146,8 @@ def _parse_yahoo(d, now=None, quality=None, history=None):
             continue
         c = close[i]; lo = low[i]
         if c is None or lo is None:
+            if quality is not None:
+                quality["missingPriceRows"] = quality.get("missingPriceRows", 0) + 1
             continue
         c, lo = float(c), float(lo)
         _prices(c, lo, allow_separate_close=futures)
@@ -153,6 +159,8 @@ def _parse_yahoo(d, now=None, quality=None, history=None):
         # Keep one row per exchange-local session, even when the endpoint appends
         # a regularMarketTime row for the same date. Preserve the session timestamp.
         first_stamp = sessions[day][0] if day in sessions else stamp
+        if day in sessions and quality is not None:
+            quality["duplicateSessionRows"] = quality.get("duplicateSessionRows", 0) + 1
         def field(name, multiplier=1):
             values = q.get(name) or []
             value = values[i] if i < len(values) else None
@@ -167,7 +175,10 @@ def _parse_yahoo(d, now=None, quality=None, history=None):
         raise ValueError("empty or non-monotonic completed Yahoo history")
     if history is not None:
         history.update(bars=rows, timeZone=meta["exchangeTimezoneName"],
-                       priceBasis="adjusted" if adj else "source")
+                       priceBasis="adjusted" if adj else "source", source="Yahoo Finance", dataKind="ohlcv",
+                       quote=meta.get("currency"), exchange=meta.get("exchangeName"),
+                       providerFirstDate=(datetime.fromtimestamp(meta["firstTradeDate"], tz).date().isoformat()
+                                          if meta.get("firstTradeDate") is not None else None))
     return [r[0] for r in rows], [r[4] for r in rows], [r[3] for r in rows]
 
 
@@ -192,6 +203,8 @@ def fetch_yahoo(symbol, rng=None, interval="1d", start=DAILY_HISTORY_START):
                 raise ValueError(f"Requested {interval}, received {granularity}")
             data = _parse_yahoo(raw, now=now, quality=quality, history=history)
             history["requestedStart"] = start if rng is None else None
+            history.update(ticker=symbol, sourceUrl=f"https://finance.yahoo.com/quote/{quote(symbol, safe='')}/history/",
+                           ingestQuality=quality)
             LAST_ENDPOINT[symbol] = base
             LAST_QUALITY[symbol] = quality
             LAST_HISTORY[symbol] = history
@@ -199,6 +212,58 @@ def fetch_yahoo(symbol, rng=None, interval="1d", start=DAILY_HISTORY_START):
         except Exception as exc:  # noqa: BLE001
             errors.append(f"{base}: {exc}")
     raise RuntimeError("all Yahoo endpoints failed\n" + "\n".join(errors))
+
+
+def fetch_coinmetrics(asset, now=None):
+    """Independent USD close history, never spliced into exchange OHLCV."""
+    if asset not in {"btc", "eth"}:
+        raise ValueError("Unsupported reference asset")
+    now = time.time() if now is None else now
+    start = "2009-01-03" if asset == "btc" else "2015-07-30"
+    params = dict(assets=asset, metrics="PriceUSD", frequency="1d", start_time=start, page_size=10000)
+    url = COINMETRICS_ENDPOINT + "?" + urlencode(params)
+    seen, rows, missing, previous = set(), [], 0, None
+    while url:
+        parsed = urlparse(url)
+        query = parse_qs(parsed.query)
+        if (parsed.scheme != "https" or parsed.netloc != "community-api.coinmetrics.io"
+                or parsed.path != "/v4/timeseries/asset-metrics" or parsed.fragment
+                or any(query.get(k) != [str(params[k])] for k in ("assets", "metrics", "frequency", "start_time"))):
+            raise ValueError("Unexpected Coin Metrics pagination scope")
+        if url in seen or len(seen) >= 50:
+            raise ValueError("Coin Metrics pagination did not advance")
+        seen.add(url)
+        response = _get(url)
+        if response.get("error") or not isinstance(response.get("data"), list):
+            raise ValueError("Invalid Coin Metrics response")
+        for item in response["data"]:
+            if item.get("asset") != asset:
+                raise ValueError("Reference asset mismatch")
+            stamp = int(datetime.fromisoformat(item["time"].replace("Z", "+00:00")).timestamp())
+            if stamp % 86400 or (previous is not None and stamp <= previous):
+                raise ValueError("Non-monotonic daily reference timestamps")
+            previous = stamp
+            # PriceUSD labels the beginning of the day; its closing fix is next midnight.
+            if stamp + 86400 > now:
+                continue
+            value = item.get("PriceUSD")
+            if value is None:
+                missing += 1
+                continue
+            close = float(value)
+            _prices(close, close)
+            rows.append([stamp, None, None, None, close, None])
+        url = response.get("next_page_url")
+        if url:
+            time.sleep(1)
+    if not rows:
+        raise ValueError("Empty reference price history")
+    return {"bars": rows, "timeZone": "UTC", "priceBasis": "usd-reference-close", "dataKind": "close-only",
+            "source": "Coin Metrics", "ticker": asset.upper()+" / USD", "quote": "USD", "metric": "PriceUSD",
+            "requestedStart": start, "sourceUrl": "https://docs.coinmetrics.io/packages/coin-metrics-community-data",
+            "license": "CC BY-NC 4.0", "licenseUrl": "https://creativecommons.org/licenses/by-nc/4.0/",
+            "timestampConvention": "interval-start; close at following UTC midnight",
+            "ingestQuality": {"missingPriceRows": missing}}
 
 
 def fetch_symbol(sym):

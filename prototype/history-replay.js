@@ -31,16 +31,21 @@
     get selected() { return this.cases[this.state.index]; }
     profileControls() {
       if (!Object.keys(this.options.profiles || {}).length) return '';
-      const interval = this.profileKey.split('-')[0], span = this.profileKey.split('-')[1] || '6m';
+      const profile = this.options.profiles[this.profileKey];
+      const interval = profile?.interval, span = profile?.months === 12 ? '1y' : '6m';
+      const prefix = profile?.series === 'usd' ? 'usd-' : '';
       const button = (key, label, pressed) => '<button type="button" data-profile="' + key +
         '" aria-pressed="' + pressed + '">' + label + '</button>';
       return '<div class="hr-tools hr-profiles"><div class="hr-segment" role="group" aria-label="' + this.t('K 线周期','Candle interval') + '">' +
         button('', this.t('短窗口','Short window'), !this.profileKey) +
-        button('1d-'+span, this.t('日线','Daily'), interval === '1d') +
-        button('1w-'+span, this.t('周线','Weekly'), interval === '1w') + '</div>' +
+        button(prefix+'1d-'+span, this.t('日线','Daily'), interval === '1d') +
+        button(prefix+'1w-'+span, this.t('周线','Weekly'), interval === '1w') + '</div>' +
         '<div class="hr-segment" role="group" aria-label="' + this.t('匹配长度','Matching length') + '">' +
-        button((interval || '1d')+'-6m', this.t('最近半年','Last 6 months'), span === '6m' && !!interval) +
-        button((interval || '1d')+'-1y', this.t('最近一年','Last year'), span === '1y' && !!interval) + '</div></div>';
+        button(prefix+(interval || '1d')+'-6m', this.t('最近半年','Last 6 months'), span === '6m' && !!interval) +
+        button(prefix+(interval || '1d')+'-1y', this.t('最近一年','Last year'), span === '1y' && !!interval) + '</div>' +
+        (this.options.profiles['usd-1d-6m'] ? '<select class="hr-select" data-control="source" aria-label="' + this.t('历史数据源','Historical source') + '">' +
+          '<option value="primary"' + (!prefix ? ' selected' : '') + '>Binance USDT · ' + this.t('K 线','OHLCV') + '</option>' +
+          '<option value="usd"' + (prefix ? ' selected' : '') + '>Coin Metrics USD · ' + this.t('长期收盘线','Long close history') + '</option></select>' : '') + '</div>';
     }
     bindProfiles() {
       this.root.querySelectorAll('[data-profile]').forEach(button => {
@@ -50,6 +55,12 @@
           this.load();
         };
       });
+      const source = this.root.querySelector('[data-control=source]');
+      if (source) source.onchange = () => {
+        const p = this.options.profiles[this.profileKey];
+        this.profileKey = (source.value === 'usd' ? 'usd-' : '') + (p?.interval || '1d') + '-' + (p?.months === 12 ? '1y' : '6m');
+        this.load();
+      };
     }
     async load() {
       this.stop(); this.removeCharts(); this.abort.abort();
@@ -63,7 +74,7 @@
       this.data = null;
       let reloadRequired = false;
       this.options.onProfileChange?.(this.profileKey, null, 'loading');
-      this.root.innerHTML = this.profileControls() + '<div class="hr-empty" role="status">' + this.t('正在读取历史 K 线...', 'Loading historical candles...') + '</div>';
+      this.root.innerHTML = this.profileControls() + '<div class="hr-empty" role="status">' + this.t('正在读取历史行情...', 'Loading historical prices...') + '</div>';
       this.bindProfiles();
       try {
         if (!input || (this.profileKey && !input.url)) throw new Error('No snapshot');
@@ -85,6 +96,7 @@
         }
         if (this.destroyed || controller !== this.abort) return;
         this.data = M.validate(data, this.options.symbol, asof, input);
+        if (this.data.dataKind === 'close-only') this.state.volume = false;
         if (!window.LightweightCharts) throw new Error('Chart library unavailable');
         const years = Object.keys(this.data.annualCases || {});
         if (!years.includes(this.state.year)) this.state.year = String(this.data.verdict?.leader || (years.includes('2018') ? '2018' : years.at(-1) || ''));
@@ -119,7 +131,7 @@
         '<div class="hr-years">' + this.data.comparison.map(row => '<div class="hr-year"><div class="hr-year-title"><h4>' + row.year +
           '</h4><strong>' + (row.available ? row.score.toFixed(3) : '-') + '</strong>' + (row.available ?
             '<button type="button" class="hr-icon" data-year="' + row.year + '" title="' + t('打开','Open') + ' ' + row.year +
-            t(' 年 K 线',' candles') + '" aria-label="' + t('打开','Open') + ' ' + row.year + t(' 年 K 线',' candles') + '"><i class="ti ti-chart-candle" aria-hidden="true"></i></button>' : '') + '</div>' +
+            t(' 年走势',' history') + '" aria-label="' + t('打开','Open') + ' ' + row.year + t(' 年走势',' history') + '"><i class="ti ti-chart-candle" aria-hidden="true"></i></button>' : '') + '</div>' +
           (row.available ? '<p>' + row.start + ' → ' + row.end + '</p><dl><div><dt>' + t('区间涨跌','Window return') + '</dt><dd>' + pct(row.return) +
             '</dd></div><div><dt>' + t('收盘最大回撤','Close drawdown') + '</dt><dd>' + pct(row.drawdown) + '</dd></div></dl><p class="hr-year-coverage">' +
             row.candidates + t(' 个可匹配终点 · ',' eligible endpoints · ') + row.eligibleStart + ' → ' + row.eligibleEnd + '</p>' :
@@ -138,6 +150,42 @@
         '</tbody></table></div><p class="hr-cycle-note">' + t('从完整历史选取 corr ≥ 0.50 的最多 20 个互不重叠匹配区间，不只限于当前查看年份；0.50 是筛选门槛，不是统计显著性。后续观察区间仍可能互相重叠，样本并非统计独立；所有后续数据均早于当前窗口。小样本比例不构成预测或回测收益。',
           'Up to 20 non-overlapping windows with corr ≥ 0.50 across the full history, not just the selected year. This threshold is not statistical significance. Forward horizons can overlap; samples are not independent. All outcomes predate the current window. Small-sample rates are not forecasts or strategy returns.') + '</p></details>';
     }
+    coverageHTML() {
+      const c = this.data.coverage || this.options.coverage;
+      if (!c) return '';
+      const t = this.t.bind(this), ref = c.lifecycle, cont = c.continuity;
+      const labels = {
+        'network-not-price':t('网络诞生不等于价格历史起点','Network genesis is not a price-history start'),
+        'missing-early':t('尚缺早期历史','Early history missing'),
+        'start-reached':t('已到核对起点，完整性未认证','Reference start reached; completeness not certified'),
+        'before-reference':t('含更早记录，证券沿革需区分','Earlier records require security-lineage distinctions'),
+        'unverified':t('上市／诞生起点尚未独立核实','Listing / inception start not independently verified'),
+      };
+      const kinds = {network:t('网络诞生','Network genesis'),ipo:t('IPO','IPO'),adr:t('美国 ADR 上市','US ADR listing'),
+        'operating-ticker':t('现经营主体交易起点','Operating-company ticker start'),product:t('产品首个交易日','Product first trade')};
+      const link = (url, label) => typeof url === 'string' && /^https:\/\//.test(url) ?
+        '<a href="'+escape(url)+'" target="_blank" rel="noopener">'+escape(label)+'</a>' : escape(label);
+      const gap = cont.missingCount == null ? t('未核对该产品的交易日历','Product trading calendar not audited') :
+        cont.missingCount ? cont.missingCount+t(' 个疑似缺失时段，待核对停牌／交易所日历',' suspected missing intervals; check halts / exchange calendar') :
+        t('区间内日历初筛未发现缺失时段','No missing intervals in the audited range');
+      let note = ref?.note === 'spac-predecessor' ? t('早期记录属于 SPAC 前身，不代表现经营公司的历史经营表现。','Earlier prices belong to the SPAC predecessor, not the current operating company.') :
+        ref?.note === 'us-listing-only' ? t('仅核对美国 ADR，不等同于台湾本股上市历史。','US ADR only; not the Taiwan-listed ordinary-share history.') :
+        ref?.note === 'otc-before-nyse' ? t('IPO 先于 NYSE 上市，不能把 1979 年上市转板日当作最早发行日。','The OTC IPO predates the 1979 NYSE listing.') : '';
+      if (c.dataKind === 'close-only') note += ' '+t('仅有 USD 参考收盘价，没有开高低或成交量；与 Binance USDT 独立匹配，不拼接。','USD reference closes only, without O/H/L or volume; matched independently, never spliced into Binance USDT.');
+      const row = (name, value) => '<div><dt>'+name+'</dt><dd>'+value+'</dd></div>';
+      return '<details class="hr-data-audit"><summary>'+t('历史覆盖','History coverage')+' · '+escape(c.first)+' → '+escape(c.last)+'<span>'+escape(labels[c.startStatus] || labels.unverified)+'</span></summary><dl>' +
+        row(t('数据源／范围','Source / range'),link(c.sourceUrl,c.source || this.data.source)+' · '+escape(c.ticker)+' · '+escape(c.interval)+' · '+c.bars+t(' 条',' observations')) +
+        row(t('已核对的起点','Verified reference start'),ref ? kinds[ref.kind]+' · '+link(ref.sourceUrl,ref.date) : t('未核实，不能用数据源首条价格代替上市日期','Unverified; first available price is not proof of listing date')) +
+        (c.providerFirstDate ? row(t('上游首日字段','Provider first-date field'),escape(c.providerFirstDate)+t('（非独立上市证明）',' (not independent listing evidence)')) : '') +
+        row(t('连续性初筛','Continuity screen'),escape(gap)) +
+        row(t('初筛范围','Audited range'),escape(cont.from+' → '+cont.to)+' · '+escape(cont.calendar || '-')+
+          (cont.uncheckedEarlierBars ? t(' · 更早未核对 ',' · Earlier unaudited: ')+cont.uncheckedEarlierBars+t(' 条',' bars') : '')) +
+        (cont.unexpectedCount ? row(t('非预期交易日','Unexpected sessions'),cont.unexpectedCount+t(' 条，需复核日历／时间戳','; calendar / timestamps need review')) : '') +
+        (cont.missingExamples?.length ? row(t('疑似缺口示例','Gap examples'),cont.missingExamples.map(escape).join(' · ')) : '') +
+        (c.dataKind !== 'close-only' ? row(t('不完整／不一致 OHLC','Incomplete / inconsistent OHLC'),c.invalidCandles+t(' 条，保留原价，不补造 K 线',' bars; original closes preserved, no fabricated candles')) : '') +
+        row(t('核对时间','Audit time'),escape(c.checkedAt)+(c.refreshStatus === 'cached' ? t(' · 缓存核对',' · cached audit') : '')) +
+        '</dl><p>'+escape(note)+'</p><p>'+t('日期已覆盖、行情已更新，都不代表全历史完整；尚未完成跨数据源逐日验证。','A covered start date or fresh quote does not certify lifetime completeness; independent day-by-day source verification is not complete.')+'</p></details>';
+    }
     icon(action, name, label) {
       return '<button type="button" class="hr-icon" data-action="' + action + '" title="' + escape(label) +
         '" aria-label="' + escape(label) + '"><i class="ti ti-' + name + '" aria-hidden="true"></i></button>';
@@ -149,10 +197,11 @@
         t('匹配区间', 'Matched window') + ' · ' + this.data.window + t(' 根', ' bars') + '</span></div>' +
         '<div class="hr-dates"></div></div><div class="hr-ohlc"></div>' +
         '<div class="hr-chart-wrap"><div class="hr-chart"></div><div class="hr-shade"></div></div></div>';
-      this.root.innerHTML = this.profileControls() + '<div class="hr-heading"><h3>' + t('相似历史 · K 线核对', 'Historical analogues · chart comparison') +
+      this.root.innerHTML = this.profileControls() + '<div class="hr-heading"><h3>' + (this.data.dataKind === 'close-only' ?
+        t('相似历史 · 收盘线核对','Historical analogues · close comparison') : t('相似历史 · K 线核对', 'Historical analogues · chart comparison')) +
         '</h3><small>' + escape(this.data.source + ' · ' + this.data.ticker + ' · ' + this.data.interval + ' · ' + this.data.timeZone) + '</small></div>' +
-        (this.profileKey ? '<p class="hr-profile-meta">' + this.data.window + t(' 根已完成 K 线 · 收盘覆盖至 ',' completed bars · Closed through ') + escape(this.data.asofDay) +
-          t(' · 历史起点 ',' · History starts ') + escape(this.data.historyStart) + '</p>' : '') + this.comparisonHTML() +
+        (this.profileKey ? '<p class="hr-profile-meta">' + this.data.window + t(' 个已完成观察值 · 收盘覆盖至 ',' completed observations · Closed through ') + escape(this.data.asofDay) +
+          t(' · 历史起点 ',' · History starts ') + escape(this.data.historyStart) + '</p>' : '') + this.coverageHTML() + this.comparisonHTML() +
         '<div class="hr-tools"><div class="hr-segment" role="group" aria-label="' + t('匹配方法', 'Matching method') + '">' +
         '<button type="button" data-method="corr" title="' + t('corr 越大越相似', 'Higher correlation is more similar') + '">' + t('形状相似', 'Correlation') + '</button>' +
         (this.data.cases.dtw ? '<button type="button" data-method="dtw" title="' + t('DTW 距离越小越相似', 'Lower DTW distance is more similar') + '">' + t('节奏相似', 'DTW') + '</button>' : '') +
@@ -178,14 +227,15 @@
         this.icon('back', 'player-track-prev', t('退一根', 'Previous bar')) +
         this.icon('play', 'player-play', t('播放后续', 'Play continuation')) +
         this.icon('step', 'player-track-next', t('前进一根', 'Next bar')) +
-        '<input class="hr-timeline" data-control="timeline" type="range" min="0" step="1" aria-label="' + t('后续 K 线根数', 'Revealed future bars') + '">' +
+        '<input class="hr-timeline" data-control="timeline" type="range" min="0" step="1" aria-label="' + t('后续观察值数量', 'Revealed future observations') + '">' +
         '<output class="hr-progress"></output>' +
         '<select class="hr-select" data-control="speed" aria-label="' + t('播放速度', 'Playback speed') + '"><option value="1500">0.5x</option><option value="750">1x</option><option value="250">3x</option></select>' +
         this.icon('all', 'eye', t('展开全部后续', 'Reveal all continuation')) + '</div>' +
         '<div class="hr-status"><span class="hr-coverage"></span><span class="hr-result" aria-live="polite"></span></div>' +
         '<div class="hr-warning" role="status"></div>' + this.summaryHTML() + '<div class="hr-footer"><span>' +
         t('浅色区：参与匹配 · 金色边界：匹配终点 · 历史相似不代表未来', 'Shaded: matched window · Gold edge: match end · Similarity is not a forecast') +
-        '</span><span><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a> · <a href="./vendor/lightweight-charts/NOTICE" target="_blank" rel="noopener">Copyright (с) 2025 TradingView, Inc.</a></span></div>';
+        '</span><span><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a> · <a href="./vendor/lightweight-charts/NOTICE" target="_blank" rel="noopener">Copyright (с) 2025 TradingView, Inc.</a></span>' +
+        (this.data.dataKind === 'close-only' ? '<span><a href="https://docs.coinmetrics.io/packages/coin-metrics-community-data" target="_blank" rel="noopener">Coin Metrics · PriceUSD</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a></span>' : '') + '</div>';
       this.bindProfiles();
       this.onClick = event => {
         const button = event.target.closest('button');
@@ -323,7 +373,8 @@
       if (!row) return;
       const factor = this.state.indexed ? 100 / item.segment.bars[item.segment.start][4] : 1;
       item.pane.querySelector('.hr-ohlc').textContent = this.date(row[0]) + '  ' +
-        ['O','H','L','C'].map((key, i) => key + ' ' + this.fmt(row[i+1] == null ? null : row[i+1]*factor)).join('  ') +
+        (this.data.dataKind === 'close-only' ? (this.state.indexed ? 'Index C ' : 'USD C ') + this.fmt(row[4]*factor) :
+          ['O','H','L','C'].map((key, i) => key + ' ' + this.fmt(row[i+1] == null ? null : row[i+1]*factor)).join('  ')) +
         (row[5] == null ? '' : '  V ' + this.fmt(row[5]));
     }
     shade(item) {
@@ -393,6 +444,7 @@
       query('[data-action=next]').disabled = this.state.index === this.cases.length - 1;
       query('[data-action=link]').setAttribute('aria-pressed', this.state.linked);
       query('[data-action=volume]').setAttribute('aria-pressed', this.state.volume);
+      query('[data-action=volume]').disabled = this.data.dataKind === 'close-only';
       ['rewind','back'].forEach(a => query('[data-action='+a+']').disabled = this.state.reveal === 0);
       ['step','play','all'].forEach(a => query('[data-action='+a+']').disabled = this.state.reveal === count);
       query('[data-control=timeline]').max = count;
@@ -409,7 +461,10 @@
       if (this.data.interval === '4h') warnings.push(this.t(
         '匹配窗口：60 根四小时 K 线，约 10 天；局部形态相似不代表整轮牛熊周期相同。',
         'Matching window: 60 four-hour bars, about 10 days. Local similarity does not establish an equivalent market cycle.'));
-      if ([this.data.current, this.selected].some(s => !s.bars.every(M.candleValid))) warnings.push(this.t(
+      if (this.data.dataKind === 'close-only') warnings.push(this.t(
+        'USD 参考收盘线，无开高低和成交量；日期标注当日区间，收盘值在次日 UTC 00:00 确定，不是交易所 K 线。',
+        'USD reference closes without O/H/L or volume. Dates label the day; its close is fixed at the following UTC midnight. Not exchange candles.'));
+      else if ([this.data.current, this.selected].some(s => !s.bars.every(M.candleValid))) warnings.push(this.t(
         '部分 OHLC 不完整或结算价超出高低区间，相关图表以真实收盘线显示，未补造 K 线。',
         'Incomplete or inconsistent OHLC: affected charts use the original close line; no candles are fabricated.'));
       if (this.data.priceBasis === 'adjusted') warnings.push(this.t('价格按数据源复权口径。','Prices use source-adjusted OHLC.'));

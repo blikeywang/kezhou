@@ -17,6 +17,10 @@
     if (descriptor?.profileKey && ['profileKey','interval','window'].some(key => data[key] !== descriptor[key])) {
       throw new Error('Profile scope mismatch');
     }
+    if (descriptor?.profileKey && ['series','source','dataKind'].some(key => descriptor[key] && data[key] !== descriptor[key])) {
+      throw new Error('Profile source mismatch');
+    }
+    if (data.dataKind === 'close-only' && data.priceBasis !== 'usd-reference-close') throw new Error('Invalid reference-price basis');
     new Intl.DateTimeFormat('en', {timeZone: data.timeZone}).format();
     function segment(s) {
       if (!s || !Array.isArray(s.bars) || !s.bars.length ||
@@ -32,6 +36,9 @@
           throw new Error('Invalid historical bar');
         }
         previous = row[0];
+        if (data.dataKind === 'close-only' && [row[1],row[2],row[3],row[5]].some(v => v !== null)) {
+          throw new Error('Reference close contains fabricated OHLCV');
+        }
       }
       if (s.startTime !== s.bars[s.start][0] || s.endTime !== s.bars[s.end][0]) {
         throw new Error('Matching timestamps differ');

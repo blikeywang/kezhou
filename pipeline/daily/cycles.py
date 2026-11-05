@@ -126,7 +126,8 @@ def build_profile(symbol, meta, history, key, config, now):
     prim = {"matchEnds": {"corr": [[e, scores[e]] for e in selected[:6]]}, "annualMatchEnds": annual}
     cfg = dict(config, contextBefore=1, contextAfter=1)
     snapshot = build_replay(symbol, meta["grp"], prim, ts, close.tolist(), source_history,
-                            "Binance" if meta["grp"] == "crypto" else "Yahoo Finance", meta["ticker"],
+                            history.get("source", "Binance" if meta["grp"] == "crypto" else "Yahoo Finance"),
+                            history.get("ticker", meta["ticker"]),
                             config=cfg, interval=interval, annual_year_basis="end")
     # A distant top-ranked window is not automatically a useful analogue.
     stats_ends = choose([e for e in ranked if scores[e] >= .5], 20)
@@ -156,12 +157,20 @@ def build_profile(symbol, meta, history, key, config, now):
     return snapshot
 
 
-def refresh_profiles(symbol, meta, history, previous, now, output_dir=PROFILE_DIR):
+def refresh_profiles(symbol, meta, history, previous, now, output_dir=PROFILE_DIR, series="primary"):
+    if series not in {"primary", "usd"} or (series == "usd" and symbol not in {"BTC", "ETH"}):
+        raise ValueError("Unknown historical series")
     profiles = {}
-    for key, config in configurations(meta["grp"]).items():
-        descriptor = dict(config, profileKey=key, symbol=symbol, group=meta["grp"])
+    for base_key, config in configurations(meta["grp"]).items():
+        key = ("usd-" if series == "usd" else "") + base_key
+        descriptor = dict(config, profileKey=key, symbol=symbol, group=meta["grp"], series=series)
         try:
+            if series == "usd" and history and (history.get("source") != "Coin Metrics"
+                    or history.get("dataKind") != "close-only" or history.get("priceBasis") != "usd-reference-close"
+                    or history.get("ticker") != symbol+" / USD"):
+                raise ValueError("USD reference profile cannot use exchange candles")
             snapshot = build_profile(symbol, meta, history, key, config, now)
+            snapshot["series"] = series
             output_dir.mkdir(parents=True, exist_ok=True)
             name = f"{symbol}-{key}.json"
             path = output_dir / name
@@ -170,7 +179,8 @@ def refresh_profiles(symbol, meta, history, previous, now, output_dir=PROFILE_DI
             temporary.replace(path)
             descriptor.update(url="./history-profiles/"+name, asof=snapshot["asof"],
                               asofDay=snapshot["asofDay"], generatedAt=snapshot["generatedAt"],
-                              status=snapshot["status"], historyStart=snapshot["historyStart"])
+                              status=snapshot["status"], historyStart=snapshot["historyStart"],
+                              source=snapshot["source"], dataKind=snapshot["dataKind"])
         except Exception as error:
             old = (previous or {}).get(key)
             if old and old.get("url") and (output_dir / Path(old["url"]).name).is_file():

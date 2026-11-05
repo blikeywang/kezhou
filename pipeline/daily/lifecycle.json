@@ -1,0 +1,20 @@
+{
+  "BTC": {"date":"2009-01-03","kind":"network","sourceUrl":"https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki"},
+  "ETH": {"date":"2015-07-30","kind":"network","sourceUrl":"https://blog.ethereum.org/2015/07/30/ethereum-launches"},
+  "AAPL": {"date":"1980-12-12","kind":"ipo","sourceUrl":"https://investor.apple.com/faq./default.aspx"},
+  "MSFT": {"date":"1986-03-13","kind":"ipo","sourceUrl":"https://www.microsoft.com/en-us/investor/faq"},
+  "AMZN": {"date":"1997-05-15","kind":"ipo","sourceUrl":"https://ir.aboutamazon.com/faqs/default.aspx"},
+  "NVDA": {"date":"1999-01-22","kind":"ipo","sourceUrl":"https://investor.nvidia.com/investor-resources/faqs/default.aspx?sh_print=yes"},
+  "AMD": {"date":"1972-09-27","kind":"ipo","note":"otc-before-nyse","sourceUrl":"https://ir.amd.com/contacts-faq/faq"},
+  "INTC": {"date":"1971-10-13","kind":"ipo","sourceUrl":"https://www.intc.com/stock-info/faq"},
+  "AMAT": {"date":"1972-10-05","kind":"ipo","sourceUrl":"https://ir.appliedmaterials.com/shareholder-services/investor-faqs/"},
+  "ADBE": {"date":"1986-08-20","kind":"ipo","sourceUrl":"https://www.adobe.com/investor-relations/faq.html"},
+  "ORCL": {"date":"1986-03-12","kind":"ipo","sourceUrl":"https://investor.oracle.com/faq/default.aspx"},
+  "TSM": {"date":"1997-10-08","kind":"adr","note":"us-listing-only","sourceUrl":"https://investor.tsmc.com/english/faq"},
+  "SOFI": {"date":"2021-06-01","kind":"operating-ticker","note":"spac-predecessor","sourceUrl":"https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2021-21"},
+  "RKLB": {"date":"2021-08-25","kind":"operating-ticker","note":"spac-predecessor","sourceUrl":"https://investors.rocketlabcorp.com/static-files/8dfd352c-0070-4ffd-9c5e-966bf4cdcc21"},
+  "ASTS": {"date":"2021-04-07","kind":"operating-ticker","note":"spac-predecessor","sourceUrl":"https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2021-59"},
+  "IONQ": {"date":"2021-10-01","kind":"operating-ticker","note":"spac-predecessor","sourceUrl":"https://www.ionq.com/news/october-01-2021-ionq-listed-on-nyse"},
+  "NQ": {"date":"1999-06-21","kind":"product","sourceUrl":"https://www.cmegroup.com/media-room/historical-first-trade-dates.html"},
+  "ES": {"date":"1997-09-09","kind":"product","sourceUrl":"https://www.cmegroup.com/media-room/historical-first-trade-dates.html"}
+}

@@ -94,7 +94,7 @@ class PortalBuildTests(unittest.TestCase):
             self.assertEqual(snapshot["asof"], asset["health"]["asofTimestamp"])
             self.assertIn(hashlib.sha256(payload).hexdigest()[:12], descriptor["url"])
             self.assertEqual(snapshot["current"]["end"], len(snapshot["current"]["bars"])-1)
-            self.assertEqual(len(asset["profiles"]), 4)
+            self.assertEqual(len(asset["profiles"]), 8 if symbol in {"BTC", "ETH"} else 4)
             for key, profile in asset["profiles"].items():
                 self.assertNotIn("cases", profile)
                 payload = (page.parent / profile["url"]).read_bytes()

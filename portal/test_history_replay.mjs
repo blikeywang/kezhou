@@ -16,7 +16,8 @@ function profile(symbol, key) {
 test('all daily and weekly profiles validate their own source scope and completed windows', () => {
   let count = 0;
   for (const [symbol,a] of Object.entries(data.assets)) {
-    assert.deepEqual(Object.keys(a.profiles), ['1d-6m','1d-1y','1w-6m','1w-1y']);
+    const keys = ['1d-6m','1d-1y','1w-6m','1w-1y'];
+    assert.deepEqual(Object.keys(a.profiles), ['BTC','ETH'].includes(symbol) ? [...keys,...keys.map(k=>'usd-'+k)] : keys);
     for (const key of Object.keys(a.profiles)) {
       const {descriptor:d,snapshot:p} = profile(symbol,key);
       assert.equal(M.validate(p,symbol,d.asof,d),p);
@@ -33,7 +34,7 @@ test('all daily and weekly profiles validate their own source scope and complete
       count++;
     }
   }
-  assert.equal(count,312);
+  assert.equal(count,320);
 });
 
 test('BTC and ETH long windows compare endpoint years with unequal coverage disclosed', () => {
@@ -222,8 +223,8 @@ test('axis labels stay compact and use the source exchange timezone', () => {
 test('long daily coverage is real and does not backfill pre-launch futures or newer ETFs', () => {
   for (const symbol of ['NDX','SPX','SPY','AAPL']) {
     const a = data.assets[symbol];
-    assert.equal(a.health.requestedStart,'1998-01-01');
-    assert.equal(a.health.historyStart,'1998-01-02');
+    assert.equal(a.health.requestedStart,'1900-01-01');
+    assert.ok(a.health.historyStart<'1998-01-01',symbol);
     assert.ok(a.health.bars > 7000,symbol);
     assert.ok(a.seasyears.some(row=>row[0]===1998),symbol);
   }
@@ -234,6 +235,42 @@ test('long daily coverage is real and does not backfill pre-launch futures or ne
     const start = Date.parse(a.health.historyStart)/1000;
     for (const method of ['corr','dtw']) for (const s of a.replay.cases[method]) {
       assert.ok(s.bars.every(row=>row[0]>=start),a.k);
+    }
+  }
+});
+
+test('lifetime coverage never equates a fresh snapshot with complete history', () => {
+  for (const [symbol,a] of Object.entries(data.assets)) {
+    assert.equal(a.coverage.first,a.health.historyStart,symbol);
+    assert.equal(a.coverage.fullHistoryVerified,false,symbol);
+    assert.ok(a.coverage.continuity.status);
+    assert.ok(a.coverage.startStatus);
+  }
+  assert.equal(data.assets.AAPL.health.historyStart,'1980-12-12');
+  assert.equal(data.assets.AMD.coverage.startStatus,'missing-early');
+  assert.equal(data.assets.SOFI.coverage.startStatus,'before-reference');
+});
+
+test('early USD reference profiles do not invent or splice exchange candles', () => {
+  for (const symbol of ['BTC','ETH']) {
+    for (const key of ['1d-6m','1d-1y','1w-6m','1w-1y']) {
+      const {snapshot:p,descriptor:d}=profile(symbol,'usd-'+key);
+      assert.equal(p.source,'Coin Metrics');
+      assert.equal(p.series,'usd');
+      assert.equal(p.priceBasis,'usd-reference-close');
+      assert.equal(p.coverage.first,symbol==='BTC'?'2010-07-18':'2015-08-08');
+      for (const s of [p.current,...p.cases.corr,...Object.values(p.annualCases).flat()]) {
+        assert.ok(s.bars.every(r=>[r[1],r[2],r[3],r[5]].every(v=>v===null)));
+        assert.equal(M.seriesData(s,0,false).candles,false);
+        assert.equal(M.seriesData(s,0,false).volume.length,0);
+      }
+      if (key==='1d-1y') {
+        assert.equal(p.comparison[0].eligibleStart,'2018-01-01');
+        assert.equal(p.comparison[0].candidates,365);
+      }
+      assert.throws(()=>M.validate(p,symbol,d.asof,{...d,source:'Binance'}),/Profile source/);
+      const fake=structuredClone(p);fake.current.bars[0][1]=fake.current.bars[0][4];
+      assert.throws(()=>M.validate(fake,symbol,d.asof,d),/fabricated/);
     }
   }
 });

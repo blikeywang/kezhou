@@ -155,17 +155,17 @@ class CompletedCandlesTests(unittest.TestCase):
         self.assertIn("/%5ENDX?", calls[0])
         self.assertIn("query2", calls[1])
 
-    def test_default_daily_request_uses_fixed_1998_start_not_a_rolling_range(self):
+    def test_default_daily_request_allows_pre_1970_history_without_1998_cutoff(self):
         now = stamp("2026-11-05T08:00:00")
         with patch.object(fetch, "_get", return_value=yahoo_payload()) as get, \
              patch.object(fetch.time, "time", return_value=now):
             fetch.fetch_yahoo("^NDX")
         query = parse_qs(urlparse(get.call_args.args[0]).query)
-        self.assertEqual(query["period1"], [str(stamp("1998-01-01T00:00:00"))])
+        self.assertEqual(query["period1"], [str(stamp("1900-01-01T00:00:00"))])
         self.assertEqual(query["period2"], [str(now)])
         self.assertEqual(query["interval"], ["1d"])
         self.assertNotIn("range", query)
-        self.assertEqual(fetch.LAST_HISTORY["^NDX"]["requestedStart"], "1998-01-01")
+        self.assertEqual(fetch.LAST_HISTORY["^NDX"]["requestedStart"], "1900-01-01")
 
     def test_explicit_range_remains_available_without_claiming_1998(self):
         with patch.object(fetch, "_get", return_value=yahoo_payload()) as get:

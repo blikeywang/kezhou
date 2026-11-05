@@ -68,6 +68,7 @@ def build_replay(symbol, group, prim, ts, close, history, source, ticker, config
     return {
         "version": 1, "symbol": symbol, "interval": interval or ("4h" if group == "crypto" else "1d"),
         "timeZone": history["timeZone"], "priceBasis": history["priceBasis"],
+        "dataKind": history.get("dataKind", "ohlcv"), "coverage": history.get("coverage"),
         "source": source, "ticker": ticker, "asof": ts[-1], "window": window,
         "horizons": cfg["H"], "current": segment(n - 1, "current"), "cases": cases,
         "annualCases": annual_cases,

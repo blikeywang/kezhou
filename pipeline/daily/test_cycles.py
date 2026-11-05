@@ -180,10 +180,32 @@ class ProfileTests(unittest.TestCase):
             fetch.LAST_HISTORY[pair] = fetch.LAST_HISTORY[(pair, interval)] = daily
         with patch.dict(fetch.LAST_HISTORY, {"BTCUSDT": base}), \
              patch.object(fetch, "fetch_symbol", return_value=([1],[1],[1])), \
-             patch.object(fetch, "fetch_binance", side_effect=daily_fetch):
+             patch.object(fetch, "fetch_binance", side_effect=daily_fetch), \
+             patch.object(fetch, "fetch_coinmetrics", return_value={"source":"Coin Metrics"}):
             result = run.get_ohlc("BTC", "crypto", False)[3]
             self.assertIs(result["history"], base)
             self.assertIs(result["dailyHistory"], daily)
+
+    def test_early_reference_profiles_are_independent_close_only_series(self):
+        h = history("2010-07-18")
+        h.update(source="Coin Metrics", ticker="BTC / USD", dataKind="close-only", priceBasis="usd-reference-close")
+        for row in h["bars"]:
+            row[1] = row[2] = row[3] = row[5] = None
+        with tempfile.TemporaryDirectory() as directory:
+            profiles = cycles.refresh_profiles("BTC", self.meta, h, {}, self.now, Path(directory), series="usd")
+            self.assertEqual(set(profiles), {"usd-"+k for k in cycles.configurations("crypto")})
+            self.assertTrue(all(p["source"] == "Coin Metrics" for p in profiles.values()))
+        p = cycles.build_profile("BTC", self.meta, h, "usd-1d-1y", cycles.configurations("crypto")["1d-1y"], self.now)
+        self.assertEqual(p["comparison"][0]["candidates"], 365)
+        self.assertEqual(p["comparison"][0]["eligibleStart"], "2018-01-01")
+        self.assertEqual(p["ticker"], "BTC / USD")
+        self.assertTrue(all(row[1:4] == [None,None,None] and row[5] is None for row in p["current"]["bars"]))
+
+    def test_usd_profile_rejects_a_binance_substitution(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = cycles.refresh_profiles("BTC", self.meta, self.history, {}, self.now, Path(directory), series="usd")
+            self.assertTrue(all(p["status"] == "unavailable" for p in result.values()))
+            self.assertFalse(list(Path(directory).glob("*.json")))
 
 
 if __name__ == "__main__":

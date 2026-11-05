@@ -82,13 +82,18 @@ def _prepare_history(path: Path) -> None:
             if not descriptor.get("url"):
                 continue
             expected = f"./history-profiles/{symbol}-{key}.json"
-            if key not in {"1d-6m", "1d-1y", "1w-6m", "1w-1y"} or descriptor["url"] != expected:
+            allowed = {"1d-6m", "1d-1y", "1w-6m", "1w-1y"}
+            if symbol in {"BTC", "ETH"}:
+                allowed |= {"usd-" + k for k in allowed}
+            if key not in allowed or descriptor["url"] != expected:
                 raise ValueError(f"Invalid profile path: {symbol}/{key}")
             payload = (ROOT / "prototype" / "history-profiles" / f"{symbol}-{key}.json").read_bytes()
             profile = json.loads(payload)
             if any(profile.get(field) != value for field, value in {
                 "symbol": symbol, "profileKey": key, "version": 1, "asof": descriptor["asof"],
                 "interval": descriptor["interval"], "window": descriptor["window"],
+                "series": descriptor.get("series"), "source": descriptor.get("source"),
+                "dataKind": descriptor.get("dataKind"),
             }.items()):
                 raise ValueError(f"Profile descriptor mismatch: {symbol}/{key}")
             target = path.parent / "history-profiles"

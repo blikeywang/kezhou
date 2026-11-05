@@ -20,6 +20,16 @@
 .hr-statistics{border-block:1px solid var(--line);padding:12px 0;margin:12px 0}
 .hr-statistics summary{font-size:13px;color:var(--ink2);cursor:pointer;margin-bottom:8px}
 .hr-statistics .t{min-width:600px}
+.hr-data-audit{border-block:1px solid var(--line);padding:10px 0;margin:10px 0;font-size:12px;color:var(--ink2);line-height:1.7;overflow-wrap:anywhere}
+.hr-data-audit summary{cursor:pointer;color:var(--ink)}
+.hr-data-audit summary span{display:block;color:var(--gold);font-size:11px}
+.hr-data-audit dl{margin:10px 0;display:grid;gap:8px}
+.hr-data-audit dl>div{display:grid;grid-template-columns:145px minmax(0,1fr);gap:12px}
+.hr-data-audit dt{color:var(--mut)}
+.hr-data-audit dd{margin:0;font-variant-numeric:tabular-nums}
+.hr-data-audit a{color:var(--acc);text-decoration:underline}
+.hr-data-audit p{margin:5px 0;color:var(--mut)}
+@media(max-width:600px){.hr-data-audit dl>div{grid-template-columns:minmax(0,1fr);gap:0}.hr-profiles>[data-control=source]{width:100%}}
 #history-base-analysis[hidden],#history-base-health[hidden],#history-base-scope[hidden],#history-base-verdict[hidden]{display:none}
 @media(max-width:480px){.hr-years{grid-template-columns:minmax(0,1fr);gap:12px}.hr-year{padding:0}.hr-year+.hr-year{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}.hr-profiles .hr-segment{max-width:100%}.hr-cycle-heading{align-items:flex-start}}
 .hr-tools [data-method=year][aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
