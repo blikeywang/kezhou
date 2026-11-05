@@ -37,3 +37,32 @@ cannot estimate a reliable win rate or validate the new event strategy.
 Validation: signed-token trust boundaries and tampering; event prefix/future
 invariance; same-event deduplication; original engine/horizon/pair/market and
 SQLite ledger tests; public exporter, UI health, and portal checks.
+
+Live verification (2026-11-05): Site version 13, source
+`393cc8b932ad388de24981e00d9a870006b3ee24`, restored indexed bounded
+archive reads. The previous full-archive JSON ranking exhausted D1's resource
+window. Per-symbol batches also avoid D1's compound SELECT term limit.
+The OIDC fetch uses manual redirect mode and rejects non-2xx; Workers does not
+support the Fetch standard's `redirect: error` mode.
+
+GitHub run `41962518703` returned an actual successful paper result at
+03:35:32 UTC: ledger time 03:35:27.418, six fresh symbols, zero open positions,
+44 closed singles. Public `latest.json` independently returned that ledger time
+and `executionOutcome: success`. The additional close was the existing BTC
+position's original stop, located in a past 5M bar during recovery; it was not
+a new entry or a contemporaneous fill. Recovered single net P&L: -$2,232.03.
+
+Owner-authenticated model submission `model-recovery-20261105T0338Z` and audit
+`audit-recovery-20261105T0340Z` were saved and read back. The NQ pullback plan
+has entry 28402–28406, original stop 28420, target 28362 before nearby support,
+0.125% risk and a 60-minute expiry; it remains conditional, not a claimed fill.
+The audit covered all six active targets and reconsidered old gates with current
+evidence. NQ/10M and XAG/1H were explicitly released; pair gates remain held
+because nearby leg targets do not support the old projected ratio rewards.
+
+A Site-linked hourly model task was saved and independently read back as enabled,
+starting 2026-11-05 12:08 Asia/Singapore and repeating each hour at :08.
+The task forms new six-asset model plans, rereads context, reviews all required
+targets and old gates, submits, and verifies saved IDs. Its saved state is not
+proof of a future scheduled run; the initial owner-authenticated write/readback
+above verifies the source and writer. Monitor actual model/review timestamps.
