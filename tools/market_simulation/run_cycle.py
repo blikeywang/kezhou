@@ -46,7 +46,7 @@ def run():
                 # Public identity claims only: never log the token, headers or request URL.
                 segment = identity.split('.')[1]
                 claims = json.loads(base64.urlsafe_b64decode(segment + '=' * (-len(segment) % 4)))
-                print(json.dumps({'runnerIdentity': {k: claims.get(k) for k in ('repository_id', 'repository_owner_id', 'sub', 'ref', 'workflow_ref', 'event_name', 'runner_environment', 'iat', 'nbf', 'exp')}}))
+                print(json.dumps({'runnerIdentity': {k: claims.get(k) for k in ('iss', 'aud', 'repository_id', 'repository_owner_id', 'sub', 'ref', 'workflow_ref', 'event_name', 'runner_environment', 'iat', 'nbf', 'exp')}}))
             stage = 'paper-cycle'
             result = request_json(urllib.request.Request(AUDIENCE, data=b'{}', method='POST', headers={
                 'Authorization': 'Bearer ' + identity, 'OAI-Sites-Authorization': 'Bearer ' + site_token,
