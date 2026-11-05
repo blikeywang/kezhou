@@ -467,6 +467,9 @@
       else if ([this.data.current, this.selected].some(s => !s.bars.every(M.candleValid))) warnings.push(this.t(
         '部分 OHLC 不完整或结算价超出高低区间，相关图表以真实收盘线显示，未补造 K 线。',
         'Incomplete or inconsistent OHLC: affected charts use the original close line; no candles are fabricated.'));
+      if ([this.data.current, this.selected].some(M.zeroRangeSegment)) warnings.push(this.t(
+        '部分片段的源数据开、高、低全部等于收盘，改用收盘线显示；这些字段不足以核实日内振幅，不能视为完整日内结构。',
+        'Some segments have source O/H/L equal to close throughout and are shown as close lines. These fields cannot verify intraday ranges or complete intraday structure.'));
       if (this.data.priceBasis === 'adjusted') warnings.push(this.t('价格按数据源复权口径。','Prices use source-adjusted OHLC.'));
       if (this.profileKey) {
         const status = M.profileStatus(this.descriptor);

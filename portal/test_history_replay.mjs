@@ -142,6 +142,19 @@ test('invalid candles fall back to true closes and never get clamped or fabricat
   assert.equal(s.bars[s.end][3],s.bars[s.end][4]+10);
 });
 
+test('zero-range source history is readable without implying verified intraday OHLC', () => {
+  const s={start:0,end:2,bars:[[-300000000,10,10,10,10,0],[-299913600,11,11,11,11,0],[-299827200,12,12,12,12,0]]};
+  const original=structuredClone(s);
+  assert.equal(M.zeroRangeSegment(s),true);
+  const line=M.seriesData(s,0,false);
+  assert.equal(line.candles,false);
+  assert.deepEqual(line.price.map(r=>r.value),[10,11,12]);
+  assert.deepEqual(s,original);
+  s.bars[1][2]=12;
+  assert.equal(M.zeroRangeSegment(s),false);
+  assert.equal(M.seriesData(s,0,false).candles,true);
+});
+
 test('cross-chart ranges align matching bars instead of unrelated calendar dates', () => {
   const a = replay.current, b = replay.cases.corr[0];
   const range = {from:a.start-15,to:a.end+5};

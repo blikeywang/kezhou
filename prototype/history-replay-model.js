@@ -9,6 +9,9 @@
     return row.slice(1, 5).every(positive) &&
       row[3] <= Math.min(row[1], row[4]) && Math.max(row[1], row[4]) <= row[2];
   }
+  function zeroRangeSegment(s) {
+    return s.bars.length > 1 && s.bars.every(r => candleValid(r) && r[1] === r[2] && r[2] === r[3] && r[3] === r[4]);
+  }
   function validate(data, symbol, asof, descriptor) {
     if (!data || data.version !== 1 || data.symbol !== symbol ||
         !['4h', '1d', '1w'].includes(data.interval) || data.asof !== asof) {
@@ -112,7 +115,7 @@
     const rows = visibleRows(s, reveal);
     const factor = indexed ? 100 / s.bars[s.start][4] : 1;
     // Never repair a settlement/out-of-range candle. Preserve its close as a line.
-    const candles = s.bars.every(candleValid);
+    const candles = s.bars.every(candleValid) && !zeroRangeSegment(s);
     return {
       candles,
       price: rows.map(r => candles
@@ -154,5 +157,5 @@
     if (kind === 'time') return parts.hour + ':' + parts.minute;
     return parts.month + '/' + parts.day;
   }
-  return {validate, profileStatus, caseList, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
+  return {validate, profileStatus, caseList, candleValid, zeroRangeSegment, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
 });
