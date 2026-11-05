@@ -198,10 +198,32 @@ def fetch_source(token: str) -> dict:
     raise ValueError("No source response")
 
 
+def review_flow(flow: dict) -> dict:
+    """Bound model context without changing A/B anchors or historical pivot values."""
+    result = {k: v for k, v in flow.items() if k != "assets"}
+    result["fullSource"] = "https://traderhome-histroy.xyz/market-simulation/data/latest.json"
+    result["summaryPolicy"] = "每市场保留最近12根1H柱、12个拐点及最新12组比较；每组保留原始A/B时点与共同锚点。这是输出摘要，不把背离限定于固定小时窗口。完整证据见fullSource的cryptoOrderFlow。"
+    result["assets"] = []
+    for asset in flow.get("assets", []):
+        compact = {"symbol": asset["symbol"]}
+        for kind in ("spot", "perpetual"):
+            market = asset.get(kind, {})
+            summary = {k: v for k, v in market.items() if k not in ("series", "hourly", "divergences")}
+            hourly = market.get("hourly", {})
+            summary["hourly"] = {k: v for k, v in hourly.items() if k not in ("series", "pivots", "comparisons")}
+            summary["hourly"].update(series=hourly.get("series", [])[-12:], pivots=hourly.get("pivots", [])[-12:],
+                comparisons=sorted(hourly.get("comparisons", []), key=lambda x: (x.get("b", {}).get("time", 0), x.get("a", {}).get("time", 0)))[-12:])
+            compact[kind] = summary
+        result["assets"].append(compact)
+    return result
+
+
 def publish(public: dict, history: dict, output: Path, secrets=()) -> None:
     encoded = {"status.json": json.dumps({"schema": public["schema"], "publishedAt": public["publishedAt"]}),
                "latest.json": json.dumps(public, ensure_ascii=False, separators=(",", ":"), allow_nan=False),
                "history.json": json.dumps(history, ensure_ascii=False, separators=(",", ":"), allow_nan=False)}
+    if public.get("cryptoOrderFlow"):
+        encoded["crypto-flow-review.json"] = json.dumps(review_flow(public["cryptoOrderFlow"]), ensure_ascii=False, separators=(",", ":"), allow_nan=False)
     for body in encoded.values():
         if any(secret and len(secret) >= 12 and secret in body for secret in secrets):
             raise ValueError("Credential content detected; refusing publication")

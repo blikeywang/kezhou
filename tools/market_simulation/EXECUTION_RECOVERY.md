@@ -66,3 +66,16 @@ The task forms new six-asset model plans, rereads context, reviews all required
 targets and old gates, submits, and verifies saved IDs. Its saved state is not
 proof of a future scheduled run; the initial owner-authenticated write/readback
 above verifies the source and writer. Monitor actual model/review timestamps.
+
+Follow-up execution correction: `rules-3.1.1-event-auction-10m` distinguishes an
+hourly model observation from an explicit audit hold. A model wait still replaces
+older plans, but does not suppress newer rule evidence for the full hour. An
+unconsumed executable model plan retains priority, and explicit suspended gates
+remain in force. Regression tests cover each case without changing frozen fills.
+
+The publisher also writes `crypto-flow-review.json`, a compact view of the existing
+public OKX 1H pivot evidence. It keeps original A/B times, prices, CVD anchors,
+OI, confirmation status and evidence ID; limiting output to 12 comparisons is not
+a fixed-hour divergence definition. The Site model context reads this bounded
+public evidence without forwarding credentials, separately marks stale/unavailable
+data, and points to the full series already published in `latest.json`.

@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from export_public import SYMBOLS, NoRedirect, prepare, publish
+from export_public import SYMBOLS, NoRedirect, prepare, publish, review_flow
 
 NOW = 1790656000000
 
@@ -32,6 +32,18 @@ def sample():
 
 
 class PublicExportTests(unittest.TestCase):
+    def test_flow_summary_preserves_cross_day_pivot_values_and_evidence(self):
+        old={"time":100,"cvd":-3,"cvdAnchor":50,"oi":12}
+        pairs=[{"a":old,"b":{"time":i+10000,"cvdAnchor":50}} for i in range(20)]
+        source={"schema":"crypto-flow-2.0","generatedAt":NOW,"evidenceId":"immutable","assets":[{"symbol":"BTC","spot":{"series":[1],"hourly":{"series":list(range(20)),"pivots":[old],"comparisons":pairs}}}]}
+        before=json.dumps(source)
+        result=review_flow(source); h=result["assets"][0]["spot"]["hourly"]
+        self.assertEqual(result["evidenceId"],"immutable")
+        self.assertNotIn("series",result["assets"][0]["spot"])
+        self.assertEqual(len(h["series"]),12); self.assertEqual(len(h["comparisons"]),12)
+        self.assertEqual(h["comparisons"][0]["a"],old)
+        self.assertEqual(json.dumps(source),before)
+
     def test_all_trades_survive_and_unknown_private_fields_do_not(self):
         public, history = prepare(sample(), NOW)
         body = json.dumps(public)
