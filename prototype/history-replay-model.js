@@ -50,7 +50,24 @@
         ids.add(s.id);
       });
     }
+    for (const [year, cases] of Object.entries(data.annualCases || {})) {
+      if (!/^\d{4}$/.test(year) || !Array.isArray(cases) || !cases.length || cases.length > 3) {
+        throw new Error('Invalid annual cases');
+      }
+      const ids = new Set();
+      cases.forEach(s => {
+        segment(s);
+        if (s.endTime >= data.current.startTime || !Number.isFinite(s.score) || ids.has(s.id) ||
+            [s.startTime,s.endTime].some(t => String(new Date(t*1000).getUTCFullYear()) !== year)) {
+          throw new Error('Invalid annual match');
+        }
+        ids.add(s.id);
+      });
+    }
     return data;
+  }
+  function caseList(data, method, year) {
+    return method === 'year' ? (data.annualCases?.[year] || []) : (data.cases?.[method] || []);
   }
   const futureCount = s => s.bars.length - s.end - 1;
   const clampReveal = (s, n) => Math.min(futureCount(s), Math.max(0, Math.trunc(Number(n) || 0)));
@@ -103,5 +120,5 @@
     if (kind === 'time') return parts.hour + ':' + parts.minute;
     return parts.month + '/' + parts.day;
   }
-  return {validate, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
+  return {validate, caseList, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
 });

@@ -6,6 +6,7 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 
 import fetch
+import build
 import replay
 import run
 import universe
@@ -86,6 +87,14 @@ class ReplaySnapshotTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.build()
 
+    def test_annual_cases_share_original_bars_and_reject_wrong_year(self):
+        self.prim["annualMatchEnds"] = {"2023": [[200, .93]]}
+        case = self.build()["annualCases"]["2023"][0]
+        self.assertEqual(case["bars"][case["end"]][0], self.ts[200])
+        self.prim["annualMatchEnds"] = {"2018": [[200, .93]]}
+        with self.assertRaisesRegex(ValueError, "crosses the selected year"):
+            self.build()
+
     def test_inconsistent_candle_is_preserved_not_repaired(self):
         self.history["bars"][200][3] = self.close[200] + 1
         case = self.build()["cases"]["corr"][0]
@@ -109,6 +118,40 @@ class ReplaySnapshotTests(unittest.TestCase):
             with self.assertRaises(SystemExit):
                 run.main()
         publish.assert_not_called()
+
+
+class AnnualMatchingTests(unittest.TestCase):
+    def setUp(self):
+        self.ts, self.close, self.low = run._synth(3000, stamp("2017-08-17T04:00:00"), 14400, 123)
+
+    def prim(self):
+        with patch.dict(build.CFG["crypto"], {"prefilter": 20}):
+            return build.build_prim(self.ts, self.close, self.low, "crypto")
+
+    def test_annual_matches_exist_outside_global_top_six_and_are_non_overlapping(self):
+        p = self.prim()
+        self.assertIn("2018", p["annualMatchEnds"])
+        for year, matches in p["annualMatchEnds"].items():
+            self.assertLessEqual(len(matches), 3)
+            self.assertEqual([score for _, score in matches], sorted((score for _, score in matches), reverse=True))
+            for e, _ in matches:
+                self.assertEqual(build._date(self.ts[e])[:4], year)
+                self.assertEqual(build._date(self.ts[e-59])[:4], year)
+                self.assertLess(e+180, len(self.ts))
+            self.assertTrue(all(abs(a[0]-b[0])>=60 for i,a in enumerate(matches) for b in matches[i+1:]))
+
+    def test_historical_gaps_are_excluded_from_matching_and_forward_periods(self):
+        self.ts[1000:] = [t+14400 for t in self.ts[1000:]]
+        p = self.prim()
+        collections = list(p["matchEnds"].values()) + list(p["annualMatchEnds"].values())
+        for matches in collections:
+            for e, _ in matches:
+                self.assertEqual(self.ts[e+180]-self.ts[e-59], 239*14400)
+
+    def test_current_gap_fails_instead_of_mislabeling_a_ten_day_window(self):
+        self.ts[-10:] = [t+14400 for t in self.ts[-10:]]
+        with self.assertRaisesRegex(ValueError, "current crypto window"):
+            self.prim()
 
 
 if __name__ == "__main__":

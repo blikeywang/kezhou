@@ -35,10 +35,10 @@ def yahoo_payload():
 class UniverseTests(unittest.TestCase):
     def test_every_catalogue_symbol_has_a_real_mapping(self):
         names = universe.load_names()
-        self.assertEqual(len(names), 48)
+        self.assertEqual(len(names), 78)
         self.assertEqual(set(names), set(fetch.CRYPTO) | set(fetch.YAHOO))
         cats = universe.catalogue(names)
-        self.assertEqual([len(cats[g]) for g in universe.GROUPS], [10, 18, 8, 6, 6])
+        self.assertEqual([len(cats[g]) for g in universe.GROUPS], [10, 48, 8, 6, 6])
         self.assertEqual(fetch.YAHOO["NQ"], "NQ=F")
         self.assertEqual(fetch.YAHOO["ES"], "ES=F")
         self.assertEqual(fetch.YAHOO["NDX"], "^NDX")
@@ -114,6 +114,34 @@ class CompletedCandlesTests(unittest.TestCase):
             ts, close, _ = fetch._fetch_binance_from("https://example.test", "BTCUSDT", "4h", 10)
         self.assertEqual(ts, [1])
         self.assertEqual(close, [10])
+
+    def test_crypto_history_paginates_past_old_bar_limit_and_stops_at_fixed_start(self):
+        base, count = stamp("2016-12-31T00:00:00"), 13010
+        rows = [[(base+i*14400)*1000, "10", "12", "9", "11", "1",
+                 (base+(i+1)*14400)*1000-1] for i in range(count)]
+        def get(url):
+            end = int(parse_qs(urlparse(url).query)["endTime"][0])
+            return [r for r in rows if r[0] <= end][-1000:]
+        with patch.object(fetch, "_get", side_effect=get), patch.object(fetch.time, "sleep"), \
+             patch.object(fetch.time, "time", return_value=base+count*14400+1):
+            ts, _, _ = fetch.fetch_binance("TESTUSDT")
+        self.assertEqual(len(ts), count-6)
+        self.assertEqual(ts[0], stamp("2017-01-01T00:00:00"))
+        self.assertEqual(ts[-1], base+(count-1)*14400)
+        self.assertEqual(fetch.LAST_HISTORY["TESTUSDT"]["requestedStart"], "2017-01-01")
+
+    def test_explicit_crypto_bar_limit_does_not_claim_full_history(self):
+        rows = [[i*1000, "10", "12", "9", "11", "1", i*1000+999] for i in range(1, 20)]
+        with patch.object(fetch, "_get", return_value=rows):
+            ts, _, _ = fetch.fetch_binance("TESTUSDT", bars=5)
+        self.assertEqual(ts, [15, 16, 17, 18, 19])
+        self.assertIsNone(fetch.LAST_HISTORY["TESTUSDT"]["requestedStart"])
+
+    def test_crypto_repeated_page_is_rejected_instead_of_repeating_prices(self):
+        rows = [[i*14400000, "10", "12", "9", "11", "1", (i+1)*14400000-1] for i in range(1, 1001)]
+        with patch.object(fetch, "_get", return_value=rows), patch.object(fetch.time, "sleep"):
+            with self.assertRaisesRegex(RuntimeError, "did not move backwards"):
+                fetch._fetch_binance_from("https://example.test", "TESTUSDT", "4h", None)
 
     def test_yahoo_url_encoding_and_fallback(self):
         calls = []

@@ -8,8 +8,8 @@ const data = JSON.parse(html.match(/<script id="APPDATA"[^>]*>(.*?)<\/script>/s)
 const asset = data.assets.NQ;
 const replay = asset.replay;
 
-test('all 48 snapshots validate identity, ordering and original matching windows', () => {
-  assert.equal(Object.keys(data.assets).length, 48);
+test('all 78 snapshots validate identity, ordering and original matching windows', () => {
+  assert.equal(Object.keys(data.assets).length, 78);
   for (const [symbol, a] of Object.entries(data.assets)) {
     const r = M.validate(a.replay, symbol, a.health.asofTimestamp);
     const current = r.current;
@@ -103,6 +103,39 @@ test('crypto cases preserve four-hour timestamps rather than resolving by date',
     assert.equal(s.bars[s.end][0]-s.bars[s.end-1][0],14400);
     assert.equal(s.end-s.start+1,60);
   }
+});
+
+test('BTC and ETH include 2018 and 2023 with independent annual correlation cases', () => {
+  for (const symbol of ['BTC','ETH']) {
+    const a = data.assets[symbol], r = a.replay;
+    assert.equal(a.health.historyStart,'2017-08-17');
+    assert.equal(a.health.requestedStart,'2017-01-01');
+    assert.ok(a.health.bars>12000);
+    for (const year of ['2018','2023']) {
+      assert.ok(a.seasyears.some(row=>String(row[0])===year));
+      const cases = M.caseList(r,'year',year);
+      assert.equal(cases.length,3);
+      for (const s of cases) {
+        assert.equal(String(new Date(s.startTime*1000).getUTCFullYear()),year);
+        assert.equal(String(new Date(s.endTime*1000).getUTCFullYear()),year);
+        assert.ok(s.endTime<r.current.startTime);
+        assert.equal(M.seriesData(s,0,false).price.at(-1).time,s.endTime);
+        const span = s.bars.slice(s.start,s.end+181);
+        assert.ok(span.every((bar,i)=>!i||bar[0]-span[i-1][0]===14400));
+      }
+    }
+    assert.equal(M.caseList(r,'corr','2018'),r.cases.corr);
+    assert.equal(M.caseList(r,'dtw','2023'),r.cases.dtw);
+    assert.deepEqual(M.caseList(r,'year','1998'),[]);
+  }
+});
+
+test('annual snapshots reject mislabeled years and keep legacy snapshots usable', () => {
+  const wrong = structuredClone(data.assets.BTC.replay);
+  wrong.annualCases['1998'] = wrong.annualCases['2018'];
+  assert.throws(()=>M.validate(wrong,'BTC',wrong.asof));
+  delete wrong.annualCases;
+  assert.equal(M.validate(wrong,'BTC',wrong.asof),wrong);
 });
 
 test('axis labels stay compact and use the source exchange timezone', () => {

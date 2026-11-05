@@ -89,7 +89,7 @@ def get_ohlc(sym, grp, self_test):
     ts, close, low = fetch.fetch_symbol(sym)
     source = "Binance" if grp == "crypto" else "Yahoo Finance"
     return ts, close, low, {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source),
-                            "quality": fetch.LAST_QUALITY.get(fetch.YAHOO.get(sym), {}),
+                            "quality": fetch.LAST_QUALITY.get(fetch.NAMES[sym]["ticker"], {}),
                             "history": fetch.LAST_HISTORY.get(fetch.NAMES[sym]["ticker"])}
 
 

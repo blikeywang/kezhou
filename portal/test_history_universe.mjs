@@ -41,10 +41,11 @@ function browser(saved = {}, search = '') {
 test('search resolves canonical tickers, provider codes and aliases across markets', () => {
   const { context: c } = browser();
   for (const [query, symbol] of [['NQ', 'NQ'], ['NQ1!', 'NQ'], ['ES=F', 'ES'], ['^NDX', 'NDX'],
-    ['us tech 100', 'NDX'], ['纳指', 'NDX'], ['特斯拉', 'TSLA'], ['PLTR', 'PLTR']]) {
+    ['us tech 100', 'NDX'], ['纳指', 'NDX'], ['特斯拉', 'TSLA'], ['PLTR', 'PLTR'],
+    ['安谋','ARM'], ['甲骨文','ORCL'], ['火箭实验室','RKLB'], ['阿里巴巴','BABA'], ['HOOD','HOOD']]) {
     assert.equal(c.searchSymbols(query)[0].k, symbol, query);
   }
-  assert.equal(c.universe().length, 48);
+  assert.equal(c.universe().length, 78);
   assert.equal(c.searchSymbols('not-a-symbol').length, 0);
 });
 
@@ -121,7 +122,12 @@ test('early market context stays a separate index instead of spliced futures pri
   assert.equal(nq.replay,originalReplay);
   assert.notEqual(c.catData(c.findSymbol('NDX')),nq);
   assert.equal(c.findSymbol('ES').historyReference,'SPX');
-  assert.equal(c.historyScopeHTML(c.findSymbol('BTC'),c.D.assets.BTC),'');
+  const btc = c.D.assets.BTC;
+  btc.health.requestedStart = '2017-01-01';
+  const crypto = c.historyScopeHTML(c.findSymbol('BTC'),btc);
+  assert.ok(crypto.includes('四小时'));
+  assert.ok(crypto.includes('Binance'));
+  assert.ok(!crypto.includes('日线目标'));
 });
 
 test('a larger sampling scope is not presented as a probability movement', () => {

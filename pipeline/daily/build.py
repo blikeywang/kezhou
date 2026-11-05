@@ -54,7 +54,14 @@ def build_prim(ts, close, low, grp):
     ref_end = n - 1; ref_start = ref_end - W + 1
     ref_z = _zwin(logC, ref_start, W)
 
-    ends = [e for e in range(W - 1, ref_start) if e + max_h <= n - 1]
+    # A missing crypto candle must not silently turn six bars into more than a day.
+    gaps = np.r_[0, np.cumsum(np.diff(ts) != 14400)] if grp == "crypto" else np.zeros(n, dtype=int)
+    if gaps[-1] != gaps[ref_start]:
+        raise ValueError("current crypto window contains missing four-hour candles")
+    ends = [e for e in range(W - 1, ref_start)
+            if e + max_h <= n - 1 and gaps[e + max_h] == gaps[e - W + 1]]
+    if not ends:
+        raise ValueError("no complete historical matching windows")
     corrs = np.array([float(np.dot(ref_z, _zwin(logC, e - W + 1, W)) / W) for e in ends])
     order = np.argsort(-corrs)
     corr_by_end = {ends[k]: float(corrs[k]) for k in range(len(ends))}
@@ -75,6 +82,17 @@ def build_prim(ts, close, low, grp):
 
     ch_corr = select([ends[k] for k in order])
     ch_dtw = select(sorted(dtw_by_end, key=lambda e: dtw_by_end[e]))
+
+    annual_ends = {}
+    if grp == "crypto":
+        for k in order:
+            e = ends[k]
+            year = _date(ts[e])[:4]
+            if _date(ts[e - W + 1])[:4] != year:
+                continue
+            chosen = annual_ends.setdefault(year, [])
+            if len(chosen) < 3 and all(abs(e - row[0]) >= W for row in chosen):
+                chosen.append([e, corr_by_end[e]])
 
     def cond_matches(chosen, score_of, score_round):
         fwd = {h: [] for h in H}; paths = []; rows = []
@@ -99,7 +117,8 @@ def build_prim(ts, close, low, grp):
 
     bas = []
     for h in H:
-        arr = np.array([C[e + h] / C[e] - 1 for e in range(W - 1, ref_start) if e + h <= n - 1])
+        arr = np.array([C[e + h] / C[e] - 1 for e in range(W - 1, ref_start)
+                        if e + h <= n - 1 and gaps[e + h] == gaps[e - W + 1]])
         st = _stats(arr); bas.append([h, st["p_up"], st["median"]])
 
     # Top-K 敏感性:观察 corr / DTW 在 20、30、全量案例下相对基准的方向是否稳定。
@@ -130,6 +149,7 @@ def build_prim(ts, close, low, grp):
             "corr": [[e, corr_by_end[e]] for e in ch_corr[:6]],
             "dtw": [[e, dtw_by_end[e]] for e in ch_dtw[:6]],
         },
+        "annualMatchEnds": dict(sorted(annual_ends.items())),
     }
 
 
@@ -151,7 +171,8 @@ def build_season(ts, close, grp):
         row = [y]
         for d, step in zip(days, bars):
             j = bi + step
-            r = float(C[j] / C[bi] - 1) if j <= n - 1 else None
+            complete = j <= n - 1 and (grp != "crypto" or ts[j] - ts[bi] == step * 14400)
+            r = float(C[j] / C[bi] - 1) if complete else None
             row.append(round(r, 4) if r is not None else None)
             if r is not None:
                 buckets[d].append(r)

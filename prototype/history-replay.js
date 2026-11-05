@@ -15,7 +15,7 @@
       this.timer = null;
       this.destroyed = false;
       this.key = options.symbol + ':' + options.asof;
-      this.state = Object.assign({method:'corr', index:0, reveal:0, indexed:false,
+      this.state = Object.assign({method:'corr', year:'', index:0, reveal:0, indexed:false,
         linked:false, volume:true, context:'match', speed:750}, preferences.get(this.key));
       this.zh = options.lang !== 'en';
       this.load();
@@ -29,7 +29,8 @@
     fmt(value) {
       return value == null ? '-' : value.toLocaleString('en-US', {maximumFractionDigits: value < 1 ? 5 : 2});
     }
-    get selected() { return this.data.cases[this.state.method][this.state.index]; }
+    get cases() { return M.caseList(this.data, this.state.method, this.state.year); }
+    get selected() { return this.cases[this.state.index]; }
     async load() {
       this.reloadRequired = false;
       this.root.innerHTML = '<div class="hr-empty" role="status">' + this.t('正在读取历史 K 线...', 'Loading historical candles...') + '</div>';
@@ -55,7 +56,10 @@
         if (this.destroyed) return;
         this.data = M.validate(data, this.options.symbol, this.options.asof);
         if (!window.LightweightCharts) throw new Error('Chart library unavailable');
-        this.state.index = Math.min(this.state.index, this.data.cases[this.state.method].length - 1);
+        const years = Object.keys(this.data.annualCases || {});
+        if (!years.includes(this.state.year)) this.state.year = years.includes('2018') ? '2018' : years.at(-1) || '';
+        if (this.state.method === 'year' && !years.length) this.state.method = 'corr';
+        this.state.index = Math.min(this.state.index, this.cases.length - 1);
         this.state.reveal = M.clampReveal(this.selected, this.state.reveal);
         this.render();
       } catch (error) {
@@ -83,7 +87,11 @@
       this.root.innerHTML = '<div class="hr-heading"><h3>' + t('相似历史 · K 线核对', 'Historical analogues · chart comparison') +
         '</h3><small>' + escape(this.data.source + ' · ' + this.data.ticker + ' · ' + this.data.interval + ' · ' + this.data.timeZone) + '</small></div>' +
         '<div class="hr-tools"><div class="hr-segment" role="group" aria-label="' + t('匹配方法', 'Matching method') + '">' +
-        '<button type="button" data-method="corr" title="' + t('corr 越大越相似', 'Higher correlation is more similar') + '">' + t('形状相似', 'Correlation') + '</button><button type="button" data-method="dtw" title="' + t('DTW 距离越小越相似', 'Lower DTW distance is more similar') + '">' + t('节奏相似', 'DTW') + '</button></div>' +
+        '<button type="button" data-method="corr" title="' + t('corr 越大越相似', 'Higher correlation is more similar') + '">' + t('形状相似', 'Correlation') + '</button><button type="button" data-method="dtw" title="' + t('DTW 距离越小越相似', 'Lower DTW distance is more similar') + '">' + t('节奏相似', 'DTW') + '</button>' +
+        (Object.keys(this.data.annualCases || {}).length ? '<button type="button" data-method="year" title="' +
+          t('各年份内的形状相似案例', 'Correlation cases within each year') + '">' + t('按年核对', 'By year') + '</button>' : '') + '</div>' +
+        (Object.keys(this.data.annualCases || {}).length ? '<select class="hr-select" data-control="year" aria-label="' + t('历史年份', 'Historical year') + '" hidden>' +
+          Object.keys(this.data.annualCases).sort().reverse().map(year => '<option value="' + year + '">' + year + '</option>').join('') + '</select>' : '') +
         '<label class="hr-case-label"><select class="hr-select" data-control="case" aria-label="' + t('相似历史案例', 'Historical case') + '"></select></label>' +
         this.icon('previous', 'chevron-left', t('上一个案例', 'Previous case')) +
         this.icon('next', 'chevron-right', t('下一个案例', 'Next case')) + '</div>' +
@@ -95,6 +103,7 @@
         this.icon('volume', 'chart-bar', t('成交量', 'Volume')) +
         this.icon('reset', 'focus-centered', t('重置视野', 'Reset view')) +
         this.icon('fullscreen', 'arrows-maximize', t('全屏', 'Fullscreen')) + '</div>' +
+        '<div class="hr-scope" role="status"></div>' +
         '<div class="hr-chart-grid">' + pane('current', t('当前窗口', 'Current window')) + pane('history', t('历史案例', 'Historical case')) + '</div>' +
         '<div class="hr-playback"><span class="hr-playback-label">' + t('历史后续走势', 'Historical continuation') + '</span>' +
         this.icon('rewind', 'player-skip-back', t('回到匹配终点', 'Back to match end')) +
@@ -122,6 +131,10 @@
       this.root.addEventListener('change', event => {
         const control = event.target.dataset.control;
         if (control === 'case') this.selectCase(this.state.method, Number(event.target.value));
+        if (control === 'year') {
+          if (!this.data.annualCases?.[event.target.value]) return;
+          this.stop(); this.state.year = event.target.value; this.selectCase('year', 0);
+        }
         if (control === 'context') {this.state.context = event.target.value; this.fit();}
         if (control === 'speed') {
           const playing = !!this.timer; this.stop(); this.state.speed = Number(event.target.value);
@@ -149,10 +162,11 @@
       this.updateControls();
     }
     selectCase(method, index) {
-      if (!['corr','dtw'].includes(method)) return;
+      if (!['corr','dtw','year'].includes(method)) return;
+      if (this.data && !M.caseList(this.data, method, this.state.year).length) return;
       this.stop();
       this.state.method = method;
-      this.state.index = this.data ? Math.max(0, Math.min(index, this.data.cases[method].length - 1)) : index;
+      this.state.index = this.data ? Math.max(0, Math.min(index, this.cases.length - 1)) : index;
       this.state.reveal = 0;
       if (this.data) {this.drawCharts(); this.updateControls();}
     }
@@ -287,17 +301,23 @@
       this.root.querySelectorAll('[data-method]').forEach(b => b.setAttribute('aria-pressed', b.dataset.method === this.state.method));
       this.root.querySelectorAll('[data-price]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.price === 'indexed') === this.state.indexed));
       const select = query('[data-control=case]');
-      if (select.dataset.method !== this.state.method) {
-        select.innerHTML = this.data.cases[this.state.method].map((s, i) =>
+      const caseKey = this.state.method + ':' + this.state.year;
+      if (select.dataset.method !== caseKey) {
+        select.innerHTML = this.cases.map((s, i) =>
           '<option value="' + i + '">#' + (i+1) + ' · ' +
-          escape(this.date(s.endTime)) + ' · ' + (this.state.method === 'corr' ? 'corr ' + s.score.toFixed(3) : 'DTW ' + s.score.toFixed(2)) + '</option>').join('');
-        select.dataset.method = this.state.method;
+          escape(this.date(s.endTime)) + ' · ' + (this.state.method !== 'dtw' ? 'corr ' + s.score.toFixed(3) : 'DTW ' + s.score.toFixed(2)) + '</option>').join('');
+        select.dataset.method = caseKey;
       }
       select.value = String(this.state.index);
+      const year = query('[data-control=year]');
+      if (year) {year.hidden = this.state.method !== 'year'; year.value = this.state.year;}
+      query('.hr-scope').textContent = this.state.method === 'year' ? this.state.year + this.t(
+        ' · 年内 corr 前 ' + this.cases.length + ' 个非重叠案例 · 下方统计仍基于全历史样本',
+        ' · Top ' + this.cases.length + ' non-overlapping correlation cases in this year · Statistics below use the full history') : '';
       query('[data-control=context]').value = this.state.context;
       query('[data-control=speed]').value = String(this.state.speed);
       query('[data-action=previous]').disabled = this.state.index === 0;
-      query('[data-action=next]').disabled = this.state.index === this.data.cases[this.state.method].length - 1;
+      query('[data-action=next]').disabled = this.state.index === this.cases.length - 1;
       query('[data-action=link]').setAttribute('aria-pressed', this.state.linked);
       query('[data-action=volume]').setAttribute('aria-pressed', this.state.volume);
       ['rewind','back'].forEach(a => query('[data-action='+a+']').disabled = this.state.reveal === 0);
@@ -313,6 +333,9 @@
         this.date(this.selected.bars[this.selected.end+this.state.reveal][0]);
       query('.hr-result').className = 'hr-result' + (ret == null ? '' : ret >= 0 ? ' up' : ' dn');
       const warnings = [];
+      if (this.data.interval === '4h') warnings.push(this.t(
+        '匹配窗口：60 根四小时 K 线，约 10 天；局部形态相似不代表整轮牛熊周期相同。',
+        'Matching window: 60 four-hour bars, about 10 days. Local similarity does not establish an equivalent market cycle.'));
       if ([this.data.current, this.selected].some(s => !s.bars.every(M.candleValid))) warnings.push(this.t(
         '部分 OHLC 不完整或结算价超出高低区间，相关图表以真实收盘线显示，未补造 K 线。',
         'Incomplete or inconsistent OHLC: affected charts use the original close line; no candles are fabricated.'));

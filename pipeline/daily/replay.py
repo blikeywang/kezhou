@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+from datetime import datetime, timezone
 from build import CFG
 
 
@@ -39,15 +40,30 @@ def build_replay(symbol, group, prim, ts, close, history, source, ticker):
         }
 
     cases = {}
+    def historical(end, key, score):
+        if end < window - 1 or end >= n - window or end + horizon >= n:
+            raise ValueError("Historical match crosses current window or lacks forward history")
+        return segment(end, key, float(score))
+
     for method in ("corr", "dtw"):
         cases[method] = []
         for end, score in prim["matchEnds"][method]:
-            if end >= n - window or end + horizon >= n:
-                raise ValueError("Historical match crosses current window or lacks forward history")
-            cases[method].append(segment(end, f"{method}-{ts[end]}", float(score)))
+            cases[method].append(historical(end, f"{method}-{ts[end]}", score))
+    annual_cases = {}
+    for year, matches in prim.get("annualMatchEnds", {}).items():
+        if not 1 <= len(matches) <= 3:
+            raise ValueError("Invalid annual case count")
+        annual_cases[year] = []
+        for end, score in matches:
+            case = historical(end, f"year-{year}-{ts[end]}", score)
+            if any(str(datetime.fromtimestamp(case[key], timezone.utc).year) != year
+                   for key in ("startTime", "endTime")):
+                raise ValueError("Annual case crosses the selected year")
+            annual_cases[year].append(case)
     return {
         "version": 1, "symbol": symbol, "interval": "4h" if group == "crypto" else "1d",
         "timeZone": history["timeZone"], "priceBasis": history["priceBasis"],
         "source": source, "ticker": ticker, "asof": ts[-1], "window": window,
         "horizons": cfg["H"], "current": segment(n - 1, "current"), "cases": cases,
+        "annualCases": annual_cases,
     }

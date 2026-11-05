@@ -53,8 +53,8 @@ class TrustMetricsTest(unittest.TestCase):
 class FetchFailoverTest(unittest.TestCase):
     def test_binance_failover_and_endpoint(self):
         original_get = fetch._get
-        rows = [[1000, "9", "11", "9", "10", "1", 1999],
-                [2000, "10", "12", "10", "11", "1", 2999]]
+        rows = [[1514764800000, "9", "11", "9", "10", "1", 1514779199999],
+                [1514779200000, "10", "12", "10", "11", "1", 1514793599999]]
         calls = []
 
         def fake_get(url, timeout=25, retries=3):
@@ -68,7 +68,7 @@ class FetchFailoverTest(unittest.TestCase):
             ts, close, low = fetch.fetch_symbol("BTC")
         finally:
             fetch._get = original_get
-        self.assertEqual(ts, [1, 2])
+        self.assertEqual(ts, [1514764800, 1514779200])
         self.assertEqual(close, [10.0, 11.0])
         self.assertEqual(low, [9.0, 10.0])
         self.assertIn("data-api.binance.vision", calls[0])

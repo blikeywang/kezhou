@@ -1,4 +1,8 @@
 .history-replay{margin:24px 0 20px;scroll-margin-top:125px;border-top:1px solid var(--line2);padding-top:16px;min-width:0;letter-spacing:0}
+.hr-scope{font-size:11px;color:var(--ink2);line-height:1.6;margin:0 0 10px;overflow-wrap:anywhere}
+.hr-scope:empty{display:none}
+.hr-tools [data-method=year][aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
+.hr-tools [hidden]{display:none}
 .hr-heading,.hr-tools,.hr-playback,.hr-footer,.hr-status,.hr-pane-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .hr-heading{justify-content:space-between;margin-bottom:10px}
 .hr-heading h3{font-size:17px;line-height:1.4;margin:0}

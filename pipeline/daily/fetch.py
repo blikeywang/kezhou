@@ -30,6 +30,7 @@ LAST_QUALITY = {}
 LAST_HISTORY = {}
 YAHOO_BASES = ("https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com")
 DAILY_HISTORY_START = "1998-01-01"
+CRYPTO_HISTORY_START = "2017-01-01"
 
 
 def _prices(close, low, allow_separate_close=False):
@@ -51,13 +52,15 @@ def _get(url, timeout=25, retries=3):
     raise RuntimeError(f"GET failed after {retries}: {url}\n{last}")
 
 
-def _fetch_binance_from(base, pair, interval, bars):
+def _fetch_binance_from(base, pair, interval, bars, start=None):
     """从一个 Binance 官方入口向前分页;中途失败则整批丢弃。"""
     out = []  # rows: [time_s, open, high, low, close, volume]
     now_ms = int(time.time() * 1000)
+    start_ms = (int(datetime.fromisoformat(start).replace(tzinfo=timezone.utc).timestamp()) * 1000
+                if start else None)
     end = now_ms
     endpoint = base.rstrip("/") + "/api/v3/klines"
-    while len(out) < bars:
+    while bars is None or len(out) < bars:
         url = f"{endpoint}?symbol={pair}&interval={interval}&limit=1000"
         if end is not None:
             url += f"&endTime={end}"
@@ -66,7 +69,7 @@ def _fetch_binance_from(base, pair, interval, bars):
             break
         chunk = []
         for r in rows:
-            if int(r[6]) >= now_ms:
+            if int(r[6]) >= now_ms or (start_ms is not None and int(r[0]) < start_ms):
                 continue
             close, low = float(r[4]), float(r[3])
             _prices(close, low)
@@ -76,24 +79,29 @@ def _fetch_binance_from(base, pair, interval, bars):
         if next_end >= end:
             raise RuntimeError("Binance pagination did not move backwards")
         end = next_end
-        if len(rows) < 1000:
+        if len(rows) < 1000 or (start_ms is not None and end < start_ms):
             break
         time.sleep(0.25)
-    out = out[-bars:]
+    if bars is not None:
+        out = out[-bars:]
     if not out:
         raise RuntimeError(f"empty Binance response from {base}")
     if any(out[i][0] >= out[i + 1][0] for i in range(len(out) - 1)):
         raise RuntimeError(f"non-monotonic Binance timestamps from {base}")
-    LAST_HISTORY[pair] = {"bars": out, "timeZone": "UTC", "priceBasis": "spot"}
+    gaps = sum(out[i + 1][0] - out[i][0] != 14400 for i in range(len(out) - 1)) if interval == "4h" else 0
+    LAST_QUALITY[pair] = {"gapCount": gaps} if gaps else {}
+    LAST_HISTORY[pair] = {"bars": out, "timeZone": "UTC", "priceBasis": "spot", "requestedStart": start}
     return [r[0] for r in out], [r[4] for r in out], [r[3] for r in out]
 
 
-def fetch_binance(pair, interval="4h", bars=12000):
+def fetch_binance(pair, interval="4h", bars=None, start=CRYPTO_HISTORY_START):
     """抓取 Binance K线;在官方只读入口间故障转移。"""
+    if bars is not None and (not isinstance(bars, int) or bars <= 0):
+        raise ValueError("bars must be a positive integer or None")
     errors = []
     for base in BINANCE_BASES:
         try:
-            data = _fetch_binance_from(base, pair, interval, bars)
+            data = _fetch_binance_from(base, pair, interval, bars, start=None if bars is not None else start)
             LAST_ENDPOINT[pair] = base
             return data
         except Exception as e:  # noqa: BLE001
