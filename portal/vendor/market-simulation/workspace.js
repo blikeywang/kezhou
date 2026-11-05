@@ -1,5 +1,6 @@
 import {renderReviewCards} from './reviews.mjs?v=1';
 import {renderPerformance} from './performance.mjs?v=2';
+import {renderComparison} from './comparison.mjs?v=1';
 import {pipelineHealth,pipelineNotice} from './health.mjs?v=1';
 import {renderFlow,updateFlowChoice} from './flow.mjs?v=2';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
@@ -15,7 +16,7 @@ const empty=text=>'<div class="ms-empty">'+E(text)+'</div>';
 const side=s=>s===1?'多':'空';
 const levels=items=>'<div class="ms-levels">'+items.map(([label,value,tone])=>'<div><small>'+E(label)+'</small><b class="'+(tone??'')+'">'+E(value)+'</b></div>').join('')+'</div>';
 const source=r=>'<div class="ms-source">'+E(r.source??'')+' · 数据截止 '+dt(r.dataThrough??r.through)+'（UTC+8）'+(r.caveat?'<br>'+E(r.caveat):'')+'</div>';
-let data=null,history=null,tab='plans',horizon='10M',tradeBook='all',tradeHorizon='all',journalSymbol='all',journalHorizon='all',journalPage=0,loading=false,historyError='',clockTimer;
+let data=null,history=null,tab=location.hash==='#comparison'?'comparison':'plans',horizon='10M',tradeBook='all',tradeHorizon='all',journalSymbol='all',journalHorizon='all',journalPage=0,loading=false,historyError='',clockTimer;
 const market=s=>data.markets.find(m=>m.symbol===s);
 const gate=(book,key,h='10M')=>currentGate(data.review?.gates,book,key,h);
 const review=(book,id)=>lastCheck(data.review?.history,book,id);
@@ -133,12 +134,13 @@ function renderJournal(){
 }
 function renderPanel(){
   document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===tab);b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false');});
-  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='performance'?renderPerformance(data,{fmt,cash,dt,badge}):tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
+  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='comparison'?renderComparison(data.comparison,{E,fmt,cash,dt,badge,empty,candles}):tab==='performance'?renderPerformance(data,{fmt,cash,dt,badge}):tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
 }
 function singleDetail(r){
   const p=r.plan,h=r.horizon??'10M',current=data.reports.some(x=>x.id===r.id);
   const marks=p?[{value:p.entry,label:'入场',color:'#8cb7ff'},{value:p.stop,label:'止损',color:'#ec919a'},{value:p.target,label:'止盈',color:'#76d9b9'}]:[{value:r.levels?.support,label:'支撑'},{value:r.levels?.resistance,label:'阻力'},{value:r.costMap?.vwap??r.levels?.vwap,label:'成本',color:'#8cb7ff'}];
   let html='<p class="ms-prose">'+E(r.summary)+'</p>'+levels(p?[['计划入场',p.entryZone?p.entryZone.map(v=>fmt(v)).join(' – '):fmt(p.entry)],['原始止损',fmt(p.stop),'bad-text'],['目标止盈',fmt(p.target),'good']]:[['支撑',fmt(r.levels?.support)],['成交重心',fmt(r.costMap?.vwap??r.levels?.vwap)],['阻力',fmt(r.levels?.resistance)]]);
+  if(r.modelReview?.ictView)html+='<section class="ms-detail-section"><h4>小时模型 · ICT 视角</h4><p class="ms-prose">'+E(r.modelReview.ictView)+'</p></section>';
   if(r.auction?.previous?.tpo){const ref=r.auction.previous.tpo;marks.push({value:ref.val,label:'TPO VAL',color:'#d4b97b'},{value:ref.poc,label:'TPO POC',color:'#d4b97b'},{value:ref.vah,label:'TPO VAH',color:'#d4b97b'});}
   if(r.auction?.event?.profile?.tpo){const t=r.auction.event.profile.tpo;marks.push({value:t.poc,label:'事件POC',color:'#8cb7ff'},{value:t.val,label:'事件VAL',color:'#8cb7ff'},{value:t.vah,label:'事件VAH',color:'#8cb7ff'});}
   if(current)html+=candles(r.chartBars?.length?r.chartBars:chartBars(market(r.symbol),h,Date.now()),marks,r.symbol+' '+h+' 价格与计划')+'<p class="ms-chart-caption">最新可用的完整 '+h+' K 线与本次研判价位。悬停蜡烛可读价格；历史研判不借用后续行情补画当时图形。</p>';

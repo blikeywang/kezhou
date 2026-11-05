@@ -34,6 +34,8 @@ COST = fields("valid reason from through bars volumeCoverage totalVolume vwap si
 SETUP = {**fields("stage name reason eventId side boundary triggeredAt confirmedAt stop target netRR"), "map": COST}
 PLAN = fields("entry stop target side notBefore expires riskFraction maxHoldMs") | {"entryZone": [True]}
 VALUE_AREA = fields("poc val vah")
+ICT = {**fields("version stage reason side eventId reaction stop target targetLabel netRR session premiumDiscount"),
+       "sweep": fields("time level extreme"), "shift": fields("time level"), "gap": fields("from through low high mid")}
 AUCTION_PROFILE = {**fields("valid reason from through complete blocks expectedBlocks blockMinutes rowSize vwap"),
                    "tpo": VALUE_AREA, "vp": VALUE_AREA,
                    "rows": [fields("price count volume")], "singlePrints": [fields("low high")]}
@@ -44,11 +46,11 @@ REPORT = {
     **fields("id symbol horizon hour published dataThrough price direction regime score agreement stale summary counter action strategy source sourceUrl caveat hash version intervalMs origin"),
     "levels": fields("support resistance vwap ema20 ema50 atr rsi"), "plan": PLAN,
     "factors": [FACTOR], "costMap": COST, "setup": SETUP, "blockers": [True],
-    "modelReview": fields("id thesis pairs validUntil"), "chartBars": [BAR],
+    "modelReview": fields("id thesis pairs validUntil ictView"), "chartBars": [BAR], "ict": ICT,
     "auction": AUCTION,
 }
 ENTRY = {**fields("version published dataThrough summary action counter score agreement plannedEntry source sourceUrl hash"),
-         "factors": [FACTOR], "costMap": COST, "setup": SETUP, "auction": AUCTION}
+         "factors": [FACTOR], "costMap": COST, "setup": SETUP, "auction": AUCTION, "ict": ICT}
 TRADE = {
     **fields("horizon maxHoldMs id reportId symbol strategy side quantity entry stop target opened processed risk entryFee closed exit exitFee pnl r reason version processedThrough exitLogic exitBarStart exitBarEnd executionIntervalMs"),
     "entrySnapshot": ENTRY, "events": [fields("time kind reason price pnl reportId")],
@@ -78,6 +80,9 @@ ACCOUNT = {
     "trades": [TRADE], "curve": [fields("time equity")], "decisions": [fields("time symbol reportId reason")],
 }
 PAIR_ACCOUNT = {**ACCOUNT, "trades": [PAIR_TRADE], "decisions": [fields("time pair reason")]}
+COMPARISON = {**fields("version started updated rules"), "books": [{**fields("key label version"),
+    "account": ACCOUNT, "reports": [REPORT],
+    "metrics": fields("equity unrealized risk maxDrawdown closed open winRate netPnl profitFactor meanR days assessment")} ]}
 MARKET = {
     **fields("symbol intervalMs volumeReliable source sourceUrl fetched dailyFetched cached"),
     **{key: [BAR] for key in ("bars", "executionBars", "contextBars", "dailyBars", "weeklyBars")},
@@ -157,6 +162,7 @@ def prepare(raw: dict, published_at: int) -> tuple[dict, dict]:
                   **project(raw["pairs"], fields("equity unrealized gross maxDrawdown") | {"stalePairs": [True]})},
         "cloud": cloud, "review": review,
         "model": project(raw.get("model", {}), fields("id published reviewId")),
+        "comparison": project(raw.get("comparison"), COMPARISON),
         "history": {"file": "history.json", "singleCount": len(reports), "pairCount": len(pairs),
                     "from": min((r["published"] for r in reports + pairs), default=as_of), "through": max((r["published"] for r in reports + pairs), default=as_of),
                     "scope": "最近约 60 小时短线研判及最多 60 份各长周期研判；成交账本保留全部记录。"},

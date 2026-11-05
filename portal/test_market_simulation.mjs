@@ -2,6 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {performance,groups,modelTime} from './vendor/market-simulation/performance.mjs';
 import {pipelineHealth,pipelineNotice} from './vendor/market-simulation/health.mjs';
+import {renderComparison} from './vendor/market-simulation/comparison.mjs';
+test('comparison distinguishes zero samples and escapes stored ICT rationale',()=>{
+ const html=renderComparison({started:1,updated:2,rules:'same fees',books:[{key:'ICT',label:'ICT',metrics:{open:0,closed:0,days:0,winRate:null,profitFactor:null,equity:100000,netPnl:0,maxDrawdown:0,meanR:null,assessment:'样本不足'},account:{initial:100000,trades:[],decisions:[]},reports:[{id:'x',symbol:'BTC',summary:'<img src=x onerror=alert(1)>',ict:{stage:'retest'},action:'wait'}]}]}, {E:escape,fmt:x=>x==null?'—':String(x),cash:String,dt:String,badge:x=>x,empty:x=>x,candles:()=>''});
+ assert.match(html,/样本不足/);assert.match(html,/&lt;img/);assert.ok(!html.includes('<img'));assert.ok(!html.includes('NaN'));assert.ok(!html.includes('Infinity'));
+});
 test('fresh publication and heartbeat never conceal a stalled paper ledger',()=>{
  const now=10_000_000,data={publishedAt:now,account:{lastRun:1},cloud:{connected:true,lastScheduledSuccess:now},model:{published:1},review:{history:[{published:1}]}};
  assert.equal(pipelineHealth(data,now)[0].healthy,false);

@@ -79,3 +79,25 @@ OI, confirmation status and evidence ID; limiting output to 12 comparisons is no
 a fixed-hour divergence definition. The Site model context reads this bounded
 public evidence without forwarding credentials, separately marks stale/unavailable
 data, and points to the full series already published in `latest.json`.
+
+## First unattended hourly run verified — 2026-11-05
+
+The scheduled cloud run started at 12:09:20 Singapore time and completed at
+12:17:40. It published `model-flow-20261105T0415Z` at 12:15:38 and
+`audit-flow-20261105T0418Z` at 12:17:09, with all six required targets covered.
+It reread changing market data after rejected stale-reference submissions.
+The next automatic Pages publication, run `41967460717`, exported at 12:23:32
+and deployed at 12:24:13. All six model report IDs/hashes and the audit ID/hash/
+target IDs were matched against the public files. This is actual scheduled
+execution evidence, separate from the initial manual writer verification.
+
+## ICT forward comparison
+
+The new ICT/TPO page compares two independent, simultaneous paper cohorts,
+each starting with USD 100,000 and 0.125% per-trade risk. The existing ledger
+is preserved. ICT is an explicit mechanical approximation of confirmed swing
+sweep, displacement/MSS, three-candle FVG and subsequent retracement, with
+nearest known targets and costs. All execution is prospective; no old fills
+are regenerated. Empty samples stay unranked. The hourly context includes
+both books and asks for per-asset `ictView` analysis; exact 5M submission
+references are now separate from 10M report prices. No extra schedule was made.

@@ -32,6 +32,18 @@ def sample():
 
 
 class PublicExportTests(unittest.TestCase):
+    def test_comparison_retains_frozen_evidence_and_null_metrics_without_private_fields(self):
+        raw=sample()
+        raw['comparison']={'started':NOW,'books':[{'key':'ICT','account':raw['account'],
+            'metrics':{'winRate':None,'profitFactor':None,'closed':0,'secret':'PRIVATE'},
+            'reports':[{'id':'ict','ict':{'stage':'retest','gap':{'low':100,'high':102,'through':NOW,'secret':'PRIVATE'}},'modelReview':{'ictView':'Wait for confirmation'}}]}]}
+        public,_=prepare(raw,NOW);book=public['comparison']['books'][0]
+        self.assertIsNone(book['metrics']['winRate'])
+        self.assertIsNone(book['metrics']['profitFactor'])
+        self.assertEqual(book['reports'][0]['ict']['gap']['through'],NOW)
+        self.assertEqual(book['reports'][0]['modelReview']['ictView'],'Wait for confirmation')
+        self.assertNotIn('PRIVATE',json.dumps(public))
+
     def test_flow_summary_preserves_cross_day_pivot_values_and_evidence(self):
         old={"time":100,"cvd":-3,"cvdAnchor":50,"oi":12}
         pairs=[{"a":old,"b":{"time":i+10000,"cvdAnchor":50}} for i in range(20)]
