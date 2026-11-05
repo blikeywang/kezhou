@@ -14,9 +14,7 @@
       this.charts = [];
       this.timer = null;
       this.destroyed = false;
-      this.key = options.symbol + ':' + options.asof;
-      this.state = Object.assign({method:'corr', year:'', index:0, reveal:0, indexed:false,
-        linked:false, volume:true, context:'match', speed:750}, preferences.get(this.key));
+      this.profileKey = options.profiles?.[options.profile] ? options.profile : '';
       this.zh = options.lang !== 'en';
       this.load();
     }
@@ -31,47 +29,114 @@
     }
     get cases() { return M.caseList(this.data, this.state.method, this.state.year); }
     get selected() { return this.cases[this.state.index]; }
+    profileControls() {
+      if (!Object.keys(this.options.profiles || {}).length) return '';
+      const interval = this.profileKey.split('-')[0], span = this.profileKey.split('-')[1] || '6m';
+      const button = (key, label, pressed) => '<button type="button" data-profile="' + key +
+        '" aria-pressed="' + pressed + '">' + label + '</button>';
+      return '<div class="hr-tools hr-profiles"><div class="hr-segment" role="group" aria-label="' + this.t('K 线周期','Candle interval') + '">' +
+        button('', this.t('短窗口','Short window'), !this.profileKey) +
+        button('1d-'+span, this.t('日线','Daily'), interval === '1d') +
+        button('1w-'+span, this.t('周线','Weekly'), interval === '1w') + '</div>' +
+        '<div class="hr-segment" role="group" aria-label="' + this.t('匹配长度','Matching length') + '">' +
+        button((interval || '1d')+'-6m', this.t('最近半年','Last 6 months'), span === '6m' && !!interval) +
+        button((interval || '1d')+'-1y', this.t('最近一年','Last year'), span === '1y' && !!interval) + '</div></div>';
+    }
+    bindProfiles() {
+      this.root.querySelectorAll('[data-profile]').forEach(button => {
+        button.onclick = () => {
+          if (this.profileKey === button.dataset.profile) return;
+          this.profileKey = button.dataset.profile;
+          this.load();
+        };
+      });
+    }
     async load() {
-      this.reloadRequired = false;
-      this.root.innerHTML = '<div class="hr-empty" role="status">' + this.t('正在读取历史 K 线...', 'Loading historical candles...') + '</div>';
+      this.stop(); this.removeCharts(); this.abort.abort();
+      const controller = this.abort = new AbortController();
+      const input = this.profileKey ? this.options.profiles[this.profileKey] : this.options.snapshot;
+      this.descriptor = input;
+      const asof = this.profileKey ? input?.asof : this.options.asof;
+      this.key = this.options.symbol + ':' + asof + ':' + this.profileKey;
+      this.state = Object.assign({method:this.profileKey ? 'year' : 'corr', year:'', index:0, reveal:0,
+        indexed:!!this.profileKey, linked:!!this.profileKey, volume:true, context:'match', speed:750}, preferences.get(this.key));
+      this.data = null;
+      let reloadRequired = false;
+      this.options.onProfileChange?.(this.profileKey, null, 'loading');
+      this.root.innerHTML = this.profileControls() + '<div class="hr-empty" role="status">' + this.t('正在读取历史 K 线...', 'Loading historical candles...') + '</div>';
+      this.bindProfiles();
       try {
-        const input = this.options.snapshot;
-        if (!input) throw new Error('No snapshot');
+        if (!input || (this.profileKey && !input.url)) throw new Error('No snapshot');
         let data = input;
         if (input.url) {
-          if (!/^\.\/replays\/[A-Za-z0-9_-]+\.json$/.test(input.url)) throw new Error('Invalid snapshot URL');
+          if (!/^\.\/(replays|history-profiles)\/[A-Za-z0-9_-]+\.json$/.test(input.url)) throw new Error('Invalid snapshot URL');
           data = snapshots.get(input.url);
           if (!data) {
-            const response = await fetch(input.url, {signal:this.abort.signal, credentials:'omit'});
+            const response = await fetch(input.url, {signal:controller.signal, credentials:'omit'});
             if (!response.ok) {
-              this.reloadRequired = response.status === 404;
+              reloadRequired = response.status === 404;
               throw new Error('Snapshot HTTP ' + response.status);
             }
             data = await response.json();
-            M.validate(data, this.options.symbol, this.options.asof);
+            M.validate(data, this.options.symbol, asof, input);
             if (snapshots.size >= 8) snapshots.delete(snapshots.keys().next().value);
             snapshots.set(input.url, data);
           }
         }
-        if (this.destroyed) return;
-        this.data = M.validate(data, this.options.symbol, this.options.asof);
+        if (this.destroyed || controller !== this.abort) return;
+        this.data = M.validate(data, this.options.symbol, asof, input);
         if (!window.LightweightCharts) throw new Error('Chart library unavailable');
         const years = Object.keys(this.data.annualCases || {});
-        if (!years.includes(this.state.year)) this.state.year = years.includes('2018') ? '2018' : years.at(-1) || '';
+        if (!years.includes(this.state.year)) this.state.year = String(this.data.verdict?.leader || (years.includes('2018') ? '2018' : years.at(-1) || ''));
         if (this.state.method === 'year' && !years.length) this.state.method = 'corr';
+        if (this.state.method !== 'year' && !this.data.cases[this.state.method]) this.state.method = 'corr';
         this.state.index = Math.min(this.state.index, this.cases.length - 1);
         this.state.reveal = M.clampReveal(this.selected, this.state.reveal);
         this.render();
+        this.options.onProfileChange?.(this.profileKey, this.data, this.profileKey ? M.profileStatus(input) : 'fresh');
       } catch (error) {
-        if (this.destroyed || error.name === 'AbortError') return;
-        const label = this.reloadRequired ? this.t('刷新快照','Reload snapshot') : this.t('重试','Retry');
-        this.root.innerHTML = '<div class="hr-empty" role="status">' +
-          (this.reloadRequired ? this.t('这份历史快照已失效或暂时缺失。', 'This historical snapshot has expired or is missing.') :
-            this.t('这份快照的 K 线暂不可用，统计结果仍可查看。', 'Candles are unavailable for this snapshot; statistics remain available.')) +
+        if (this.destroyed || controller !== this.abort || error.name === 'AbortError') return;
+        this.removeCharts(); this.data = null;
+        this.options.onProfileChange?.(this.profileKey, null, 'unavailable');
+        const label = reloadRequired ? this.t('刷新快照','Reload snapshot') : this.t('重试','Retry');
+        this.root.innerHTML = this.profileControls() + '<div class="hr-empty" role="status">' +
+          (reloadRequired ? this.t('这份历史快照已失效或暂时缺失。', 'This historical snapshot has expired or is missing.') :
+            this.t('这个窗口的历史数据暂不可用，可切换其他周期。', 'History for this window is unavailable. Other intervals remain accessible.')) +
           '<button class="hr-icon" type="button" title="' + label +
           '" aria-label="' + label + '"><i class="ti ti-refresh" aria-hidden="true"></i></button></div>';
-        this.root.querySelector('button').onclick = () => this.reloadRequired ? window.location.reload() : this.load();
+        this.bindProfiles();
+        this.root.querySelector('.hr-empty button').onclick = () => reloadRequired ? window.location.reload() : this.load();
       }
+    }
+    comparisonHTML() {
+      if (!this.data.comparison) return '';
+      const t = this.t.bind(this), v = this.data.verdict;
+      const verdict = v.reason === 'higher' ? t('形状分数较高：','Higher shape score: ') + v.leader :
+        v.reason === 'close' ? t('两年分数接近','Similar scores in both years') :
+        v.reason === 'weak' ? t('两年的形状相似度均偏弱','Both years have weak shape similarity') : t('历史不足，暂不判断','Insufficient history to compare');
+      const pct = n => (n >= 0 ? '+' : '') + (n*100).toFixed(1) + '%';
+      return '<section class="hr-comparison" aria-label="2018 / 2023"><div class="hr-cycle-heading"><h4>2018 / 2023</h4><b>' + verdict + '</b></div>' +
+        '<div class="hr-years">' + this.data.comparison.map(row => '<div class="hr-year"><div class="hr-year-title"><h4>' + row.year +
+          '</h4><strong>' + (row.available ? row.score.toFixed(3) : '-') + '</strong>' + (row.available ?
+            '<button type="button" class="hr-icon" data-year="' + row.year + '" title="' + t('打开','Open') + ' ' + row.year +
+            t(' 年 K 线',' candles') + '" aria-label="' + t('打开','Open') + ' ' + row.year + t(' 年 K 线',' candles') + '"><i class="ti ti-chart-candle" aria-hidden="true"></i></button>' : '') + '</div>' +
+          (row.available ? '<p>' + row.start + ' → ' + row.end + '</p><dl><div><dt>' + t('区间涨跌','Window return') + '</dt><dd>' + pct(row.return) +
+            '</dd></div><div><dt>' + t('收盘最大回撤','Close drawdown') + '</dt><dd>' + pct(row.drawdown) + '</dd></div></dl><p class="hr-year-coverage">' +
+            row.candidates + t(' 个可匹配终点 · ',' eligible endpoints · ') + row.eligibleStart + ' → ' + row.eligibleEnd + '</p>' :
+            '<p>' + t('没有满足完整窗口与后续行情的样本','No complete window with forward history') + '</p>') + '</div>').join('') + '</div>' +
+        '<p class="hr-cycle-note">' + t('同一标的、同一长度，按匹配终点年份归类；分数是对数收盘价形状相关性，不是上涨概率，也不代表涨跌幅、成交量或宏观条件相同。两年可用样本数可能不同，最高分不等于整轮牛熊周期相同。',
+          'Same instrument and length; year refers to the match endpoint. Log-close correlation is not an up probability or evidence of equal returns, volume or macro conditions. Unequal coverage and best-case selection do not establish the same market cycle.') + '</p></section>';
+    }
+    summaryHTML() {
+      if (!this.data.summary) return '';
+      const t = this.t.bind(this), unit = this.data.interval === '1w' ? t('周','weeks') : this.data.group === 'crypto' ? t('天','days') : t('交易日','sessions');
+      const pct = n => n == null ? '-' : (n*100).toFixed(1) + '%';
+      return '<details class="hr-statistics"><summary>' + t('该窗口的历史后续统计','Forward statistics for this window') + '</summary><div class="tw"><table class="t"><thead><tr>' +
+        [t('后续','Forward'),t('案例数','Cases'),t('上涨占比','Up rate'),t('收益中位数','Median return'),t('中间 50%','Middle 50%'),t('全样本上涨占比','Baseline up rate')].map(s => '<th>'+s+'</th>').join('') +
+        '</tr></thead><tbody>' + this.data.summary.map(row => '<tr><td>+' + row.bars + ' ' + unit + '</td><td>' + row.n + '</td><td>' + pct(row.upRate) +
+          '</td><td>' + pct(row.median) + '</td><td>' + pct(row.p25) + ' … ' + pct(row.p75) + '</td><td>' + pct(row.baseUpRate) + '</td></tr>').join('') +
+        '</tbody></table></div><p class="hr-cycle-note">' + t('从完整历史选取 corr ≥ 0.50 的最多 20 个互不重叠匹配区间，不只限于当前查看年份；0.50 是筛选门槛，不是统计显著性。后续观察区间仍可能互相重叠，样本并非统计独立；所有后续数据均早于当前窗口。小样本比例不构成预测或回测收益。',
+          'Up to 20 non-overlapping windows with corr ≥ 0.50 across the full history, not just the selected year. This threshold is not statistical significance. Forward horizons can overlap; samples are not independent. All outcomes predate the current window. Small-sample rates are not forecasts or strategy returns.') + '</p></details>';
     }
     icon(action, name, label) {
       return '<button type="button" class="hr-icon" data-action="' + action + '" title="' + escape(label) +
@@ -84,10 +149,13 @@
         t('匹配区间', 'Matched window') + ' · ' + this.data.window + t(' 根', ' bars') + '</span></div>' +
         '<div class="hr-dates"></div></div><div class="hr-ohlc"></div>' +
         '<div class="hr-chart-wrap"><div class="hr-chart"></div><div class="hr-shade"></div></div></div>';
-      this.root.innerHTML = '<div class="hr-heading"><h3>' + t('相似历史 · K 线核对', 'Historical analogues · chart comparison') +
+      this.root.innerHTML = this.profileControls() + '<div class="hr-heading"><h3>' + t('相似历史 · K 线核对', 'Historical analogues · chart comparison') +
         '</h3><small>' + escape(this.data.source + ' · ' + this.data.ticker + ' · ' + this.data.interval + ' · ' + this.data.timeZone) + '</small></div>' +
+        (this.profileKey ? '<p class="hr-profile-meta">' + this.data.window + t(' 根已完成 K 线 · 收盘覆盖至 ',' completed bars · Closed through ') + escape(this.data.asofDay) +
+          t(' · 历史起点 ',' · History starts ') + escape(this.data.historyStart) + '</p>' : '') + this.comparisonHTML() +
         '<div class="hr-tools"><div class="hr-segment" role="group" aria-label="' + t('匹配方法', 'Matching method') + '">' +
-        '<button type="button" data-method="corr" title="' + t('corr 越大越相似', 'Higher correlation is more similar') + '">' + t('形状相似', 'Correlation') + '</button><button type="button" data-method="dtw" title="' + t('DTW 距离越小越相似', 'Lower DTW distance is more similar') + '">' + t('节奏相似', 'DTW') + '</button>' +
+        '<button type="button" data-method="corr" title="' + t('corr 越大越相似', 'Higher correlation is more similar') + '">' + t('形状相似', 'Correlation') + '</button>' +
+        (this.data.cases.dtw ? '<button type="button" data-method="dtw" title="' + t('DTW 距离越小越相似', 'Lower DTW distance is more similar') + '">' + t('节奏相似', 'DTW') + '</button>' : '') +
         (Object.keys(this.data.annualCases || {}).length ? '<button type="button" data-method="year" title="' +
           t('各年份内的形状相似案例', 'Correlation cases within each year') + '">' + t('按年核对', 'By year') + '</button>' : '') + '</div>' +
         (Object.keys(this.data.annualCases || {}).length ? '<select class="hr-select" data-control="year" aria-label="' + t('历史年份', 'Historical year') + '" hidden>' +
@@ -115,13 +183,16 @@
         '<select class="hr-select" data-control="speed" aria-label="' + t('播放速度', 'Playback speed') + '"><option value="1500">0.5x</option><option value="750">1x</option><option value="250">3x</option></select>' +
         this.icon('all', 'eye', t('展开全部后续', 'Reveal all continuation')) + '</div>' +
         '<div class="hr-status"><span class="hr-coverage"></span><span class="hr-result" aria-live="polite"></span></div>' +
-        '<div class="hr-warning" role="status"></div><div class="hr-footer"><span>' +
+        '<div class="hr-warning" role="status"></div>' + this.summaryHTML() + '<div class="hr-footer"><span>' +
         t('浅色区：参与匹配 · 金色边界：匹配终点 · 历史相似不代表未来', 'Shaded: matched window · Gold edge: match end · Similarity is not a forecast') +
         '</span><span><a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView Lightweight Charts™</a> · <a href="./vendor/lightweight-charts/NOTICE" target="_blank" rel="noopener">Copyright (с) 2025 TradingView, Inc.</a></span></div>';
+      this.bindProfiles();
       this.onClick = event => {
         const button = event.target.closest('button');
         if (!button || !this.root.contains(button)) return;
-        if (button.dataset.method) this.selectCase(button.dataset.method, 0);
+        if ('profile' in button.dataset) return;
+        if (button.dataset.year) {this.state.year = button.dataset.year; this.selectCase('year', 0);}
+        else if (button.dataset.method) this.selectCase(button.dataset.method, 0);
         else if (button.dataset.price) {
           this.state.indexed = button.dataset.price === 'indexed';
           this.stop(); this.drawCharts(); this.updateControls();
@@ -177,7 +248,8 @@
       const color = key => styles.getPropertyValue(key).trim();
       this.charts = [this.data.current, this.selected].map((segment, index) => {
         const pane = this.root.querySelectorAll('.hr-pane')[index];
-        pane.querySelector('.hr-dates').textContent = this.date(segment.startTime) + ' → ' + this.date(segment.endTime);
+        pane.querySelector('.hr-dates').textContent = this.date(segment.startTime) + ' → ' +
+          (this.data.interval === '1w' ? segment.endDate : this.date(segment.endTime));
         const seriesData = M.seriesData(segment, index ? this.state.reveal : 0, this.state.indexed);
         const chart = L.createChart(pane.querySelector('.hr-chart'), {
           autoSize:true, layout:{background:{type:'solid',color:color('--pan2')},textColor:color('--ink2'),fontSize:10,attributionLogo:true},
@@ -299,19 +371,20 @@
       const query = selector => this.root.querySelector(selector);
       const count = M.futureCount(this.selected);
       this.root.querySelectorAll('[data-method]').forEach(b => b.setAttribute('aria-pressed', b.dataset.method === this.state.method));
+      this.root.querySelectorAll('[data-year]').forEach(b => b.setAttribute('aria-pressed', this.state.method === 'year' && b.dataset.year === this.state.year));
       this.root.querySelectorAll('[data-price]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.price === 'indexed') === this.state.indexed));
       const select = query('[data-control=case]');
       const caseKey = this.state.method + ':' + this.state.year;
       if (select.dataset.method !== caseKey) {
         select.innerHTML = this.cases.map((s, i) =>
           '<option value="' + i + '">#' + (i+1) + ' · ' +
-          escape(this.date(s.endTime)) + ' · ' + (this.state.method !== 'dtw' ? 'corr ' + s.score.toFixed(3) : 'DTW ' + s.score.toFixed(2)) + '</option>').join('');
+          escape(this.data.interval === '1w' ? s.endDate : this.date(s.endTime)) + ' · ' + (this.state.method !== 'dtw' ? 'corr ' + s.score.toFixed(3) : 'DTW ' + s.score.toFixed(2)) + '</option>').join('');
         select.dataset.method = caseKey;
       }
       select.value = String(this.state.index);
       const year = query('[data-control=year]');
       if (year) {year.hidden = this.state.method !== 'year'; year.value = this.state.year;}
-      query('.hr-scope').textContent = this.state.method === 'year' ? this.state.year + this.t(
+      query('.hr-scope').textContent = this.state.method === 'year' ? (this.profileKey ? this.t('终点年份 ','Endpoint year ') : '') + this.state.year + this.t(
         ' · 年内 corr 前 ' + this.cases.length + ' 个非重叠案例 · 下方统计仍基于全历史样本',
         ' · Top ' + this.cases.length + ' non-overlapping correlation cases in this year · Statistics below use the full history') : '';
       query('[data-control=context]').value = this.state.context;
@@ -340,7 +413,10 @@
         '部分 OHLC 不完整或结算价超出高低区间，相关图表以真实收盘线显示，未补造 K 线。',
         'Incomplete or inconsistent OHLC: affected charts use the original close line; no candles are fabricated.'));
       if (this.data.priceBasis === 'adjusted') warnings.push(this.t('价格按数据源复权口径。','Prices use source-adjusted OHLC.'));
-      if (this.options.stale) warnings.push(this.t('缓存快照，非实时行情。','Cached snapshot, not live prices.'));
+      if (this.profileKey) {
+        const status = M.profileStatus(this.descriptor);
+        if (status !== 'fresh') warnings.push(this.t('数据更新延迟：显示上次可用快照，非当前行情。','Update delayed: showing the last available snapshot, not current prices.'));
+      } else if (this.options.stale) warnings.push(this.t('缓存快照，非实时行情。','Cached snapshot, not live prices.'));
       query('.hr-warning').textContent = warnings.join(' ');
       const label = this.timer ? this.t('暂停','Pause') : this.t('播放后续','Play continuation');
       query('[data-action=play]').title = label; query('[data-action=play]').setAttribute('aria-label',label);

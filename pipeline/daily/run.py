@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
-import build, inject, replay  # noqa: E402
+import build, inject, replay, cycles  # noqa: E402
 
 UI_PATCH = os.path.join(os.path.dirname(__file__), "ui-explanations.patch")
 UI_MARKER = 'data-methods-version="2026-07-10"'
@@ -88,9 +88,19 @@ def get_ohlc(sym, grp, self_test):
     import fetch
     ts, close, low = fetch.fetch_symbol(sym)
     source = "Binance" if grp == "crypto" else "Yahoo Finance"
-    return ts, close, low, {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source),
+    details = {"source": source, "endpoint": fetch.LAST_ENDPOINT.get(sym, source),
                             "quality": fetch.LAST_QUALITY.get(fetch.NAMES[sym]["ticker"], {}),
                             "history": fetch.LAST_HISTORY.get(fetch.NAMES[sym]["ticker"])}
+    if grp == "crypto":
+        try:
+            pair = fetch.NAMES[sym]["ticker"]
+            fetch.fetch_binance(pair, interval="1d")
+            details["dailyHistory"] = fetch.LAST_HISTORY[(pair, "1d")]
+        except Exception as error:
+            details["profileError"] = str(error).splitlines()[0][:160]
+    else:
+        details["dailyHistory"] = details["history"]
+    return ts, close, low, details
 
 
 def data_status(last_ts, group, now=None):
@@ -102,6 +112,7 @@ def main(self_test=False):
     names = inject.load_meta_names()               # {sym:{nz,ne,grp}}
     old_assets, old_charts = _load_existing()
     assets, prims, seasons, grp_by = {}, {}, {}, {}
+    daily_history = {}
     failed, unavailable = [], []
     generated_at = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     # Limit source concurrency; matching and matplotlib stay on the main thread.
@@ -114,6 +125,7 @@ def main(self_test=False):
         t0 = time.time()
         try:
             ts, close, low, fetch_meta = pending[sym].result()
+            daily_history[sym] = fetch_meta.get("dailyHistory")
             P = build.build_prim(ts, close, low, grp)
             S = build.build_season(ts, close, grp)
             asset = build.build_asset(sym, meta["nz"], meta["ne"], grp, P, S)
@@ -153,6 +165,15 @@ def main(self_test=False):
     if not prims and not assets:
         raise SystemExit("all symbols failed and no previous data; aborting (site unchanged)")
 
+    profile_issues = []
+    if not self_test:
+        now = time.time()
+        for sym, asset in assets.items():
+            asset["profiles"] = cycles.refresh_profiles(sym, names[sym], daily_history.get(sym),
+                (old_assets.get(sym) or {}).get("profiles"), now)
+            profile_issues.extend(f"{sym}:{key}" for key, p in asset["profiles"].items() if p["status"] != "fresh")
+        print(f"long profiles: {len(assets)*4-len(profile_issues)} fresh, {len(profile_issues)} cached/stale/unavailable", flush=True)
+
     print("rendering charts …")
     charts = build.build_charts(prims, seasons, grp_by) if prims else {"dark": {}, "light": {}}
     # 只为「失败标的」及「整组失败的组」沿用旧图,绝不引入 v1 之外的标的
@@ -171,10 +192,11 @@ def main(self_test=False):
     stale = [s for s, a in assets.items() if a.get("health", {}).get("status") == "stale"]
     fresh = sum(a.get("health", {}).get("status") == "fresh" for a in assets.values())
     cached = [s for s in failed if s in assets]
-    run_status = "healthy" if not failed and not stale else "partial"
+    run_status = "healthy" if not failed and not stale and not profile_issues else "partial"
     run_meta = {"generatedAt": generated_at, "status": run_status,
                 "configured": len(names), "available": len(assets), "fresh": fresh,
-                "cached": len(cached), "failed": failed, "unavailable": unavailable, "stale": stale}
+                "cached": len(cached), "failed": failed, "unavailable": unavailable, "stale": stale,
+                "profileIssues": profile_issues}
     appdata = inject.assemble(assets, charts, run_meta)
     inject.inject(appdata)
     _ensure_ui_explanations()

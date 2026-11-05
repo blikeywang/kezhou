@@ -64,10 +64,13 @@ jobs:
       - name: Refresh data (fetch + build + inject)
         run: python pipeline/daily/run.py
 
+      - name: Validate refreshed history snapshots
+        run: node --test portal/test_history_universe.mjs portal/test_history_replay.mjs
+
       - name: Commit refreshed public data
         run: |
           git config user.name  "kezhou-bot"
           git config user.email "kezhou-bot@users.noreply.github.com"
-          git add prototype/app.html portal/vendor/otc/data/prices.json
+          git add prototype/app.html prototype/history-profiles portal/vendor/otc/data/prices.json
           git commit -m "chore: daily data refresh $(date -u +%F)" || echo "no changes to commit"
           git push || echo "nothing to push"

@@ -94,6 +94,14 @@ class PortalBuildTests(unittest.TestCase):
             self.assertEqual(snapshot["asof"], asset["health"]["asofTimestamp"])
             self.assertIn(hashlib.sha256(payload).hexdigest()[:12], descriptor["url"])
             self.assertEqual(snapshot["current"]["end"], len(snapshot["current"]["bars"])-1)
+            self.assertEqual(len(asset["profiles"]), 4)
+            for key, profile in asset["profiles"].items():
+                self.assertNotIn("cases", profile)
+                payload = (page.parent / profile["url"]).read_bytes()
+                long = json.loads(payload)
+                self.assertIn(hashlib.sha256(payload).hexdigest()[:12], profile["url"])
+                self.assertEqual((long["symbol"], long["profileKey"], long["asof"], long["window"]),
+                                 (symbol, key, profile["asof"], profile["window"]))
         for name in ("history-replay.js", "history-replay-model.js", "history-replay.css",
                      "vendor/lightweight-charts/lightweight-charts.standalone.production.js",
                      "vendor/lightweight-charts/LICENSE", "vendor/lightweight-charts/NOTICE"):

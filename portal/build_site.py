@@ -78,6 +78,25 @@ def _prepare_history(path: Path) -> None:
         (replay_dir / name).write_bytes(payload)
         asset["replay"] = {"version": 1, "symbol": symbol, "asof": replay["asof"],
                            "url": "./replays/" + name}
+        for key, descriptor in asset.get("profiles", {}).items():
+            if not descriptor.get("url"):
+                continue
+            expected = f"./history-profiles/{symbol}-{key}.json"
+            if key not in {"1d-6m", "1d-1y", "1w-6m", "1w-1y"} or descriptor["url"] != expected:
+                raise ValueError(f"Invalid profile path: {symbol}/{key}")
+            payload = (ROOT / "prototype" / "history-profiles" / f"{symbol}-{key}.json").read_bytes()
+            profile = json.loads(payload)
+            if any(profile.get(field) != value for field, value in {
+                "symbol": symbol, "profileKey": key, "version": 1, "asof": descriptor["asof"],
+                "interval": descriptor["interval"], "window": descriptor["window"],
+            }.items()):
+                raise ValueError(f"Profile descriptor mismatch: {symbol}/{key}")
+            target = path.parent / "history-profiles"
+            target.mkdir(exist_ok=True)
+            digest = hashlib.sha256(payload).hexdigest()[:12]
+            name = f"{symbol}-{key}-{digest}.json"
+            (target / name).write_bytes(payload)
+            descriptor["url"] = "./history-profiles/" + name
     body = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     html = html[:match.start(2)] + body + html[match.end(2):]
     path.write_text(html, encoding="utf-8")

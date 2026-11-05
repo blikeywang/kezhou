@@ -8,6 +8,78 @@ const data = JSON.parse(html.match(/<script id="APPDATA"[^>]*>(.*?)<\/script>/s)
 const asset = data.assets.NQ;
 const replay = asset.replay;
 
+function profile(symbol, key) {
+  const descriptor = data.assets[symbol].profiles[key];
+  return {descriptor, snapshot:JSON.parse(readFileSync(new URL('../prototype/'+descriptor.url,import.meta.url),'utf8'))};
+}
+
+test('all daily and weekly profiles validate their own source scope and completed windows', () => {
+  let count = 0;
+  for (const [symbol,a] of Object.entries(data.assets)) {
+    assert.deepEqual(Object.keys(a.profiles), ['1d-6m','1d-1y','1w-6m','1w-1y']);
+    for (const key of Object.keys(a.profiles)) {
+      const {descriptor:d,snapshot:p} = profile(symbol,key);
+      assert.equal(M.validate(p,symbol,d.asof,d),p);
+      assert.equal(p.window,d.window);
+      assert.deepEqual(p.methods,['corr']);
+      assert.equal(p.statsMinCorrelation,.5);
+      assert.equal(M.futureCount(p.current),0);
+      for (const s of [...p.cases.corr,...Object.values(p.annualCases).flat()]) {
+        assert.ok(s.bars.at(-1)[0]<p.current.startTime,symbol+'/'+key);
+        assert.equal(M.seriesData(s,0,false).price.at(-1).time,s.endTime);
+        assert.ok(M.seriesData(s,0,false).volume.every(r=>r.time<=s.endTime));
+        assert.equal(M.seriesData(s,1,false).price.at(-1).time,s.bars[s.end+1][0]);
+      }
+      count++;
+    }
+  }
+  assert.equal(count,312);
+});
+
+test('BTC and ETH long windows compare endpoint years with unequal coverage disclosed', () => {
+  for (const symbol of ['BTC','ETH']) for (const key of ['1d-6m','1d-1y','1w-6m','1w-1y']) {
+    const {snapshot:p} = profile(symbol,key);
+    assert.equal(p.annualYearBasis,'end');
+    assert.deepEqual(p.comparison.map(r=>r.year),[2018,2023]);
+    assert.ok(p.comparison.every(r=>r.available && r.candidates>0));
+    for (const row of p.comparison) {
+      const cases = M.caseList(p,'year',String(row.year));
+      assert.equal(row.score,cases[0].score);
+      assert.equal(cases[0].endDate,row.end);
+      assert.equal(row.end.slice(0,4),String(row.year));
+    }
+    if (key==='1d-1y') {
+      assert.equal(p.comparison[0].eligibleStart,'2018-08-16');
+      assert.ok(p.comparison[0].candidates<p.comparison[1].candidates);
+    }
+    if (p.interval==='1w') assert.equal(new Date(p.current.endDate+'T00:00:00Z').getUTCDay(),0);
+  }
+});
+
+test('long profile identity and forward boundaries cannot silently cross scopes', () => {
+  const {snapshot:p,descriptor:d} = profile('BTC','1d-1y');
+  for (const [key,value] of [['profileKey','1d-6m'],['window',180],['interval','1w']]) {
+    assert.throws(()=>M.validate(p,'BTC',p.asof,{...d,[key]:value}),/Profile scope/);
+  }
+  const wrong = structuredClone(p);
+  wrong.horizons=[100000];
+  assert.throws(()=>M.validate(wrong,'BTC',wrong.asof,d),/Forward statistics/);
+  const date = structuredClone(p);
+  date.annualCases['2018'][0].endDate='2019-01-01';
+  assert.throws(()=>M.validate(date,'BTC',date.asof,d));
+});
+
+test('profile health ages independently of the four-hour snapshot', () => {
+  const now=1800000000;
+  const d={url:'./history-profiles/BTC-1d-1y.json',interval:'1d',group:'crypto',asof:now-86400,status:'fresh'};
+  assert.equal(M.profileStatus(d,now),'fresh');
+  assert.equal(M.profileStatus({...d,status:'cached'},now),'cached');
+  assert.equal(M.profileStatus({...d,asof:now-4*86400},now),'stale');
+  assert.equal(M.profileStatus({...d,interval:'1w',asof:now-14*86400},now),'fresh');
+  assert.equal(M.profileStatus({...d,interval:'1w',asof:now-16*86400},now),'stale');
+  assert.equal(M.profileStatus({status:'unavailable'},now),'unavailable');
+});
+
 test('all 78 snapshots validate identity, ordering and original matching windows', () => {
   assert.equal(Object.keys(data.assets).length, 78);
   for (const [symbol, a] of Object.entries(data.assets)) {

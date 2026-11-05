@@ -9,6 +9,8 @@
 
 V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对 baseline 的 Edge、Wilson 区间、方法一致度、Top-K 稳健性、上一版变化，以及每个标的的 Fresh/Cached/Stale 数据健康状态。可信度等级是历史证据完整度，不是买卖评级。
 
+历史核对现支持日线、周线的最近半年／一年，共 78 × 4 份独立快照。BTC / ETH 可并排核对 2018 与 2023 的相似片段、覆盖范围、涨跌与收盘回撤，并拖动查看前后 K 线、逐根回放。直达 [BTC 半年日线](https://traderhome-histroy.xyz/history/?symbol=BTC&profile=1d-6m) 与 [ETH 一年周线](https://traderhome-histroy.xyz/history/?symbol=ETH&profile=1w-1y)。长窗口只使用 corr，不沿用短窗口的 DTW、概率或评级。
+
 2026-11-05：历史规律扩为 **78 个独立数据标的**，涵盖 10 个加密资产、48 只美股、8 个指数/ETF、6 个期货序列、6 个商品基金。美股补充 ARM、ASML、ORCL、CRWD、NET、HOOD、RKLB 等 30 只；日线请求自 1998 年，实际覆盖以各自数据为准。加密不再截断为最近 12,000 根，BTC / ETH 的 Binance 现货记录自 2017-08-17 起，增加 2018、2023 等年份的独立相似案例核对。支持全市场搜索、跨市场自选、分类对比排序和直达链接（例如 [`/history/?symbol=BTC`](https://traderhome-histroy.xyz/history/?symbol=BTC)）。四小时局部相似不等于整轮牛熊周期重演，期货日线背景研究也不是分钟级回测。详见 [数据口径](docs/METHODS_AND_SOURCES.md)。
 
 

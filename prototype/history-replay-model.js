@@ -9,10 +9,13 @@
     return row.slice(1, 5).every(positive) &&
       row[3] <= Math.min(row[1], row[4]) && Math.max(row[1], row[4]) <= row[2];
   }
-  function validate(data, symbol, asof) {
+  function validate(data, symbol, asof, descriptor) {
     if (!data || data.version !== 1 || data.symbol !== symbol ||
-        !['4h', '1d'].includes(data.interval) || data.asof !== asof) {
+        !['4h', '1d', '1w'].includes(data.interval) || data.asof !== asof) {
       throw new Error('Snapshot identity mismatch');
+    }
+    if (descriptor?.profileKey && ['profileKey','interval','window'].some(key => data[key] !== descriptor[key])) {
+      throw new Error('Profile scope mismatch');
     }
     new Intl.DateTimeFormat('en', {timeZone: data.timeZone}).format();
     function segment(s) {
@@ -33,12 +36,22 @@
       if (s.startTime !== s.bars[s.start][0] || s.endTime !== s.bars[s.end][0]) {
         throw new Error('Matching timestamps differ');
       }
+      if (s.endDate) {
+        const parts = Object.fromEntries(new Intl.DateTimeFormat('en', {timeZone:data.timeZone,year:'numeric',month:'2-digit',day:'2-digit'})
+          .formatToParts(new Date(s.endTime*1000)).map(p => [p.type,p.value]));
+        const local = parts.year + '-' + parts.month + '-' + parts.day;
+        const delta = Date.parse(s.endDate)-Date.parse(local);
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(s.endDate) || !Number.isFinite(delta) || delta < 0 ||
+            delta > (data.interval === '1w' ? 6 : 0)*86400000) throw new Error('Invalid session end date');
+      }
     }
     segment(data.current);
     if (data.current.end !== data.current.bars.length - 1 || data.current.endTime !== data.asof) {
       throw new Error('Current snapshot contains future bars');
     }
-    for (const method of ['corr', 'dtw']) {
+    const methods = data.methods || ['corr','dtw'];
+    if (!methods.length || methods.some(m => !['corr','dtw'].includes(m))) throw new Error('Unknown matching method');
+    for (const method of methods) {
       const cases = data.cases && data.cases[method];
       if (!Array.isArray(cases) || !cases.length || cases.length > 6) throw new Error('No matched cases');
       const ids = new Set();
@@ -58,13 +71,27 @@
       cases.forEach(s => {
         segment(s);
         if (s.endTime >= data.current.startTime || !Number.isFinite(s.score) || ids.has(s.id) ||
-            [s.startTime,s.endTime].some(t => String(new Date(t*1000).getUTCFullYear()) !== year)) {
+            (data.annualYearBasis === 'end' ? [s.endDate?.slice(0,4) || String(new Date(s.endTime*1000).getUTCFullYear())] :
+              [s.startTime,s.endTime].map(t => String(new Date(t*1000).getUTCFullYear()))).some(y => y !== year)) {
           throw new Error('Invalid annual match');
         }
         ids.add(s.id);
       });
     }
+    if (data.futureBeforeCurrent) {
+      const all = [...Object.values(data.cases), ...Object.values(data.annualCases || {})].flat();
+      const horizon = Math.max(...data.horizons);
+      if (all.some(s => !s.bars[s.end+horizon] || s.bars[s.end+horizon][0] >= data.current.startTime)) {
+        throw new Error('Forward statistics overlap current window');
+      }
+    }
     return data;
+  }
+  function profileStatus(descriptor, now=Date.now()/1000) {
+    if (!descriptor?.url) return 'unavailable';
+    const maxAge = descriptor.interval === '1w' ? 15*86400 : (descriptor.group === 'crypto' ? 3 : 5)*86400;
+    if (!Number.isFinite(descriptor.asof) || now-descriptor.asof>maxAge) return 'stale';
+    return descriptor.status || 'fresh';
   }
   function caseList(data, method, year) {
     return method === 'year' ? (data.annualCases?.[year] || []) : (data.cases?.[method] || []);
@@ -120,5 +147,5 @@
     if (kind === 'time') return parts.hour + ':' + parts.minute;
     return parts.month + '/' + parts.day;
   }
-  return {validate, caseList, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
+  return {validate, profileStatus, caseList, candleValid, futureCount, clampReveal, visibleRows, seriesData, linkedRange, bandCoordinates, viewRange, forwardReturn, axisLabel};
 });

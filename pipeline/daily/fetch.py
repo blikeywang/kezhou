@@ -91,6 +91,7 @@ def _fetch_binance_from(base, pair, interval, bars, start=None):
     gaps = sum(out[i + 1][0] - out[i][0] != 14400 for i in range(len(out) - 1)) if interval == "4h" else 0
     LAST_QUALITY[pair] = {"gapCount": gaps} if gaps else {}
     LAST_HISTORY[pair] = {"bars": out, "timeZone": "UTC", "priceBasis": "spot", "requestedStart": start}
+    LAST_HISTORY[(pair, interval)] = LAST_HISTORY[pair]
     return [r[0] for r in out], [r[4] for r in out], [r[3] for r in out]
 
 

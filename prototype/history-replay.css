@@ -1,6 +1,27 @@
 .history-replay{margin:24px 0 20px;scroll-margin-top:125px;border-top:1px solid var(--line2);padding-top:16px;min-width:0;letter-spacing:0}
 .hr-scope{font-size:11px;color:var(--ink2);line-height:1.6;margin:0 0 10px;overflow-wrap:anywhere}
 .hr-scope:empty{display:none}
+.hr-profile-meta,.hr-cycle-note,.hr-year p{font-size:12px;color:var(--ink2);line-height:1.6;overflow-wrap:anywhere}
+.hr-profile-meta{margin:0 0 12px}
+.hr-cycle-heading,.hr-year-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.hr-cycle-heading h4,.hr-year-title h4{font-size:14px;margin:0}
+.hr-cycle-heading>b{font-size:13px;color:var(--acc)}
+.hr-comparison{border-block:1px solid var(--line2);padding:12px 0;margin:12px 0}
+.hr-years{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
+.hr-year{min-width:0;padding:0 16px 0 0}
+.hr-year+.hr-year{border-left:1px solid var(--line2);padding:0 0 0 16px}
+.hr-year-title strong{font:600 18px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;margin-left:auto;color:var(--ink)}
+.hr-year p{margin:6px 0}
+.hr-year dl{display:flex;gap:10px 24px;flex-wrap:wrap;margin:8px 0}
+.hr-year dt{font-size:11px;color:var(--mut)}
+.hr-year dd{margin:3px 0 0;font-size:13px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.hr-year .hr-year-coverage,.hr-cycle-note{font-size:11px;color:var(--mut)}
+.hr-cycle-note{margin:10px 0 0}
+.hr-statistics{border-block:1px solid var(--line);padding:12px 0;margin:12px 0}
+.hr-statistics summary{font-size:13px;color:var(--ink2);cursor:pointer;margin-bottom:8px}
+.hr-statistics .t{min-width:600px}
+#history-base-analysis[hidden],#history-base-health[hidden],#history-base-scope[hidden],#history-base-verdict[hidden]{display:none}
+@media(max-width:480px){.hr-years{grid-template-columns:minmax(0,1fr);gap:12px}.hr-year{padding:0}.hr-year+.hr-year{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}.hr-profiles .hr-segment{max-width:100%}.hr-cycle-heading{align-items:flex-start}}
 .hr-tools [data-method=year][aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
 .hr-tools [hidden]{display:none}
 .hr-heading,.hr-tools,.hr-playback,.hr-footer,.hr-status,.hr-pane-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
