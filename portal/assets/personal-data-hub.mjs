@@ -35,7 +35,30 @@ export function hasPersonalHubToken() {
   return Boolean(localStorage.getItem(HUB_TOKEN_KEY));
 }
 
+const HUB_ENABLED_KEY = "traderhome-personal-data-hub-enabled-v1";
+
+/**
+ * The hub runs only on the owner's own computer. Public visitors should not
+ * see a red "hub not running" error or trigger a local-network probe on page
+ * load, so probing is opt-in: an existing hub token, ?hub=1 once in the URL,
+ * or an explicit click on a hub button (enablePersonalHub) turns it on.
+ */
+export function personalHubEnabled() {
+  try {
+    if (new URLSearchParams(location.search).get("hub") === "1") localStorage.setItem(HUB_ENABLED_KEY, "1");
+    if (new URLSearchParams(location.search).get("hub") === "0") localStorage.removeItem(HUB_ENABLED_KEY);
+    return hasPersonalHubToken() || localStorage.getItem(HUB_ENABLED_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function enablePersonalHub() {
+  try { localStorage.setItem(HUB_ENABLED_KEY, "1"); } catch { /* storage unavailable */ }
+}
+
 export function forgetPersonalHub() {
+  localStorage.removeItem(HUB_ENABLED_KEY);
   localStorage.removeItem(HUB_URL_KEY);
   localStorage.removeItem(HUB_TOKEN_KEY);
 }

@@ -13,8 +13,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "portal"
-SHELL_CSS = '<link rel="stylesheet" href="/assets/traderhome-shell.css?v=11" data-traderhome-shell="v4">'
-SHELL_JS = '<script src="/assets/traderhome-shell.js?v=11" data-traderhome-shell="v4" defer></script>'
+ASSET_VERSION = "12"
+SHELL_CSS = (
+    f'<link rel="stylesheet" href="/assets/traderhome-tokens.css?v={ASSET_VERSION}">\n  '
+    f'<link rel="stylesheet" href="/assets/traderhome-shell.css?v={ASSET_VERSION}" data-traderhome-shell="v4">\n  '
+    f'<link rel="stylesheet" href="/assets/traderhome-unify.css?v={ASSET_VERSION}">'
+)
+SHELL_JS = f'<script src="/assets/traderhome-shell.js?v={ASSET_VERSION}" data-traderhome-shell="v4" defer></script>'
+STAGES = (
+    ("history/", "history"), ("review/", "review"), ("incomeos/", "incomeos"),
+    ("tailtrend/", "tailtrend"), ("daily-trade/", "dailyTrade"), ("otc/", "otc"),
+    ("market-simulation/", "marketSimulation"),
+)
 THEME_COLOR = '<meta name="theme-color" content="#070b14">'
 FAVICON = (
     '<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 '
@@ -134,6 +144,10 @@ def _inject_shell(path: Path, output: Path) -> None:
     if 'data-traderhome-shell="v4"' in html:
         path.write_text(html, encoding="utf-8")
         return
+    # Stamp the product stage at build time so shared tokens apply on first
+    # paint, before the deferred shell script runs (no colour flash).
+    stage = next((key for prefix, key in STAGES if rel.startswith(prefix)), "home")
+    html = re.sub(r"<html\b(?![^>]*data-th-stage)", f'<html data-th-stage="{stage}"', html, count=1, flags=re.I)
     lower = html.lower()
     head_at = lower.rfind("</head>")
     html = html[:head_at] + "  " + SHELL_CSS + "\n" + html[head_at:]
@@ -185,6 +199,61 @@ def _prepare_tailtrend(output: Path) -> None:
     page.write_text(page_html, encoding="utf-8")
 
 
+def _read_json(path: Path):
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _write_status(output: Path) -> dict:
+    """Publish one small status file: each product's data time and cadence.
+
+    The shell and home page compare these times with the visitor's clock, so
+    a snapshot that stopped updating shows as late/stale instead of fresh.
+    """
+    modules = []
+
+    def add(key, name, route, as_of, fresh_hours, late_hours, **extra):
+        entry = {"key": key, "name": name, "route": route, "asOf": as_of,
+                 "policy": {"freshHours": fresh_hours, "lateHours": late_hours}}
+        entry.update(extra)
+        modules.append(entry)
+
+    history_as_of = None
+    source = (ROOT / "prototype" / "app.html").read_text(encoding="utf-8")
+    match = re.search(r'<script id="APPDATA"[^>]*>(.*?)</script>', source, re.S)
+    if match:
+        assets = json.loads(match.group(1)).get("assets", {})
+        stamps = [a.get("health", {}).get("generatedAt") for a in assets.values() if isinstance(a, dict)]
+        stamps = [x for x in stamps if isinstance(x, str)]
+        history_as_of = max(stamps) if stamps else None
+    add("history", "历史证据", "/history/", history_as_of, 30, 72, cadence="每日两次")
+
+    add("review", "交易复盘", "/review/", None, 0, 0, localOnly=True, cadence="本地数据")
+
+    income = _read_json(output / "incomeos" / "data" / "research-snapshot.json") or {}
+    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192, cadence="每周")
+
+    tail = _read_json(output / "tailtrend" / "data" / "latest.json") or {}
+    tail_date = tail.get("dataAsOf")
+    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 168, cadence="每交易日收盘")
+
+    otc = _read_json(output / "otc" / "data" / "snapshot.json") or {}
+    otc_date = otc.get("dataDate")
+    add("otc", "场外日线", "/otc/", f"{otc_date}T23:59:00+08:00" if otc_date else None, 48, 96, cadence="每日")
+
+    add("marketSimulation", "模拟盘", "/market-simulation/", None, 0.5, 3, cadence="每 10 分钟", runtime="/market-simulation/data/status.json")
+
+    daily = _read_json(output / "daily-trade" / "data" / "manifest.json") or {}
+    add("dailyTrade", "早晚报", "/daily-trade/", daily.get("generated_at"), 36, 96, cadence="每交易日")
+
+    status = {"schema": "traderhome_status_v1", "modules": modules}
+    (output / "assets" / "traderhome-status.json").write_text(
+        json.dumps(status, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    return status
+
+
 def build(output: Path) -> dict:
     if output.exists():
         shutil.rmtree(output)
@@ -229,6 +298,8 @@ def build(output: Path) -> dict:
 
     for html in output.rglob("*.html"):
         _inject_shell(html, output)
+
+    _write_status(output)
 
     for name in ("CNAME", "DISCLAIMER.md"):
         source = ROOT / name

@@ -11,6 +11,8 @@ import {
   openIbkrWebLogin,
   personalHubFetch,
   personalHubStatus,
+  enablePersonalHub,
+  personalHubEnabled,
 } from "/assets/personal-data-hub.mjs";
 
 const WHOLE_SHARE_MODE = document.body.dataset.executionMode === "whole";
@@ -202,7 +204,10 @@ function snapshotState(data) {
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(now);
   const clock = Object.fromEntries(parts.map((part) => [part.type, part.value]));
   const minutes = Number(clock.hour) * 60 + Number(clock.minute);
-  if (ageHours > 72) return { level: "stale", label: "STALE · 旧快照", detail: "超过 72 小时，只用于研究，不按合约执行。" };
+  if (ageHours > 72) {
+    const age = ageHours >= 48 ? `${Math.floor(ageHours / 24)} 天` : `${Math.round(ageHours)} 小时`;
+    return { level: "stale", label: "STALE · 旧快照", detail: `已 ${age}未更新（超过 72 小时），只用于研究，不按合约执行。` };
+  }
   if (clock.weekday === "Fri" && minutes >= 600 && minutes < 960 && ageHours <= 24) return { level: "review", label: "FRIDAY REVIEW", detail: "周五执行窗口；仍需在 IBKR 复核现金、持仓和限价。" };
   return { level: "preview", label: "PREVIEW · 最新可得快照", detail: "非周五 10:00 ET 执行窗口；本页先生成预案。" };
 }
@@ -235,7 +240,10 @@ function renderStatus(data) {
   const status = $("#snapshotStatus");
   status.className = `io-status ${snapshot.level}`;
   status.innerHTML = `<b>${snapshot.label}</b><span>${snapshot.detail}</span>`;
-  $("#topbarStatus").textContent = `${data.tradingDate} · ${data.mode === "live" ? "DATA COMPLETE" : "PARTIAL DATA"}`;
+  // The top bar must never contradict the snapshot gate below it.
+  const topbarLabel = snapshot.level === "stale" ? "快照已过期" : data.mode === "live" ? "数据完整" : "部分数据";
+  $("#topbarStatus").textContent = `${data.tradingDate} · ${topbarLabel}`;
+  $("#topbarStatus").closest(".io-topbar-status")?.setAttribute("data-level", snapshot.level);
   $("#candidateCount").textContent = data.universe.candidateCount;
   $("#top50Count").textContent = data.universe.top50Count;
   $("#optionScanCount").textContent = `${data.optionDataQuality.usable}/${data.optionDataQuality.scanned}`;
@@ -405,7 +413,7 @@ function renderOperationHistory(historyData) {
 function renderOverview(data) {
   const modules = [
     [WHOLE_SHARE_MODE ? "整数股操作单" : "周五操作单", WHOLE_SHARE_MODE ? "把本周入金转成完整股数与现金余款" : "把本周入金转成今天的美元订单"], ["Top 50", "71 个候选每周竞争 50 个席位"], ["组合引擎", "把高分变成受行业与仓位约束的组合"],
-    ["Sell Call", "100 股、Delta、IV 与事件闸门"], ["Sell Put", "底层、期权和账户容量三层闸门"], ["Risk Engine", "账户阶段、集中度和现金约束"],
+    ["备兑 Call", "100 股、Delta、IV 与事件闸门"], ["现金担保 Put", "底层、期权和账户容量三层闸门"], ["风险引擎", "账户阶段、集中度和现金约束"],
     ["回测 / 基准", "与 SPY、QQQI、JEPI、JEPQ、SPYI 比较"], ["数据室", "数据覆盖、缺口与外部源"], ["券商边界", "本机只读同步，下单仍由你确认"],
   ];
   $("#moduleMap").innerHTML = modules.map(([name, detail], index) => `<article><span>${String(index + 1).padStart(2, "0")}</span><h3>${name}</h3><p>${detail}</p></article>`).join("");
@@ -575,7 +583,7 @@ function bindEvents() {
     if (selector === "#accountValue" && state.ibkrAccount && Math.abs(Number($(selector).value) - state.ibkrAccount.netLiquidation) > .01) state.ibkrAccount = null;
     if (state.data) renderAll();
   }));
-  $("#syncIbkrButton")?.addEventListener("click", syncIbkrAccount);
+  $("#syncIbkrButton")?.addEventListener("click", () => { enablePersonalHub(); syncIbkrAccount(); });
   $("#incomeIbkrLoginButton")?.addEventListener("click", openIbkrWebLogin);
   window.addEventListener("focus", () => {
     if (!$("#incomeIbkrLoginButton")?.hidden) window.setTimeout(probeIncomeHub, 500);
@@ -612,7 +620,8 @@ async function init() {
   setFontFamily(localStorage.getItem(FONT_FAMILY_KEY) ?? "system");
   setColorTheme(localStorage.getItem(COLOR_THEME_KEY) ?? "ocean");
   bindEvents();
-  probeIncomeHub();
+  if (personalHubEnabled()) probeIncomeHub();
+  else setIbkrSyncStatus("只读同步需要你自己的电脑上运行个人数据中枢；不连接也可以直接手动填写上面三项。", "");
   syncTopbarOffset();
   if ("ResizeObserver" in window) {
     state.topbarObserver = new ResizeObserver(syncTopbarOffset);

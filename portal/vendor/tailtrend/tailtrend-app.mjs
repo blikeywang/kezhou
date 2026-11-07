@@ -60,6 +60,28 @@ function bindingLabel(value) {
   })[value] ?? value ?? "—";
 }
 
+// A daily-close snapshot stays current across a weekend (Friday close →
+// Tuesday morning). Past that the published states describe an old market:
+// show them as history and never let them open a new position.
+const STALE_AFTER_DAYS = 4;
+
+function snapshotAgeDays(snapshot, now = Date.now()) {
+  const date = snapshot?.dataAsOf ?? snapshot?.tradingDate;
+  const closedAt = Date.parse(`${date}T21:00:00Z`);
+  return Number.isFinite(closedAt) ? Math.max(0, Math.floor((now - closedAt) / 86_400_000)) : null;
+}
+
+function applySnapshotAge(snapshot) {
+  snapshot.ageDays = snapshotAgeDays(snapshot);
+  snapshot.expired = snapshot.ageDays !== null && snapshot.ageDays > STALE_AFTER_DAYS;
+  if (!snapshot.expired) return;
+  for (const record of snapshot.records ?? []) {
+    record.publishedDataStatus = record.dataStatus;
+    record.dataStatus = "STALE";
+    record.newPositionAllowed = false;
+  }
+}
+
 function dataClass(value) {
   return value === "FRESH" ? "" : value === "CACHED" ? "cached" : "stale";
 }
@@ -68,18 +90,32 @@ function renderHeader() {
   const snapshot = state.snapshot;
   const quality = snapshot.dataQuality;
   const newest = state.index?.entries?.[0];
-  $("#snapshotMode").textContent = newest?.status === "MISSING"
-    ? `缺少 ${newest.dataAsOf} · 已禁新仓`
-    : snapshot.mode === "complete" ? "完整日线快照" : "部分数据降级";
+  $("#snapshotMode").textContent = snapshot.expired
+    ? `快照已过期 · ${snapshot.ageDays} 天未更新`
+    : newest?.status === "MISSING"
+      ? `缺少 ${newest.dataAsOf} · 已禁新仓`
+      : snapshot.mode === "complete" ? "完整日线快照" : "部分数据降级";
+  $("#snapshotMode").closest(".tt-hero__status")?.toggleAttribute("data-expired", Boolean(snapshot.expired));
   $("#snapshotDate").textContent = newest?.status === "MISSING"
     ? `最近完整 ${snapshot.tradingDate}`
     : `截至 ${snapshot.tradingDate}`;
+  const banner = document.getElementById("ttStaleBanner");
+  if (snapshot.expired && !banner) {
+    const note = document.createElement("div");
+    note.id = "ttStaleBanner";
+    note.className = "tt-stale-banner";
+    note.setAttribute("role", "status");
+    note.textContent = `日线快照停在 ${snapshot.tradingDate}，已经 ${snapshot.ageDays} 天没有更新。下方状态只能当作历史回看，全部标为过期且不允许新开仓；等快照恢复后自动解除。`;
+    document.querySelector("#scanner .tt-wrap")?.prepend(note);
+  }
   $("#metricUniverse").textContent = snapshot.universe.published;
   const edgeBuckets = ["TAIL_RECLAIM_WATCH", "BREAKOUT_CANDIDATE_WATCH", "TREND_ACCEPTED_WATCH", "BREAKOUT_FAILURE_WATCH", "BREAKDOWN_RISK", "EVENT_QUARANTINE"];
   $("#metricEdges").textContent = snapshot.records.filter((row) => edgeBuckets.includes(row.bucket)).length;
   $("#metricMiddle").textContent = snapshot.summary.bucketCounts.NO_TRADE_MIDDLE ?? 0;
-  $("#metricFresh").textContent = `${quality.fresh}/${snapshot.universe.requested}`;
-  $("#metricQuality").textContent = newest?.status === "MISSING"
+  $("#metricFresh").textContent = snapshot.expired ? `0/${snapshot.universe.requested}` : `${quality.fresh}/${snapshot.universe.requested}`;
+  $("#metricQuality").textContent = snapshot.expired
+    ? `数据停在 ${snapshot.tradingDate} · 不作为今日依据`
+    : newest?.status === "MISSING"
     ? `${newest.dataAsOf} 已写入 MISSING，不沿用旧信号`
     : quality.errors.length ? `${quality.errors.length} 项失败，已禁止缓存触发新仓` : "全部 Fresh · 无缺失";
   $("#metricTransitions").textContent = snapshot.transitions.length;
@@ -419,6 +455,7 @@ async function load() {
     })) };
     state.audit = auditResponse.ok ? await auditResponse.json() : { entries: [], daysCollected: 0 };
     if (state.snapshot.schema !== "traderhome_tailtrend_snapshot_v1") throw new Error("unknown TailTrend snapshot schema");
+    applySnapshotAge(state.snapshot);
     renderHeader();
     renderFilters();
     renderRows();

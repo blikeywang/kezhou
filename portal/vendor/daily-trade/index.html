@@ -3,38 +3,107 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Codex 独立交易流程的早报与晚报公开快照。">
+  <meta name="description" content="TraderHome 交易早晚报：独立交易流程已校验的早报与晚报公开快照。">
   <title>交易早晚报 · TraderHome</title>
+  <link rel="stylesheet" href="/assets/traderhome-site.css?v=12">
   <style>
-    :root{color-scheme:dark;--bg:#070b14;--panel:#101827;--panel2:#151f31;--line:#263447;--text:#eef4ff;--muted:#9aa8bb;--cyan:#67e8f9;--green:#8bd98b;--amber:#f3c969}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55}
-    main{max-width:1180px;margin:0 auto;padding:42px 18px 68px}.dt-kicker{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-    h1{font-size:clamp(32px,6vw,58px);line-height:1.02;margin:12px 0 14px;letter-spacing:0}h2{font-size:22px;margin:32px 0 12px}.dt-lead{color:var(--muted);font-size:17px;max-width:850px}
-    .dt-actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}.dt-actions a{border:1px solid var(--line);border-radius:8px;padding:10px 13px;color:var(--text);text-decoration:none;background:var(--panel)}
-    .dt-actions a.primary{background:var(--cyan);color:#041018;border-color:var(--cyan);font-weight:800}.dt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-    .dt-card,.dt-panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}.dt-card span{color:var(--amber);font-size:12px;font-weight:800}.dt-card h3{margin:8px 0 8px;font-size:18px}.dt-card p,.dt-card small{color:var(--muted)}
-    .dt-warning{border-color:rgba(243,201,105,.5);background:rgba(243,201,105,.08)}.dt-foot{margin-top:34px;color:var(--muted);font-size:13px}
+    .dt-page { padding: 48px 0 72px; }
+    .dt-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    .dt-head h1 { margin: 10px 0 10px; font-size: var(--th-fs-3xl); line-height: 1.15; letter-spacing: -.02em; }
+    .dt-latest { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px; margin-top: 28px; }
+    .dt-card { padding: 22px; border: 1px solid var(--th-line-strong); border-radius: var(--th-r-lg); background: var(--th-surface-1); }
+    .dt-card h2 { margin: 6px 0 6px; font-size: var(--th-fs-xl); }
+    .dt-card p { margin: 0; color: var(--th-text-2); font-size: var(--th-fs-md); }
+    .dt-card .th-actions { margin-top: 18px; }
+    .dt-facts { display: grid; gap: 10px; margin: 0; }
+    .dt-facts div { display: grid; grid-template-columns: 88px 1fr; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--th-line); }
+    .dt-facts div:last-child { border-bottom: 0; padding-bottom: 0; }
+    .dt-facts dt { color: var(--th-muted); font-size: var(--th-fs-sm); }
+    .dt-facts dd { margin: 0; color: var(--th-text-2); font-size: var(--th-fs-sm); }
+    .dt-notice { margin-top: 14px; padding: 14px 18px; border: 1px solid rgba(242, 191, 94, .4); border-radius: var(--th-r-md); color: #f6d9a2; background: var(--th-warn-bg); font-size: var(--th-fs-md); }
+    .dt-notice[hidden] { display: none; }
+    .dt-archive { margin-top: 36px; }
+    .dt-archive h2 { margin: 0 0 12px; font-size: var(--th-fs-lg); }
+    .dt-archive ol { list-style: none; margin: 0; padding: 0; border: 1px solid var(--th-line-strong); border-radius: var(--th-r-lg); background: var(--th-surface-1); overflow: hidden; }
+    .dt-archive li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--th-line); font-size: var(--th-fs-md); }
+    .dt-archive li:last-child { border-bottom: 0; }
+    .dt-archive li span { font-variant-numeric: tabular-nums; }
+    .dt-archive li nav { display: flex; gap: 14px; }
+    .dt-archive a { color: var(--th-accent); }
+    .dt-foot { margin-top: 28px; color: var(--th-faint); font-size: var(--th-fs-xs); }
+    @media (max-width: 760px) { .dt-latest { grid-template-columns: 1fr; } }
   </style>
 </head>
-<body>
-  <main>
-    <div class="dt-kicker">Codex Daily Trade Workflow</div>
-    <h1>交易早晚报</h1>
-    <p class="dt-lead">这里同步 Codex 独立交易流程已经生成的早报与晚报 HTML。页面只做研究信息展示，不发布账户私有数据，不包含密钥，不替用户下单。</p>
-    <div class="dt-actions">
-      <a class="primary" href="/daily-trade/reports/2026-08-14/morning.html">打开综合早报</a>
-      <a href="/daily-trade/reports/2026-08-14/evening.html">打开趋势晚报</a>
+<body class="th-site">
+  <main class="th-container dt-page">
+    <div class="dt-head">
+      <div>
+        <div class="th-kicker">Daily trade reports</div>
+        <h1>交易早晚报</h1>
+        <p class="th-lead">同步独立交易流程已经生成并校验的早报与晚报。页面只展示研究信息，不发布账户私有数据，不包含密钥，不替用户下单。</p>
+      </div>
+      <span class="th-fresh" id="dtFresh" data-state="unknown">读取中</span>
     </div>
-    <section class="dt-grid">
-      <article class="dt-card"><span>REPORT DATE</span><h3>2026-08-14</h3><p>最新公开快照日期。</p></article>
-      <article class="dt-card"><span>SCOPE</span><h3>早报 + 晚报</h3><p>不复制美盘指导、最终动作页、期权雷达或历史工作簿。</p></article>
-      <article class="dt-card"><span>BOUNDARY</span><h3>研究用途</h3><p>非投资建议，不替用户下单，不复制账户私有数据。</p></article>
+
+    <section class="dt-latest" aria-label="最新一期">
+      <article class="dt-card">
+        <div class="th-kicker">最新一期</div>
+        <h2 id="dtDate">2026-08-14</h2>
+        <p>综合早报覆盖开盘前的结构与计划；趋势晚报复核当日结果与次日条件。</p>
+        <div class="th-actions">
+          <a class="th-btn primary" id="dtMorning" href="/daily-trade/reports/2026-08-14/morning.html">打开综合早报</a>
+          <a class="th-btn" id="dtEvening" href="/daily-trade/reports/2026-08-14/evening.html">打开趋势晚报</a>
+        </div>
+      </article>
+      <article class="dt-card">
+        <dl class="dt-facts">
+          <div><dt>发布范围</dt><dd>早报 + 晚报。不复制美盘指导、最终动作页、期权雷达或历史工作簿。</dd></div>
+          <div><dt>数据来源</dt><dd>场外指数与每日潜力区只采用用户主动提供的来源；缺失、过期、回退按原报告显示。</dd></div>
+          <div><dt>使用边界</dt><dd>研究用途，非投资建议，不替用户下单，不复制账户私有数据。</dd></div>
+        </dl>
+      </article>
     </section>
-    <section class="dt-panel dt-warning">
-      <strong>公开边界</strong>
-      <p>本页只发布交易流程已生成的早报和晚报 HTML。场外指数与每日潜力区仍只采用用户主动提供来源；缺失、过期、回退必须按原报告显示。</p>
+    <p class="dt-notice" id="dtNotice" hidden></p>
+
+    <section class="dt-archive" aria-label="往期报告">
+      <h2>往期报告</h2>
+      <ol id="dtArchive"><li><span>2026-08-14</span><nav><a href="/daily-trade/reports/2026-08-14/morning.html">早报</a><a href="/daily-trade/reports/2026-08-14/evening.html">晚报</a></nav></li></ol>
     </section>
     <p class="dt-foot">研究用途，非投资建议。</p>
   </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+      function safe(path) { return typeof path === "string" && /^\/daily-trade\/reports\/[0-9-]+\/(morning|evening)\.html$/.test(path) ? path : null; }
+      fetch("/daily-trade/data/manifest.json", { cache: "no-store", credentials: "omit" })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (m) {
+          if (!m) return;
+          var routes = m.routes || {};
+          document.getElementById("dtDate").textContent = m.report_date || "—";
+          if (safe(routes.morning)) document.getElementById("dtMorning").href = routes.morning;
+          if (safe(routes.evening)) document.getElementById("dtEvening").href = routes.evening;
+          var reports = Array.isArray(m.reports) && m.reports.length ? m.reports : [{ date: m.report_date, morning: routes.morning, evening: routes.evening }];
+          document.getElementById("dtArchive").innerHTML = reports.map(function (r) {
+            var links = [safe(r.morning) && '<a href="' + esc(r.morning) + '">早报</a>', safe(r.evening) && '<a href="' + esc(r.evening) + '">晚报</a>'].filter(Boolean).join("");
+            return "<li><span>" + esc(r.date || "—") + "</span><nav>" + links + "</nav></li>";
+          }).join("");
+          var t = Date.parse(m.generated_at || "");
+          var api = window.TraderHome;
+          var badge = document.getElementById("dtFresh");
+          if (!isFinite(t)) { badge.textContent = "时间未知"; return; }
+          var f = api && api.freshness ? api.freshness(t, { freshHours: 36, lateHours: 96 }) : null;
+          if (!f) return;
+          badge.setAttribute("data-state", f.state);
+          badge.textContent = f.label + " · " + f.ago;
+          if (f.state !== "fresh") {
+            var notice = document.getElementById("dtNotice");
+            notice.hidden = false;
+            notice.textContent = "最新一期停在 " + (m.report_date || "—") + "（" + f.ago + "）。交易流程恢复发布前，下面的报告只能当作历史回看。";
+          }
+        })
+        .catch(function () {});
+    });
+  </script>
 </body>
 </html>
