@@ -91,6 +91,15 @@
           var t = Date.parse(m.generated_at || "");
           var api = window.TraderHome;
           var badge = document.getElementById("dtFresh");
+          var publishing = m.publishing || {};
+          if (publishing.state === "paused") {
+            badge.setAttribute("data-state", "paused");
+            badge.textContent = "暂停更新";
+            var paused = document.getElementById("dtNotice");
+            paused.hidden = false;
+            paused.textContent = (publishing.note || "来源任务已暂停。") + " 下面是 " + (m.report_date || "—") + " 的报告，只能当作历史回看。";
+            return;
+          }
           if (!isFinite(t)) { badge.textContent = "时间未知"; return; }
           var f = api && api.freshness ? api.freshness(t, { freshHours: 36, lateHours: 96 }) : null;
           if (!f) return;

@@ -41,10 +41,10 @@ export function renderReviewCards(data, ui) {
   const {dt,badge,empty}=ui,now=ui.now??Date.now();
   const audits=[...(data.review?.history??[])].sort((a,b)=>b.published-a.published);
   const gates=(data.review?.gates??[]).filter((g,i,a)=>i===a.findLastIndex(x=>x.book===g.book&&x.key===g.key&&x.horizon===g.horizon)).filter(g=>g.verdict==='suspended');
-  let html='<div class="ms-row"><div><h2>模型复核</h2><p>逐项查看判断、依据和恢复条件。绿标表示该次审查认可依据与风险控制。</p></div>'+badge(data.review?.schedule?.enabled?'已配置小时复核':'复核日程待确认',data.review?.schedule?.enabled?'':'warn')+'</div>';
+  let html='<div class="ms-row"><div><h2>模型复核</h2><p>逐项查看判断、依据和恢复条件。绿标表示那一次复核认可了依据和风险控制。</p></div>'+badge(data.review?.schedule?.enabled?'已配置小时复核':'复核日程待确认',data.review?.schedule?.enabled?'':'warn')+'</div>';
   const last=audits[0],fresh=reviewFresh(last,now);
   html+='<div class="ms-review-clocks"><section><small>十分钟交易检查</small><b>'+dt(data.cloud?.lastScheduledSuccess??data.account?.lastRun)+'</b></section><section><small>最近模型复核</small><b>'+dt(last?.published)+'</b>'+badge(fresh?'记录可用':'等待新的复核',fresh?'good':'warn')+'</section><section><small>公开页面同步</small><b>'+dt(data.publishedAt)+'</b></section></div>';
-  if(!fresh)html+='<p class="ms-notice warn">'+(last?'最近复核已经过期，下面展示历史判断；旧绿标不代表当前已经通过审查。':'尚未收到实际模型复核结果。')+'</p>';
+  if(!fresh)html+='<p class="ms-notice warn">'+(last?'最近一次复核已经过期，下面是当时的判断；旧绿标不代表当前仍然有效。':'尚未收到实际模型复核结果。')+'</p>';
   html+='<p class="ms-inline-note">BTC / ETH 按 1H 价格拐点 A/B 比较连续 CVD 与同期 OI。<button data-tab="flow">查看 CVD / OI 图表 ↗</button></p>';
   if(gates.length)html+='<details class="ms-review-gates"><summary>当前新入场挂起范围 · '+gates.length+' 项</summary><div class="ms-review-grid">'+gates.map(g=>'<section class="ms-review-topic"><h4>'+E(g.key)+' · '+E(g.horizon)+'</h4>'+badge('新入场挂起','warn')+prose(g.reason)+'</section>').join('')+'</div></details>';
   if(!audits.length)return html+empty('尚无模型复核记录');

@@ -13,7 +13,7 @@
       <div>
         <div class="th-kicker">TraderHome · Evidence → Review → Growth</div>
         <h1>专业不是指标更多，<br><span>而是每一步都能验证</span></h1>
-        <p class="th-hero__lead">先用历史证据建立可证伪的假设，交易之后再用真实记录验证改进。每个结论都写明依据、边界和下一步；证据不够时，“不行动”也是正式输出。</p>
+        <p class="th-hero__lead">交易前，用历史数据看当前走势有没有统计上的优势；交易后，用真实成交记录找出最花钱的习惯并验证改进。每个结论都写明依据和适用范围，证据不够时就明确说“不操作”。</p>
         <div class="th-actions">
           <a class="th-btn primary" href="/history/">从历史证据开始 →</a>
           <a class="th-btn" href="#board">查看今日状态</a>
@@ -32,16 +32,16 @@
           <p>保留交易员原始判断，再用成交与K线证据给出唯一改进动作。</p>
           <em>输出：未来 10 笔交易的一个可观察改变</em>
         </li>
-        <li class="th-flow__loop">↺ 复盘结论回到下一轮研究；其余系统各自独立，不参与这条闭环的评分。</li>
+        <li class="th-flow__loop">↺ 复盘的结论带回下一轮研究。</li>
       </ol>
     </section>
 
     <section class="th-section" id="board"><div class="th-container">
       <div class="th-section__head">
         <div>
-          <div class="th-kicker">Today</div>
+          <div class="th-kicker">今日</div>
           <h2>今日状态</h2>
-          <p class="th-lead">每个系统按自己的更新频率判断数据是否新鲜。过期的系统仍可回看，但不应作为今天的依据。</p>
+          <p class="th-lead">按各系统自己的更新频率判断数据是否新鲜。过期的仍可回看，但不要当作今天的依据。</p>
         </div>
         <span class="th-fresh th-board__summary" id="boardSummary" data-state="unknown">读取状态中</span>
       </div>
@@ -51,20 +51,20 @@
         <article class="th-sys" data-key="history" style="--sys: var(--th-accent-history)">
           <header><span class="th-sys__tag">01 · 历史研究</span><span class="th-fresh" data-status-for="history" data-state="unknown">读取中</span></header>
           <h3>刻舟求剑<small>历史证据</small></h3>
-          <p>不预测价格，而是判断当前形态相对历史基准，是否出现值得关注的统计差异。</p>
-          <ul><li>corr + DTW 双方法共识</li><li>Edge、95% 区间与 Top-K 稳健性</li><li>Fresh / Cached / Stale 数据健康</li></ul>
+          <p>不预测价格，只判断当前走势在历史上相似的情况下，之后上涨的概率是否明显高于或低于平时。</p>
+          <ul><li>两种相似度方法互相印证</li><li>给出相对基准的优势（Edge）和置信区间</li><li>每个标的标明数据是否最新</li></ul>
           <footer><small data-status-time="history">—</small><a class="th-sys__go" href="/history/">打开历史证据 →</a></footer>
         </article>
         <article class="th-sys" data-key="review" style="--sys: var(--th-accent-review)">
           <header><span class="th-sys__tag">02 · 交易后</span><span class="th-fresh" data-state="unknown">本地运行</span></header>
           <h3>TradeReview OS<small>交易复盘</small></h3>
-          <p>不是再给一张盈亏报表，而是用真实成交与行情证据找到最高成本的行为，再用下一批交易验证改进。</p>
+          <p>导入已平仓交易，找出最花钱的重复习惯，给一个改进动作，再用接下来 10 笔交易验证。</p>
           <ul><li>本地导入 CSV / JSON，文件不上传</li><li>匹配历史K线，逐笔重演计划与持仓路径</li><li>唯一处方、行为证据与滚动成长验证</li></ul>
           <footer><small>成交记录只在你的浏览器内处理</small><a class="th-sys__go" href="/review/">打开交易复盘 →</a></footer>
         </article>
       </div>
 
-      <h3 class="th-board__group">独立研究系统 <small>各自口径与边界，不进入核心工作流评分</small></h3>
+      <h3 class="th-board__group">独立研究系统 <small>各自独立运行</small></h3>
       <div class="th-board">
         <article class="th-sys" data-key="incomeos" style="--sys: var(--th-accent-incomeos)">
           <header><span class="th-sys__tag">长期资金 · 每周</span><span class="th-fresh" data-status-for="incomeos" data-state="unknown">读取中</span></header>
@@ -76,14 +76,14 @@
         <article class="th-sys" data-key="tailtrend" style="--sys: var(--th-accent-tailtrend)">
           <header><span class="th-sys__tag">日线收盘 · 影子测试</span><span class="th-fresh" data-status-for="tailtrend" data-state="unknown">读取中</span></header>
           <h3>TailTrend Lab</h3>
-          <p>下沿收复、上沿管理、突破跟随、失败退出写成同一套状态机，再由账户风险决定能否占用仓位。</p>
+          <p>每天收盘后判断美股处在近 60 日区间的底部、顶部、中间还是已突破；只在两端给观察，仓位由账户风险决定。</p>
           <ul><li>公开站只发布派生状态，不发布原始K线</li><li>压力仓位只在浏览器内存计算</li></ul>
           <footer><small data-status-time="tailtrend">—</small><a class="th-sys__go" href="/tailtrend/">查看今日状态 →</a></footer>
         </article>
         <article class="th-sys" data-key="otc" style="--sys: var(--th-accent-otc)">
           <header><span class="th-sys__tag">场外 · 日线研究</span><span class="th-fresh" data-status-for="otc" data-state="unknown">读取中</span></header>
           <h3>场外日线工作台</h3>
-          <p>在同一条时间轴上读进退场周期、场外指数与爆破节点，明确研究优先级、下一确认和失效条件。</p>
+          <p>把进退场周期、场外指数和爆破指数放在一条时间轴上，按日期回看，写明下一步要确认什么、什么情况算失效。</p>
           <ul><li>缺页断线，过期醒目标记</li><li>历史质量不等于当前买点</li></ul>
           <footer><small data-status-time="otc">—</small><a class="th-sys__go" href="/otc/">打开场外日线 →</a></footer>
         </article>
@@ -97,7 +97,7 @@
         <article class="th-sys" data-key="dailyTrade" style="--sys: var(--th-accent-daily)">
           <header><span class="th-sys__tag">研究快照</span><span class="th-fresh" data-status-for="dailyTrade" data-state="unknown">读取中</span></header>
           <h3>交易早晚报</h3>
-          <p>只发布交易流程已经校验过的早报与晚报，缺失、过期和回退按原报告显示。</p>
+          <p>发布已经校验过的早报和晚报；数据缺失或过期的地方按原样标出。</p>
           <ul><li>不含账户私有数据与密钥</li><li>不替用户下单</li></ul>
           <footer><small data-status-time="dailyTrade">—</small><a class="th-sys__go" href="/daily-trade/">打开早晚报 →</a></footer>
         </article>
@@ -105,9 +105,9 @@
     </div></section>
 
     <section class="th-section" id="contracts"><div class="th-container">
-      <div class="th-kicker">Product output contracts</div>
-      <h2>输出契约：输入什么、输出什么、何时拒绝</h2>
-      <p class="th-lead" style="margin-bottom: 24px">专业产品不能只展示答案，还要让用户知道答案何时失效。</p>
+      <div class="th-kicker">输出契约</div>
+      <h2>输出契约：每个系统用什么数据、给出什么、什么情况下不给结论</h2>
+      <p class="th-lead" style="margin-bottom: 24px">先知道结论在什么情况下会失效，再决定用不用它。</p>
       <div class="th-contracts">
         <table>
           <thead><tr><th scope="col">系统</th><th scope="col">输入</th><th scope="col">输出</th><th scope="col">拒绝或降级</th></tr></thead>
@@ -126,22 +126,11 @@
       </div>
     </div></section>
 
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Shared evidence language</div>
-      <h2>同一套证据语言</h2>
-      <p class="th-lead" style="margin-bottom: 24px">所有页面用同样的四个标签说明一个数字从哪里来。</p>
-      <div class="th-evidence">
-        <div><b>DATA</b><p>已收盘K线，或贡献者授权的交易记录。</p></div>
-        <div><b>DERIVED</b><p>概率、Edge、相似度、期望值、回撤与行为指标。</p></div>
-        <div><b>FORWARD</b><p>结果出来之前封存、按固定规则结算的计划；亏损不能删除。</p></div>
-        <div><b>METHOD / DEMO</b><p>教学规则、历史叙述或合成的产品演示。</p></div>
-      </div>
-    </div></section>
 
-    <section class="th-section" id="community"><div class="th-container">
+    <section class="th-section th-section--slim" id="community"><div class="th-container">
       <div class="th-community">
-        <div><div class="th-kicker">Private community</div><h2>公开站负责证明价值，DC / TG 承接真实使用</h2><p>品类扩展、内测、问题反馈和后续服务进入私域。邀请链接配置之前保持禁用，不跳转到无关社区。</p></div>
-        <div class="th-community__actions"><span class="th-btn disabled" title="等待真实邀请链接">Discord · 待配置</span><span class="th-btn disabled" title="等待真实邀请链接">Telegram · 待配置</span></div>
+        <div><h2>社区</h2><p>Discord / Telegram 邀请链接还在准备，开放后会放在这里。</p></div>
+        <div class="th-community__actions"><span class="th-btn disabled" title="等待真实邀请链接">Discord · 待开放</span><span class="th-btn disabled" title="等待真实邀请链接">Telegram · 待开放</span></div>
       </div>
     </div></section>
   </main>
@@ -155,11 +144,12 @@
         (status.modules || []).forEach(function (m) {
           if (m.localOnly) return;
           var f = m.freshness;
-          if (counts[f.state] !== undefined) counts[f.state] += 1;
+          if (!m.paused && counts[f.state] !== undefined) counts[f.state] += 1;
           var badge = document.querySelector('[data-status-for="' + m.key + '"]');
           if (badge) { badge.setAttribute("data-state", f.state); badge.textContent = f.label; }
           var time = document.querySelector('[data-status-time="' + m.key + '"]');
-          if (time) time.textContent = m.asOf ? "数据 " + api.shortDate(Date.parse(m.asOf)) + " · " + f.ago + " · " + (m.cadence || "") : "暂无数据";
+          if (time) time.textContent = m.paused ? "来源任务暂停中 · 最新一期 " + api.shortDate(Date.parse(m.asOf)).slice(0, 5)
+            : m.asOf ? "数据 " + api.shortDate(Date.parse(m.asOf)) + " · " + f.ago + " · " + (m.cadence || "") : "暂无数据";
         });
         var summary = document.getElementById("boardSummary");
         var total = counts.fresh + counts.late + counts.stale;

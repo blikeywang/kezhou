@@ -11,16 +11,16 @@
   <main class="tt-main">
     <section class="tt-wrap tt-hero">
       <div class="tt-hero__copy">
-        <div class="tt-kicker">TRADERHOME · TAILTREND LAB · SHADOW TEST</div>
-        <h1>只在边缘行动。<br><span>趋势被接受时，才把赢家留下。</span></h1>
-        <p>同一套状态机协调下沿收复、上沿兑现、突破延续、失败反转与事件隔离。正式状态只用日线收盘确认；区间中部默认空仓，账户风险预算拥有最终否决权。</p>
+        <div class="tt-kicker">TailTrend Lab · 日线观察</div>
+        <h1>只在区间边缘出手，<br><span>趋势站稳了才继续持有。</span></h1>
+        <p>每个交易日收盘后检查一组流动性好的美股：价格处在近 60 日区间的什么位置，是在底部收回、在顶部受阻，还是已经突破并站稳。只在区间两端给出观察；价格在中间时不开新仓。能买多少，最终由你的账户风险决定。</p>
         <div class="tt-actions">
           <a class="tt-button primary" href="#scanner">查看今日状态 →</a>
-          <a class="tt-button" href="#risk">计算压力仓位</a>
-          <a class="tt-button" href="#cadence">查看运行频率</a>
+          <a class="tt-button" href="#risk">计算能买多少股</a>
+          <a class="tt-button" href="#cadence">多久更新一次</a>
         </div>
         <div class="tt-hero__rules">
-          <span>触及 ≠ 信号</span><span>中部不开新仓</span><span>一个想法一个总风险</span><span>只给赢家加仓</span>
+          <span>触及 ≠ 信号</span><span>区间中部不开新仓</span><span>同类股票合计一份风险</span><span>只给赚钱的仓位加仓</span>
         </div>
       </div>
       <div class="tt-hero__status" aria-live="polite">
@@ -29,22 +29,22 @@
         <dl class="tt-source-list">
           <div><dt>行情源</dt><dd>Longbridge Securities</dd></div>
           <div><dt>口径</dt><dd>前复权 · 正常交易时段 · 日线</dd></div>
-          <div><dt>执行</dt><dd>研究影子运行 · 不自动下单</dd></div>
+          <div><dt>执行</dt><dd>仅用于研究观察 · 不自动下单</dd></div>
         </dl>
       </div>
     </section>
 
     <section class="tt-wrap tt-health" id="health" aria-label="数据健康">
-      <div><span>扫描池</span><strong id="metricUniverse">—</strong><small>初始液态美股池</small></div>
-      <div><span>边缘候选</span><strong id="metricEdges">—</strong><small>分状态，不混成总分</small></div>
-      <div><span>中部等待</span><strong id="metricMiddle">—</strong><small>现金也是正式仓位</small></div>
+      <div><span>扫描池</span><strong id="metricUniverse">—</strong><small>流动性好的美股</small></div>
+      <div><span>边缘候选</span><strong id="metricEdges">—</strong><small>在区间两端、值得复核</small></div>
+      <div><span>中部等待</span><strong id="metricMiddle">—</strong><small>在区间中间，暂不操作</small></div>
       <div><span>数据健康</span><strong id="metricFresh">—</strong><small id="metricQuality">—</small></div>
-      <div><span>状态变化</span><strong id="metricTransitions">—</strong><small>相对上一份日线快照</small></div>
+      <div><span>状态变化</span><strong id="metricTransitions">—</strong><small>与上一个交易日相比</small></div>
     </section>
 
     <section class="tt-section" id="scanner"><div class="tt-wrap">
       <div class="tt-section__head">
-        <div><div class="tt-kicker">DAILY STATE BOARD</div><h2>先分桶，再在同类机会里排序</h2><p>突破候选与趋势已接受分开显示。优先级只用于安排复核顺序，不是胜率或收益预测；点击一行查看分数构成、变化原因和下一条件。</p></div>
+        <div><div class="tt-kicker">今日状态</div><h2>每只股票现在处于哪种状态</h2><p>按状态分组。“复核优先级”只决定先看哪只，不代表胜率或收益。点一行可以看到判断依据和下一步要满足的条件。</p></div>
         <div class="tt-search"><label for="symbolSearch">查找标的</label><input id="symbolSearch" type="search" placeholder="SPXC / NVDA / 名称"></div>
       </div>
       <div id="bucketFilters" class="tt-filters" aria-label="状态筛选"></div>
@@ -65,7 +65,7 @@
 
     <section class="tt-section tt-audit-section" id="audit"><div class="tt-wrap">
       <div class="tt-section__head">
-        <div><div class="tt-kicker">DAILY AUDIT LEDGER</div><h2>先积累证据，再讨论调参</h2><p>账本只记录真实刷新产生的状态、原因、下一交易日参考和派生 MFE/MAE；不会补造尚未发生的 5–10 日结果。</p></div>
+        <div><div class="tt-kicker">事后验证</div><h2>这些判断后来对不对</h2><p>每次收盘判定都会存档，之后补上 1、3、5、10 个交易日内的最大浮盈和最大浮亏（MFE/MAE），用来检验规则。还没到时间的结果留空，不会估算。</p></div>
         <span id="auditProgress" class="tt-private">读取中</span>
       </div>
       <div id="auditSummary" class="tt-audit-summary"><div class="tt-empty">正在读取审计账本…</div></div>
@@ -73,27 +73,27 @@
     </div></section>
 
     <section class="tt-section tt-cadence-section" id="cadence"><div class="tt-wrap">
-      <div class="tt-kicker">SLOW DECISION · FAST ALERT · REAL-TIME RISK</div>
-      <h2>不需要不停扫描全市场</h2>
-      <p class="tt-lead">正式状态用慢频率确认；只有候选靠近边界、已有持仓和硬风险需要更快。MVP 暂不启用 60 分钟探针，先积累日线影子样本。</p>
+      <div class="tt-kicker">更新频率</div>
+      <h2>多久更新一次</h2>
+      <p class="tt-lead">状态只在每天收盘后判定一次，盘中波动不会改变它。盘前和盘中提醒还没有开发。</p>
       <div class="tt-cadence">
-        <article><span>WEEKLY · MANUAL</span><strong>周末全池复核</strong><p>当前人工复核股票池、周线环境、行业集群与相关性。</p></article>
-        <article><span>AFTER CLOSE</span><strong>每日全池正式判定</strong><p>更新 ATR/HV，确认收复、突破接受、失败与退出。</p></article>
-        <article><span>PREMARKET · PLANNED</span><strong>只复核持仓与候选</strong><p>尚未开发；未来检查事件、跳空、风险预算与止损。</p></article>
-        <article><span>INTRADAY · PLANNED</span><strong>盘中只盯边界提醒</strong><p>尚未开发；未来也不允许盘中噪声推翻日线规则。</p></article>
+        <article><span>每周 · 人工</span><strong>周末复核股票池</strong><p>检查股票名单、周线大方向、行业分组和相关性。</p></article>
+        <article><span>每个交易日 · 自动</span><strong>收盘后正式判定</strong><p>更新波动率，确认底部收回、突破站稳、突破失败和退出。</p></article>
+        <article><span>盘前 · 未开发</span><strong>只看持仓和候选</strong><p>计划检查财报等事件、跳空和止损。</p></article>
+        <article><span>盘中 · 未开发</span><strong>只在靠近边界时提醒</strong><p>提醒不会推翻收盘规则。</p></article>
       </div>
-      <div class="tt-fast-lane"><b>60 分钟快速探针 · 暂停启用</b><span>未来若回测通过，只允许日线已是突破候选的标的先用计划趋势风险的 25% 探针；回到旧区间立即退出，余下风险等日线确认。</span></div>
+      <div class="tt-fast-lane"><b>60 分钟提前小仓 · 未启用</b><span>设想：已是突破候选的股票，先用计划风险的 25% 试仓，跌回原区间就退出。要等回测验证后才会启用。</span></div>
     </div></section>
 
     <section class="tt-section" id="risk"><div class="tt-wrap">
       <div class="tt-section__head">
-        <div><div class="tt-kicker">ACCOUNT RISK VETO</div><h2>信号决定“是否值得看”，风险预算决定“能做多大”</h2><p>账户输入只在当前浏览器内存计算，不保存、不上传。选择上方标的会带入参考入场、硬止损、HV 与周线状态。</p></div>
-        <span class="tt-private">LOCAL ONLY · 不连接券商</span>
+        <div><div class="tt-kicker">仓位计算</div><h2>能买多少股：由账户风险决定</h2><p>输入账户金额和止损，按风险上限算出最多可买的股数。从上方状态表选一只股票，会自动带入入场价、止损和波动率。数据只在本页计算，不保存、不上传。</p></div>
+        <span class="tt-private">只在本页计算 · 不连接券商</span>
       </div>
       <div class="tt-risk-grid">
         <form id="riskForm" class="tt-risk-form">
           <label><span>账户权益 USD</span><input id="riskEquity" type="number" min="0" step="1000" value="100000"></label>
-          <label><span>策略袖套 · 由状态锁定</span><select id="riskModule" disabled aria-describedby="riskModuleLock"><option value="tail_core">尾部核心 · 总想法0.40%中的60%</option><option value="pure_trend">纯趋势 · 上限0.20%</option><option value="us_short">美股做空 · 上限0.15%</option><option value="event">事件隔离 · 普通公式禁用</option></select><small id="riskModuleLock" class="tt-field-note">不可手动绕开状态机</small></label>
+          <label><span>风险档位（由状态自动决定）</span><select id="riskModule" disabled aria-describedby="riskModuleLock"><option value="tail_core">区间边缘 · 单个想法风险 0.40% 的 60%</option><option value="pure_trend">趋势跟随 · 风险上限 0.20%</option><option value="us_short">美股做空 · 风险上限 0.15%</option><option value="event">事件期间 · 不按常规计算</option></select><small id="riskModuleLock" class="tt-field-note">跟随所选股票的状态，不能手动改</small></label>
           <label><span>参考入场价</span><input id="riskEntry" type="number" min="0" step="0.01"></label>
           <label><span>硬止损价</span><input id="riskStop" type="number" min="0" step="0.01"></label>
           <label><span>跳空准备金 / 股</span><input id="riskGap" type="number" min="0" step="0.01" value="0"></label>
@@ -103,12 +103,12 @@
           <label><span>同一集群已有风险 %</span><input id="riskCluster" type="number" min="0" max="100" step="0.01" value="0"></label>
           <label><span>今日完整止损次数</span><input id="riskStops" type="number" min="0" step="1" value="0"></label>
           <label><span>今日已实现亏损 / 权益 %</span><input id="riskDailyLoss" type="number" min="0" max="100" step="0.1" value="0"></label>
-          <button class="tt-button primary" type="submit">重新计算压力仓位</button>
+          <button class="tt-button primary" type="submit">重新计算股数</button>
           <div class="tt-config-actions">
             <button id="exportRiskConfig" class="tt-button" type="button">导出本地配置</button>
             <label class="tt-button tt-config-import">导入本地配置<input id="riskConfigFile" type="file" accept=".json,application/json"></label>
           </div>
-          <small id="riskConfigStatus" class="tt-field-note">配置文件由你自行保管；本站不写浏览器存储。</small>
+          <small id="riskConfigStatus" class="tt-field-note">配置文件保存在你自己的电脑上，本站不记录。</small>
         </form>
         <div id="riskOutput" class="tt-risk-output"><div class="tt-empty">先从状态表选择一个有结构失效位的候选。</div></div>
       </div>
@@ -116,9 +116,9 @@
 
     <section class="tt-section tt-local-section"><div class="tt-wrap tt-local-grid">
       <div>
-        <div class="tt-kicker">LOCAL RESEARCH SLOT</div>
-        <h2>临时测试自定义股票，不把原始K线上传</h2>
-        <p class="tt-lead">导入 Longbridge JSON 或含 time/open/high/low/close/volume/turnover 的 CSV。至少 90 根有效日线，单文件不超过 5 MB；缺 turnover 时会停用流动性闸门并明确提示。文件只在本页内存解析，刷新页面即清除。</p>
+        <div class="tt-kicker">自选测试</div>
+        <h2>用你自己的K线测试一只股票</h2>
+        <p class="tt-lead">支持 Longbridge 导出的 JSON，或包含 time / open / high / low / close / volume / turnover 的 CSV，至少 90 根日线、不超过 5 MB。没有 turnover 列时不检查流动性。文件只在本页读取，刷新即清除，不会上传。</p>
         <div class="tt-import-controls">
           <label><span>标的代码</span><input id="importSymbol" value="CUSTOM.US" autocomplete="off"></label>
           <label class="tt-file"><span>选择 JSON / CSV</span><input id="barFile" type="file" accept=".json,.csv,application/json,text/csv"></label>
@@ -129,17 +129,17 @@
     </div></section>
 
     <section class="tt-section tt-method"><div class="tt-wrap">
-      <div class="tt-kicker">METHOD · BOUNDARIES · WHAT TO TEST</div>
-      <h2>接下来几天，重点看错在哪里</h2>
+      <div class="tt-kicker">检验重点</div>
+      <h2>这套规则可能错在哪里</h2>
       <div class="tt-method-grid">
-        <article><b>状态误判</b><p>下沿收复是否过早？突破候选到接受是否太慢？上沿拒绝有没有把普通回撤误判成做空候选？</p></article>
-        <article><b>参数敏感</b><p>60日区间、20%尾部、0.25 ATR 接受门槛与10日低点退出只是固定研究起点，先记录、暂不追求历史最优。</p></article>
-        <article><b>漏掉的走势</b><p>记录 V 形反转、无回踩直线突破、慢趋势、事件跳空和大跌后急弹，判断该新增状态还是接受有意放弃。</p></article>
-        <article><b>实际可执行性</b><p>比较提醒到可成交价的偏差、隔夜跳空、滑点、借券与集群同时止损；不要只看信号方向。</p></article>
+        <article><b>判断早了或晚了</b><p>底部收回是不是判得太早？突破到“站稳”是不是确认得太慢？顶部受阻会不会把普通回调当成做空机会？</p></article>
+        <article><b>参数是否合适</b><p>60 日区间、两端各 20%、站稳门槛 0.25 ATR、跌破 10 日低点退出，都是起步值，先记录结果，不追求历史最优。</p></article>
+        <article><b>没覆盖的走势</b><p>V 形反转、不回踩的直线突破、慢涨慢跌、消息跳空、大跌后急弹：记下来，再决定增加规则还是放弃这类机会。</p></article>
+        <article><b>实际能不能做到</b><p>提醒价和真实成交价差多少？隔夜跳空、滑点、借券成本、同类股票一起止损，都要算进去，不能只看方向对不对。</p></article>
       </div>
       <div class="tt-disclaimer">
         <strong>研究边界</strong>
-        <p>TailTrend Lab 不是原版海龟交易法，而是尾部均值回归与趋势跟踪的统一研究框架；当前参数尚未完成 walk-forward、成本与样本外验证。页面只发布 Longbridge 日线的派生状态，不提供实时价格或自动交易。</p>
+        <p>TailTrend Lab 把“区间边缘反转”和“趋势跟随”放进同一套规则，不是原版海龟交易法。参数还没有经过滚动回测、交易成本和样本外验证。页面只发布 Longbridge 日线算出的状态，不提供实时价格，也不自动交易。</p>
         <p>本输出内容仅供参考，不构成投资建议。海龟交易法是趋势跟踪策略，在震荡行情中可能频繁止损，历史表现不代表未来收益。投资有风险，入市需谨慎。</p>
       </div>
     </div></section>

@@ -41,13 +41,13 @@
   };
   var stages = {
     history: {
-      step: "01", label: "研究", title: "先建立一个可证伪的交易假设",
-      output: "共识概率 · Edge · 区间 · 稳健性", boundary: "不输出确定走势或买卖指令",
+      step: "01", label: "研究", title: "先看历史证据，再形成交易想法",
+      output: "上涨概率 · 相对基准的优势 · 置信区间", boundary: "不预测价格，不给买卖指令",
       next: "/review/", nextText: "下一步：交易后验证"
     },
     review: {
-      step: "02", label: "复盘", title: "找到最贵的重复错误，并验证它是否真的改变",
-      output: "成本行为 · 证据单 · 唯一处方 · 成长证明", boundary: "不把相关亏损写成可挽回收益",
+      step: "02", label: "复盘", title: "找出最花钱的重复错误，并检验改了没有",
+      output: "花钱的习惯 · 证据 · 一个改进动作", boundary: "伴随的亏损不等于能挽回的钱",
       next: "/history/", nextText: "下一步：开始下一轮研究"
     }
   };
@@ -102,6 +102,8 @@
       .then(function (status) {
         (status.modules || []).forEach(function (m) {
           m.freshness = m.asOf ? freshness(m.asOf, m.policy) : { state: "unknown", label: m.localOnly ? "本地运行" : "未知", ago: "", ageMs: NaN };
+          // A source deliberately paused is not "broken": show it, don't alarm.
+          if (m.paused) { m.freshness.state = "paused"; m.freshness.label = "已暂停"; }
         });
         return status;
       });
@@ -209,7 +211,7 @@
   }
 
   loadStatus().then(function (status) {
-    var modules = (status.modules || []).filter(function (m) { return !m.localOnly; });
+    var modules = (status.modules || []).filter(function (m) { return !m.localOnly && !m.paused; });
     var bad = modules.filter(function (m) { return m.freshness.state === "stale"; }).length;
     var late = modules.filter(function (m) { return m.freshness.state === "late"; }).length;
     var ok = modules.filter(function (m) { return m.freshness.state === "fresh"; }).length;
@@ -220,7 +222,7 @@
       : "数据状态";
     header.querySelectorAll(".th-shell__nav a, .th-shell__panel a").forEach(function (a) {
       var m = (status.modules || []).filter(function (x) { return x.key === a.getAttribute("data-key"); })[0];
-      if (m && !m.localOnly) a.setAttribute("data-state", m.freshness.state);
+      if (m && !m.localOnly && !m.paused) a.setAttribute("data-state", m.freshness.state);
     });
     var list = header.querySelector(".th-shell__statuslist");
     list.innerHTML = (status.modules || []).map(function (m) {

@@ -252,9 +252,22 @@ function renderStatus(data) {
   $("#snapshotDate").textContent = `${data.tradingDate} · ${new Intl.DateTimeFormat("zh-CN", { timeZone: "America/New_York", hour: "2-digit", minute: "2-digit", timeZoneName: "short" }).format(new Date(data.asOf))}`;
 }
 
+// Longbridge returns an English market-temperature phrase; show it in Chinese.
+const MARKET_TEMP_WORDS = [
+  [/temp(erature)?\s*/gi, ""], [/extremely\s+hot/gi, "过热"], [/overheat(ed|ing)?/gi, "过热"],
+  [/comfortable/gi, "温度适中"], [/cold/gi, "偏冷"], [/cool/gi, "偏凉"], [/warm/gi, "偏暖"], [/hot/gi, "偏热"],
+  [/gradually\s+rising/gi, "缓慢升温"], [/gradually\s+falling/gi, "缓慢降温"], [/rapidly\s+rising/gi, "快速升温"],
+  [/rapidly\s+falling/gi, "快速降温"], [/rising/gi, "升温"], [/falling/gi, "降温"], [/stable/gi, "平稳"], [/\s*&\s*/g, "，"],
+];
+function marketTempText(text) {
+  if (!text || /[\u4e00-\u9fff]/.test(text)) return text ?? "—";
+  const translated = MARKET_TEMP_WORDS.reduce((value, [pattern, word]) => value.replace(pattern, word), String(text)).trim();
+  return /[A-Za-z]/.test(translated) ? text : translated;
+}
+
 function renderMarket(data) {
   const rows = [
-    ["市场温度", data.market.temperature, "/100", data.market.description ?? "—"],
+    ["市场温度", data.market.temperature, "/100", marketTempText(data.market.description)],
     ["估值热度", data.market.valuation, "/100", data.market.valuation >= 80 ? "整体估值偏热，单股加仓更看自身分位" : "整体估值可接受"],
     ["情绪热度", data.market.sentiment, "/100", "情绪只作风险背景，不单独择时"],
     ["数据覆盖", data.dataQuality.priced, `/${data.universe.candidateCount}`, `${data.optionDataQuality.usable} 个标的有双边期权快照`],
@@ -338,8 +351,14 @@ function renderReport(data, plan) {
   } else if (structural) {
     const evaluation = structural.accountEvaluation;
     $("#putHeadline").textContent = `本周 0 张；${structural.ticker} 只通过结构闸门`;
-    $("#putExplanation").textContent = `${structural.put.contract} 的市场结构可复核，但按你输入的账户/现金仍不合格。`;
-    $("#putReasons").innerHTML = evaluation.reasons.slice(0, 4).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+    // With no account value entered, "assignment = 7350% of the account" is
+    // arithmetic on the weekly deposit alone; ask for the missing input instead.
+    const accountMissing = !(Number($("#accountValue")?.value) > 0) && !state.ibkrAccount;
+    $("#putExplanation").textContent = accountMissing
+      ? `${structural.put.contract} 的市场结构可复核。先填写券商净值，才能判断被指派后这笔仓位占账户多少。`
+      : `${structural.put.contract} 的市场结构可复核，但按你输入的账户/现金仍不合格。`;
+    const reasons = accountMissing ? evaluation.reasons.filter((item) => !item.startsWith("被指派后占账户")) : evaluation.reasons;
+    $("#putReasons").innerHTML = reasons.slice(0, 4).map((item) => `<li>${escapeHtml(item)}</li>`).join("");
   } else {
     $("#putHeadline").textContent = "本周没有通过全部闸门的 Put";
     $("#putExplanation").textContent = WHOLE_SHARE_MODE
@@ -402,7 +421,7 @@ function renderOperationHistory(historyData) {
       return `<article class="io-history-week" id="history-week-${record.actionDate}">
         <div class="io-history-week-head"><div><time datetime="${record.actionDate}">${record.actionDate} · ${escapeHtml(recordLabel)}</time><p>数据交易日 ${escapeHtml(record.snapshotTradingDate)} · ${escapeHtml(record.source)}</p></div><span>生成于 ${escapeHtml(historyTimestamp(record))} ET</span></div>
         <div class="io-history-allocation">${allocation}</div>
-        <div class="io-history-decision"><div><span>OPTION DECISION</span><strong>${escapeHtml(option.headline ?? "—")}</strong></div><p>${optionDetail}</p></div>
+        <div class="io-history-decision"><div><span>期权结论</span><strong>${escapeHtml(option.headline ?? "—")}</strong></div><p>${optionDetail}</p></div>
         <p class="io-history-leaders">当周前五：${escapeHtml(leaders || "—")}。记录的是系统目标比例和期权闸门结论${WHOLE_SHARE_MODE ? "；具体整数股数由当周输入、余款和价格计算" : ""}，不代表 IBKR 已成交。</p>
       </article>`;
     }).join("");

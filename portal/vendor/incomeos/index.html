@@ -45,9 +45,9 @@
 
     <section class="io-wrap io-hero compact-hero">
       <div class="io-hero-copy">
-        <div class="io-eyebrow">PERSONAL ENDOWMENT · WEEKLY RESEARCH SYSTEM</div>
-        <h1>不是一只 JPM。<br><span>每周重新找更好的组合。</span></h1>
-        <p>候选池从原 50 扩展到 71 个，再按长期复利、盈利预期、质量、估值、风险、股息和流动性选出当期 Top 50。输入本周到账与 IBKR 净值后，系统把当前组合转成今天可执行的美元订单。</p>
+        <div class="io-eyebrow">长期资金 · 每周研究</div>
+        <h1>把每周入金变成买入清单，<br><span>每周重新找更好的组合。</span></h1>
+        <p>每周给 71 只候选股票和 ETF 打分（长期回报、盈利预期、质量、估值、风险、股息、流动性），选出前 50 并配成组合。填入本周入金和券商净值，就得到今天按美元下单的清单。</p>
         <div class="io-hero-proof">
           <div><b id="candidateCount">—</b><span>候选扫描</span></div>
           <div><b id="top50Count">—</b><span>当期 Top 50</span></div>
@@ -58,7 +58,7 @@
       </div>
 
       <aside class="io-control-panel" aria-label="IncomeOS 本周输入">
-        <div class="io-panel-head"><div><span>THIS WEEK</span><strong id="weeklyAmountHero">$1,000</strong></div><small>只保存在当前浏览器</small></div>
+        <div class="io-panel-head"><div><span>本周入金</span><strong id="weeklyAmountHero">$1,000</strong></div><small>只保存在当前浏览器</small></div>
         <label class="io-input"><span>本周实际到账</span><div><b>$</b><input id="weeklyContribution" type="number" min="0" step="50" inputmode="decimal" value="1000"></div><small>每周按真正进入 IBKR 的净新增现金填写</small></label>
         <label class="io-input"><span>券商当前净值（入金前）</span><div><b>$</b><input id="accountValue" type="number" min="0" step="1000" inputmode="decimal" value="0"></div><small>决定账户阶段、动态比例和指派集中度</small></label>
         <label class="io-input"><span>已隔离的期权现金</span><div><b>$</b><input id="optionReserve" type="number" min="0" step="100" inputmode="decimal" value="0"></div><small>只填真正愿意被指派的现金；不使用保证金放大</small></label>
@@ -83,7 +83,7 @@
     <div class="io-modules">
       <section class="io-module active" data-view="report" id="report">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">FRIDAY 10:00 ET · ACTION SHEET</div><h2>本周到账的钱，今天怎么做</h2></div><div class="io-meta"><span>数据截止（美东）</span><b id="snapshotDate">—</b></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">周五操作单 · 美东 10:00</div><h2>本周入金怎么买</h2></div><div class="io-meta"><span>数据截止（美东）</span><b id="snapshotDate">—</b></div></div>
           <div class="io-market-strip" id="marketStrip"></div>
           <div class="io-summary-grid">
             <article><span>账户阶段</span><strong id="stageLabel">—</strong><small id="stageDetail">—</small></article>
@@ -98,11 +98,11 @@
           </div>
           <div class="io-action-grid">
             <div>
-              <div class="io-subhead"><span>IBKR · TODAY</span><h3>按美元下单</h3><p>这是新增资金流向，不会假装知道你现有持仓偏离。</p></div>
+              <div class="io-subhead"><span>今天在 IBKR 执行</span><h3>按美元下单</h3><p>只分配本周新增的钱，不会根据你已有的持仓再做调整。</p></div>
               <div id="orders" class="io-orders"></div>
             </div>
             <aside class="io-put-callout">
-              <span class="io-label">OPTION DECISION</span>
+              <span class="io-label">期权结论</span>
               <h3 id="putHeadline">正在检查期权闸门</h3>
               <p id="putExplanation">—</p>
               <ul id="putReasons"></ul>
@@ -114,7 +114,7 @@
           </div>
           <section class="io-operation-history" aria-labelledby="operationHistoryTitle">
             <div class="io-history-head">
-              <div><span class="io-label">FRIDAY LEDGER</span><h3 id="operationHistoryTitle">周五操作历史</h3><p>保存每周五系统生成的操作单快照；这是当时的模型建议，不冒充 IBKR 实际成交。</p></div>
+              <div><span class="io-label">历史存档</span><h3 id="operationHistoryTitle">周五操作历史</h3><p>每周五生成的模型建议存档，不是实际成交记录。</p></div>
               <div class="io-history-count"><span>已归档</span><b id="historyRecordCount">0 周</b></div>
             </div>
             <nav class="io-history-index" id="historyArchive" aria-label="按年月查看周五操作历史"></nav>
@@ -125,21 +125,21 @@
 
       <section class="io-module" data-view="overview" id="overview">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">SYSTEM OVERVIEW</div><h2>IncomeOS 不是一个页面，是九个协同板块</h2></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">总览</div><h2>本周结论一览</h2></div></div>
           <div class="io-module-map" id="moduleMap"></div>
           <div class="io-overview-grid">
-            <article class="io-panel"><span class="io-label">CURRENT FINDING</span><h3 id="currentFinding">—</h3><p id="currentFindingDetail">—</p></article>
-            <article class="io-panel"><span class="io-label">JPM STATUS</span><h3 id="jpmStatus">—</h3><p id="jpmStatusDetail">—</p></article>
-            <article class="io-panel"><span class="io-label">IBKR BOUNDARY</span><h3>账户只读，下单仍由你确认</h3><p>本机中枢可同步净值、现金与持仓，但没有交易权限；页面不会替你下单。</p></article>
+            <article class="io-panel"><span class="io-label">本周发现</span><h3 id="currentFinding">—</h3><p id="currentFindingDetail">—</p></article>
+            <article class="io-panel"><span class="io-label">JPM 状态</span><h3 id="jpmStatus">—</h3><p id="jpmStatusDetail">—</p></article>
+            <article class="io-panel"><span class="io-label">账户权限</span><h3>只读，下单由你确认</h3><p>可以只读同步净值、现金和持仓；页面没有交易权限，不会替你下单。</p></article>
           </div>
-          <div class="io-subhead score-head"><span>LEADERS</span><h3>本周质量 + 估值前 8</h3><p>高质量不等于期权也适合；期权另看独立闸门。</p></div>
+          <div class="io-subhead score-head"><span>排名前列</span><h3>本周综合评分前 8</h3><p>评分高不代表适合卖期权，期权另有单独检查。</p></div>
           <div class="io-leader-grid" id="leaderCards"></div>
         </div>
       </section>
 
       <section class="io-module" data-view="ranking" id="ranking">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">71 → TOP 50</div><h2>候选池不是永久名单，每周允许挑战者进入</h2></div><div class="io-meta"><span>评分权重</span><b>复利 28 · 预期 20 · 质量 15 · 估值 12 · 风险 15</b></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">71 选 50</div><h2>候选排名：每周重新打分</h2></div><div class="io-meta"><span>评分权重</span><b>复利 28 · 预期 20 · 质量 15 · 估值 12 · 风险 15</b></div></div>
           <div class="io-ranking-tools">
             <div class="io-filter-group" id="rankingFilters">
               <button type="button" data-filter="top50" class="active">当期 Top 50</button>
@@ -158,13 +158,13 @@
 
       <section class="io-module" data-view="portfolio" id="portfolio">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">PORTFOLIO ENGINE</div><h2>最佳不是最高分单票，而是受约束后的组合</h2></div><div class="io-meta"><span>当前模型</span><b id="portfolioMethodShort">—</b></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">组合配置</div><h2>在集中度上限内配出的组合</h2></div><div class="io-meta"><span>当前模型</span><b id="portfolioMethodShort">—</b></div></div>
           <div class="io-verdict"><strong id="portfolioVerdict">—</strong><p id="portfolioVerdictDetail">—</p></div>
           <div class="io-portfolio-layout">
-            <div class="io-panel"><div class="io-subhead"><span>TARGET</span><h3>成熟账户参考组合</h3></div><div class="io-weight-list" id="modelWeights"></div></div>
-            <div class="io-panel"><div class="io-subhead"><span>YOUR STAGE</span><h3>按当前输入后的动态目标</h3></div><div class="io-weight-list" id="dynamicWeights"></div></div>
+            <div class="io-panel"><div class="io-subhead"><span>参考</span><h3>成熟账户的目标组合</h3></div><div class="io-weight-list" id="modelWeights"></div></div>
+            <div class="io-panel"><div class="io-subhead"><span>你的阶段</span><h3>按你当前净值调整后的目标</h3></div><div class="io-weight-list" id="dynamicWeights"></div></div>
           </div>
-          <div class="io-subhead score-head"><span>THIS WEEK</span><h3>新增资金订单拆分</h3><p>分配到美分并确保总额与本周输入完全一致。</p></div>
+          <div class="io-subhead score-head"><span>本周</span><h3>新增资金怎么拆</h3><p>精确到美分，合计等于本周入金。</p></div>
           <div class="io-table-wrap"><table class="io-table"><thead><tr><th>标的 / 角色</th><th>当前动态权重</th><th>本周金额</th><th>参考价</th><th>估算碎股</th><th>选择理由</th></tr></thead><tbody id="portfolioOrders"></tbody></table></div>
           <div class="io-guardrail-grid" id="portfolioGuardrails"></div>
         </div>
@@ -172,48 +172,48 @@
 
       <section class="io-module" data-view="calls" id="calls">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">SELL CALL ENGINE</div><h2>先拥有 100 股，再决定是否封顶上涨</h2></div><div class="io-meta"><span>当前自动订单</span><b>0 · 未读取 IBKR 持仓</b></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">备兑 Call</div><h2>持有满 100 股后，才考虑卖 Call</h2></div><div class="io-meta"><span>当前自动订单</span><b>0 · 未读取 IBKR 持仓</b></div></div>
           <div class="io-rule-grid">
-            <article><b>强趋势</b><strong>10–12 Delta</strong><p>尽量保留上涨，不为小权利金过早封顶。</p></article>
-            <article><b>中性趋势</b><strong>约 18 Delta</strong><p>在现金流与被行权概率之间平衡。</p></article>
-            <article><b>弱趋势</b><strong>约 25 Delta</strong><p>只在仍愿意持有且事件闸门通过时使用。</p></article>
-            <article><b>硬闸门</b><strong>IV/HV · OI · Spread</strong><p>财报、除息、价差、流动性任一失败即暂停。</p></article>
+            <article><b>强趋势</b><strong>10–12 Delta</strong><p>行权价放远，尽量留住上涨，不为一点权利金卖掉涨幅。</p></article>
+            <article><b>中性趋势</b><strong>约 18 Delta</strong><p>在权利金收入和被行权（股票被买走）的概率之间折中。</p></article>
+            <article><b>弱趋势</b><strong>约 25 Delta</strong><p>只在你仍愿意持有、且近期没有财报或除息时使用。</p></article>
+            <article><b>任一不合格就暂停</b><strong>IV/HV · OI · 价差</strong><p>财报、除息、买卖价差过宽或成交太少，都会暂停卖 Call。</p></article>
           </div>
           <div class="io-table-wrap"><table class="io-table option-table"><thead><tr><th>标的 / 合约</th><th>DTE</th><th>Delta</th><th>IV/HV</th><th>OI</th><th>Bid / Ask</th><th>价差</th><th>权利金年化代理</th><th>闸门</th></tr></thead><tbody id="callRows"></tbody></table></div>
-          <p class="io-method">即使显示“复核 100 股”，也必须在 IBKR 确认实际有完整 100 股、除息日和限价；页面不下单。</p>
+          <p class="io-method">显示“复核 100 股”时，仍要在 IBKR 确认确实持有 100 股、查看除息日并设限价；页面不会下单。</p>
         </div>
       </section>
 
       <section class="io-module" data-view="puts" id="puts">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">CASH-SECURED PUT ENGINE</div><h2>底层最优、期权最优、账户装得下，三者缺一不可</h2></div><div class="io-meta"><span>本周结构通过</span><b id="putStructureCount">—</b></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">现金担保 Put</div><h2>股票、期权、账户三项都合格才卖 Put</h2></div><div class="io-meta"><span>本周结构通过</span><b id="putStructureCount">—</b></div></div>
           <div class="io-verdict"><strong id="putVerdict">—</strong><p id="putVerdictDetail">—</p></div>
           <div class="io-table-wrap"><table class="io-table option-table put-table"><thead><tr><th>标的 / 合约</th><th>Delta</th><th>现金担保</th><th>账户占比</th><th>Bid / Ask</th><th>IV/HV</th><th>OI</th><th>权利金年化代理</th><th>盈亏平衡折价</th><th>当前结论</th></tr></thead><tbody id="putRows"></tbody></table></div>
           <div class="io-caveats">
-            <article><b>不使用保证金放大</b><p>准备金不足时只继续停泊 SGOV/现金，不把“差一点”变成裸露义务。</p></article>
-            <article><b>单股指派 ≤ 12%</b><p>ETF 可放宽到 50%，但仍需要完整现金与执行复核。</p></article>
-            <article><b>当前快照不是回测</b><p>年化权利金只是单一时点代理；没有历史期权面就不声称长期能实现。</p></article>
+            <article><b>不用保证金</b><p>准备金不够时钱继续放在 SGOV 或现金里，不会借钱去卖 Put。</p></article>
+            <article><b>单只股票被指派后 ≤ 12%</b><p>ETF 上限放宽到 50%，但同样要备足现金。</p></article>
+            <article><b>年化权利金只是估算</b><p>按今天这一刻的报价换算，不代表长期能拿到；缺少历史期权数据，暂时无法回测。</p></article>
           </div>
         </div>
       </section>
 
       <section class="io-module" data-view="risk" id="risk">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">RISK ENGINE</div><h2>账户越大，策略逐步解锁；风险上限不跟着放松</h2></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">风险规则</div><h2>账户越大可用的策略越多，风险上限不变</h2></div></div>
           <div class="io-risk-summary" id="riskSummary"></div>
           <div class="io-roadmap" id="accountRoadmap"></div>
-          <div class="io-subhead score-head"><span>NON-NEGOTIABLE</span><h3>组合硬约束</h3></div>
+          <div class="io-subhead score-head"><span>硬性限制</span><h3>任何时候都不放宽</h3></div>
           <div class="io-guardrail-grid" id="riskGuardrails"></div>
-          <div class="io-warning-panel"><span class="io-label">CURRENT WARNINGS</span><ul id="riskWarnings"></ul></div>
+          <div class="io-warning-panel"><span class="io-label">当前提醒</span><ul id="riskWarnings"></ul></div>
         </div>
       </section>
 
       <section class="io-module" data-view="backtest" id="backtest">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">BACKTEST / BENCHMARK</div><h2>先测试底层组合；没有历史期权面，就不伪造期权收益</h2></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">回测与基准</div><h2>只回测股票组合，不回测期权收益</h2></div></div>
           <div class="io-backtest-hero" id="backtestHero"></div>
           <div class="io-table-wrap"><table class="io-table"><thead><tr><th>模型 / 基准</th><th>可得区间</th><th>样本月数</th><th>CAGR</th><th>波动</th><th>最大回撤</th><th>Sharpe 代理</th><th>总回报</th></tr></thead><tbody id="backtestRows"></tbody></table></div>
-          <div class="io-subhead score-head"><span>GROWTH CYCLES</span><h3>前 12 名跨周期表现</h3><p>避免把 2023 以后的一段行情当成永久增长率。</p></div>
+          <div class="io-subhead score-head"><span>分阶段表现</span><h3>前 12 名在不同时期的表现</h3><p>看它们在 2016–19、2020–22、2023 至今三段行情里是否都站得住，而不只是最近涨得多。</p></div>
           <div class="io-table-wrap"><table class="io-table"><thead><tr><th>标的</th><th>10Y CAGR</th><th>5Y CAGR</th><th>2016–19</th><th>2020–22</th><th>2023–今</th><th>最大回撤</th><th>正收益年份</th></tr></thead><tbody id="cycleRows"></tbody></table></div>
           <p class="io-method" id="backtestLimit">—</p>
         </div>
@@ -221,24 +221,24 @@
 
       <section class="io-module" data-view="data" id="data">
         <div class="io-wrap">
-          <div class="io-section-head"><div><div class="io-eyebrow">DATA ROOM</div><h2>哪些数据已经够用，哪些还不能假装拥有</h2></div></div>
+          <div class="io-section-head"><div><div class="io-eyebrow">数据</div><h2>数据来源与缺口</h2></div></div>
           <div class="io-data-quality" id="dataQuality"></div>
           <div class="io-data-grid">
             <article><span>01 · 已接</span><h3>Longbridge 市场与基本面</h3><p>现价、十年月线、财报、EPS 预期修正、业绩超预期、五年估值分位、期权 Greeks/OI/盘口与财报日历。</p></article>
             <article><span>02 · 已接</span><h3>IBKR 本机只读账户</h3><p>读取净值、现金、购买力、完整持仓与持仓盈亏；未开放下单权限。</p></article>
-            <article><span>03 · 回测缺口</span><h3>历史期权面</h3><p>需要 Point-in-Time bid/ask、IV、Greeks、OI、公司行动和指派记录，才能真实比较 10/15/20 Delta。</p></article>
-            <article><span>04 · 研究增强</span><h3>完整预期与股息历史</h3><p>需要更长的分析师修正快照、逐期股息增长、payout/FCF 与税费模型，减少幸存者偏差。</p></article>
+            <article><span>03 · 回测缺口</span><h3>历史期权面</h3><p>要比较 10/15/20 Delta 哪个长期更好，需要当时的买卖价、IV、Greeks、持仓量和行权记录，目前还没有。</p></article>
+            <article><span>04 · 研究增强</span><h3>完整预期与股息历史</h3><p>还缺更长的分析师预期修正、逐年股息、派息率与自由现金流、税费模型；补齐后评分偏差更小。</p></article>
           </div>
-          <div class="io-warning-panel"><span class="io-label">KNOWN LIMITATIONS</span><ul id="dataLimitations"></ul></div>
+          <div class="io-warning-panel"><span class="io-label">已知局限</span><ul id="dataLimitations"></ul></div>
         </div>
       </section>
     </div>
   </main>
 
   <footer class="io-wrap io-footer">
-    <span>IncomeOS · TraderHome 独立长期资金系统</span>
-    <p>研究与教育工具，不构成投资建议。账户数据仅经本机只读中枢处理；网页不持有交易权限。</p>
-    <a href="/standards/">证据标准</a>
+    <span>IncomeOS · TraderHome 长期资金系统</span>
+    <p>研究与教育工具，不构成投资建议。账户数据只在你的电脑上只读处理，网页没有交易权限。</p>
+    <a href="/DISCLAIMER.md">免责声明</a>
   </footer>
   <script type="module" src="/incomeos/incomeos-app.mjs"></script>
 </body>
