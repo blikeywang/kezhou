@@ -34,13 +34,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: main
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.11'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - name: Check public exporter and portal
@@ -63,21 +63,34 @@ jobs:
           MARKET_SIMULATION_SITE_TOKEN: ${{ secrets.MARKET_SIMULATION_SITE_TOKEN }}
           PAPER_CYCLE_OUTCOME: ${{ steps.paper_cycle.outcome }}
         run: python tools/market_simulation/export_public.py --output _site/market-simulation/data
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: _site
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    # Give deploy-pages its full 10-minute service timeout plus runner cleanup.
-    # A shorter job limit can cancel a valid deployment still updating Pages.
-    timeout-minutes: 15
+    # Pages processes one deployment at a time and is occasionally slow
+    # (GitHub incidents, large artifacts). Wait up to 20 minutes, then retry
+    # once after a pause: a 502 on create or a cancelled stuck deployment
+    # usually clears on the second attempt. Job limit covers both attempts.
+    timeout-minutes: 50
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy_retry.outputs.page_url }}
     steps:
       - id: deploy
-        uses: actions/deploy-pages@v4
+        continue-on-error: true
+        uses: actions/deploy-pages@v5
         with:
           artifact_name: ${{ needs.build.outputs.artifact_name }}
+          timeout: '1200000'
+      - name: Pause before retrying Pages deployment
+        if: steps.deploy.outcome == 'failure'
+        run: sleep 90
+      - id: deploy_retry
+        if: steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact_name }}
+          timeout: '1200000'
