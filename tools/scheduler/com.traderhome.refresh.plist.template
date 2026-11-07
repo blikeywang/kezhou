@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.traderhome.refresh.__JOB__</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>__NODE__</string>
+    <string>__RUNNER__</string>
+    <string>__JOB__</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>__PATH__</string>
+    <key>HOME</key>
+    <string>__HOME__</string>
+    <key>TRADERHOME_REFRESH_REPO</key>
+    <string>__CLONE__</string>
+  </dict>
+  <!-- Fires every hour at the given minute. The runner itself decides from
+       the New York market clock whether anything is due, so the schedule
+       keeps working if the Mac's time zone changes. A run missed during sleep
+       starts once when the Mac wakes. -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Minute</key>
+    <integer>__MINUTE__</integer>
+  </dict>
+  <key>RunAtLoad</key>
+  <false/>
+  <key>LowPriorityIO</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>__HOME__/.traderhome/logs/refresh-__JOB__.log</string>
+  <key>StandardErrorPath</key>
+  <string>__HOME__/.traderhome/logs/refresh-__JOB__.log</string>
+</dict>
+</plist>

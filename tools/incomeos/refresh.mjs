@@ -14,7 +14,13 @@ function run(script) {
   });
 }
 
+// --no-archive refreshes the research snapshot only. Scheduled weekday runs
+// use it so the published data stays current without adding "临时更新操作单"
+// records; the Friday 10:00 ET run archives the weekly action sheet.
+const archive = !process.argv.includes("--no-archive");
+
 await run("build-research.mjs");
 await run("enrich-execution.mjs");
 await run("enrich-options.mjs");
-await run("archive-operation.mjs");
+if (archive) await run("archive-operation.mjs");
+else console.log("Skipped operation-history archive (--no-archive).");

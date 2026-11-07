@@ -232,8 +232,10 @@ def _write_status(output: Path) -> dict:
 
     add("review", "交易复盘", "/review/", None, 0, 0, localOnly=True, cadence="本地数据")
 
-    income = _read_json(output / "incomeos" / "data" / "research-snapshot.json") or {}
-    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192, cadence="每周")
+    # The page reads incomeos-full.json; research-snapshot.json is the frozen
+    # growth-cycle study and is not rewritten by the weekly refresh.
+    income = _read_json(output / "incomeos" / "data" / "incomeos-full.json") or {}
+    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192, cadence="每个交易日 · 周五出操作单")
 
     tail = _read_json(output / "tailtrend" / "data" / "latest.json") or {}
     tail_date = tail.get("dataAsOf")
@@ -246,7 +248,9 @@ def _write_status(output: Path) -> dict:
     add("marketSimulation", "模拟盘", "/market-simulation/", None, 0.5, 3, cadence="每 10 分钟", runtime="/market-simulation/data/status.json")
 
     daily = _read_json(output / "daily-trade" / "data" / "manifest.json") or {}
-    add("dailyTrade", "早晚报", "/daily-trade/", daily.get("generated_at"), 36, 96, cadence="每交易日")
+    paused = (daily.get("publishing") or {}).get("state") == "paused"
+    add("dailyTrade", "早晚报", "/daily-trade/", daily.get("generated_at"), 36, 96,
+        cadence="每交易日", **({"paused": True} if paused else {}))
 
     status = {"schema": "traderhome_status_v1", "modules": modules}
     (output / "assets" / "traderhome-status.json").write_text(
