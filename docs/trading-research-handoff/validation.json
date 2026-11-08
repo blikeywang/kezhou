@@ -1,0 +1,196 @@
+{
+  "schema": "trading_research_documentation_validation_v1",
+  "baseline_date": "2026-11-08",
+  "validated_at_utc": "2026-11-08T07:30:49.943428+00:00",
+  "status": "passed_with_documented_limitations",
+  "scope": "Documentation integrity and existing offline unit tests only; not strategy certification.",
+  "tests": {
+    "command": "python3 -B -m unittest discover -s tests -p 'test_*.py' -v",
+    "python_version": "3.13.2",
+    "count": 40,
+    "exit_code": 0,
+    "elapsed_seconds": 0.006,
+    "result": "OK"
+  },
+  "documentation_files": [
+    {
+      "path": "README.md",
+      "sha256": "626541dca9b22b151f151f0d5d2f7ea59489b8b9181c5be519af4facbeddb3fd",
+      "bytes": 6541,
+      "lines": 75
+    },
+    {
+      "path": "CLAUDE.md",
+      "sha256": "e58ac89f1a02592e4397eb76d51d5bc3835270040997382d1f4bfe879bc8d2f9",
+      "bytes": 3243,
+      "lines": 42
+    },
+    {
+      "path": "docs/DATA_SOURCES.md",
+      "sha256": "bcaf0094e882d7057ff9d22ff1a68016a553f6c76dd7c256c266acaefa7ca0cb",
+      "bytes": 8751,
+      "lines": 73
+    },
+    {
+      "path": "docs/CORE_PIPELINE.md",
+      "sha256": "3685025ebd1c1beeb8f6804ae0bbea74b888eaf226705da38f977a531ff83c04",
+      "bytes": 9823,
+      "lines": 135
+    },
+    {
+      "path": "docs/S1_SURF_BACKTEST.md",
+      "sha256": "e7d7418d5fff74808747a7b6ff253efcef949310577fb3e2d85a4cb0c7d3249b",
+      "bytes": 26097,
+      "lines": 302
+    },
+    {
+      "path": "docs/OPTIONS_AND_FLOW.md",
+      "sha256": "5141b7e546f217a0bef2c7eb4306d1ebef56fd5a80e37aaeac39da3540c7abd0",
+      "bytes": 29052,
+      "lines": 365
+    },
+    {
+      "path": "docs/RISK_AND_ENTRIES.md",
+      "sha256": "8d43408727b857d1dd5ce37ff1e8600edd07ac9eb840ed3d3a67391455d9a078",
+      "bytes": 23586,
+      "lines": 260
+    },
+    {
+      "path": "docs/OTC_AND_DISPLAY.md",
+      "sha256": "1dc2a2feb3746c017d4c4502cb1df2b0d437316031b99416bc04c403b838fdd2",
+      "bytes": 10554,
+      "lines": 135
+    },
+    {
+      "path": "docs/OPERATIONS.md",
+      "sha256": "43775fc891961626eb36e6b62dd829690f6c939416c7593a6b805640de0e14b2",
+      "bytes": 8696,
+      "lines": 115
+    },
+    {
+      "path": "docs/KNOWN_LIMITATIONS.md",
+      "sha256": "4fb39240d378c79033d1e62167702df6b4aaef2f585225c8b07a8a901ca7ed87",
+      "bytes": 8270,
+      "lines": 67
+    }
+  ],
+  "source_inventory_sha256": "f46e1b6ed72acf8b724583c65105a25a1d3fd51fd3fe649731ca448d8ae466dd",
+  "internal_links": [
+    {
+      "from": "README.md",
+      "to": "docs/KNOWN_LIMITATIONS.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "CLAUDE.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/DATA_SOURCES.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/CORE_PIPELINE.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/S1_SURF_BACKTEST.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/OPTIONS_AND_FLOW.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/RISK_AND_ENTRIES.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/OTC_AND_DISPLAY.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/OPERATIONS.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "docs/KNOWN_LIMITATIONS.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "source_inventory.json",
+      "exists_or_generated": true
+    },
+    {
+      "from": "README.md",
+      "to": "validation.json",
+      "exists_or_generated": true
+    },
+    {
+      "from": "docs/OPERATIONS.md",
+      "to": "S1_SURF_BACKTEST.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "docs/OPERATIONS.md",
+      "to": "S1_SURF_BACKTEST.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "docs/KNOWN_LIMITATIONS.md",
+      "to": "CORE_PIPELINE.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "docs/KNOWN_LIMITATIONS.md",
+      "to": "S1_SURF_BACKTEST.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "docs/KNOWN_LIMITATIONS.md",
+      "to": "OPTIONS_AND_FLOW.md",
+      "exists_or_generated": true
+    },
+    {
+      "from": "docs/KNOWN_LIMITATIONS.md",
+      "to": "RISK_AND_ENTRIES.md",
+      "exists_or_generated": true
+    }
+  ],
+  "public_allowlist": [
+    "CLAUDE.md",
+    "README.md",
+    "docs/CORE_PIPELINE.md",
+    "docs/DATA_SOURCES.md",
+    "docs/KNOWN_LIMITATIONS.md",
+    "docs/OPERATIONS.md",
+    "docs/OPTIONS_AND_FLOW.md",
+    "docs/OTC_AND_DISPLAY.md",
+    "docs/RISK_AND_ENTRIES.md",
+    "docs/S1_SURF_BACKTEST.md",
+    "source_inventory.json",
+    "validation.json"
+  ],
+  "violations": [],
+  "secret_scan_scope": "Pattern checks on publish documents only plus source/provenance allowlist; not a guarantee against all secrets.",
+  "not_performed": [
+    "live price or macro refresh",
+    "paid snapshot calls",
+    "real account reads",
+    "strategy performance recomputation",
+    "13-entry external engine validation",
+    "current broker fee or margin validation",
+    "production logic changes"
+  ],
+  "known_limits": "See docs/KNOWN_LIMITATIONS.md; tests passing does not resolve those issues."
+}

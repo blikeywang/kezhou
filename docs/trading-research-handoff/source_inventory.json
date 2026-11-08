@@ -1,0 +1,188 @@
+{
+  "schema": "trading_research_documentation_provenance_v1",
+  "baseline_date": "2026-11-08",
+  "generated_at_utc": "2026-11-08T07:30:49.943428+00:00",
+  "source_root": "user-local trading research project (not kezhou)",
+  "scope": "File fingerprints locate the documentation baseline; not a complete audit or source distribution.",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "afb87f03cfdf0442ad37e4f40e71f100b4ff6e09cb134f80d01b6e793435b9d5",
+      "bytes": 2089,
+      "lines": 24
+    },
+    {
+      "path": "WORKFLOW.md",
+      "sha256": "bad1e5d7bb68032d6547b02ed1dcc9fb8c36f344bd26231abdf91af590406c53",
+      "bytes": 26223,
+      "lines": 198
+    },
+    {
+      "path": "config/workflow.json",
+      "sha256": "0c4aaa4f53b82f8610ac3540203a0ea57dadefa55c49bf00d97c86d29d06ac12",
+      "bytes": 5333,
+      "lines": 151
+    },
+    {
+      "path": "scripts/daily_trade.py",
+      "sha256": "e5995ed147ce155a6a2e9bb1fc4173c585159bd68a8763c5d48acf2b2f78cb7b",
+      "bytes": 323195,
+      "lines": 5990
+    },
+    {
+      "path": "scripts/sync_claude_sources.mjs",
+      "sha256": "6432bdec32445147a726125aa2012b18601d32a3bfb8b75cb542d4c9cce8a3c9",
+      "bytes": 25977,
+      "lines": 659
+    },
+    {
+      "path": "scripts/s1_surf_filter.py",
+      "sha256": "148d40ddc920afcd8dbc8614df537cff9d992b31e065f594ae09efef1755c20e",
+      "bytes": 34730,
+      "lines": 857
+    },
+    {
+      "path": "scripts/backtest_s1_one_share.py",
+      "sha256": "7d716252b94293cd019c12f5ae225ba6727b65d00a4d340d7766d7a6b1973283",
+      "bytes": 41945,
+      "lines": 1010
+    },
+    {
+      "path": "scripts/analyze_s1_market_variants.py",
+      "sha256": "cf6f5c4a1957cefbecbd78d4b877bad793c543e69a3efaa37b66890a44df5b3c",
+      "bytes": 12534,
+      "lines": 261
+    },
+    {
+      "path": "scripts/analyze_s1_us_capital.py",
+      "sha256": "809ffb47a96b5ddba04bc5151eb47b21b373352f0d885d6016728c916e978f77",
+      "bytes": 30451,
+      "lines": 647
+    },
+    {
+      "path": "scripts/cache_s1_ibkr_bars.py",
+      "sha256": "7d3b1ccbe133bbb3227b7323b56f46ed9ad2d6d25d4658b08c65111f5e857a69",
+      "bytes": 2725,
+      "lines": 73
+    },
+    {
+      "path": "scripts/cache_s1_alpaca_bars.py",
+      "sha256": "fe2e07d7dda65c6e15da6686d60f61831921b9e6233cbee6ff4078890a5b7586",
+      "bytes": 3789,
+      "lines": 106
+    },
+    {
+      "path": "scripts/cache_s1_tencent_bars.py",
+      "sha256": "de2a9d2a599bf8797dd6d8fc2944236ccc057d8c2199465204471428fffc5bdd",
+      "bytes": 5373,
+      "lines": 145
+    },
+    {
+      "path": "scripts/collect_longbridge_options.py",
+      "sha256": "d7a539f1d30e6d903b196f7f6d64e08eb6d4d884ac6bf726b77c17775be52f49",
+      "bytes": 96237,
+      "lines": 1974
+    },
+    {
+      "path": "scripts/s1_forced_flow.py",
+      "sha256": "9baaecc3a43fc00ea4ff28565d408feabcc2ea86dbd2fd263ab72ca3f1d1f981",
+      "bytes": 50878,
+      "lines": 1044
+    },
+    {
+      "path": "scripts/collect_okx_account.py",
+      "sha256": "8c27253f186723274ed86d6a7a8c22b6c37d9539218eccd2bca55dd4182d5220",
+      "bytes": 39326,
+      "lines": 872
+    },
+    {
+      "path": "scripts/sync_entry_points.ts",
+      "sha256": "7bca889b96b9b3a5e98cff339c1dbdcb5a5a38c4258442b98eb1088b2ba9d492",
+      "bytes": 21691,
+      "lines": 588
+    },
+    {
+      "path": "scripts/build_mobile_snapshot.py",
+      "sha256": "91551429f4c51ac5d34a4ce960a2a056576c447bafbf42fe1fb1d291c7ecebd7",
+      "bytes": 100643,
+      "lines": 1756
+    },
+    {
+      "path": "scripts/build_history_workbook.mjs",
+      "sha256": "8779a2f8cf8d8cf395b4674287a6a9336554cef51d28ccc3b34ba1c72db1a9ac",
+      "bytes": 29925,
+      "lines": 631
+    },
+    {
+      "path": "scripts/publish_traderhome_reports.mjs",
+      "sha256": "42ec1d83eb379adf23b08f717f927c2bbc990e592b4e236892a324d900b28748",
+      "bytes": 14058,
+      "lines": 243
+    },
+    {
+      "path": "tests/test_daily_trade.py",
+      "sha256": "50de7ff969fb413654714a47de3ebf74af00e789537954ec6229d43ed211e689",
+      "bytes": 25596,
+      "lines": 652
+    },
+    {
+      "path": "tests/test_okx_account.py",
+      "sha256": "938eb507a4c9d5808aba35c244f3406c0b8d9ec3edbca40dda432e9e73211b2c",
+      "bytes": 4244,
+      "lines": 116
+    },
+    {
+      "path": "tests/test_s1_surf_filter.py",
+      "sha256": "33989829245a43673b8bfb694471651ec01efa6f978adcf65c2a2699334064ee",
+      "bytes": 6085,
+      "lines": 161
+    },
+    {
+      "path": "tests/test_s1_forced_flow.py",
+      "sha256": "fc94f4adab25fc9a0e302bf45efefb13ba6fa6eab05080f4f2546b8990e7301d",
+      "bytes": 12594,
+      "lines": 291
+    },
+    {
+      "path": "outputs/otc-chart/build_snapshot.py",
+      "sha256": "8153c54f95b582dc7f1c29c98b0fa3b2ee962dd16acc7cf5ab2de1d78889b504",
+      "bytes": 15717,
+      "lines": 238
+    },
+    {
+      "path": "outputs/otc-chart/copy_to_traderhome.py",
+      "sha256": "c112359dd3fd5252725a3f3f847906610f93983bf293fca64a7d94df4cd7e4bf",
+      "bytes": 1749,
+      "lines": 35
+    },
+    {
+      "path": "outputs/otc-chart/update_public_prices.py",
+      "sha256": "e47fd6ab09e1ab7b7434724870b2755164b0e7ac51d3e58a85937de4dcd52230",
+      "bytes": 7257,
+      "lines": 140
+    },
+    {
+      "path": "outputs/otc-chart/site/engine.mjs",
+      "sha256": "6d32bd27df1f1a53304a904a9e6e97226581558c966f9a180212034184340d66",
+      "bytes": 4909,
+      "lines": 32
+    },
+    {
+      "path": "outputs/otc-chart/intake-2026-11-07/validate.py",
+      "sha256": "511d941f723579954c60eb2fabae9c54e613a357034f91eddffb5483f5a74504",
+      "bytes": 11016,
+      "lines": 163
+    }
+  ],
+  "external_13_entry_engine": {
+    "status": "missing_at_configured_path_on_review",
+    "internal_formulas_verified": false
+  },
+  "excluded": [
+    "private config and credentials",
+    "account snapshots",
+    "broker raw market data",
+    "paid source originals",
+    "production source contents"
+  ]
+}
