@@ -28,6 +28,14 @@ V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对
 
 本地每日交易研究流程的[完整交接文档](docs/monkey-cognition/README.md)已按 2026-11-08 源码整理，涵盖计算公式、数据来源、S2 截图分析、运行命令、验证结果和已知限制。该目录是文档包；本地采集脚本、私有数据及外部 13 买点依赖不随包发布。Claude 可从[运行手册](docs/monkey-cognition/CLAUDE_HANDOFF.md)开始，修改规则前先核对[计算口径](docs/monkey-cognition/CALCULATIONS.md)与[实现核对记录](docs/monkey-cognition/AUDIT.md)。
 
+## Desk、期权与日报运维交接
+
+- [本对话交接总入口](docs/market-research-handoff/README.md)：公开来源索引、计算逻辑、条件式分析流程和离线公式测试。
+- [早晚报历史位置与运行流程](docs/market-research-handoff/DAILY_REPORTS.md) / [权限矩阵](docs/market-research-handoff/ACCESS_MATRIX.md)：完整本地历史、公开派生摘要、只读外部源和发布边界分开说明。
+- [研究系统实现审计](docs/trading-research-handoff/README.md)：S1、冲浪、回测、资金、期权与风险模块的实际实现及已知限制。
+
+以上为文档交接，不迁移账户、凭证、付费原文，也不证明生产调度或交易策略有效。
+
 ## 目录结构
 
 ```
