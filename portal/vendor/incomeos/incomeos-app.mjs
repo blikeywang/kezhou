@@ -250,6 +250,14 @@ function renderStatus(data) {
   const model = data.portfolio.comparisons.find((item) => item.label.includes("IncomeOS"));
   $("#modelCagr").textContent = pct(model?.cagr);
   $("#snapshotDate").textContent = `${data.tradingDate} · ${new Intl.DateTimeFormat("zh-CN", { timeZone: "America/New_York", hour: "2-digit", minute: "2-digit", timeZoneName: "short" }).format(new Date(data.asOf))}`;
+  // Say it next to the plan as well: the section title reads like "this week" even when the data is old.
+  const meta = $("#snapshotDate").closest(".io-meta");
+  meta?.classList.toggle("is-stale", snapshot.level === "stale");
+  let note = meta?.querySelector(".io-meta-stale");
+  if (snapshot.level === "stale" && meta) {
+    if (!note) { note = document.createElement("small"); note.className = "io-meta-stale"; meta.appendChild(note); }
+    note.textContent = "数据已过期：下面是那一天的方案，不是本周的";
+  } else note?.remove();
 }
 
 // Longbridge returns an English market-temperature phrase; show it in Chinese.
@@ -635,9 +643,11 @@ async function init() {
   $("#optionReserve").value = saved.optionReserve ?? 0;
   if (WHOLE_SHARE_MODE && $("#carryCash")) $("#carryCash").value = saved.carryCash ?? 0;
   if (WHOLE_SHARE_MODE && $("#cashBuffer")) $("#cashBuffer").value = saved.cashBuffer ?? 15;
-  setFontScale(localStorage.getItem(FONT_KEY) ?? 100);
-  setFontFamily(localStorage.getItem(FONT_FAMILY_KEY) ?? "system");
-  setColorTheme(localStorage.getItem(COLOR_THEME_KEY) ?? "ocean");
+  // The per-page font / theme switcher was removed: the whole site now shares one design.
+  // Reset anything a visitor saved earlier so they are not stuck with a style they cannot change.
+  setFontScale(100);
+  setFontFamily("system");
+  setColorTheme("ocean");
   bindEvents();
   if (personalHubEnabled()) probeIncomeHub();
   else setIbkrSyncStatus("只读同步需要你自己的电脑上运行个人数据中枢；不连接也可以直接手动填写上面三项。", "");
