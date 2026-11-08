@@ -1,5 +1,8 @@
 # TailTrend Lab daily refresh
 
+**完整维护/Claude接手入口：[TailTrend README](../../docs/tailtrend/README.md)。**
+公式、状态机与风险请读[计算规格](../../docs/tailtrend/CALCULATIONS.md)；数据字段、时效、MISSING和调度请读[数据与运维](../../docs/tailtrend/DATA_AND_OPERATIONS.md)；已知缺口与更新步骤见[Claude清单](../../docs/tailtrend/CLAUDE_HANDOFF.md)。以下为运行速查。
+
 TailTrend Lab is a research-only, daily-close scanner for the unified tail mean-reversion and trend-following framework.
 
 Run from the TraderHome repository root after the regular US session has closed:
@@ -10,7 +13,7 @@ node --test portal/test_tailtrend_engine.mjs
 python3 -m unittest portal.test_portal
 ```
 
-`tools/scheduler/` runs this automatically on the owner's Mac after each US close. The refresh uses the authenticated local Longbridge CLI and requests 360 forward-adjusted regular-session daily candles for each symbol. It publishes only derived state, tail boundaries, volatility, liquidity, event, management-zone and data-health fields. It does not publish raw OHLCV, account data, broker credentials or orders.
+`tools/scheduler/` supports automatic runs on the owner's Mac when installed and authenticated; source code alone does not prove a successful schedule. At the 2026-11-08 documentation audit, the committed and public TailTrend snapshot still represented the 2026-08-12 close. The refresh uses the authenticated local Longbridge CLI and requests 360 forward-adjusted regular-session daily candles for each symbol. It publishes only derived state, tail boundaries, volatility, liquidity, event, management-zone and data-health fields. It does not publish raw OHLCV, account data, broker credentials or orders.
 
 The initial universe is deliberately small and liquid so the shadow test is easy to inspect. Change `universe.json` only as a versioned research decision. A failed refresh may use a prior derived row while building the attempted run, but the official daily artifact is frozen as `MISSING`; `latest.json` then exposes the most recent complete snapshot only after marking every row `STALE` and forcing `newPositionAllowed=false`.
 
@@ -29,3 +32,5 @@ portal/vendor/tailtrend/data/
 Each immutable snapshot includes `dataAsOf`, `runAt`, engine commit/source hash, parameter hash, explicit previous state, transition reasons, active boundary memory and public risk-factor decomposition. Same-day reruns cannot overwrite it, and missing trading sessions receive explicit `MISSING` files.
 
 `tailtrend-audit.json` fills the next-session reference plus 1/3/5/10-session MFE/MAE only when later daily bars arrive and is never silently truncated. Forward outcomes remain separate so historical state snapshots are not mutated. Neither file contains the source OHLCV rows.
+
+Operational limits: missing dates are discovered only on a later run within the visible bar dates, not continuously. A frozen same-day `MISSING` cannot be replaced by a retry. The audit currently receives only the last 20 bars per symbol, so long outages need explicit continuity repair before interpreting horizons. Event-calendar failures do not yet hard-block publication. Read the handoff before restarting a long-paused pipeline or changing rules.

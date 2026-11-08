@@ -24,6 +24,12 @@ V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对
 
 快照更新后运行 `python3 -m unittest portal.test_portal` 与 `node --test portal/test_otc_engine.mjs`。门户清单版本为 V10，核心工作流为历史研究与交易后复盘。
 
+## TailTrend Lab · Claude 交接
+
+**接手入口：[TailTrend 完整 README](docs/tailtrend/README.md)**（2026-11-08按当前源码核对）。覆盖尾部/ATR/HV/周线公式、冻结边界状态机、止盈止损参考、压力仓位与全部闸门、Longbridge数据来源、不可变快照与MFE/MAE审计、Mac调度及GitHub发布。附[完整计算规格](docs/tailtrend/CALCULATIONS.md)、[数据与运维](docs/tailtrend/DATA_AND_OPERATIONS.md)、[Claude更新清单与已知缺口](docs/tailtrend/CLAUDE_HANDOFF.md)。
+
+交接时仓库和线上TailTrend快照仍为2026-08-12，只有1个v0.3影子日；前端会按年龄标为过期。调度代码已存在，但全站日更和Pages发布不能证明TailTrend行情持续更新。新文档明确区分已实现计算、管理文案和待开发回放，保留原始8月快照与历史评审记录。
+
 ## 猴认知分析 · Claude 交接
 
 本地每日交易研究流程的[完整交接文档](docs/monkey-cognition/README.md)已按 2026-11-08 源码整理，涵盖计算公式、数据来源、S2 截图分析、运行命令、验证结果和已知限制。该目录是文档包；本地采集脚本、私有数据及外部 13 买点依赖不随包发布。Claude 可从[运行手册](docs/monkey-cognition/CLAUDE_HANDOFF.md)开始，修改规则前先核对[计算口径](docs/monkey-cognition/CALCULATIONS.md)与[实现核对记录](docs/monkey-cognition/AUDIT.md)。

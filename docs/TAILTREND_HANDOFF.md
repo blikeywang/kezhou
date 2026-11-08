@@ -1,5 +1,7 @@
 # TraderHome TailTrend Lab 开发目标与交接说明
 
+> **历史文档说明（2026-11-08）**：本页保留2026-08-13开发目标和评审背景。当前维护以[完整TailTrend README](tailtrend/README.md)、[源码计算规格](tailtrend/CALCULATIONS.md)和[Claude接手清单](tailtrend/CLAUDE_HANDOFF.md)为准。后续已加入Mac调度代码和网页过期保护；“所有收复需5日”、风险裁剪顺序、审计连续性及已实现能力也需按新文档核对。本页历史日期/验证结果不表示当前数据已更新。
+
 > 文档状态：v0.3 影子测试交接稿（已吸收两轮评审）
 >
 > 编写日期：2026-08-13

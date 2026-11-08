@@ -1,5 +1,7 @@
 # Kezhou · Claude Code 推送 & 部署 Runbook
 
+> **适用范围说明**：这是早期刻舟求剑建站手册，不是当前所有TraderHome模块的更新入口。接手现有TailTrend请阅读[docs/tailtrend/README.md](docs/tailtrend/README.md)，沿用已有`blikeywang/kezhou`仓库与当前工作流；不要据本页历史说明新建TailTrend仓库或将`prototype/app.html`当作TailTrend源码。
+
 > 给 Claude Code / 任何 coding agent 读的执行手册。目标:把本目录推到 GitHub 的**新仓库**,
 > 开启每日自动刷新 + GitHub Pages 部署。**照着从上到下做即可。**
 
