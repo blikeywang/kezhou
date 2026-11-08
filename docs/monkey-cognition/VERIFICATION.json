@@ -1,0 +1,155 @@
+{
+  "reviewed_on": "2026-11-08",
+  "timezone": "Asia/Singapore",
+  "environment": {
+    "python": "3.13.2",
+    "node": "v22.23.1"
+  },
+  "existing_unit_tests": {
+    "command": "python3 -B -m unittest discover -s tests -v",
+    "passed": 40,
+    "failed": 0,
+    "run_in_this_session": true
+  },
+  "source_files_indexed": 32,
+  "syntax_checks": [
+    {
+      "path": "scripts/analyze_s1_market_variants.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/analyze_s1_us_capital.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/backtest_s1_one_share.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/build_history_workbook.mjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "scripts/build_mobile_snapshot.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/cache_s1_alpaca_bars.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/cache_s1_ibkr_bars.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/cache_s1_tencent_bars.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/collect_longbridge_options.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/collect_okx_account.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/daily_trade.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/publish_traderhome_reports.mjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "scripts/s1_forced_flow.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/s1_surf_filter.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/sync_claude_sources.mjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "scripts/sync_entry_points.ts",
+      "check": "external tsx/type environment not invoked",
+      "passed": null
+    },
+    {
+      "path": "tests/test_daily_trade.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_okx_account.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_s1_forced_flow.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_s1_surf_filter.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "outputs/otc-chart/build_snapshot.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "outputs/otc-chart/update_public_prices.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "outputs/otc-chart/copy_to_traderhome.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "outputs/otc-chart/site/engine.mjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "outputs/otc-chart/test_public_prices.py",
+      "check": "ast.parse",
+      "passed": true
+    }
+  ],
+  "local_markdown_links_checked": 13,
+  "s2_images_indexed": 38,
+  "s2_files_available": 0,
+  "publication_allowlist_check": "passed",
+  "credential_pattern_and_host_path_check": "passed",
+  "not_run": [
+    "live market/account collectors",
+    "paid snapshots",
+    "external 13-buy engine",
+    "workbook generation",
+    "current input freshness validation",
+    "site build/deployment"
+  ]
+}

@@ -24,6 +24,10 @@ V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对
 
 快照更新后运行 `python3 -m unittest portal.test_portal` 与 `node --test portal/test_otc_engine.mjs`。门户清单版本为 V10，核心工作流为历史研究与交易后复盘。
 
+## 猴认知分析 · Claude 交接
+
+本地每日交易研究流程的[完整交接文档](docs/monkey-cognition/README.md)已按 2026-11-08 源码整理，涵盖计算公式、数据来源、S2 截图分析、运行命令、验证结果和已知限制。该目录是文档包；本地采集脚本、私有数据及外部 13 买点依赖不随包发布。Claude 可从[运行手册](docs/monkey-cognition/CLAUDE_HANDOFF.md)开始，修改规则前先核对[计算口径](docs/monkey-cognition/CALCULATIONS.md)与[实现核对记录](docs/monkey-cognition/AUDIT.md)。
+
 ## 目录结构
 
 ```

@@ -1,0 +1,2575 @@
+{
+  "schema": "monkey_cognition_documentation_provenance_v1",
+  "reviewed_on": "2026-11-08",
+  "source_root": "local monkey-cognition project; not kezhou repository root",
+  "source_code_included": false,
+  "configuration_scope": "public thresholds and collection settings; excludes credentials and account mappings/themes",
+  "config_snapshot": {
+    "timezone": "Asia/Singapore",
+    "otc_source": {
+      "mode": "user_provided",
+      "effective_from": "2026-07-24",
+      "accepted_inputs": [
+        "notion_url",
+        "uploaded_file",
+        "pasted_text"
+      ],
+      "ignore_claude_external": true
+    },
+    "api_base": "https://www.trendtrader.cn/apiData/data",
+    "api_docs": "https://www.trendtrader.cn/apiData/v3/api-docs",
+    "snapshot_fields": [
+      "tickerName",
+      "asset",
+      "trendTemperatureCurr",
+      "trendPhaseCurr"
+    ],
+    "snapshot_batch_size": 8,
+    "max_snapshot_items": 120,
+    "categories": [
+      {
+        "tmId": 303121,
+        "name": "A股"
+      },
+      {
+        "tmId": 377042,
+        "name": "ETF基金"
+      },
+      {
+        "tmId": 332171,
+        "name": "美股"
+      },
+      {
+        "tmId": 300144,
+        "name": "商品期货"
+      },
+      {
+        "tmId": 327801,
+        "name": "加密币"
+      },
+      {
+        "tmId": 704988,
+        "name": "美国ETF"
+      }
+    ],
+    "portfolios": [
+      {
+        "tmId": 622485,
+        "name": "温转热(ETF基金)"
+      },
+      {
+        "tmId": 622460,
+        "name": "温转热(美股)"
+      },
+      {
+        "tmId": 622495,
+        "name": "温转热(商品期货)"
+      }
+    ],
+    "temperature_score": {
+      "沸": 1,
+      "热": 1,
+      "温": 1,
+      "平": 0,
+      "凉": -1,
+      "寒": -1
+    },
+    "freshness_days": {
+      "otc": 1,
+      "potential_zones": 1,
+      "trend": 1,
+      "s1": 1,
+      "buy_points": 1,
+      "desk": 2,
+      "options": 1
+    },
+    "s1_forced_flow": {
+      "enabled": true,
+      "early_window_sessions": 3,
+      "confirmation_window_sessions": 5,
+      "precheck_min_directional_move_pct": 2.5,
+      "ignition_atr_multiple": 1.0,
+      "ignition_relative_volume": 1.5,
+      "high_priority_score": 50,
+      "medium_priority_score": 30,
+      "max_report_rows": 12,
+      "max_push_option_cards": 3,
+      "contract_hotspot_limit": 4
+    },
+    "s1_surf_filter": {
+      "enabled": true,
+      "base_window_min": 5,
+      "base_window_max": 9,
+      "decline_lookback_sessions": 20,
+      "atr_period": 14,
+      "prior_decline_min_pct": 8.0,
+      "prior_decline_min_atr": 2.0,
+      "base_range_max_pct": 12.0,
+      "base_range_max_atr": 2.5,
+      "max_daily_move_pct": 6.0,
+      "max_daily_move_atr": 1.25,
+      "median_daily_move_atr": 0.6,
+      "alternation_min_ratio": 0.4,
+      "minimum_colored_bars": 3,
+      "base_slope_max_atr_per_session": 0.18,
+      "lower_low_tolerance_atr": 0.25,
+      "signal_close_min_range_position": 0.2,
+      "minimum_structure_score": 60.0,
+      "max_snapshot_gap_days": 3,
+      "history_calendar_days": 150,
+      "max_workers": 4,
+      "timeout_seconds": 30
+    },
+    "options": {
+      "longbridge_core_symbols": [
+        "SPY.US",
+        "QQQ.US",
+        "NVDA.US"
+      ],
+      "longbridge_pinned_symbols": [
+        "CRCL.US",
+        "SPCX.US"
+      ],
+      "longbridge_aggregate_volume_exclusions": {
+        "SPCX.US": "Longbridge option volume/daily still resolves the reused ticker to legacy ETF/US/SPCX; exclude aggregate P/C and OI history until the provider mapping is corrected."
+      },
+      "longbridge_max_candidate_symbols": 9,
+      "longbridge_expiries_per_symbol": 3,
+      "longbridge_target_dte": [
+        0,
+        7,
+        30
+      ],
+      "surface_moneyness": [
+        -0.1,
+        -0.05,
+        -0.025,
+        0,
+        0.025,
+        0.05,
+        0.1
+      ],
+      "deep_dive_top_count": 3,
+      "deep_dive_min_total_volume": 3000,
+      "microstructure_window_pct": 0.2,
+      "microstructure_contracts_per_side": 2,
+      "microstructure_trade_count": 1000,
+      "large_print_min_contracts": 50,
+      "large_print_min_gross_premium_usd": 100000,
+      "contract_watch_min_volume": 50,
+      "contract_watch_limit": 12,
+      "history_days": 60,
+      "max_workers": 4
+    },
+    "account_risk_thresholds_only": {
+      "freshness_minutes": {
+        "asia_morning": 120,
+        "us_premarket": 30,
+        "manual": 45
+      },
+      "quote_stale_minutes": 45,
+      "gross_leverage_warn": 10,
+      "gross_leverage_critical": 20,
+      "margin_ratio_warn_pct": 350,
+      "margin_ratio_critical_pct": 200,
+      "liquidation_buffer_warn_pct": 15,
+      "liquidation_buffer_critical_pct": 10,
+      "available_equity_warn_pct": 25,
+      "high_leverage_threshold": 20
+    },
+    "market_risk_watch": {
+      "enabled": true,
+      "logic_source": {
+        "title": "一個月前全網喊AI泡沫要崩，我說鬼故事是洗盤不是葬禮，二波窗口鎖死7月底8月初！",
+        "author": "一个狠人",
+        "url": "https://www.youtube.com/watch?v=MrnjBdgQPLU&t=1055s",
+        "published_date": "2026-08-10",
+        "segment_start": "17:35",
+        "role": "外部启发式风险框架；不是官方压力阈值、收益预测或自动交易信号"
+      },
+      "fred_bundle_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=WRESBAL,WDTGAL,SOFR,IORB,RPONTSYD",
+      "freshness_days": {
+        "daily": 3,
+        "weekly": 10,
+        "monthly": 45,
+        "quarterly": 140
+      },
+      "thresholds": {
+        "reserve_watch_trillion": 2.9,
+        "reserve_confirmation_trillion": 2.8,
+        "reserve_hard_risk_trillion": 2.5,
+        "sofr_iorb_red_bp": 3.0,
+        "sofr_iorb_positive_days": 2,
+        "tga_pressure_trillion": 0.95,
+        "tga_reference_trillion": 1.0,
+        "insider_sell_buy_red": 5.0,
+        "ndx_forward_pe_red": 30.0
+      },
+      "hyperscaler_symbols": [
+        "MSFT.US",
+        "AMZN.US",
+        "GOOGL.US",
+        "META.US"
+      ],
+      "capex_minimum_coverage": 3
+    }
+  },
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "afb87f03cfdf0442ad37e4f40e71f100b4ff6e09cb134f80d01b6e793435b9d5",
+      "bytes": 2089,
+      "lines": 24
+    },
+    {
+      "path": "WORKFLOW.md",
+      "sha256": "bad1e5d7bb68032d6547b02ed1dcc9fb8c36f344bd26231abdf91af590406c53",
+      "bytes": 26223,
+      "lines": 198
+    },
+    {
+      "path": "README.md",
+      "sha256": "a4d00e64ef0cdd43ad5aeeb69e01780df9ee82522f350d60af7c6372fca7482e",
+      "bytes": 44790,
+      "lines": 1085
+    },
+    {
+      "path": "inbox/README.md",
+      "sha256": "16d32ad53d08e74920f81d9e040fddf5bb95247a54bef88f21e37ccc756a03c5",
+      "bytes": 1806,
+      "lines": 42
+    },
+    {
+      "path": "config/workflow.json",
+      "sha256": "0c4aaa4f53b82f8610ac3540203a0ea57dadefa55c49bf00d97c86d29d06ac12",
+      "bytes": 5333,
+      "lines": 151
+    },
+    {
+      "path": "data/options/CLAUDE_README.md",
+      "sha256": "331b2f5ec285b65228bd0883bd97ce949cdd3d5b266b08e05431a839fa51f1dc",
+      "bytes": 2295,
+      "lines": 27
+    },
+    {
+      "path": "scripts/analyze_s1_market_variants.py",
+      "sha256": "cf6f5c4a1957cefbecbd78d4b877bad793c543e69a3efaa37b66890a44df5b3c",
+      "bytes": 12534,
+      "lines": 261,
+      "symbols": [
+        {
+          "name": "pct",
+          "kind": "FunctionDef",
+          "line": 34,
+          "end_line": 35
+        },
+        {
+          "name": "money",
+          "kind": "FunctionDef",
+          "line": 38,
+          "end_line": 39
+        },
+        {
+          "name": "summarize",
+          "kind": "FunctionDef",
+          "line": 42,
+          "end_line": 91
+        },
+        {
+          "name": "build_report",
+          "kind": "FunctionDef",
+          "line": 94,
+          "end_line": 174
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 177,
+          "end_line": 257
+        }
+      ]
+    },
+    {
+      "path": "scripts/analyze_s1_us_capital.py",
+      "sha256": "809ffb47a96b5ddba04bc5151eb47b21b373352f0d885d6016728c916e978f77",
+      "bytes": 30451,
+      "lines": 647,
+      "symbols": [
+        {
+          "name": "as_float",
+          "kind": "FunctionDef",
+          "line": 35,
+          "end_line": 36
+        },
+        {
+          "name": "parse_date",
+          "kind": "FunctionDef",
+          "line": 39,
+          "end_line": 40
+        },
+        {
+          "name": "cache_filename",
+          "kind": "FunctionDef",
+          "line": 43,
+          "end_line": 44
+        },
+        {
+          "name": "canonical_symbol",
+          "kind": "FunctionDef",
+          "line": 47,
+          "end_line": 51
+        },
+        {
+          "name": "bar_date",
+          "kind": "FunctionDef",
+          "line": 54,
+          "end_line": 56
+        },
+        {
+          "name": "load_bars",
+          "kind": "FunctionDef",
+          "line": 59,
+          "end_line": 76
+        },
+        {
+          "name": "short_minimum",
+          "kind": "FunctionDef",
+          "line": 79,
+          "end_line": 92
+        },
+        {
+          "name": "order_commission",
+          "kind": "FunctionDef",
+          "line": 95,
+          "end_line": 106
+        },
+        {
+          "name": "build_orders",
+          "kind": "FunctionDef",
+          "line": 109,
+          "end_line": 137
+        },
+        {
+          "name": "estimate_pending_basket",
+          "kind": "FunctionDef",
+          "line": 140,
+          "end_line": 253
+        },
+        {
+          "name": "active_on",
+          "kind": "FunctionDef",
+          "line": 256,
+          "end_line": 259
+        },
+        {
+          "name": "requirement",
+          "kind": "FunctionDef",
+          "line": 262,
+          "end_line": 285
+        },
+        {
+          "name": "mark_pnl",
+          "kind": "FunctionDef",
+          "line": 288,
+          "end_line": 293
+        },
+        {
+          "name": "round_up",
+          "kind": "FunctionDef",
+          "line": 296,
+          "end_line": 297
+        },
+        {
+          "name": "analyze_variant",
+          "kind": "FunctionDef",
+          "line": 300,
+          "end_line": 473
+        },
+        {
+          "name": "build_report",
+          "kind": "FunctionDef",
+          "line": 476,
+          "end_line": 579
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 582,
+          "end_line": 643
+        }
+      ]
+    },
+    {
+      "path": "scripts/backtest_s1_one_share.py",
+      "sha256": "7d716252b94293cd019c12f5ae225ba6727b65d00a4d340d7766d7a6b1973283",
+      "bytes": 41945,
+      "lines": 1010,
+      "symbols": [
+        {
+          "name": "Event",
+          "kind": "ClassDef",
+          "line": 48,
+          "end_line": 54
+        },
+        {
+          "name": "canonical_symbol",
+          "kind": "FunctionDef",
+          "line": 57,
+          "end_line": 66
+        },
+        {
+          "name": "market_currency",
+          "kind": "FunctionDef",
+          "line": 69,
+          "end_line": 74
+        },
+        {
+          "name": "load_events",
+          "kind": "FunctionDef",
+          "line": 77,
+          "end_line": 126
+        },
+        {
+          "name": "cache_filename",
+          "kind": "FunctionDef",
+          "line": 129,
+          "end_line": 130
+        },
+        {
+          "name": "atomic_json_write",
+          "kind": "FunctionDef",
+          "line": 133,
+          "end_line": 143
+        },
+        {
+          "name": "fetch_symbol",
+          "kind": "FunctionDef",
+          "line": 146,
+          "end_line": 231
+        },
+        {
+          "name": "fetch_all",
+          "kind": "FunctionDef",
+          "line": 234,
+          "end_line": 263
+        },
+        {
+          "name": "bar_date",
+          "kind": "FunctionDef",
+          "line": 266,
+          "end_line": 268
+        },
+        {
+          "name": "load_bars",
+          "kind": "FunctionDef",
+          "line": 271,
+          "end_line": 301
+        },
+        {
+          "name": "prepare_executions",
+          "kind": "FunctionDef",
+          "line": 304,
+          "end_line": 340
+        },
+        {
+          "name": "finalize_leg",
+          "kind": "FunctionDef",
+          "line": 343,
+          "end_line": 367
+        },
+        {
+          "name": "simulate_symbol",
+          "kind": "FunctionDef",
+          "line": 370,
+          "end_line": 445
+        },
+        {
+          "name": "mean_or_none",
+          "kind": "FunctionDef",
+          "line": 448,
+          "end_line": 450
+        },
+        {
+          "name": "median_or_none",
+          "kind": "FunctionDef",
+          "line": 453,
+          "end_line": 455
+        },
+        {
+          "name": "exposure_stats",
+          "kind": "FunctionDef",
+          "line": 458,
+          "end_line": 486
+        },
+        {
+          "name": "summarize_variant",
+          "kind": "FunctionDef",
+          "line": 489,
+          "end_line": 558
+        },
+        {
+          "name": "percentile",
+          "kind": "FunctionDef",
+          "line": 561,
+          "end_line": 566
+        },
+        {
+          "name": "crosscheck_against_longbridge",
+          "kind": "FunctionDef",
+          "line": 569,
+          "end_line": 606
+        },
+        {
+          "name": "json_safe",
+          "kind": "FunctionDef",
+          "line": 609,
+          "end_line": 616
+        },
+        {
+          "name": "write_csv",
+          "kind": "FunctionDef",
+          "line": 619,
+          "end_line": 631
+        },
+        {
+          "name": "pct",
+          "kind": "FunctionDef",
+          "line": 634,
+          "end_line": 635
+        },
+        {
+          "name": "money",
+          "kind": "FunctionDef",
+          "line": 638,
+          "end_line": 639
+        },
+        {
+          "name": "build_report",
+          "kind": "FunctionDef",
+          "line": 642,
+          "end_line": 808
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 811,
+          "end_line": 1006
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_history_workbook.mjs",
+      "sha256": "8779a2f8cf8d8cf395b4674287a6a9336554cef51d28ccc3b34ba1c72db1a9ac",
+      "bytes": 29925,
+      "lines": 631,
+      "symbols": [
+        {
+          "name": "exists",
+          "line": 34
+        },
+        {
+          "name": "readJsonIfExists",
+          "line": 43
+        },
+        {
+          "name": "csvCell",
+          "line": 52
+        },
+        {
+          "name": "toCsv",
+          "line": 59
+        },
+        {
+          "name": "seedOtcCsv",
+          "line": 65
+        },
+        {
+          "name": "nonEmptyLines",
+          "line": 78
+        },
+        {
+          "name": "latestFirstColumn",
+          "line": 82
+        },
+        {
+          "name": "applyHeader",
+          "line": 101
+        },
+        {
+          "name": "styleDataSheet",
+          "line": 113
+        }
+      ]
+    },
+    {
+      "path": "scripts/build_mobile_snapshot.py",
+      "sha256": "91551429f4c51ac5d34a4ce960a2a056576c447bafbf42fe1fb1d291c7ecebd7",
+      "bytes": 100643,
+      "lines": 1756,
+      "symbols": [
+        {
+          "name": "read_json",
+          "kind": "FunctionDef",
+          "line": 25,
+          "end_line": 26
+        },
+        {
+          "name": "read_json_optional",
+          "kind": "FunctionDef",
+          "line": 29,
+          "end_line": 34
+        },
+        {
+          "name": "read_csv",
+          "kind": "FunctionDef",
+          "line": 37,
+          "end_line": 39
+        },
+        {
+          "name": "iso_date",
+          "kind": "FunctionDef",
+          "line": 42,
+          "end_line": 48
+        },
+        {
+          "name": "freshness",
+          "kind": "FunctionDef",
+          "line": 51,
+          "end_line": 65
+        },
+        {
+          "name": "otc_date",
+          "kind": "FunctionDef",
+          "line": 68,
+          "end_line": 70
+        },
+        {
+          "name": "clean_text",
+          "kind": "FunctionDef",
+          "line": 73,
+          "end_line": 74
+        },
+        {
+          "name": "public_status_detail",
+          "kind": "FunctionDef",
+          "line": 77,
+          "end_line": 88
+        },
+        {
+          "name": "sanitize_public_value",
+          "kind": "FunctionDef",
+          "line": 91,
+          "end_line": 111
+        },
+        {
+          "name": "temperature_value",
+          "kind": "FunctionDef",
+          "line": 114,
+          "end_line": 122
+        },
+        {
+          "name": "shannon_entropy",
+          "kind": "FunctionDef",
+          "line": 125,
+          "end_line": 131
+        },
+        {
+          "name": "light_state",
+          "kind": "FunctionDef",
+          "line": 134,
+          "end_line": 141
+        },
+        {
+          "name": "optional_number",
+          "kind": "FunctionDef",
+          "line": 469,
+          "end_line": 476
+        }
+      ]
+    },
+    {
+      "path": "scripts/cache_s1_alpaca_bars.py",
+      "sha256": "fe2e07d7dda65c6e15da6686d60f61831921b9e6233cbee6ff4078890a5b7586",
+      "bytes": 3789,
+      "lines": 106,
+      "symbols": [
+        {
+          "name": "requested_symbols",
+          "kind": "FunctionDef",
+          "line": 14,
+          "end_line": 23
+        },
+        {
+          "name": "ingest",
+          "kind": "FunctionDef",
+          "line": 26,
+          "end_line": 68
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 71,
+          "end_line": 102
+        }
+      ]
+    },
+    {
+      "path": "scripts/cache_s1_ibkr_bars.py",
+      "sha256": "7d3b1ccbe133bbb3227b7323b56f46ed9ad2d6d25d4658b08c65111f5e857a69",
+      "bytes": 2725,
+      "lines": 73,
+      "symbols": [
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 14,
+          "end_line": 69
+        }
+      ]
+    },
+    {
+      "path": "scripts/cache_s1_tencent_bars.py",
+      "sha256": "de2a9d2a599bf8797dd6d8fc2944236ccc057d8c2199465204471428fffc5bdd",
+      "bytes": 5373,
+      "lines": 145,
+      "symbols": [
+        {
+          "name": "vendor_symbol",
+          "kind": "FunctionDef",
+          "line": 18,
+          "end_line": 26
+        },
+        {
+          "name": "fetch_one",
+          "kind": "FunctionDef",
+          "line": 29,
+          "end_line": 106
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 109,
+          "end_line": 140
+        }
+      ]
+    },
+    {
+      "path": "scripts/collect_longbridge_options.py",
+      "sha256": "d7a539f1d30e6d903b196f7f6d64e08eb6d4d884ac6bf726b77c17775be52f49",
+      "bytes": 96237,
+      "lines": 1974,
+      "symbols": [
+        {
+          "name": "read_json",
+          "kind": "FunctionDef",
+          "line": 42,
+          "end_line": 44
+        },
+        {
+          "name": "write_json_atomic",
+          "kind": "FunctionDef",
+          "line": 47,
+          "end_line": 53
+        },
+        {
+          "name": "symbol_output_dir",
+          "kind": "FunctionDef",
+          "line": 56,
+          "end_line": 58
+        },
+        {
+          "name": "filtered_radar_for_symbol",
+          "kind": "FunctionDef",
+          "line": 61,
+          "end_line": 81
+        },
+        {
+          "name": "write_symbol_snapshot",
+          "kind": "FunctionDef",
+          "line": 84,
+          "end_line": 112
+        },
+        {
+          "name": "as_float",
+          "kind": "FunctionDef",
+          "line": 115,
+          "end_line": 122
+        },
+        {
+          "name": "as_int",
+          "kind": "FunctionDef",
+          "line": 125,
+          "end_line": 127
+        },
+        {
+          "name": "valid_iv",
+          "kind": "FunctionDef",
+          "line": 130,
+          "end_line": 132
+        },
+        {
+          "name": "mean",
+          "kind": "FunctionDef",
+          "line": 135,
+          "end_line": 137
+        },
+        {
+          "name": "stdev",
+          "kind": "FunctionDef",
+          "line": 140,
+          "end_line": 141
+        },
+        {
+          "name": "ratio",
+          "kind": "FunctionDef",
+          "line": 144,
+          "end_line": 146
+        },
+        {
+          "name": "clamp",
+          "kind": "FunctionDef",
+          "line": 149,
+          "end_line": 150
+        },
+        {
+          "name": "zscore_against",
+          "kind": "FunctionDef",
+          "line": 153,
+          "end_line": 158
+        },
+        {
+          "name": "log_distance",
+          "kind": "FunctionDef",
+          "line": 161,
+          "end_line": 164
+        },
+        {
+          "name": "cli_json",
+          "kind": "FunctionDef",
+          "line": 167,
+          "end_line": 185
+        },
+        {
+          "name": "load_s1_rows",
+          "kind": "FunctionDef",
+          "line": 188,
+          "end_line": 192
+        },
+        {
+          "name": "batched",
+          "kind": "FunctionDef",
+          "line": 195,
+          "end_line": 196
+        },
+        {
+          "name": "fetch_quotes",
+          "kind": "FunctionDef",
+          "line": 199,
+          "end_line": 205
+        },
+        {
+          "name": "choose_symbols",
+          "kind": "FunctionDef",
+          "line": 208,
+          "end_line": 228
+        },
+        {
+          "name": "choose_expiries",
+          "kind": "FunctionDef",
+          "line": 231,
+          "end_line": 248
+        },
+        {
+          "name": "realized_volatility",
+          "kind": "FunctionDef",
+          "line": 251,
+          "end_line": 259
+        },
+        {
+          "name": "nearest_row",
+          "kind": "FunctionDef",
+          "line": 262,
+          "end_line": 264
+        },
+        {
+          "name": "occ_symbol",
+          "kind": "FunctionDef",
+          "line": 267,
+          "end_line": 270
+        },
+        {
+          "name": "sample_chain",
+          "kind": "FunctionDef",
+          "line": 273,
+          "end_line": 371
+        },
+        {
+          "name": "enrich_quotes",
+          "kind": "FunctionDef",
+          "line": 374,
+          "end_line": 424
+        },
+        {
+          "name": "parse_volume_history",
+          "kind": "FunctionDef",
+          "line": 427,
+          "end_line": 486
+        },
+        {
+          "name": "collect_symbol",
+          "kind": "FunctionDef",
+          "line": 489,
+          "end_line": 649
+        },
+        {
+          "name": "primary_expiry",
+          "kind": "FunctionDef",
+          "line": 652,
+          "end_line": 654
+        },
+        {
+          "name": "anomaly_profile",
+          "kind": "FunctionDef",
+          "line": 657,
+          "end_line": 769
+        },
+        {
+          "name": "choose_deep_dive_expiry",
+          "kind": "FunctionDef",
+          "line": 772,
+          "end_line": 785
+        },
+        {
+          "name": "top_oi_clusters",
+          "kind": "FunctionDef",
+          "line": 788,
+          "end_line": 803
+        },
+        {
+          "name": "fetch_option_quotes_resilient",
+          "kind": "FunctionDef",
+          "line": 806,
+          "end_line": 820
+        },
+        {
+          "name": "fetch_option_calc_indexes_resilient",
+          "kind": "FunctionDef",
+          "line": 823,
+          "end_line": 845
+        },
+        {
+          "name": "merge_calc_indexes_into_quotes",
+          "kind": "FunctionDef",
+          "line": 848,
+          "end_line": 864
+        },
+        {
+          "name": "summarize_option_depth",
+          "kind": "FunctionDef",
+          "line": 867,
+          "end_line": 886
+        },
+        {
+          "name": "summarize_option_trades",
+          "kind": "FunctionDef",
+          "line": 889,
+          "end_line": 953
+        },
+        {
+          "name": "option_side_record",
+          "kind": "FunctionDef",
+          "line": 956,
+          "end_line": 988
+        },
+        {
+          "name": "enrich_strike_sensitivities",
+          "kind": "FunctionDef",
+          "line": 991,
+          "end_line": 1001
+        },
+        {
+          "name": "nearest_delta_contract",
+          "kind": "FunctionDef",
+          "line": 1004,
+          "end_line": 1023
+        },
+        {
+          "name": "build_delta_surface",
+          "kind": "FunctionDef",
+          "line": 1026,
+          "end_line": 1070
+        },
+        {
+          "name": "build_gross_sensitivity",
+          "kind": "FunctionDef",
+          "line": 1073,
+          "end_line": 1118
+        },
+        {
+          "name": "build_contract_watchlist",
+          "kind": "FunctionDef",
+          "line": 1121,
+          "end_line": 1152
+        },
+        {
+          "name": "choose_microstructure_contracts",
+          "kind": "FunctionDef",
+          "line": 1155,
+          "end_line": 1240
+        },
+        {
+          "name": "fetch_option_microstructure",
+          "kind": "FunctionDef",
+          "line": 1243,
+          "end_line": 1267
+        },
+        {
+          "name": "full_chain_deep_dive",
+          "kind": "FunctionDef",
+          "line": 1270,
+          "end_line": 1491
+        },
+        {
+          "name": "previous_equity_snapshot",
+          "kind": "FunctionDef",
+          "line": 1494,
+          "end_line": 1509
+        },
+        {
+          "name": "attach_open_interest_change",
+          "kind": "FunctionDef",
+          "line": 1512,
+          "end_line": 1581
+        },
+        {
+          "name": "build_opportunity_radar",
+          "kind": "FunctionDef",
+          "line": 1584,
+          "end_line": 1824
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 1827,
+          "end_line": 1970
+        }
+      ]
+    },
+    {
+      "path": "scripts/collect_okx_account.py",
+      "sha256": "8c27253f186723274ed86d6a7a8c22b6c37d9539218eccd2bca55dd4182d5220",
+      "bytes": 39326,
+      "lines": 872,
+      "symbols": [
+        {
+          "name": "MissingCredentials",
+          "kind": "ClassDef",
+          "line": 39,
+          "end_line": 40
+        },
+        {
+          "name": "read_json",
+          "kind": "FunctionDef",
+          "line": 43,
+          "end_line": 47
+        },
+        {
+          "name": "write_json_atomic",
+          "kind": "FunctionDef",
+          "line": 50,
+          "end_line": 56
+        },
+        {
+          "name": "as_float",
+          "kind": "FunctionDef",
+          "line": 59,
+          "end_line": 66
+        },
+        {
+          "name": "as_int",
+          "kind": "FunctionDef",
+          "line": 69,
+          "end_line": 71
+        },
+        {
+          "name": "ratio",
+          "kind": "FunctionDef",
+          "line": 74,
+          "end_line": 76
+        },
+        {
+          "name": "parse_timestamp",
+          "kind": "FunctionDef",
+          "line": 79,
+          "end_line": 92
+        },
+        {
+          "name": "iso_from_millis",
+          "kind": "FunctionDef",
+          "line": 95,
+          "end_line": 97
+        },
+        {
+          "name": "margin_ratio_pct",
+          "kind": "FunctionDef",
+          "line": 100,
+          "end_line": 106
+        },
+        {
+          "name": "liq_distance_pct",
+          "kind": "FunctionDef",
+          "line": 109,
+          "end_line": 116
+        },
+        {
+          "name": "side_sign",
+          "kind": "FunctionDef",
+          "line": 119,
+          "end_line": 120
+        },
+        {
+          "name": "public_json",
+          "kind": "FunctionDef",
+          "line": 123,
+          "end_line": 134
+        },
+        {
+          "name": "OkxReadOnlyClient",
+          "kind": "ClassDef",
+          "line": 137,
+          "end_line": 176
+        },
+        {
+          "name": "normalize_account",
+          "kind": "FunctionDef",
+          "line": 179,
+          "end_line": 201
+        },
+        {
+          "name": "infer_side",
+          "kind": "FunctionDef",
+          "line": 204,
+          "end_line": 211
+        },
+        {
+          "name": "contains_protective_stop",
+          "kind": "FunctionDef",
+          "line": 214,
+          "end_line": 217
+        },
+        {
+          "name": "contains_take_profit",
+          "kind": "FunctionDef",
+          "line": 220,
+          "end_line": 221
+        },
+        {
+          "name": "normalize_position",
+          "kind": "FunctionDef",
+          "line": 224,
+          "end_line": 274
+        },
+        {
+          "name": "normalize_import_position",
+          "kind": "FunctionDef",
+          "line": 277,
+          "end_line": 311
+        },
+        {
+          "name": "public_okx_get",
+          "kind": "FunctionDef",
+          "line": 314,
+          "end_line": 322
+        },
+        {
+          "name": "collect_funding",
+          "kind": "FunctionDef",
+          "line": 325,
+          "end_line": 348
+        },
+        {
+          "name": "latest_extended_session",
+          "kind": "FunctionDef",
+          "line": 351,
+          "end_line": 363
+        },
+        {
+          "name": "normalize_longbridge_quote",
+          "kind": "FunctionDef",
+          "line": 366,
+          "end_line": 403
+        },
+        {
+          "name": "collect_longbridge_quotes",
+          "kind": "FunctionDef",
+          "line": 406,
+          "end_line": 429
+        },
+        {
+          "name": "mapped_underlying",
+          "kind": "FunctionDef",
+          "line": 432,
+          "end_line": 438
+        },
+        {
+          "name": "attach_market_references",
+          "kind": "FunctionDef",
+          "line": 441,
+          "end_line": 468
+        },
+        {
+          "name": "theme_exposures",
+          "kind": "FunctionDef",
+          "line": 471,
+          "end_line": 495
+        },
+        {
+          "name": "compute_risk",
+          "kind": "FunctionDef",
+          "line": 498,
+          "end_line": 629
+        },
+        {
+          "name": "collect_algo_orders",
+          "kind": "FunctionDef",
+          "line": 632,
+          "end_line": 643
+        },
+        {
+          "name": "collect_authenticated",
+          "kind": "FunctionDef",
+          "line": 646,
+          "end_line": 667
+        },
+        {
+          "name": "collect_imported",
+          "kind": "FunctionDef",
+          "line": 670,
+          "end_line": 712
+        },
+        {
+          "name": "write_attempt_status",
+          "kind": "FunctionDef",
+          "line": 715,
+          "end_line": 732
+        },
+        {
+          "name": "build_snapshot",
+          "kind": "FunctionDef",
+          "line": 735,
+          "end_line": 794
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 797,
+          "end_line": 868
+        }
+      ]
+    },
+    {
+      "path": "scripts/daily_trade.py",
+      "sha256": "e5995ed147ce155a6a2e9bb1fc4173c585159bd68a8763c5d48acf2b2f78cb7b",
+      "bytes": 323195,
+      "lines": 5990,
+      "symbols": [
+        {
+          "name": "read_json",
+          "kind": "FunctionDef",
+          "line": 100,
+          "end_line": 104
+        },
+        {
+          "name": "write_json_atomic",
+          "kind": "FunctionDef",
+          "line": 107,
+          "end_line": 113
+        },
+        {
+          "name": "read_csv_rows",
+          "kind": "FunctionDef",
+          "line": 116,
+          "end_line": 120
+        },
+        {
+          "name": "write_csv_rows_atomic",
+          "kind": "FunctionDef",
+          "line": 123,
+          "end_line": 131
+        },
+        {
+          "name": "parse_iso_day",
+          "kind": "FunctionDef",
+          "line": 134,
+          "end_line": 140
+        },
+        {
+          "name": "canonical_trade_symbol",
+          "kind": "FunctionDef",
+          "line": 143,
+          "end_line": 155
+        },
+        {
+          "name": "latest_value",
+          "kind": "FunctionDef",
+          "line": 158,
+          "end_line": 160
+        },
+        {
+          "name": "chunks",
+          "kind": "FunctionDef",
+          "line": 163,
+          "end_line": 165
+        },
+        {
+          "name": "esc",
+          "kind": "FunctionDef",
+          "line": 168,
+          "end_line": 169
+        },
+        {
+          "name": "public_status_detail",
+          "kind": "FunctionDef",
+          "line": 172,
+          "end_line": 183
+        },
+        {
+          "name": "load_config",
+          "kind": "FunctionDef",
+          "line": 186,
+          "end_line": 190
+        },
+        {
+          "name": "now_local",
+          "kind": "FunctionDef",
+          "line": 193,
+          "end_line": 194
+        },
+        {
+          "name": "append_dedup",
+          "kind": "FunctionDef",
+          "line": 197,
+          "end_line": 214
+        },
+        {
+          "name": "validate_otc_payload",
+          "kind": "FunctionDef",
+          "line": 217,
+          "end_line": 223
+        },
+        {
+          "name": "validate_potential_zones_payload",
+          "kind": "FunctionDef",
+          "line": 226,
+          "end_line": 245
+        },
+        {
+          "name": "validate_options_payload",
+          "kind": "FunctionDef",
+          "line": 248,
+          "end_line": 260
+        },
+        {
+          "name": "validate_equity_options_payload",
+          "kind": "FunctionDef",
+          "line": 263,
+          "end_line": 276
+        },
+        {
+          "name": "validate_forced_flow_payload",
+          "kind": "FunctionDef",
+          "line": 279,
+          "end_line": 323
+        },
+        {
+          "name": "validate_surf_payload",
+          "kind": "FunctionDef",
+          "line": 326,
+          "end_line": 370
+        },
+        {
+          "name": "validate_crypto_options_payload",
+          "kind": "FunctionDef",
+          "line": 373,
+          "end_line": 383
+        },
+        {
+          "name": "validate_account_payload",
+          "kind": "FunctionDef",
+          "line": 386,
+          "end_line": 408
+        },
+        {
+          "name": "account_freshness",
+          "kind": "FunctionDef",
+          "line": 411,
+          "end_line": 441
+        },
+        {
+          "name": "optional_float",
+          "kind": "FunctionDef",
+          "line": 538,
+          "end_line": 544
+        },
+        {
+          "name": "parse_fred_bundle",
+          "kind": "FunctionDef",
+          "line": 547,
+          "end_line": 576
+        },
+        {
+          "name": "refresh_market_risk_macro",
+          "kind": "FunctionDef",
+          "line": 579,
+          "end_line": 631
+        },
+        {
+          "name": "_series_observations",
+          "kind": "FunctionDef",
+          "line": 634,
+          "end_line": 647
+        },
+        {
+          "name": "_latest_series_point",
+          "kind": "FunctionDef",
+          "line": 650,
+          "end_line": 656
+        },
+        {
+          "name": "_risk_freshness",
+          "kind": "FunctionDef",
+          "line": 659,
+          "end_line": 672
+        },
+        {
+          "name": "_metric_row",
+          "kind": "FunctionDef",
+          "line": 675,
+          "end_line": 696
+        },
+        {
+          "name": "_option_reflexivity_rows",
+          "kind": "FunctionDef",
+          "line": 699,
+          "end_line": 752
+        },
+        {
+          "name": "_capex_watch",
+          "kind": "FunctionDef",
+          "line": 755,
+          "end_line": 800
+        },
+        {
+          "name": "_slow_crowding_rows",
+          "kind": "FunctionDef",
+          "line": 803,
+          "end_line": 831
+        },
+        {
+          "name": "build_market_risk_watch",
+          "kind": "FunctionDef",
+          "line": 834,
+          "end_line": 1091
+        },
+        {
+          "name": "market_risk_markdown",
+          "kind": "FunctionDef",
+          "line": 1094,
+          "end_line": 1148
+        },
+        {
+          "name": "market_risk_html",
+          "kind": "FunctionDef",
+          "line": 1151,
+          "end_line": 1186
+        },
+        {
+          "name": "day_from_option_filename",
+          "kind": "FunctionDef",
+          "line": 1189,
+          "end_line": 1191
+        },
+        {
+          "name": "futures_contract_label",
+          "kind": "FunctionDef",
+          "line": 1194,
+          "end_line": 1202
+        },
+        {
+          "name": "normalize_claude_es_nq_payload",
+          "kind": "FunctionDef",
+          "line": 1205,
+          "end_line": 1338
+        },
+        {
+          "name": "normalize_crypto_options_payload",
+          "kind": "FunctionDef",
+          "line": 1341,
+          "end_line": 1386
+        },
+        {
+          "name": "option_payload_richness",
+          "kind": "FunctionDef",
+          "line": 1389,
+          "end_line": 1404
+        },
+        {
+          "name": "option_history_row",
+          "kind": "FunctionDef",
+          "line": 1407,
+          "end_line": 1447
+        },
+        {
+          "name": "normalize_options_risk_events",
+          "kind": "FunctionDef",
+          "line": 1450,
+          "end_line": 1481
+        },
+        {
+          "name": "import_inbox",
+          "kind": "FunctionDef",
+          "line": 1484,
+          "end_line": 1613
+        },
+        {
+          "name": "TrendTraderClient",
+          "kind": "ClassDef",
+          "line": 1616,
+          "end_line": 1648
+        },
+        {
+          "name": "read_tmid_cache",
+          "kind": "FunctionDef",
+          "line": 1651,
+          "end_line": 1652
+        },
+        {
+          "name": "save_tmid_cache",
+          "kind": "FunctionDef",
+          "line": 1655,
+          "end_line": 1656
+        },
+        {
+          "name": "choose_search_result",
+          "kind": "FunctionDef",
+          "line": 1659,
+          "end_line": 1668
+        },
+        {
+          "name": "resolve_signal_tmids",
+          "kind": "FunctionDef",
+          "line": 1671,
+          "end_line": 1717
+        },
+        {
+          "name": "latest_signal_rows",
+          "kind": "FunctionDef",
+          "line": 1720,
+          "end_line": 1723
+        },
+        {
+          "name": "collect_trend",
+          "kind": "FunctionDef",
+          "line": 1726,
+          "end_line": 1833
+        },
+        {
+          "name": "trend_snapshots",
+          "kind": "FunctionDef",
+          "line": 1836,
+          "end_line": 1847
+        },
+        {
+          "name": "trend_category_map",
+          "kind": "FunctionDef",
+          "line": 1850,
+          "end_line": 1862
+        },
+        {
+          "name": "trend_signal_map",
+          "kind": "FunctionDef",
+          "line": 1865,
+          "end_line": 1876
+        },
+        {
+          "name": "latest_trend_data_date",
+          "kind": "FunctionDef",
+          "line": 1879,
+          "end_line": 1882
+        },
+        {
+          "name": "build_trend_report",
+          "kind": "FunctionDef",
+          "line": 1885,
+          "end_line": 1999
+        },
+        {
+          "name": "html_document",
+          "kind": "FunctionDef",
+          "line": 2002,
+          "end_line": 2015
+        },
+        {
+          "name": "age_status",
+          "kind": "FunctionDef",
+          "line": 2018,
+          "end_line": 2025
+        },
+        {
+          "name": "business_age_status",
+          "kind": "FunctionDef",
+          "line": 2028,
+          "end_line": 2040
+        },
+        {
+          "name": "alignment",
+          "kind": "FunctionDef",
+          "line": 2043,
+          "end_line": 2047
+        },
+        {
+          "name": "score_signal",
+          "kind": "FunctionDef",
+          "line": 2050,
+          "end_line": 2168
+        },
+        {
+          "name": "latest_points",
+          "kind": "FunctionDef",
+          "line": 2171,
+          "end_line": 2181
+        },
+        {
+          "name": "current_point_map_for_report",
+          "kind": "FunctionDef",
+          "line": 2184,
+          "end_line": 2200
+        },
+        {
+          "name": "current_point_rows_for_gate",
+          "kind": "FunctionDef",
+          "line": 2203,
+          "end_line": 2224
+        },
+        {
+          "name": "preferred_option_record",
+          "kind": "FunctionDef",
+          "line": 2227,
+          "end_line": 2257
+        },
+        {
+          "name": "display_number",
+          "kind": "FunctionDef",
+          "line": 2260,
+          "end_line": 2268
+        },
+        {
+          "name": "display_vol",
+          "kind": "FunctionDef",
+          "line": 2271,
+          "end_line": 2277
+        },
+        {
+          "name": "option_guidance",
+          "kind": "FunctionDef",
+          "line": 2280,
+          "end_line": 2373
+        },
+        {
+          "name": "equity_primary_expiry",
+          "kind": "FunctionDef",
+          "line": 2376,
+          "end_line": 2378
+        },
+        {
+          "name": "equity_option_rows",
+          "kind": "FunctionDef",
+          "line": 2381,
+          "end_line": 2426
+        },
+        {
+          "name": "equity_options_guidance",
+          "kind": "FunctionDef",
+          "line": 2429,
+          "end_line": 2485
+        },
+        {
+          "name": "equity_radar_rows",
+          "kind": "FunctionDef",
+          "line": 2488,
+          "end_line": 2527
+        },
+        {
+          "name": "forced_flow_rows",
+          "kind": "FunctionDef",
+          "line": 2530,
+          "end_line": 2532
+        },
+        {
+          "name": "forced_flow_option_text",
+          "kind": "FunctionDef",
+          "line": 2535,
+          "end_line": 2541
+        },
+        {
+          "name": "forced_flow_oi_text",
+          "kind": "FunctionDef",
+          "line": 2544,
+          "end_line": 2548
+        },
+        {
+          "name": "daily_option_process_cards",
+          "kind": "FunctionDef",
+          "line": 2551,
+          "end_line": 2562
+        },
+        {
+          "name": "forced_flow_is_current",
+          "kind": "FunctionDef",
+          "line": 2565,
+          "end_line": 2568
+        },
+        {
+          "name": "option_card_flow_text",
+          "kind": "FunctionDef",
+          "line": 2571,
+          "end_line": 2579
+        },
+        {
+          "name": "option_card_vol_text",
+          "kind": "FunctionDef",
+          "line": 2582,
+          "end_line": 2593
+        },
+        {
+          "name": "option_card_hotspot_text",
+          "kind": "FunctionDef",
+          "line": 2596,
+          "end_line": 2616
+        },
+        {
+          "name": "option_card_oi_text",
+          "kind": "FunctionDef",
+          "line": 2619,
+          "end_line": 2631
+        },
+        {
+          "name": "option_process_card_markdown",
+          "kind": "FunctionDef",
+          "line": 2634,
+          "end_line": 2658
+        },
+        {
+          "name": "option_process_cards_html",
+          "kind": "FunctionDef",
+          "line": 2661,
+          "end_line": 2688
+        },
+        {
+          "name": "make_daily_push_payload",
+          "kind": "FunctionDef",
+          "line": 2691,
+          "end_line": 2768
+        },
+        {
+          "name": "write_daily_push_artifacts",
+          "kind": "FunctionDef",
+          "line": 2771,
+          "end_line": 2809
+        },
+        {
+          "name": "write_options_learning_report",
+          "kind": "FunctionDef",
+          "line": 2812,
+          "end_line": 3182
+        },
+        {
+          "name": "crypto_option_rows",
+          "kind": "FunctionDef",
+          "line": 3185,
+          "end_line": 3226
+        },
+        {
+          "name": "crypto_options_guidance",
+          "kind": "FunctionDef",
+          "line": 3229,
+          "end_line": 3245
+        },
+        {
+          "name": "make_decision_payload",
+          "kind": "FunctionDef",
+          "line": 3248,
+          "end_line": 3627
+        },
+        {
+          "name": "write_decision_report",
+          "kind": "FunctionDef",
+          "line": 3630,
+          "end_line": 3689
+        },
+        {
+          "name": "session_windows",
+          "kind": "FunctionDef",
+          "line": 3692,
+          "end_line": 3705
+        },
+        {
+          "name": "build_us_session_report",
+          "kind": "FunctionDef",
+          "line": 3708,
+          "end_line": 3920
+        },
+        {
+          "name": "build_morning_report",
+          "kind": "FunctionDef",
+          "line": 3923,
+          "end_line": 5531
+        },
+        {
+          "name": "validate_workspace",
+          "kind": "FunctionDef",
+          "line": 5534,
+          "end_line": 5858
+        },
+        {
+          "name": "update_status_file",
+          "kind": "FunctionDef",
+          "line": 5861,
+          "end_line": 5869
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 5872,
+          "end_line": 5986
+        }
+      ]
+    },
+    {
+      "path": "scripts/publish_traderhome_reports.mjs",
+      "sha256": "42ec1d83eb379adf23b08f717f927c2bbc990e592b4e236892a324d900b28748",
+      "bytes": 14058,
+      "lines": 243,
+      "symbols": [
+        {
+          "name": "parseArgs",
+          "line": 10
+        },
+        {
+          "name": "mustExist",
+          "line": 28
+        },
+        {
+          "name": "latestReportDate",
+          "line": 35
+        },
+        {
+          "name": "copyFile",
+          "line": 49
+        },
+        {
+          "name": "replaceOnce",
+          "line": 54
+        },
+        {
+          "name": "ensureTraderHomeRoute",
+          "line": 63
+        },
+        {
+          "name": "htmlEscape",
+          "line": 144
+        },
+        {
+          "name": "buildIndex",
+          "line": 152
+        },
+        {
+          "name": "main",
+          "line": 196
+        }
+      ]
+    },
+    {
+      "path": "scripts/s1_forced_flow.py",
+      "sha256": "9baaecc3a43fc00ea4ff28565d408feabcc2ea86dbd2fd263ab72ca3f1d1f981",
+      "bytes": 50878,
+      "lines": 1044,
+      "symbols": [
+        {
+          "name": "as_float",
+          "kind": "FunctionDef",
+          "line": 25,
+          "end_line": 32
+        },
+        {
+          "name": "as_int",
+          "kind": "FunctionDef",
+          "line": 35,
+          "end_line": 37
+        },
+        {
+          "name": "clamp",
+          "kind": "FunctionDef",
+          "line": 40,
+          "end_line": 41
+        },
+        {
+          "name": "ratio",
+          "kind": "FunctionDef",
+          "line": 44,
+          "end_line": 46
+        },
+        {
+          "name": "option_flow_timing",
+          "kind": "FunctionDef",
+          "line": 49,
+          "end_line": 75
+        },
+        {
+          "name": "write_json_atomic",
+          "kind": "FunctionDef",
+          "line": 78,
+          "end_line": 86
+        },
+        {
+          "name": "normalize_us_symbol",
+          "kind": "FunctionDef",
+          "line": 89,
+          "end_line": 102
+        },
+        {
+          "name": "business_session_age",
+          "kind": "FunctionDef",
+          "line": 105,
+          "end_line": 116
+        },
+        {
+          "name": "recent_signal_contexts",
+          "kind": "FunctionDef",
+          "line": 119,
+          "end_line": 195
+        },
+        {
+          "name": "quote_precheck",
+          "kind": "FunctionDef",
+          "line": 198,
+          "end_line": 260
+        },
+        {
+          "name": "_bar_day",
+          "kind": "FunctionDef",
+          "line": 263,
+          "end_line": 272
+        },
+        {
+          "name": "daily_price_profile",
+          "kind": "FunctionDef",
+          "line": 275,
+          "end_line": 361
+        },
+        {
+          "name": "_radar_maps",
+          "kind": "FunctionDef",
+          "line": 364,
+          "end_line": 375
+        },
+        {
+          "name": "_aligned_option_direction",
+          "kind": "FunctionDef",
+          "line": 378,
+          "end_line": 381
+        },
+        {
+          "name": "_opposite_option_direction",
+          "kind": "FunctionDef",
+          "line": 384,
+          "end_line": 387
+        },
+        {
+          "name": "_deep_contract_hotspots",
+          "kind": "FunctionDef",
+          "line": 390,
+          "end_line": 475
+        },
+        {
+          "name": "_selected_expiry_model",
+          "kind": "FunctionDef",
+          "line": 478,
+          "end_line": 493
+        },
+        {
+          "name": "_aggregate_exclusion_reason",
+          "kind": "FunctionDef",
+          "line": 496,
+          "end_line": 501
+        },
+        {
+          "name": "build_option_process_card",
+          "kind": "FunctionDef",
+          "line": 504,
+          "end_line": 725
+        },
+        {
+          "name": "enrich_existing_forced_flow_payload",
+          "kind": "FunctionDef",
+          "line": 728,
+          "end_line": 780
+        },
+        {
+          "name": "build_forced_flow_payload",
+          "kind": "FunctionDef",
+          "line": 783,
+          "end_line": 1036
+        },
+        {
+          "name": "write_forced_flow_snapshots",
+          "kind": "FunctionDef",
+          "line": 1039,
+          "end_line": 1044
+        }
+      ]
+    },
+    {
+      "path": "scripts/s1_surf_filter.py",
+      "sha256": "148d40ddc920afcd8dbc8614df537cff9d992b31e065f594ae09efef1755c20e",
+      "bytes": 34730,
+      "lines": 857,
+      "symbols": [
+        {
+          "name": "as_float",
+          "kind": "FunctionDef",
+          "line": 71,
+          "end_line": 78
+        },
+        {
+          "name": "clamp",
+          "kind": "FunctionDef",
+          "line": 81,
+          "end_line": 82
+        },
+        {
+          "name": "atomic_json_write",
+          "kind": "FunctionDef",
+          "line": 85,
+          "end_line": 91
+        },
+        {
+          "name": "read_json",
+          "kind": "FunctionDef",
+          "line": 94,
+          "end_line": 98
+        },
+        {
+          "name": "read_signal_rows",
+          "kind": "FunctionDef",
+          "line": 101,
+          "end_line": 103
+        },
+        {
+          "name": "canonical_symbol",
+          "kind": "FunctionDef",
+          "line": 106,
+          "end_line": 115
+        },
+        {
+          "name": "cache_filename",
+          "kind": "FunctionDef",
+          "line": 118,
+          "end_line": 119
+        },
+        {
+          "name": "_snapshot_maps",
+          "kind": "FunctionDef",
+          "line": 122,
+          "end_line": 149
+        },
+        {
+          "name": "latest_buy_contexts",
+          "kind": "FunctionDef",
+          "line": 152,
+          "end_line": 227
+        },
+        {
+          "name": "_bar_date",
+          "kind": "FunctionDef",
+          "line": 230,
+          "end_line": 233
+        },
+        {
+          "name": "latest_closed_bar_cutoff",
+          "kind": "FunctionDef",
+          "line": 236,
+          "end_line": 266
+        },
+        {
+          "name": "normalize_bars",
+          "kind": "FunctionDef",
+          "line": 269,
+          "end_line": 295
+        },
+        {
+          "name": "fetch_symbol_bars",
+          "kind": "FunctionDef",
+          "line": 298,
+          "end_line": 411
+        },
+        {
+          "name": "fetch_all",
+          "kind": "FunctionDef",
+          "line": 414,
+          "end_line": 448
+        },
+        {
+          "name": "load_cached_bars",
+          "kind": "FunctionDef",
+          "line": 451,
+          "end_line": 455
+        },
+        {
+          "name": "_linear_slope",
+          "kind": "FunctionDef",
+          "line": 458,
+          "end_line": 466
+        },
+        {
+          "name": "_atr_before",
+          "kind": "FunctionDef",
+          "line": 469,
+          "end_line": 481
+        },
+        {
+          "name": "_base_candidate",
+          "kind": "FunctionDef",
+          "line": 484,
+          "end_line": 620
+        },
+        {
+          "name": "analyze_surf_structure",
+          "kind": "FunctionDef",
+          "line": 623,
+          "end_line": 680
+        },
+        {
+          "name": "classify_candidate",
+          "kind": "FunctionDef",
+          "line": 683,
+          "end_line": 727
+        },
+        {
+          "name": "build_payload",
+          "kind": "FunctionDef",
+          "line": 730,
+          "end_line": 833
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 836,
+          "end_line": 853
+        }
+      ]
+    },
+    {
+      "path": "scripts/sync_claude_sources.mjs",
+      "sha256": "6432bdec32445147a726125aa2012b18601d32a3bfb8b75cb542d4c9cce8a3c9",
+      "bytes": 25977,
+      "lines": 659,
+      "symbols": [
+        {
+          "name": "exists",
+          "line": 69
+        },
+        {
+          "name": "readJsonSafe",
+          "line": 78
+        },
+        {
+          "name": "csvCell",
+          "line": 86
+        },
+        {
+          "name": "toCsv",
+          "line": 93
+        },
+        {
+          "name": "parseCsv",
+          "line": 97
+        },
+        {
+          "name": "writeTextAtomic",
+          "line": 134
+        },
+        {
+          "name": "writeJsonAtomic",
+          "line": 141
+        },
+        {
+          "name": "cycleScore",
+          "line": 145
+        },
+        {
+          "name": "makeInfo",
+          "line": 151
+        },
+        {
+          "name": "monthDayToIso",
+          "line": 169
+        },
+        {
+          "name": "syncOtc",
+          "line": 185
+        },
+        {
+          "name": "decodeHtml",
+          "line": 257
+        },
+        {
+          "name": "cleanHtml",
+          "line": 267
+        },
+        {
+          "name": "inferMarket",
+          "line": 275
+        },
+        {
+          "name": "inferSector",
+          "line": 282
+        },
+        {
+          "name": "extractSymbols",
+          "line": 308
+        },
+        {
+          "name": "signalName",
+          "line": 324
+        },
+        {
+          "name": "parseSignalSection",
+          "line": 331
+        },
+        {
+          "name": "syncSignals",
+          "line": 361
+        },
+        {
+          "name": "optionProxyRow",
+          "line": 436
+        },
+        {
+          "name": "syncOptions",
+          "line": 462
+        },
+        {
+          "name": "markdownPlain",
+          "line": 549
+        },
+        {
+          "name": "markdownSection",
+          "line": 558
+        },
+        {
+          "name": "syncDesk",
+          "line": 566
+        },
+        {
+          "name": "safeSync",
+          "line": 603
+        }
+      ]
+    },
+    {
+      "path": "scripts/sync_entry_points.ts",
+      "sha256": "7bca889b96b9b3a5e98cff339c1dbdcb5a5a38c4258442b98eb1088b2ba9d492",
+      "bytes": 21691,
+      "lines": 588,
+      "symbols": [
+        {
+          "name": "parseCsvMatrix",
+          "line": 33
+        },
+        {
+          "name": "parseCsv",
+          "line": 70
+        },
+        {
+          "name": "csvCell",
+          "line": 78
+        },
+        {
+          "name": "toCsv",
+          "line": 83
+        },
+        {
+          "name": "readJson",
+          "line": 90
+        },
+        {
+          "name": "writeAtomic",
+          "line": 98
+        },
+        {
+          "name": "singaporeDay",
+          "line": 105
+        },
+        {
+          "name": "qualityCap",
+          "line": 118
+        },
+        {
+          "name": "estimatedDailyTurnover",
+          "line": 140
+        },
+        {
+          "name": "formatPrice",
+          "line": 149
+        },
+        {
+          "name": "signalMarket",
+          "line": 155
+        },
+        {
+          "name": "eastmoneySecid",
+          "line": 161
+        },
+        {
+          "name": "compactDay",
+          "line": 168
+        },
+        {
+          "name": "fetchEastmoneySymbol",
+          "line": 175
+        },
+        {
+          "name": "fetchEastmoneyBatch",
+          "line": 227
+        },
+        {
+          "name": "fetchLongbridgeSymbol",
+          "line": 259
+        },
+        {
+          "name": "fetchLongbridgeBatch",
+          "line": 302
+        },
+        {
+          "name": "fetchMarketBatch",
+          "line": 321
+        },
+        {
+          "name": "main",
+          "line": 359
+        }
+      ]
+    },
+    {
+      "path": "tests/test_daily_trade.py",
+      "sha256": "50de7ff969fb413654714a47de3ebf74af00e789537954ec6229d43ed211e689",
+      "bytes": 25596,
+      "lines": 652,
+      "symbols": [
+        {
+          "name": "DailyTradeTests",
+          "kind": "ClassDef",
+          "line": 18,
+          "end_line": 648
+        }
+      ]
+    },
+    {
+      "path": "tests/test_okx_account.py",
+      "sha256": "938eb507a4c9d5808aba35c244f3406c0b8d9ec3edbca40dda432e9e73211b2c",
+      "bytes": 4244,
+      "lines": 116,
+      "symbols": [
+        {
+          "name": "OkxAccountTests",
+          "kind": "ClassDef",
+          "line": 14,
+          "end_line": 112
+        }
+      ]
+    },
+    {
+      "path": "tests/test_s1_forced_flow.py",
+      "sha256": "fc94f4adab25fc9a0e302bf45efefb13ba6fa6eab05080f4f2546b8990e7301d",
+      "bytes": 12594,
+      "lines": 291,
+      "symbols": [
+        {
+          "name": "S1ForcedFlowTests",
+          "kind": "ClassDef",
+          "line": 14,
+          "end_line": 287
+        }
+      ]
+    },
+    {
+      "path": "tests/test_s1_surf_filter.py",
+      "sha256": "33989829245a43673b8bfb694471651ec01efa6f978adcf65c2a2699334064ee",
+      "bytes": 6085,
+      "lines": 161,
+      "symbols": [
+        {
+          "name": "synthetic_surf_bars",
+          "kind": "FunctionDef",
+          "line": 14,
+          "end_line": 56
+        },
+        {
+          "name": "S1SurfFilterTests",
+          "kind": "ClassDef",
+          "line": 59,
+          "end_line": 157
+        }
+      ]
+    },
+    {
+      "path": "outputs/otc-chart/README.md",
+      "sha256": "303fc702b2fd739f4f39d7e94d68122bcd6ae7f22d899f801ee0ac10dddc1254",
+      "bytes": 2533,
+      "lines": 25
+    },
+    {
+      "path": "outputs/otc-chart/build_snapshot.py",
+      "sha256": "8153c54f95b582dc7f1c29c98b0fa3b2ee962dd16acc7cf5ab2de1d78889b504",
+      "bytes": 15717,
+      "lines": 238,
+      "symbols": [
+        {
+          "name": "valid_number",
+          "kind": "FunctionDef",
+          "line": 18,
+          "end_line": 19
+        },
+        {
+          "name": "merge_reference",
+          "kind": "FunctionDef",
+          "line": 21,
+          "end_line": 65
+        },
+        {
+          "name": "safe_url",
+          "kind": "FunctionDef",
+          "line": 67,
+          "end_line": 70
+        },
+        {
+          "name": "append_to_verified_baseline",
+          "kind": "FunctionDef",
+          "line": 72,
+          "end_line": 117
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 119,
+          "end_line": 235
+        }
+      ]
+    },
+    {
+      "path": "outputs/otc-chart/update_public_prices.py",
+      "sha256": "e47fd6ab09e1ab7b7434724870b2755164b0e7ac51d3e58a85937de4dcd52230",
+      "bytes": 7257,
+      "lines": 140,
+      "symbols": [
+        {
+          "name": "get_json",
+          "kind": "FunctionDef",
+          "line": 18,
+          "end_line": 21
+        },
+        {
+          "name": "validate_bars",
+          "kind": "FunctionDef",
+          "line": 23,
+          "end_line": 34
+        },
+        {
+          "name": "binance_bars",
+          "kind": "FunctionDef",
+          "line": 36,
+          "end_line": 40
+        },
+        {
+          "name": "yahoo_bars",
+          "kind": "FunctionDef",
+          "line": 42,
+          "end_line": 66
+        },
+        {
+          "name": "mapping",
+          "kind": "FunctionDef",
+          "line": 68,
+          "end_line": 74
+        },
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 76,
+          "end_line": 137
+        }
+      ]
+    },
+    {
+      "path": "outputs/otc-chart/copy_to_traderhome.py",
+      "sha256": "c112359dd3fd5252725a3f3f847906610f93983bf293fca64a7d94df4cd7e4bf",
+      "bytes": 1749,
+      "lines": 35,
+      "symbols": [
+        {
+          "name": "main",
+          "kind": "FunctionDef",
+          "line": 9,
+          "end_line": 32
+        }
+      ]
+    },
+    {
+      "path": "outputs/otc-chart/site/engine.mjs",
+      "sha256": "6d32bd27df1f1a53304a904a9e6e97226581558c966f9a180212034184340d66",
+      "bytes": 4909,
+      "lines": 32,
+      "symbols": [
+        {
+          "name": "calendar",
+          "line": 4
+        },
+        {
+          "name": "atDate",
+          "line": 5
+        },
+        {
+          "name": "thresholdState",
+          "line": 6
+        },
+        {
+          "name": "tier",
+          "line": 7
+        },
+        {
+          "name": "planFor",
+          "line": 8
+        },
+        {
+          "name": "parseBars",
+          "line": 27
+        }
+      ]
+    },
+    {
+      "path": "outputs/otc-chart/test_public_prices.py",
+      "sha256": "5fd3aee304f094b75c421e456985537c6760a196cbc84e43333b578003edee1d",
+      "bytes": 1934,
+      "lines": 32,
+      "symbols": [
+        {
+          "name": "PriceTests",
+          "kind": "ClassDef",
+          "line": 5,
+          "end_line": 30
+        }
+      ]
+    }
+  ]
+}
