@@ -1,0 +1,740 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-07-17",
+ "morning": {
+  "date": "2026-07-17",
+  "headline": "优先观察 IBM；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 ETF基金、A股。",
+  "stance": null,
+  "riskCap": null,
+  "freshness": [
+   {
+    "name": "场外指数",
+    "date": "2026-07-16",
+    "state": "可用（1 天）",
+    "ageDays": 1
+   },
+   {
+    "name": "趋势冷热",
+    "date": "2026-07-15",
+    "state": "偏旧（2 天）",
+    "ageDays": 2
+   },
+   {
+    "name": "s1",
+    "date": "2026-07-17",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "13买点",
+    "date": null,
+    "state": "缺失",
+    "ageDays": null
+   }
+  ],
+  "classes": [
+   {
+    "name": "美股",
+    "temp": "温",
+    "phase": null,
+    "date": "2026-07-15"
+   },
+   {
+    "name": "美国ETF",
+    "temp": "温",
+    "phase": null,
+    "date": "2026-07-15"
+   },
+   {
+    "name": "商品期货",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-07-16"
+   },
+   {
+    "name": "加密币",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-07-15"
+   },
+   {
+    "name": "ETF基金",
+    "temp": "凉",
+    "phase": null,
+    "date": "2026-07-16"
+   },
+   {
+    "name": "A股",
+    "temp": "寒",
+    "phase": "立冬",
+    "date": "2026-07-16"
+   }
+  ],
+  "buys": [
+   {
+    "symbol": "IBM",
+    "market": "美股",
+    "agreement": "双支持 (+2)",
+    "score": 2,
+    "evidence": "标的冷热未覆盖；大类冷热 美股=温；场外 进场：Msft 进场（场外 853 / 爆破 260）；PLtr 进场（场外 1214 / 爆破 164）",
+    "entry": "无当日 13买点"
+   }
+  ],
+  "sells": [],
+  "divergences": [
+   {
+    "symbol": "002261.SZ",
+    "market": "A股",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "标的冷热未覆盖；大类冷热 A股=寒；场外 退场：国内人工智能ETF 退场（场外 1080 / 爆破 -25）",
+    "entry": null
+   },
+   {
+    "symbol": "002409.SZ",
+    "market": "A股",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "标的冷热未覆盖；大类冷热 A股=寒；场外 退场：国内半导体 退场（场外 1099 / 爆破 -96）",
+    "entry": null
+   },
+   {
+    "symbol": "01140.HK",
+    "market": "港股",
+    "agreement": "背离/降级 (-1)",
+    "score": -1,
+    "evidence": "标的冷热未覆盖；大类冷热 港股=寒；场外 未覆盖：场外追踪表无独立港股大类",
+    "entry": null
+   },
+   {
+    "symbol": "600726.SH",
+    "market": "A股",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "标的冷热未覆盖；大类冷热 A股=寒；场外 退场：A股指数 退场（场外 1096 / 爆破 -53）",
+    "entry": null
+   },
+   {
+    "symbol": "BITX",
+    "market": "美国ETF",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美国ETF=温；场外 进场：BTC 进场（场外 897 / 爆破 185）；ETH 进场（场外 1151 / 爆破 208）",
+    "entry": null
+   },
+   {
+    "symbol": "ETHA",
+    "market": "美国ETF",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美国ETF=温；场外 进场：BTC 进场（场外 897 / 爆破 185）；ETH 进场（场外 1151 / 爆破 208）",
+    "entry": null
+   },
+   {
+    "symbol": "ETHB",
+    "market": "美国ETF",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美国ETF=温；场外 进场：BTC 进场（场外 897 / 爆破 185）；ETH 进场（场外 1151 / 爆破 208）",
+    "entry": null
+   },
+   {
+    "symbol": "IBIT",
+    "market": "美国ETF",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美国ETF=温；场外 进场：BTC 进场（场外 897 / 爆破 185）；ETH 进场（场外 1151 / 爆破 208）",
+    "entry": null
+   },
+   {
+    "symbol": "MAGS",
+    "market": "美国ETF",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美国ETF=温；场外 进场：Msft 进场（场外 853 / 爆破 260）；PLtr 进场（场外 1214 / 爆破 164）",
+    "entry": null
+   },
+   {
+    "symbol": "META",
+    "market": "美股",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美股=温；场外 进场：Msft 进场（场外 853 / 爆破 260）；PLtr 进场（场外 1214 / 爆破 164）",
+    "entry": null
+   },
+   {
+    "symbol": "NVDA",
+    "market": "美股",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美股=温；场外 进场：Nvda 进场（场外 854 / 爆破 185）",
+    "entry": null
+   },
+   {
+    "symbol": "TLN",
+    "market": "美股",
+    "agreement": "背离/降级 (-2)",
+    "score": -2,
+    "evidence": "大类冷热 美股=温；场外 进场：布伦特原油 进场（场外 740 / 爆破 220）",
+    "entry": null
+   }
+  ],
+  "unconfirmed": [
+   {
+    "symbol": "CPRT",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "URI",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "000568.SZ",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "002241.SZ",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "002714.SZ",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "01060.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "01810.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "0700.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "09961.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "09988.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "159605.SZ",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "515220.SH",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "601899.SH",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "700.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "7709.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "9868.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "9992.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AEHR",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "ARES",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "BAC",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "GS",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "JPM",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "KOPN",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "MQBKY",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PANW",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PS",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   }
+  ],
+  "surf": [],
+  "buyPoints": [],
+  "buyPointScanNote": "本次行情扫描失败，当前没有可展示的有效 13 买点。",
+  "buyPointErrors": 2,
+  "risk": {
+   "conclusion": null,
+   "questions": [],
+   "liquidity": [],
+   "slowMissing": 0,
+   "slowTotal": 0
+  },
+  "crypto": [],
+  "changes": [],
+  "gaps": []
+ },
+ "evening": {
+  "date": "2026-07-17",
+  "collected": "2026-07-17 19:34",
+  "offline": false,
+  "classes": [
+   {
+    "name": "美股",
+    "date": "2026-07-16",
+    "temp": "温",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "美国ETF",
+    "date": "2026-07-16",
+    "temp": "温",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "加密币",
+    "date": "2026-07-16",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "A股",
+    "date": "2026-07-17",
+    "temp": "寒",
+    "phase": "冬至",
+    "change": "不变"
+   },
+   {
+    "name": "ETF基金",
+    "date": "2026-07-17",
+    "temp": "寒",
+    "phase": "立冬",
+    "change": "不变"
+   },
+   {
+    "name": "商品期货",
+    "date": "2026-07-17",
+    "temp": "凉",
+    "phase": null,
+    "change": "不变"
+   }
+  ],
+  "warmToHot": [
+   {
+    "group": "ETF基金",
+    "items": [
+     {
+      "name": "科创债ETF",
+      "symbol": "622455",
+      "temp": "热"
+     },
+     {
+      "name": "公司债ETF",
+      "symbol": "329461",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "美股",
+    "items": [
+     {
+      "name": "纳斯达克",
+      "symbol": "NDAQ",
+      "temp": "热"
+     },
+     {
+      "name": "可口可乐",
+      "symbol": "KO",
+      "temp": "热"
+     },
+     {
+      "name": "美国合众银行",
+      "symbol": "USB",
+      "temp": "热"
+     },
+     {
+      "name": "Welltower Inc",
+      "symbol": "WELL",
+      "temp": "热"
+     },
+     {
+      "name": "芬塔公司",
+      "symbol": "VTR",
+      "temp": "热"
+     },
+     {
+      "name": "西蒙地产",
+      "symbol": "SPG",
+      "temp": "热"
+     },
+     {
+      "name": "安博",
+      "symbol": "PLD",
+      "temp": "热"
+     },
+     {
+      "name": "星巴克",
+      "symbol": "SBUX",
+      "temp": "热"
+     },
+     {
+      "name": "PNC金融服务集团",
+      "symbol": "PNC",
+      "temp": "热"
+     },
+     {
+      "name": "维萨",
+      "symbol": "V",
+      "temp": "热"
+     },
+     {
+      "name": "标普全球",
+      "symbol": "SPGI",
+      "temp": "热"
+     },
+     {
+      "name": "万事达",
+      "symbol": "MA",
+      "temp": "热"
+     },
+     {
+      "name": "固安捷",
+      "symbol": "GWW",
+      "temp": "热"
+     },
+     {
+      "name": "富国银行",
+      "symbol": "WFC",
+      "temp": "热"
+     },
+     {
+      "name": "CSX运输",
+      "symbol": "CSX",
+      "temp": "热"
+     },
+     {
+      "name": "大都会人寿",
+      "symbol": "MET",
+      "temp": "热"
+     },
+     {
+      "name": "太平洋煤气电力",
+      "symbol": "PCG",
+      "temp": "热"
+     },
+     {
+      "name": "联合太平洋",
+      "symbol": "UNP",
+      "temp": "热"
+     },
+     {
+      "name": "自动数据处理",
+      "symbol": "ADP",
+      "temp": "热"
+     },
+     {
+      "name": "怡安保险",
+      "symbol": "AON",
+      "temp": "热"
+     },
+     {
+      "name": "JB亨特运输服务",
+      "symbol": "JBHT",
+      "temp": "热"
+     },
+     {
+      "name": "赛默飞世尔科技",
+      "symbol": "TMO",
+      "temp": "热"
+     },
+     {
+      "name": "宏盟集团",
+      "symbol": "OMC",
+      "temp": "热"
+     },
+     {
+      "name": "American Healthcare REIT Inc",
+      "symbol": "AHR",
+      "temp": "热"
+     },
+     {
+      "name": "伯灵顿百货",
+      "symbol": "BURL",
+      "temp": "热"
+     },
+     {
+      "name": "Veeva Systems Inc-A",
+      "symbol": "VEEV",
+      "temp": "热"
+     },
+     {
+      "name": "Realty Income Corp",
+      "symbol": "O",
+      "temp": "热"
+     },
+     {
+      "name": "SharkNinja Inc",
+      "symbol": "SN",
+      "temp": "热"
+     },
+     {
+      "name": "环汇",
+      "symbol": "GPN",
+      "temp": "热"
+     },
+     {
+      "name": "百时美施贵宝",
+      "symbol": "BMY",
+      "temp": "热"
+     },
+     {
+      "name": "Citizens Financial Group Inc",
+      "symbol": "CFG",
+      "temp": "热"
+     },
+     {
+      "name": "Freshworks Inc-A",
+      "symbol": "FRSH",
+      "temp": "热"
+     },
+     {
+      "name": "亨廷顿银行",
+      "symbol": "HBAN",
+      "temp": "热"
+     },
+     {
+      "name": "Nuvalent Inc-A",
+      "symbol": "NUVL",
+      "temp": "热"
+     },
+     {
+      "name": "沛齐",
+      "symbol": "PAYX",
+      "temp": "热"
+     },
+     {
+      "name": "艾昆纬",
+      "symbol": "IQV",
+      "temp": "热"
+     },
+     {
+      "name": "伊利诺伊机械",
+      "symbol": "ITW",
+      "temp": "热"
+     },
+     {
+      "name": "保德信金融",
+      "symbol": "PRU",
+      "temp": "热"
+     },
+     {
+      "name": "Veralto Corp",
+      "symbol": "VLTO",
+      "temp": "热"
+     },
+     {
+      "name": "Verisk分析",
+      "symbol": "VRSK",
+      "temp": "热"
+     },
+     {
+      "name": "Waste Connections Inc",
+      "symbol": "WCN",
+      "temp": "热"
+     },
+     {
+      "name": "加拿大太平洋堪萨斯城",
+      "symbol": "CP",
+      "temp": "热"
+     },
+     {
+      "name": "碧迪医疗",
+      "symbol": "BDX",
+      "temp": "热"
+     },
+     {
+      "name": "Corpay Inc",
+      "symbol": "CPAY",
+      "temp": "热"
+     },
+     {
+      "name": "GoDaddy Inc-A",
+      "symbol": "GDDY",
+      "temp": "热"
+     },
+     {
+      "name": "TransUnion",
+      "symbol": "TRU",
+      "temp": "热"
+     },
+     {
+      "name": "德州公路酒吧",
+      "symbol": "TXRH",
+      "temp": "热"
+     },
+     {
+      "name": "五三银行",
+      "symbol": "FITB",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "商品期货",
+    "items": []
+   }
+  ],
+  "s1": [
+   {
+    "symbol": "URI",
+    "temp": "温",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "002409.SZ",
+    "temp": "平",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "002261.SZ",
+    "temp": "凉",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "01140.HK",
+    "temp": "凉",
+    "phase": "立冬",
+    "market": "港股"
+   },
+   {
+    "symbol": "600726.SH",
+    "temp": "凉",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "CPRT",
+    "temp": "凉",
+    "phase": "寒露",
+    "market": "美股"
+   },
+   {
+    "symbol": "IBM",
+    "temp": "凉",
+    "phase": "寒露",
+    "market": "美股"
+   }
+  ]
+ }
+}

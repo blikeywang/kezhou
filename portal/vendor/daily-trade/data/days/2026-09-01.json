@@ -1,0 +1,1179 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-09-01",
+ "morning": {
+  "date": "2026-09-01",
+  "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ, AMAT.US，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF、加密币，趋势侧偏冷大类为 ETF基金。",
+  "stance": {
+   "label": "观察优先",
+   "summary": "今天的首要动作是观察并等待完整门控；不把单一 P/C、IV、原始 Buy 或未确认冲浪形态当成下单触发。"
+  },
+  "riskCap": 0.25,
+  "freshness": [
+   {
+    "name": "场外指数",
+    "date": "2026-08-31",
+    "state": "来源过期（1 天）",
+    "ageDays": 1
+   },
+   {
+    "name": "趋势冷热",
+    "date": "2026-08-31",
+    "state": "可用（1 天）",
+    "ageDays": 1
+   },
+   {
+    "name": "s1",
+    "date": "2026-08-28",
+    "state": "偏旧（4 天）",
+    "ageDays": 4
+   },
+   {
+    "name": "s1冲浪筛选",
+    "date": "2026-08-28",
+    "state": "偏旧（4 天）",
+    "ageDays": 4
+   },
+   {
+    "name": "13买点",
+    "date": "2026-09-01",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "NQ/ES期权报价/IV",
+    "date": "2026-08-04",
+    "state": "偏旧（20 天）",
+    "ageDays": 20
+   },
+   {
+    "name": "美股/ETF期权面",
+    "date": "2026-09-01",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "s1 3/5日强制流量排查",
+    "date": "2026-09-01",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "BTC/ETH期权面",
+    "date": "2026-09-01",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "市场风险三开关",
+    "date": "2026-09-01",
+    "state": "部分覆盖（0 天）",
+    "ageDays": 0
+   }
+  ],
+  "classes": [
+   {
+    "name": "美股",
+    "temp": "温",
+    "phase": "谷雨",
+    "date": "2026-08-31"
+   },
+   {
+    "name": "美国ETF",
+    "temp": "温",
+    "phase": "立夏",
+    "date": "2026-08-31"
+   },
+   {
+    "name": "加密币",
+    "temp": "温",
+    "phase": null,
+    "date": "2026-08-31"
+   },
+   {
+    "name": "商品期货",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-09-01"
+   },
+   {
+    "name": "A股",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-09-01"
+   },
+   {
+    "name": "ETF基金",
+    "temp": "凉",
+    "phase": null,
+    "date": "2026-09-01"
+   }
+  ],
+  "buys": [
+   {
+    "symbol": "PANW",
+    "market": "美股",
+    "agreement": "双支持 (+2)",
+    "score": 2,
+    "evidence": "标的冷热 PANW=温；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 48.7/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "TENX",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 TENX=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 81.5/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "RCAX",
+    "market": "美国ETF",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热未覆盖；大类冷热 美国ETF=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 68.5/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "LUNR",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 LUNR=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 52.9/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "IREN",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 IREN=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 43.4/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "HIMS",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 HIMS=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 49.9/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "BFLY",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 BFLY=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 53.8/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "AXTX",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热未覆盖；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 61.3/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "AXTI",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 AXTI=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 62.3/100",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "ACHR",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 ACHR=平；大类冷热 美股=温；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 65.3/100",
+    "entry": "无当日 13买点"
+   }
+  ],
+  "sells": [],
+  "divergences": [
+   {
+    "symbol": "002149.SZ",
+    "market": "A股",
+    "agreement": "背离/降级 (-1)",
+    "score": -1,
+    "evidence": "标的冷热 002149.SZ=凉；大类冷热 A股=平；场外当日来源过期，不作交叉确认；冲浪筛选 冲浪确认 84.7/100",
+    "entry": null
+   }
+  ],
+  "unconfirmed": [
+   {
+    "symbol": "000636.SZ",
+    "market": "A股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "301217.SZ",
+    "market": "A股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "600667.SH",
+    "market": "A股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AEHR",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AMAT",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AMBA",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "ASTS",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AVAV",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AVGO",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "BKSY",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "CSIQ",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "EQPT",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "FSLR",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "GHM",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "LHX",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "ONDS",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PL",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "RKLB",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "TTD",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "UAMY",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "VSAT",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "01548.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "02513.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "510880.SH",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "600362.SH",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "600522.SH",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "601869.SH",
+    "market": "A股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "6809.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "6869.HK",
+    "market": "港股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AMDL",
+    "market": "美国ETF",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "CCLD",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "DASH",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "DUO",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "FBL",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "LEU",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PATH",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PGY",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "SBET",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "SEDG",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "XYZ",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   }
+  ],
+  "surf": [
+   {
+    "symbol": "002149.SZ",
+    "status": "冲浪确认",
+    "score": 84.7,
+    "window": "2026-08-21→2026-08-27 (5日)",
+    "next": "等待可复核的盘中入场结构与独立失效位；冲浪确认本身不等于立即买入。"
+   },
+   {
+    "symbol": "AMAT.US",
+    "status": "冲浪确认",
+    "score": 74.6,
+    "window": "2026-08-20→2026-08-27 (6日)",
+    "next": "等待可复核的盘中入场结构与独立失效位；冲浪确认本身不等于立即买入。"
+   },
+   {
+    "symbol": "LHX.US",
+    "status": "形成中·待次日B确认",
+    "score": 80.4,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "下一份可用S1快照仍保留同一归一代码的Buy，并且价格不破震荡下沿。"
+   },
+   {
+    "symbol": "EQPT.US",
+    "status": "形成中·待次日B确认",
+    "score": 79.1,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "下一份可用S1快照仍保留同一归一代码的Buy，并且价格不破震荡下沿。"
+   },
+   {
+    "symbol": "TTD.US",
+    "status": "形成中·待次日B确认",
+    "score": 76.3,
+    "window": "2026-08-18→2026-08-28 (9日)",
+    "next": "下一份可用S1快照仍保留同一归一代码的Buy，并且价格不破震荡下沿。"
+   },
+   {
+    "symbol": "TENX.US",
+    "status": "非冲浪形态",
+    "score": 81.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "301217.SZ",
+    "status": "非冲浪形态",
+    "score": 75.2,
+    "window": "2026-08-20→2026-08-28 (7日)",
+    "next": "当前未通过：small_daily_moves；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "000636.SZ",
+    "status": "非冲浪形态",
+    "score": 74.8,
+    "window": "2026-08-20→2026-08-28 (7日)",
+    "next": "当前未通过：quiet_range、small_daily_moves；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "600667.SH",
+    "status": "非冲浪形态",
+    "score": 72.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "VSAT.US",
+    "status": "非冲浪形态",
+    "score": 69.6,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "AVAV.US",
+    "status": "非冲浪形态",
+    "score": 68.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：small_daily_moves；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "RCAX.US",
+    "status": "非冲浪形态",
+    "score": 68.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、no_further_breakdown、no_signal_day_chase；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "RKLB.US",
+    "status": "非冲浪形态",
+    "score": 66.1,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "ACHR.US",
+    "status": "非冲浪形态",
+    "score": 65.3,
+    "window": "2026-08-19→2026-08-28 (8日)",
+    "next": "当前未通过：quiet_range、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "AMBA.US",
+    "status": "非冲浪形态",
+    "score": 64.8,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：red_green_alternation；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "AVGO.US",
+    "status": "非冲浪形态",
+    "score": 62.5,
+    "window": "2026-08-20→2026-08-28 (7日)",
+    "next": "当前未通过：red_green_alternation；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "FSLR.US",
+    "status": "非冲浪形态",
+    "score": 62.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：red_green_alternation、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "AXTI.US",
+    "status": "非冲浪形态",
+    "score": 62.3,
+    "window": "2026-08-20→2026-08-26 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、red_green_alternation、flat_base_slope；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "AXTX.US",
+    "status": "非冲浪形态",
+    "score": 61.3,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、red_green_alternation、no_further_breakdown、no_signal_day_chase；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "UAMY.US",
+    "status": "非冲浪形态",
+    "score": 60.9,
+    "window": "2026-08-20→2026-08-28 (7日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "ONDS.US",
+    "status": "非冲浪形态",
+    "score": 60.7,
+    "window": "2026-08-20→2026-08-28 (7日)",
+    "next": "当前未通过：small_daily_moves、no_signal_day_chase；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "AEHR.US",
+    "status": "非冲浪形态",
+    "score": 56.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、red_green_alternation、flat_base_slope、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "PL.US",
+    "status": "非冲浪形态",
+    "score": 54.5,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：red_green_alternation、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "BFLY.US",
+    "status": "非冲浪形态",
+    "score": 53.8,
+    "window": "2026-08-18→2026-08-28 (9日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、red_green_alternation、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "ASTS.US",
+    "status": "非冲浪形态",
+    "score": 53.2,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "CSIQ.US",
+    "status": "非冲浪形态",
+    "score": 53,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、flat_base_slope、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "LUNR.US",
+    "status": "非冲浪形态",
+    "score": 52.9,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、red_green_alternation、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "HIMS.US",
+    "status": "非冲浪形态",
+    "score": 49.9,
+    "window": "2026-08-18→2026-08-28 (9日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、no_signal_day_chase；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "BKSY.US",
+    "status": "非冲浪形态",
+    "score": 49.7,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、red_green_alternation、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "PANW.US",
+    "status": "非冲浪形态",
+    "score": 48.7,
+    "window": "2026-08-19→2026-08-28 (8日)",
+    "next": "当前未通过：quiet_range、small_daily_moves；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "GHM.US",
+    "status": "非冲浪形态",
+    "score": 46.7,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：red_green_alternation、flat_base_slope、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "IREN.US",
+    "status": "非冲浪形态",
+    "score": 43.4,
+    "window": "2026-08-24→2026-08-28 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、flat_base_slope、no_further_breakdown、no_signal_day_chase；等待新的下跌后低波动震荡结构。"
+   }
+  ],
+  "buyPoints": [
+   {
+    "symbol": "000636.SZ",
+    "level": "L0 74 · #3 二次测试",
+    "entry": 55.88,
+    "stop": 54.7706,
+    "targets": "56.9894 / 58.0987",
+    "bar": "2026-08-31T06:55:00.000Z"
+   },
+   {
+    "symbol": "002149.SZ",
+    "level": "L0 74 · #3 二次测试",
+    "entry": 36.05,
+    "stop": 35.9221,
+    "targets": "36.1779 / 36.3058",
+    "bar": "2026-08-31T06:55:00.000Z"
+   },
+   {
+    "symbol": "301217.SZ",
+    "level": "L0 74 · #3 二次测试",
+    "entry": 123.97,
+    "stop": 122.2408,
+    "targets": "125.699 / 127.428",
+    "bar": "2026-08-31T06:55:00.000Z"
+   },
+   {
+    "symbol": "600667.SH",
+    "level": "L0 74 · #4 SOS 强势出现",
+    "entry": 19.34,
+    "stop": 19.2739,
+    "targets": "19.4061 / 19.4722",
+    "bar": "2026-08-31T06:55:00.000Z"
+   }
+  ],
+  "buyPointScanNote": "已扫描 31 个 A股/美股 Buy，得到 4 个 L0/L1 候选；仅使用闭合 5 分钟 K 线，研究降级行情最高为 L0。",
+  "buyPointErrors": 1,
+  "risk": {
+   "conclusion": "结论：升高；覆盖 部分覆盖。 触发风险预算上限降档。",
+   "questions": [
+    {
+     "question": "现在在哪？（定位洗盘区）",
+     "state": "缺失"
+    },
+    {
+     "question": "油够不够？（检查准备金与流动性）",
+     "state": "红色候选"
+    },
+    {
+     "question": "铃响没响？（检查资本开支二阶导）",
+     "state": "缺失"
+    }
+   ],
+   "liquidity": [
+    {
+     "name": "银行准备金余额",
+     "value": "$2.925T",
+     "date": "2026-08-26 / weekly",
+     "state": "绿色"
+    },
+    {
+     "name": "SOFR - IORB",
+     "value": "+0.0 bp",
+     "date": "2026-08-28 / daily",
+     "state": "绿色"
+    },
+    {
+     "name": "美国财政部一般账户（TGA）",
+     "value": "$0.959T",
+     "date": "2026-08-26 / weekly",
+     "state": "黄色观察"
+    },
+    {
+     "name": "临时回购操作总额代理",
+     "value": "$0M",
+     "date": "2026-08-31 / daily",
+     "state": "需纽约联储确认"
+    }
+   ],
+   "slowMissing": 7,
+   "slowTotal": 7
+  },
+  "crypto": [
+   {
+    "symbol": "BTC",
+    "spot": 78768.17,
+    "dvol": 37.65,
+    "hv30": 49.09,
+    "ivHv": 0.77,
+    "volPc": 0.75,
+    "oiPc": 0.56,
+    "tenor": "10.3D 2026-09-11",
+    "atmIv": 34.66,
+    "rr25": 1
+   },
+   {
+    "symbol": "ETH",
+    "spot": 2472.85,
+    "dvol": 51.31,
+    "hv30": 67.45,
+    "ivHv": 0.76,
+    "volPc": 0.95,
+    "oiPc": 0.54,
+    "tenor": "10.3D 2026-09-11",
+    "atmIv": 46.7,
+    "rr25": 1.34
+   }
+  ],
+  "changes": [
+   "收到用户提供的当日场外/潜力原页，且页面日期、原始价位和交易所映射通过校验后，才重启对应潜力区观察。",
+   "s1、趋势/场外与闭合价格结构至少两路同向，且 13 买点达到可复核级别时，才反证“无多体系 Buy”。",
+   "NQ/ES 新鲜完整链补齐 bid/ask、尺寸、Greeks 与多时点快照后，若与当前近价 P/C/IV 背景相反，应废弃本包的日内解释。"
+  ],
+  "gaps": [
+   "s1：偏旧（4 天）",
+   "s1冲浪筛选：偏旧（4 天）",
+   "NQ/ES期权报价/IV：偏旧（20 天）",
+   "市场风险三开关：部分覆盖（0 天）",
+   "市场风险三开关：部分覆盖；下游云厂商资本开支官方季度篮子不足；可审计的价格/筹码结构位置分类缺失；",
+   "场外指数当日来源不可用：9.1未收到用户主动提供的当日场外原页；最近8.31用户原页44项仅作过期历史背景，不进入9.1方向评分",
+   "13买点扫描：部分完成（1 项异常）",
+   "一致度分数只表示体系是否同向，不表示成功率或收益概率"
+  ]
+ },
+ "evening": {
+  "date": "2026-09-01",
+  "collected": "2026-09-01 19:51",
+  "offline": false,
+  "classes": [
+   {
+    "name": "美股",
+    "date": "2026-08-31",
+    "temp": "温",
+    "phase": "谷雨",
+    "change": "不变"
+   },
+   {
+    "name": "加密币",
+    "date": "2026-08-31",
+    "temp": "温",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "美国ETF",
+    "date": "2026-08-31",
+    "temp": "温",
+    "phase": "立夏",
+    "change": "不变"
+   },
+   {
+    "name": "A股",
+    "date": "2026-09-01",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "商品期货",
+    "date": "2026-09-01",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "ETF基金",
+    "date": "2026-09-01",
+    "temp": "凉",
+    "phase": null,
+    "change": "不变"
+   }
+  ],
+  "warmToHot": [
+   {
+    "group": "ETF基金",
+    "items": [
+     {
+      "name": "红利ETF",
+      "symbol": "328115",
+      "temp": "热"
+     },
+     {
+      "name": "银行ETF",
+      "symbol": "328166",
+      "temp": "热"
+     },
+     {
+      "name": "货币ETF",
+      "symbol": "328118",
+      "temp": "热"
+     },
+     {
+      "name": "香港银行ETF",
+      "symbol": "香港银行ETF",
+      "temp": "热"
+     },
+     {
+      "name": "科创债ETF",
+      "symbol": "622455",
+      "temp": "热"
+     },
+     {
+      "name": "国开债 ETF",
+      "symbol": "329476",
+      "temp": "热"
+     },
+     {
+      "name": "香港金融ETF",
+      "symbol": "香港金融ETF",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "美股",
+    "items": [
+     {
+      "name": "CrowdStrike Holdings Inc-A",
+      "symbol": "CRWD",
+      "temp": "热"
+     },
+     {
+      "name": "雪佛龙",
+      "symbol": "CVX",
+      "temp": "热"
+     },
+     {
+      "name": "Okta Inc-A",
+      "symbol": "OKTA",
+      "temp": "热"
+     },
+     {
+      "name": "斯伦贝谢",
+      "symbol": "SLB",
+      "temp": "热"
+     },
+     {
+      "name": "Crinetics Pharmaceuticals Inc",
+      "symbol": "CRNX",
+      "temp": "热"
+     },
+     {
+      "name": "Zscaler Inc",
+      "symbol": "ZS",
+      "temp": "热"
+     },
+     {
+      "name": "Cheniere Energy Inc",
+      "symbol": "LNG",
+      "temp": "热"
+     },
+     {
+      "name": "elf Beauty Inc",
+      "symbol": "ELF",
+      "temp": "热"
+     },
+     {
+      "name": "能源转换",
+      "symbol": "ET",
+      "temp": "热"
+     },
+     {
+      "name": "迪尔",
+      "symbol": "DE",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "商品期货",
+    "items": [
+     {
+      "name": "豆粕",
+      "symbol": "M",
+      "temp": "热"
+     },
+     {
+      "name": "乙二醇",
+      "symbol": "EG",
+      "temp": "热"
+     }
+    ]
+   }
+  ],
+  "s1": [
+   {
+    "symbol": "PANW",
+    "temp": "温",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "000636.SZ",
+    "temp": "平",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "301217.SZ",
+    "temp": "平",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "600667.SH",
+    "temp": "平",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "ACHR",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AXTI",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "BFLY",
+    "temp": "平",
+    "phase": "立秋",
+    "market": "美股"
+   },
+   {
+    "symbol": "HIMS",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "IREN",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "LUNR",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "TENX",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "002149.SZ",
+    "temp": "凉",
+    "phase": null,
+    "market": "A股"
+   },
+   {
+    "symbol": "AEHR",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AMAT",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AMBA",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "ASTS",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AVAV",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AVGO",
+    "temp": "凉",
+    "phase": "寒露",
+    "market": "美股"
+   },
+   {
+    "symbol": "BKSY",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "CSIQ",
+    "temp": "寒",
+    "phase": "立冬",
+    "market": "美股"
+   },
+   {
+    "symbol": "EQPT",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "FSLR",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "GHM",
+    "temp": "寒",
+    "phase": "寒露",
+    "market": "美股"
+   },
+   {
+    "symbol": "LHX",
+    "temp": "凉",
+    "phase": "立冬",
+    "market": "美股"
+   },
+   {
+    "symbol": "ONDS",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "PL",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "RKLB",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "TTD",
+    "temp": "凉",
+    "phase": "立冬",
+    "market": "美股"
+   },
+   {
+    "symbol": "UAMY",
+    "temp": "寒",
+    "phase": "寒露",
+    "market": "美股"
+   },
+   {
+    "symbol": "VSAT",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   }
+  ]
+ }
+}
