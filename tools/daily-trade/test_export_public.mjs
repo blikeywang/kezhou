@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
@@ -138,4 +138,21 @@ test("export writes index, day files and an active manifest", () => {
   assert.ok(Date.parse(manifest.generated_at) <= Date.parse("2026-09-21T23:59:00+08:00"));
   const index = JSON.parse(readFileSync(join(out, "index.json"), "utf8"));
   assert.equal(index.days[0].counts.buy, 1);
+});
+
+test("a day already published stays published when its source report disappears", () => {
+  const root = mkdtempSync(join(tmpdir(), "dt-keep-"));
+  const src = join(root, "src"), out = join(root, "out");
+  mkdirSync(join(src, "reports", "morning"), { recursive: true });
+  mkdirSync(join(src, "reports", "evening"), { recursive: true });
+  mkdirSync(out, { recursive: true });
+  writeFileSync(join(src, "reports", "morning", "每日综合决策早报_2026-09-20.md"), MORNING);
+  writeFileSync(join(src, "reports", "morning", "每日综合决策早报_2026-09-21.md"), MORNING);
+  exportPublic({ source: src, out, now: new Date("2026-11-08T00:00:00Z") });
+  rmSync(join(src, "reports", "morning", "每日综合决策早报_2026-09-20.md"));
+  exportPublic({ source: src, out, now: new Date("2026-11-09T00:00:00Z") });
+  const index = JSON.parse(readFileSync(join(out, "index.json"), "utf8"));
+  assert.deepEqual(index.days.map((d) => d.date), ["2026-09-21", "2026-09-20"]);
+  assert.equal(index.days[1].retained, true);
+  assert.ok(existsSync(join(out, "days", "2026-09-20.json")));
 });
