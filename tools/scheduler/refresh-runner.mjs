@@ -84,17 +84,33 @@ function nyParts(date = new Date()) {
   const v = Object.fromEntries(parts.map((p) => [p.type, p.value]));
   return { date: `${v.year}-${v.month}-${v.day}`, weekday: v.weekday, minutes: Number(v.hour) * 60 + Number(v.minute) };
 }
-function previousWeekday(dateText) {
+// NYSE full-day closures and 1:00 p.m. early closes, from NYSE Group's 2026–2028 calendar
+// (announced 2025-12-23). Extend this list before 2028; after it runs out, holidays fall back
+// to "no new data" handling.
+const NYSE_HOLIDAYS = new Set([
+  "2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25", "2026-06-19", "2026-07-03", "2026-09-07", "2026-11-26", "2026-12-25",
+  "2027-01-01", "2027-01-18", "2027-02-15", "2027-03-26", "2027-05-31", "2027-06-18", "2027-07-05", "2027-09-06", "2027-11-25", "2027-12-24",
+]);
+const NYSE_EARLY_CLOSE = new Set(["2026-11-27", "2026-12-24", "2027-11-26"]);
+export const isTradingDay = (dateText) => ![0, 6].includes(new Date(`${dateText}T12:00:00Z`).getUTCDay()) && !NYSE_HOLIDAYS.has(dateText);
+/** Minutes after New York midnight when that day's daily close should be available (close + 20 min). */
+export const closeReadyMinutes = (dateText) => (NYSE_EARLY_CLOSE.has(dateText) ? 13 * 60 : 16 * 60) + 20;
+function previousTradingDay(dateText) {
   const d = new Date(`${dateText}T12:00:00Z`);
-  do d.setUTCDate(d.getUTCDate() - 1); while ([0, 6].includes(d.getUTCDay()));
+  do d.setUTCDate(d.getUTCDate() - 1); while (!isTradingDay(d.toISOString().slice(0, 10)));
   return d.toISOString().slice(0, 10);
 }
-/** Latest regular session whose daily close should exist (holidays are handled by "no new data"). */
+/** Latest regular session whose daily close should exist. */
 export function expectedSession(now = new Date()) {
   const ny = nyParts(now);
-  const weekend = ny.weekday === "Sat" || ny.weekday === "Sun";
-  if (!weekend && ny.minutes >= 16 * 60 + 20) return ny.date;
-  return previousWeekday(ny.date);
+  if (isTradingDay(ny.date) && ny.minutes >= closeReadyMinutes(ny.date)) return ny.date;
+  return previousTradingDay(ny.date);
+}
+/** Hours since the expected session's close became available (for telling "not yet" from "failed"). */
+export function hoursSinceClose(session, now = new Date()) {
+  const ny = nyParts(now);
+  const dayDiff = Math.round((Date.parse(`${ny.date}T00:00:00Z`) - Date.parse(`${session}T00:00:00Z`)) / 86_400_000);
+  return (dayDiff * 1440 + ny.minutes - closeReadyMinutes(session)) / 60;
 }
 export function inFridayWindow(now = new Date()) {
   const ny = nyParts(now);
@@ -213,10 +229,17 @@ async function main() {
     await sh("node", job.refresh, { timeout: 30 * 60_000 });
     const after = stampOf(job);
     if (job.due === "afterClose" && !force && (after ?? "") <= (before ?? "")) {
-      // Market holiday or Longbridge has no new close yet: discard churn, retry next hour.
+      // Holidays never reach here (the calendar skips them), so a missing close on a trading day
+      // is either "not published yet" or a real data failure. Discard the churn either way, but
+      // after three hours call it a failure instead of reporting success.
       await sh("git", ["checkout", "--quiet", "--", job.dataDir]);
       await sh("git", ["clean", "-fdq", "--", job.dataDir]);
-      writeStatus(name, { ok: true, startedAt, finishedAt: new Date().toISOString(), stamp: after, message: "暂无新的收盘数据（可能是休市日）" });
+      const late = hoursSinceClose(target) >= 3;
+      const message = late
+        ? `${target} 是交易日，收盘超过 3 小时仍没拿到这一天的日线（数据停在 ${after ?? "—"}）：检查 Longbridge 行情权限或刷新日志`
+        : `${target} 的收盘数据还没出来，下一个整点重试`;
+      writeStatus(name, { ok: !late, startedAt, finishedAt: new Date().toISOString(), stamp: after, message });
+      if (late) { await notify(`TraderHome · ${job.label}没有新数据`, message); process.exitCode = 1; }
       log(`${name}: no new session after refresh (${after}); nothing committed`);
       return;
     }

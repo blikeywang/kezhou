@@ -18,7 +18,7 @@
  *        (--stamp only prints the source fingerprint; the scheduler uses it to decide)
  */
 import { createHash } from "node:crypto";
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -282,6 +282,15 @@ export function exportPublic({ source = DEFAULT_SOURCE, out = DEFAULT_OUT, now =
   if (existsSync(trendCsv)) files["trend-heatmap.json"] = trendHeatmap(readFileSync(trendCsv, "utf8"));
   files["latest-extras.json"] = latestExtras(source);
 
+  // Never trim published history: a day that is already public but no longer in the
+  // source folder (moved, archived, iCloud eviction) keeps its file and index row.
+  const previousIndex = readJson(join(out, "index.json"));
+  for (const row of previousIndex?.days ?? []) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(row?.date ?? "") || days.has(row.date)) continue;
+    if (existsSync(join(out, "days", `${row.date}.json`))) index.push({ ...row, retained: true });
+  }
+  index.sort((a, b) => b.date.localeCompare(a.date));
+
   const latest = index[0];
   // A report for day D is written on day D (Asia/Shanghai). Cap the file time at the
   // end of that day so a copied or re-synced old file never looks new.
@@ -303,7 +312,8 @@ export function exportPublic({ source = DEFAULT_SOURCE, out = DEFAULT_OUT, now =
     generated_at: generatedAt,
     source_project: "独立交易流程（公开摘要）",
     public_boundary: "allowlisted_sections_no_account_no_desk_no_keys",
-    routes: previous.routes ?? {},
+    // Only the pre-November HTML issue (2026-08-14) has routes; newer days live in index.json.
+    legacyRoutes: previous.legacyRoutes ?? previous.routes ?? {},
     reports: previous.reports ?? [],
     publishing: { state: "active", exporter: "tools/daily-trade/export-public.mjs" },
   };
@@ -312,7 +322,6 @@ export function exportPublic({ source = DEFAULT_SOURCE, out = DEFAULT_OUT, now =
   const hits = Object.entries(serialized).flatMap(([k, text]) => privacyScan(text).map((p) => `${k}: ${p}`));
   if (hits.length) throw new Error(`公开数据含私密内容，已中止：${hits.slice(0, 5).join("; ")}`);
 
-  rmSync(join(out, "days"), { recursive: true, force: true });
   mkdirSync(join(out, "days"), { recursive: true });
   for (const [k, text] of Object.entries(serialized)) writeFileSync(join(out, k), text);
   return { days: index.length, latest: latest?.date ?? null, files: Object.keys(files).length };
