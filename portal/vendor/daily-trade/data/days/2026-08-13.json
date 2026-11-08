@@ -1,0 +1,707 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-08-13",
+ "morning": {
+  "date": "2026-08-13",
+  "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 CMG, CAVA, AXTI；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+  "stance": {
+   "label": "观察优先",
+   "summary": "今天的首要动作是只做条件参与；不把单一 P/C、IV 或原始 Buy 当成下单触发。"
+  },
+  "riskCap": 0.25,
+  "freshness": [
+   {
+    "name": "场外指数",
+    "date": "2026-08-13",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "趋势冷热",
+    "date": "2026-08-12",
+    "state": "可用（1 天）",
+    "ageDays": 1
+   },
+   {
+    "name": "s1",
+    "date": "2026-08-13",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "13买点",
+    "date": "2026-08-07",
+    "state": "偏旧（6 天）",
+    "ageDays": 6
+   },
+   {
+    "name": "NQ/ES期权报价/IV",
+    "date": "2026-08-04",
+    "state": "偏旧（7 天）",
+    "ageDays": 7
+   },
+   {
+    "name": "美股/ETF期权面",
+    "date": "2026-08-13",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "s1 3/5日强制流量排查",
+    "date": "2026-08-13",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "BTC/ETH期权面",
+    "date": "2026-08-13",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "市场风险三开关",
+    "date": "2026-08-13",
+    "state": "部分覆盖（0 天）",
+    "ageDays": 0
+   }
+  ],
+  "classes": [
+   {
+    "name": "美股",
+    "temp": "热",
+    "phase": "立夏",
+    "date": "2026-08-12"
+   },
+   {
+    "name": "美国ETF",
+    "temp": "热",
+    "phase": "立夏",
+    "date": "2026-08-12"
+   },
+   {
+    "name": "商品期货",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-08-13"
+   },
+   {
+    "name": "加密币",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-08-12"
+   },
+   {
+    "name": "ETF基金",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-08-13"
+   },
+   {
+    "name": "A股",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-08-13"
+   }
+  ],
+  "buys": [
+   {
+    "symbol": "CMG",
+    "market": "美股",
+    "agreement": "双支持 (+2)",
+    "score": 2,
+    "evidence": "标的冷热 CMG=平；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "CAVA",
+    "market": "美股",
+    "agreement": "双支持 (+2)",
+    "score": 2,
+    "evidence": "标的冷热 CAVA=平；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "AXTI",
+    "market": "美股",
+    "agreement": "双支持 (+2)",
+    "score": 2,
+    "evidence": "标的冷热 AXTI=平；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "ALAB",
+    "market": "美股",
+    "agreement": "双支持 (+2)",
+    "score": 2,
+    "evidence": "标的冷热 ALAB=平；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "VNDA",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 VNDA=凉；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "ONON",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 ONON=寒；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   },
+   {
+    "symbol": "CLS",
+    "market": "美股",
+    "agreement": "单支持 (+1)",
+    "score": 1,
+    "evidence": "标的冷热 CLS=凉；大类冷热 美股=热；场外 进场背景但动能分化：美股纳指OTC进场第9天（840 / 174），Spcx进场第5天（1021 / 271）；goog退场第2天，PLtr、Nvda等仍处爆破200以下的待确认阶段。",
+    "entry": "无当日 13买点"
+   }
+  ],
+  "sells": [],
+  "divergences": [
+   {
+    "symbol": "7709.HK",
+    "market": "港股",
+    "agreement": "背离/降级 (-1)",
+    "score": -1,
+    "evidence": "标的冷热 7709.HK=凉；大类冷热 港股=平；场外 未覆盖：用户提供的场外原页无独立港股大类。",
+    "entry": null
+   }
+  ],
+  "unconfirmed": [
+   {
+    "symbol": "07709.HK",
+    "market": "港股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "ACHR",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AI",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "API",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "CELH",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "CRCL",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "DOW",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "ENPH",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "HCC",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "HYMC",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "IBM",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "INTU",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "MDB",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "MDT",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "META",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "MP",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PS",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "PUMP",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "RCAT",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "SLB",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "SMR",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "TEAM",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "TENX",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "TMO",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "TSLA",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "UBER",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "USO",
+    "market": "美国ETF",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "UUUU",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "XOM",
+    "market": "美股",
+    "signal": "Sell",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   }
+  ],
+  "surf": [],
+  "buyPoints": [
+   {
+    "symbol": "601628.SH",
+    "level": "L0 74 · #10 顺势 N 字突破",
+    "entry": 38.15,
+    "stop": 38.026,
+    "targets": "38.274 / 38.398",
+    "bar": "2026-08-06T06:55:00.000Z"
+   }
+  ],
+  "buyPointScanNote": "当前显示 2026-08-07 的 1 条已导入点位。",
+  "buyPointErrors": 2,
+  "risk": {
+   "conclusion": "结论：数据不足观察；覆盖 部分覆盖。 关键变量缺失/偏旧，按数据质量将风险倍率上限降至 0.25。",
+   "questions": [
+    {
+     "question": "现在在哪？（定位洗盘区）",
+     "state": "缺失"
+    },
+    {
+     "question": "油够不够？（检查准备金与流动性）",
+     "state": "绿色"
+    },
+    {
+     "question": "铃响没响？（检查资本开支二阶导）",
+     "state": "缺失"
+    }
+   ],
+   "liquidity": [
+    {
+     "name": "银行准备金余额",
+     "value": "$2.993T",
+     "date": "2026-08-05 / weekly",
+     "state": "绿色"
+    },
+    {
+     "name": "SOFR - IORB",
+     "value": "-3.0 bp",
+     "date": "2026-08-12 / daily",
+     "state": "绿色"
+    },
+    {
+     "name": "美国财政部一般账户（TGA）",
+     "value": "$0.929T",
+     "date": "2026-08-05 / weekly",
+     "state": "绿色"
+    },
+    {
+     "name": "临时回购操作总额代理",
+     "value": "$0M",
+     "date": "2026-08-12 / daily",
+     "state": "未见操作余额"
+    }
+   ],
+   "slowMissing": 7,
+   "slowTotal": 7
+  },
+  "crypto": [
+   {
+    "symbol": "BTC",
+    "spot": 63520.27,
+    "dvol": 35.82,
+    "hv30": 25.1,
+    "ivHv": 1.43,
+    "volPc": 0.52,
+    "oiPc": 0.55,
+    "tenor": "8.3D 2026-08-21",
+    "atmIv": 27.93,
+    "rr25": -2.38
+   },
+   {
+    "symbol": "ETH",
+    "spot": 1880.42,
+    "dvol": 49.38,
+    "hv30": 32.67,
+    "ivHv": 1.51,
+    "volPc": 0.9,
+    "oiPc": 0.53,
+    "tenor": "8.3D 2026-08-21",
+    "atmIv": 40.19,
+    "rr25": -2.53
+   }
+  ],
+  "changes": [
+   "收到用户提供的当日场外/潜力原页，且页面日期、原始价位和交易所映射通过校验后，才重启对应潜力区观察。",
+   "s1、趋势/场外与闭合价格结构至少两路同向，且 13 买点达到可复核级别时，才反证“无多体系 Buy”。",
+   "NQ/ES 新鲜完整链补齐 bid/ask、尺寸、Greeks 与多时点快照后，若与当前近价 P/C/IV 背景相反，应废弃本包的日内解释。"
+  ],
+  "gaps": [
+   "13买点：偏旧（6 天）",
+   "NQ/ES期权报价/IV：偏旧（7 天）",
+   "市场风险三开关：部分覆盖；下游云厂商资本开支官方季度篮子不足；可审计的价格/筹码结构位置分类缺失；",
+   "13买点扫描：本次失败（Yahoo 研究降级源当前不可用），仅保留最近一次成功结果",
+   "一致度分数只表示体系是否同向，不表示成功率或收益概率"
+  ]
+ },
+ "evening": {
+  "date": "2026-08-13",
+  "collected": "2026-08-13 20:40",
+  "offline": false,
+  "classes": [
+   {
+    "name": "美股",
+    "date": "2026-08-12",
+    "temp": "热",
+    "phase": "立夏",
+    "change": "不变"
+   },
+   {
+    "name": "美国ETF",
+    "date": "2026-08-12",
+    "temp": "热",
+    "phase": "立夏",
+    "change": "不变"
+   },
+   {
+    "name": "A股",
+    "date": "2026-08-13",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "ETF基金",
+    "date": "2026-08-13",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "商品期货",
+    "date": "2026-08-13",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "加密币",
+    "date": "2026-08-12",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   }
+  ],
+  "warmToHot": [
+   {
+    "group": "ETF基金",
+    "items": [
+     {
+      "name": "医药ETF",
+      "symbol": "328164",
+      "temp": "热"
+     },
+     {
+      "name": "医疗ETF",
+      "symbol": "328162",
+      "temp": "热"
+     },
+     {
+      "name": "政府债ETF",
+      "symbol": "329477",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "美股",
+    "items": [
+     {
+      "name": "戴尔科技",
+      "symbol": "DELL",
+      "temp": "热"
+     },
+     {
+      "name": "慧与",
+      "symbol": "HPE",
+      "temp": "热"
+     },
+     {
+      "name": "美国合众银行",
+      "symbol": "USB",
+      "temp": "热"
+     },
+     {
+      "name": "嘉信理财",
+      "symbol": "SCHW",
+      "temp": "热"
+     },
+     {
+      "name": "默沙东",
+      "symbol": "MRK",
+      "temp": "热"
+     },
+     {
+      "name": "星巴克",
+      "symbol": "SBUX",
+      "temp": "热"
+     },
+     {
+      "name": "PNC金融服务集团",
+      "symbol": "PNC",
+      "temp": "热"
+     },
+     {
+      "name": "瑞杰金融",
+      "symbol": "RJF",
+      "temp": "热"
+     },
+     {
+      "name": "加拿大丰业银行",
+      "symbol": "BNS",
+      "temp": "热"
+     },
+     {
+      "name": "梯瓦制药",
+      "symbol": "TEVA",
+      "temp": "热"
+     },
+     {
+      "name": "富国银行",
+      "symbol": "WFC",
+      "temp": "热"
+     },
+     {
+      "name": "第一资本金融",
+      "symbol": "COF",
+      "temp": "热"
+     },
+     {
+      "name": "泰尼特保健",
+      "symbol": "THC",
+      "temp": "热"
+     },
+     {
+      "name": "环汇",
+      "symbol": "GPN",
+      "temp": "热"
+     },
+     {
+      "name": "康捷国际物流",
+      "symbol": "EXPD",
+      "temp": "热"
+     },
+     {
+      "name": "Liberty Media Corp Liberty Formula One-C",
+      "symbol": "FWONK",
+      "temp": "热"
+     },
+     {
+      "name": "Synchrony Financial",
+      "symbol": "SYF",
+      "temp": "热"
+     },
+     {
+      "name": "北方信托",
+      "symbol": "NTRS",
+      "temp": "热"
+     },
+     {
+      "name": "纽约梅隆银行",
+      "symbol": "BNY",
+      "temp": "热"
+     },
+     {
+      "name": "德州公路酒吧",
+      "symbol": "TXRH",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "商品期货",
+    "items": []
+   }
+  ],
+  "s1": [
+   {
+    "symbol": "ALAB",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AXTI",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "CAVA",
+    "temp": "平",
+    "phase": "立春",
+    "market": "美股"
+   },
+   {
+    "symbol": "CMG",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "7709.HK",
+    "temp": "凉",
+    "phase": null,
+    "market": "香港ETF"
+   },
+   {
+    "symbol": "CLS",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "ONON",
+    "temp": "寒",
+    "phase": "寒露",
+    "market": "美股"
+   },
+   {
+    "symbol": "VNDA",
+    "temp": "凉",
+    "phase": "冬至",
+    "market": "美股"
+   }
+  ]
+ }
+}

@@ -12,9 +12,9 @@
   <main id="main" class="rv-workspace">
     <header class="th-container rv-header">
       <div>
-        <div class="th-kicker">TradeReview OS · Post-trade evidence</div>
+        <div class="th-kicker">TradeReview OS · 交易复盘</div>
         <h1>交易后复盘</h1>
-        <p>把成交、计划与真实行情放回同一条时间线。先核验事实，再判断重复行为，最后只给未来10笔一个可验证的改进动作。</p>
+        <p>导入你已平仓的交易，系统把成交、计划和当时的行情放在一起看：先核对数据，再找出最花钱的重复习惯，最后只给一个改进动作，用接下来 10 笔交易检验它有没有用。</p>
       </div>
       <div class="rv-header__actions">
         <span class="rv-local"><i></i>原始记录仅在本页内存处理</span>
@@ -27,8 +27,8 @@
       <div class="rv-import__main">
         <div class="rv-import__copy">
           <span class="rv-step">01 · 导入成交</span>
-          <h2 id="importTitle">先让数据开口，不让结论抢答</h2>
-          <p>支持按“一笔完整交易”汇总的 closed trades / position history CSV、TSV、JSON。系统会先校验字段、去重并报告证据覆盖，再开始复盘。</p>
+          <h2 id="importTitle">导入已平仓的交易</h2>
+          <p>支持 CSV、TSV、JSON，每行一笔完整交易（开仓到平仓）。导入后先检查字段、去掉重复，并告诉你数据够不够做结论。</p>
         </div>
         <label class="rv-dropzone" id="tradeDropzone" for="tradeFile">
           <span class="rv-dropzone__mark" aria-hidden="true">+</span>
@@ -46,8 +46,8 @@
           <button class="rv-button rv-button--quiet" id="downloadTemplateButton" type="button">下载字段模板</button>
         </div>
         <p class="rv-hub-state" id="personalHubState">本机只读连接尚未检测</p>
-        <p class="rv-format-note">不要直接导入逐笔成交 fills / executions：开仓、加仓和分批平仓尚未聚合时，买卖方向不等于最终持仓方向。</p>
-        <p class="rv-sample-note">教学案例为合成记录，包含24笔交易及一笔完整分钟K线重演，不会混入真实历史战绩。</p>
+        <p class="rv-format-note">请导出“已平仓交易”或“持仓历史”，不要导出逐笔成交（fills / executions）：加仓、分批平仓没合并时，单笔买卖方向会被误读。</p>
+        <p class="rv-sample-note">教学案例是 24 笔虚构交易，其中一笔带完整分钟K线，可以先用它看看效果。</p>
       </div>
 
       <aside class="rv-import__side" aria-label="复盘所需数据">
@@ -62,9 +62,9 @@
           </dl>
         </div>
         <div class="rv-source-block rv-source-block--optional">
-          <span class="rv-step">证据升级</span>
+          <span class="rv-step">可选</span>
           <h3>补充历史K线</h3>
-          <p>导入同一时期的 OHLC，可重建持仓路径、MFE/MAE、入场前结构与计划位置；没有K线时系统不会编造技术分析。</p>
+          <p>导入同一时期的 K 线后，可以还原每笔交易持仓期间的最大浮盈 / 浮亏（MFE/MAE）和入场前的走势；没有 K 线就不做技术面分析。</p>
           <button class="rv-text-button" id="chooseBarButton" type="button">选择 K 线文件</button>
           <input id="barFile" type="file" accept=".csv,.tsv,.txt,.json,text/csv,application/json" hidden>
           <div class="rv-file-state" id="barFileState">尚未导入 · 需要 time, open, high, low, close</div>
@@ -175,7 +175,7 @@
 
       <section class="rv-panel" id="panelBehaviors" role="tabpanel" data-panel="behaviors" hidden>
         <div class="rv-panel-intro">
-          <div><span class="rv-step">规则命中，不是人格标签</span><h2>行为证据账本</h2><p>每条结论都显示发生次数、共现亏损、字段覆盖、置信度和局限。共现不能直接当成可挽回收益。</p></div>
+          <div><span class="rv-step">行为证据</span><h2>哪些习惯在花你的钱</h2><p>每条都写明发生了几次、同时伴随多少亏损、数据完整度和可信度。“同时出现”不等于“是它造成的”，所以伴随亏损不能算成能挽回的钱。</p></div>
         </div>
         <div id="behaviorList" class="rv-behavior-list"></div>
       </section>
@@ -195,7 +195,7 @@
       <section class="rv-panel" id="panelGrowth" role="tabpanel" data-panel="growth" hidden>
         <div class="rv-panel-grid rv-panel-grid--wide">
           <article class="rv-module">
-            <div class="rv-module__head"><div><span class="rv-step">滚动10笔</span><h3>期望值与主要行为频率</h3></div><span class="rv-caption">盈利验证结果，行为验证过程</span></div>
+            <div class="rv-module__head"><div><span class="rv-step">滚动10笔</span><h3>期望值与主要行为频率</h3></div><span class="rv-caption">盈亏看结果，行为频率看过程</span></div>
             <canvas id="growthChart" class="rv-chart" aria-label="滚动十笔成长曲线"></canvas>
           </article>
           <article class="rv-module">
@@ -209,7 +209,7 @@
 
       <section class="rv-workspace-panel" id="workspaceCoach" role="tabpanel" data-workspace-panel="coach" hidden>
         <div class="rv-panel-intro rv-panel-intro--split">
-          <div><span class="rv-step">不是点评，是重新做一遍</span><h2>如果这笔交给教练，他会在哪里等、哪里做、哪里认错</h2><p>教练只能使用入场当时可见的K线与订单字段。每位教练都必须回答做不做、入场、止损、加仓、减仓和退出，并标出证据等级。</p></div>
+          <div><span class="rv-step">教练重做</span><h2>同一笔交易，换个有经验的人会怎么做</h2><p>只用入场那一刻能看到的K线和订单信息，回答：做不做、在哪进、止损放哪、怎么加减仓、何时离场，并标明依据有多可靠。</p></div>
           <label class="rv-coach-picker">选择一笔交易<select id="coachTradeSelect"></select></label>
         </div>
         <div class="rv-coach-stage">
@@ -225,7 +225,7 @@
 
       <section class="rv-workspace-panel" id="workspaceBenchmark" role="tabpanel" data-workspace-panel="benchmark" hidden>
         <div class="rv-panel-intro rv-panel-intro--split">
-          <div><span class="rv-step">正确成长不是一条直线</span><h2>先证明自己能活下来，再证明优势可以重复</h2><p>个人交易用逐笔证据比较；真人高手只展示来源允许证明的部分。收益榜不能替代交易台账，方法名也不能替代样本外表现。</p></div>
+          <div><span class="rv-step">成长对标</span><h2>先确认能活下来，再确认优势能重复</h2><p>主要和过去的自己比。高手的数据只展示有来源证明的部分：收益排行不等于完整交易记录。</p></div>
           <span class="rv-source-date" id="benchmarkUpdatedAt"></span>
         </div>
         <section class="rv-growth-passport" id="growthPassport" aria-label="个人成长护照"></section>
@@ -245,7 +245,7 @@
 
       <section class="rv-workspace-panel" id="workspaceConsult" role="tabpanel" data-workspace-panel="consult" hidden>
         <div class="rv-panel-intro rv-panel-intro--split">
-          <div><span class="rv-step">单子可以公开，原始账户不必公开</span><h2>战友会诊：先私下给看法，由交易本人决定哪些公开</h2><p>链接中的会诊内容放在网址井号之后，不随页面请求发送给本站。默认隐藏精确时间、价格、金额和备注，只保留可讨论的结构与R。</p></div>
+          <div><span class="rv-step">战友会诊</span><h2>匿名发一笔交易，请朋友私下点评</h2><p>内容只放在链接里（# 号之后），不会发送到本站服务器。默认隐藏精确时间、价格、金额和备注，只保留走势形状和 R 倍数。哪些点评公开，由你决定。</p></div>
           <span class="rv-local"><i></i>无账号 · 无上传 · 发单者选择公开</span>
         </div>
         <ol class="rv-consult-flow" aria-label="会诊流程">
@@ -278,7 +278,7 @@
         </div>
 
         <section class="rv-feedback-workbench" id="feedbackWorkbench" hidden>
-          <div class="rv-module__head"><div><span class="rv-step">给他一个可执行的看法</span><h3>私评不会自动出现在公开会诊中</h3></div><span class="rv-caption">交易本人收到链接后才能选择公开</span></div>
+          <div class="rv-module__head"><div><span class="rv-step">写点评</span><h3>你的点评只发给交易本人</h3></div><span class="rv-caption">交易本人收到链接后才能选择公开</span></div>
           <div class="rv-feedback-form">
             <label>你的称呼<input id="feedbackAlias" type="text" maxlength="32" value="匿名战友"></label>
             <label>立场<select id="feedbackStance"><option value="caution">谨慎：方向可讨论，计划需改</option><option value="agree">赞同：逻辑成立，执行可改</option><option value="oppose">反对：这笔当时不该做</option></select></label>
@@ -291,7 +291,7 @@
         </section>
 
         <section class="rv-owner-curation" id="ownerCuration" hidden>
-          <div class="rv-module__head"><div><span class="rv-step">这张单由你发起</span><h3>选择值得公开的战友思路</h3></div><span class="rv-caption">未勾选的私评永远不会进入公开版本</span></div>
+          <div class="rv-module__head"><div><span class="rv-step">你发起的会诊</span><h3>选出想公开的点评</h3></div><span class="rv-caption">未勾选的私评永远不会进入公开版本</span></div>
           <div id="privateFeedbackList" class="rv-private-feedback"></div>
           <div class="rv-consult-actions"><button class="rv-button rv-button--primary" id="createPublicCaseButton" type="button">生成精选公开链接</button><button class="rv-button" id="copyPublicCaseButton" type="button" disabled>复制公开链接</button></div>
           <label class="rv-share-output">精选公开链接<input id="publicCaseLinkOutput" type="text" readonly placeholder="勾选私评后生成"></label>
@@ -303,7 +303,7 @@
   <dialog class="rv-dialog" id="apiDialog">
     <form method="dialog" class="rv-dialog__surface" id="apiForm">
       <div class="rv-dialog__head"><div><span class="rv-step">只读连接</span><h2>连接你的自托管 API</h2></div><button class="rv-icon-button" value="cancel" aria-label="关闭" type="submit">&times;</button></div>
-      <p class="rv-dialog__lead">浏览器会直接请求你的地址。Token 只保存在当前页面内存；接口需要允许来自本站域名的跨域读取。</p>
+      <p class="rv-dialog__lead">浏览器会直接访问你填的地址，Token 只保留在当前页面。你的接口需要允许本站跨域读取（CORS）。</p>
       <label>接口地址<input id="apiUrl" type="url" placeholder="https://your-domain.example/api/trades" required></label>
       <label>Bearer Token（可选）<input id="apiToken" type="password" autocomplete="off" placeholder="只读 token"></label>
       <div class="rv-api-contract"><strong>支持的返回格式 · 每个对象代表一笔已完成交易</strong><code>{ "trades": [ { "symbol": "NQ", "side": "long", "entry_time": "...", "net_pnl": 120 } ] }</code></div>
@@ -326,7 +326,7 @@
   </dialog>
 
   <div class="rv-toast" id="toast" role="status" aria-live="polite"></div>
-  <footer class="th-container th-footer">TradeReview OS · 本地优先证据复盘 · 共现不等于因果 · 不构成投资建议</footer>
+  <footer class="th-container th-footer">TradeReview OS · 数据只在你的浏览器里处理 · 不构成投资建议</footer>
   <script type="module" src="./review-app.mjs"></script>
 </body>
 </html>

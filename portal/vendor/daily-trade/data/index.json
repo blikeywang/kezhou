@@ -1,0 +1,1148 @@
+{
+ "schema": "traderhome_daily_index_v1",
+ "exportedAt": "2026-11-08T01:45:35.206Z",
+ "sourceStamp": "2026-09-21:0c135c65611aaf1c",
+ "latest": "2026-09-21",
+ "days": [
+  {
+   "date": "2026-09-21",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、加密币，趋势侧偏冷大类为 …",
+   "counts": {
+    "buy": 7,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 2,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 1,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-16",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、加密币，趋势侧偏冷大类为 …",
+   "counts": {
+    "buy": 7,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 2,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-15",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 7,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 2,
+    "buyPoints": 6,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 1,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-14",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 7,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 2,
+    "buyPoints": 6,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-12",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 商品期货、加密币，趋势侧偏冷大类…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 8,
+    "buyPoints": 6,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": false
+  },
+  {
+   "date": "2026-09-11",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 LITE.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 商品期货、加密币，趋势侧偏冷大类…",
+   "counts": {
+    "buy": 1,
+    "sell": 0,
+    "divergence": 2,
+    "unconfirmed": 7,
+    "buyPoints": 2,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-10",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 LITE.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 4,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 6,
+    "buyPoints": 2,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-09",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 LITE.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 5,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 5,
+    "buyPoints": 2,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-08",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 LITE.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 5,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 5,
+    "buyPoints": 5,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-06",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 LITE.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 6,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 4,
+    "buyPoints": 5,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-05",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 LITE.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、商品期货、加密…",
+   "counts": {
+    "buy": 6,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 4,
+    "buyPoints": 5,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 6,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-04",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；原始多体系 Buy 中没有通过冲浪确认，仅保留观察 PS, PDD, MSTR；趋势侧偏暖大类为 美股、美国ETF、商品期货、加…",
+   "counts": {
+    "buy": 5,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 0,
+    "buyPoints": 4,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-03",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ, AMAT.US，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF，趋…",
+   "counts": {
+    "buy": 9,
+    "sell": 0,
+    "divergence": 4,
+    "unconfirmed": 38,
+    "buyPoints": 4,
+    "surfConfirmed": 2
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-02",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ, AMAT.US，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF，趋…",
+   "counts": {
+    "buy": 10,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 40,
+    "buyPoints": 2,
+    "surfConfirmed": 2
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-09-01",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ, AMAT.US，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF、加…",
+   "counts": {
+    "buy": 10,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 40,
+    "buyPoints": 4,
+    "surfConfirmed": 2
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-31",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ, AMAT.US，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF，趋…",
+   "counts": {
+    "buy": 11,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 40,
+    "buyPoints": 2,
+    "surfConfirmed": 2
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-30",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF、加密币，趋势侧偏冷大…",
+   "counts": {
+    "buy": 11,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 40,
+    "buyPoints": 2,
+    "surfConfirmed": 1
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-29",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 11,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 40,
+    "buyPoints": 2,
+    "surfConfirmed": 1
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-28",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪确认 002149.SZ，仍须等待多体系同向与盘中 L1 入场结构；趋势侧偏暖大类为 美股、美国ETF、加密币，趋势侧偏冷大…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 32,
+    "buyPoints": 2,
+    "surfConfirmed": 1
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-27",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 002149.SZ, DDOG.US, AMAT.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖…",
+   "counts": {
+    "buy": 11,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 33,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 6,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-26",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 603696.SH, APP.US, 002167.SZ，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 2,
+    "unconfirmed": 35,
+    "buyPoints": 5,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-25",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF、加密币，趋势侧…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 42,
+    "buyPoints": 8,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 6,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-24",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 GOOGL.US, GOOG.US, ORCL.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 22,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-23",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 GOOGL.US, GOOG.US, ORCL.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 22,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-22",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 GOOGL.US, GOOG.US, ORCL.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 12,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-21",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 1302.HK, 600312.SH，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 32,
+    "buyPoints": 2,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-20",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 GOOG.US, NRG.US, 600886.SH，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大…",
+   "counts": {
+    "buy": 15,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 11,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": false
+  },
+  {
+   "date": "2026-08-19",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 MO.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 …",
+   "counts": {
+    "buy": 4,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 60,
+    "buyPoints": 2,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-18",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 CBRS, BFLY, UNH；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 10,
+    "sell": 0,
+    "divergence": 3,
+    "unconfirmed": 57,
+    "buyPoints": 2,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-17",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 TCEHY, PDD, PAAS；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 6,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 41,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-15",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 TCEHY, QID, PDD；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 7,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 41,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-14",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 SITM, CMG, CLS；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 9,
+    "sell": 0,
+    "divergence": 2,
+    "unconfirmed": 38,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-13",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 CMG, CAVA, AXTI；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 7,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 29,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 5,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-12",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 WDC, SOXS, SNDK；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 5,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 95,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-11",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 IBKR, DDOG, VPG；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 5,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 52,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-10",
+   "stance": "观察优先",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；优先观察 W, USO, UCTT；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 12,
+    "sell": 1,
+    "divergence": 2,
+    "unconfirmed": 53,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 9
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-09",
+   "stance": "观察优先",
+   "riskCap": null,
+   "headline": "优先观察 W, USO, UCTT；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 12,
+    "sell": 1,
+    "divergence": 2,
+    "unconfirmed": 53,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 8
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-08",
+   "stance": "观察优先",
+   "riskCap": null,
+   "headline": "优先观察 W, USO, UCTT；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 12,
+    "sell": 1,
+    "divergence": 2,
+    "unconfirmed": 53,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 8
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-07",
+   "stance": "观察优先",
+   "riskCap": null,
+   "headline": "优先观察 VST, USO, TSEM；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 8,
+    "sell": 1,
+    "divergence": 3,
+    "unconfirmed": 35,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-06",
+   "stance": "观察优先",
+   "riskCap": null,
+   "headline": "优先观察 LLY, SPOT, CMG；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 5,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 91,
+    "buyPoints": 10,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-05",
+   "stance": "观察优先",
+   "riskCap": null,
+   "headline": "优先观察 SHOP, BFLY, XBI；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 无。",
+   "counts": {
+    "buy": 15,
+    "sell": 1,
+    "divergence": 14,
+    "unconfirmed": 23,
+    "buyPoints": 10,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-04",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "优先观察 META；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 1,
+    "sell": 0,
+    "divergence": 4,
+    "unconfirmed": 22,
+    "buyPoints": 7,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-03",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、美国ETF、商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 41,
+    "buyPoints": 7,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-08-01",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、美国ETF、商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 41,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 1,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-31",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、美国ETF、商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 1,
+    "divergence": 20,
+    "unconfirmed": 24,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-30",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、美国ETF、商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 7,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-29",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 8,
+    "buyPoints": 0,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-28",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 8,
+    "buyPoints": 8,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-26",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 7,
+    "unconfirmed": 13,
+    "buyPoints": 5,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 1,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-24",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 美股、美国ETF、ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 7,
+    "unconfirmed": 13,
+    "buyPoints": 5,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-23",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 4,
+    "unconfirmed": 15,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-22",
+   "stance": "风险优先",
+   "riskCap": null,
+   "headline": "优先观察 RDDT, HOOD, AMD；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 ETF基金、A股。",
+   "counts": {
+    "buy": 3,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 31,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-21",
+   "stance": "防御等待",
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 无，趋势侧偏冷大类为 ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 20,
+    "unconfirmed": 8,
+    "buyPoints": 3,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 4,
+    "total": 7
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-20",
+   "stance": null,
+   "riskCap": null,
+   "headline": "没有获得多体系支持的 Buy；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 ETF基金、A股。",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 0,
+    "unconfirmed": 48,
+    "buyPoints": 0,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 5
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-19",
+   "stance": null,
+   "riskCap": null,
+   "headline": "优先观察 IBM；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 1,
+    "sell": 0,
+    "divergence": 13,
+    "unconfirmed": 25,
+    "buyPoints": 0,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 0,
+    "total": 4
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-18",
+   "stance": null,
+   "riskCap": null,
+   "headline": "优先观察 URI, IBM；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 商品期货、ETF基金、A股。",
+   "counts": {
+    "buy": 2,
+    "sell": 0,
+    "divergence": 13,
+    "unconfirmed": 24,
+    "buyPoints": 0,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 0,
+    "total": 4
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-07-17",
+   "stance": null,
+   "riskCap": null,
+   "headline": "优先观察 IBM；趋势侧偏暖大类为 美股、美国ETF，趋势侧偏冷大类为 ETF基金、A股。",
+   "counts": {
+    "buy": 1,
+    "sell": 0,
+    "divergence": 12,
+    "unconfirmed": 26,
+    "buyPoints": 0,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 1,
+    "total": 4
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  }
+ ]
+}

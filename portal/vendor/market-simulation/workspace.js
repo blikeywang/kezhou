@@ -10,7 +10,7 @@ const fmt=(n,d)=>finite(n)?n.toLocaleString('en-US',{maximumFractionDigits:d??(M
 const cash=n=>finite(n)?(n>0?'+':n<0?'−':'')+'$'+fmt(Math.abs(n),2):'—';
 const color=n=>!finite(n)?'muted':n>=0?'good':'bad-text';
 const dt=(n,short=false)=>finite(n)&&n>0?new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Singapore',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',...(short?{}:{second:'2-digit'}),hourCycle:'h23'}).format(n):'尚无记录';
-const age=(t,now=Date.now())=>!finite(t)||t<=0?'未知':Math.max(0,Math.round((now-t)/60000))+' 分钟前';
+const age=(t,now=Date.now())=>{if(!finite(t)||t<=0)return'未知';const m=Math.max(0,Math.round((now-t)/60000));if(m<1)return'刚刚';if(m<60)return m+' 分钟前';const h=Math.round(m/60);if(h<48)return h+' 小时前';return Math.round(h/24)+' 天前'};
 const badge=(label,tone='')=>'<span class="ms-badge '+tone+'">'+E(label)+'</span>';
 const empty=text=>'<div class="ms-empty">'+E(text)+'</div>';
 const side=s=>s===1?'多':'空';

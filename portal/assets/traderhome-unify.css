@@ -1,0 +1,208 @@
+/*
+ * TraderHome unify layer — loaded after every product stylesheet.
+ *
+ * Each product keeps its own CSS and local variable names. This file only
+ * points those variables at the shared tokens in traderhome-tokens.css and
+ * harmonises a few shared components (buttons, inputs, tables, cards).
+ * Keep rules scoped by html[data-th-stage] so one product cannot leak into
+ * another, and prefer variable mapping over restyling individual selectors.
+ */
+
+/* ---------- Base: every route ---------- */
+html[data-th-stage] body {
+  font-family: var(--th-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+html[data-th-stage] ::selection { background: color-mix(in srgb, var(--th-accent) 32%, transparent); color: var(--th-text); }
+html[data-th-stage] :focus-visible { outline: 2px solid var(--th-accent); outline-offset: 2px; }
+html[data-th-stage] { scrollbar-color: #2a3647 transparent; }
+html[data-th-stage] table,
+html[data-th-stage] [class*="metric"] strong,
+html[data-th-stage] [class*="kpi"] strong { font-variant-numeric: tabular-nums; }
+/* Product CSS sometimes sets display on buttons that start [hidden]. */
+html[data-th-stage] [hidden] { display: none !important; }
+html[data-th-stage] h1, html[data-th-stage] h2, html[data-th-stage] h3 { text-wrap: balance; }
+/* Chinese headlines break at punctuation first, never leaving a lone "下。". */
+html[data-th-stage] :is(.th-hero h1, .io-hero h1, .tt-hero h1, .th-flow strong, .th-sys h3) { word-break: keep-all; overflow-wrap: anywhere; }
+html[data-th-stage] p { text-wrap: pretty; }
+
+/* ---------- Kezhou · 历史证据 (generated page: variables only) ---------- */
+html[data-th-stage="history"]:not([data-theme="light"]) {
+  --bg: var(--th-bg);
+  --bg2: var(--th-surface-2);
+  --pan: var(--th-surface-1);
+  --pan2: var(--th-surface-2);
+  --ink: var(--th-text);
+  --ink2: var(--th-text-2);
+  --mut: var(--th-muted);
+  --line: var(--th-line);
+  --line2: var(--th-line-strong);
+  --acc: var(--th-accent-history);
+  --acc2: #8aa5c8;
+  --up: var(--th-up);
+  --dn: var(--th-down);
+  --gold: var(--th-warn);
+  --head: rgba(8, 12, 20, .88);
+  --sh: var(--th-shadow);
+}
+html[data-th-stage="history"][data-theme="dark"] body,
+html[data-th-stage="history"]:not([data-theme]) body {
+  background: radial-gradient(1100px 560px at 82% -12%, var(--th-bg-glow), transparent 60%), var(--th-bg);
+}
+html[data-th-stage="history"] .appbar-in { max-width: 1400px; }
+html[data-th-stage="history"] .btn.pri { color: var(--th-on-accent); }
+/* Generated page uses 10–11px captions; lift Chinese text to the 12px floor. */
+html[data-th-stage="history"] #app :is(.csub, .note, .universe-meta, .market-count, td.mut, span.mut, th, small) { font-size: 12px; }
+@media (max-width: 680px) {
+  /* Long source URLs and the search field must not widen the page. */
+  html[data-th-stage="history"] body { overflow-x: hidden; }
+  html[data-th-stage="history"] .sidesearch,
+  html[data-th-stage="history"] .sidesearch input { max-width: 100%; min-width: 0; }
+  html[data-th-stage="history"] #app * { overflow-wrap: anywhere; }
+}
+
+/* ---------- TradeReview OS · 交易复盘 ---------- */
+html[data-th-stage="review"] {
+  --rv-bg: var(--th-bg);
+  --rv-surface: var(--th-surface-1);
+  --rv-surface-2: var(--th-surface-2);
+  --rv-surface-3: var(--th-surface-3);
+  --rv-line: var(--th-line-strong);
+  --rv-line-soft: var(--th-line);
+  --rv-text: var(--th-text);
+  --rv-muted: var(--th-muted);
+  --rv-green: var(--th-up);
+  --rv-blue: var(--th-info);
+  --rv-amber: var(--th-warn);
+  --rv-red: var(--th-down);
+  --rv-cyan: var(--th-accent-history);
+}
+html[data-th-stage="review"] body.rv-page { background: radial-gradient(1000px 520px at 85% -10%, rgba(180, 165, 251, .08), transparent 60%), var(--th-bg); }
+html[data-th-stage="review"] .rv-page .th-kicker { color: var(--th-accent); }
+html[data-th-stage="review"] .rv-button--primary {
+  color: var(--th-on-accent);
+  background: var(--th-accent);
+  border-color: var(--th-accent);
+}
+html[data-th-stage="review"] .rv-button--primary:hover { background: color-mix(in srgb, var(--th-accent) 88%, white); border-color: color-mix(in srgb, var(--th-accent) 88%, white); }
+
+/* ---------- IncomeOS (default "ocean" theme maps to shared tokens) ---------- */
+html[data-th-stage="incomeos"]:is(:not([data-income-color]), [data-income-color="ocean"]) {
+  --income-font-family: var(--th-font);
+  --io-bg: var(--th-bg);
+  --io-panel: var(--th-surface-1);
+  --io-panel-2: var(--th-surface-2);
+  --io-input-bg: var(--th-input);
+  --io-topbar-bg: rgba(8, 12, 20, .9);
+  --io-tabs-bg: rgba(8, 12, 20, .94);
+  --io-glow-a: rgba(94, 224, 210, .08);
+  --io-glow-b: rgba(122, 174, 255, .07);
+  --io-line: var(--th-line);
+  --io-text: var(--th-text);
+  --io-muted: var(--th-muted);
+  --io-cyan: var(--th-accent-incomeos);
+  --io-blue: var(--th-info);
+  --io-amber: var(--th-warn);
+  --io-red: var(--th-down);
+  --io-green: var(--th-up);
+}
+/* One sticky bar only: the product tabs sit directly under the site shell. */
+html[data-th-stage="incomeos"] .io-topbar { position: relative; top: auto; z-index: 1; }
+/* Brand, back link and status duplicate the site shell and the snapshot gate. */
+html[data-th-stage="incomeos"] .io-topbar-inner { display: none; }
+html[data-th-stage="incomeos"] .io-tabs-shell { top: var(--th-shell-h) !important; }
+/* A weekly tool: keep the input panel above the fold. */
+html[data-th-stage="incomeos"] .io-hero,
+html[data-th-stage="incomeos"] .io-hero.compact-hero { min-height: 0; padding-block: 40px 40px; gap: 48px; }
+html[data-th-stage="incomeos"] .io-hero h1 { font-size: clamp(30px, 3.6vw, 52px); line-height: 1.08; letter-spacing: -.03em; margin: 12px 0 16px; }
+html[data-th-stage="incomeos"] .io-hero-copy > p { font-size: var(--th-fs-base); }
+/* Allocation legend: value sits next to its own label, not the next dot. */
+html[data-th-stage="incomeos"] .io-allocation-legend { column-gap: 22px; row-gap: 8px; }
+html[data-th-stage="incomeos"] .io-allocation-legend div { grid-template-columns: 8px auto auto; justify-content: start; gap: 7px; font-size: var(--th-fs-sm); }
+html[data-th-stage="incomeos"] .io-allocation-legend b { font-size: var(--th-fs-sm); }
+
+/* ---------- TailTrend Lab ---------- */
+html[data-th-stage="tailtrend"] {
+  --tt-bg: var(--th-bg);
+  --tt-panel: var(--th-surface-1);
+  --tt-panel-2: var(--th-surface-2);
+  --tt-line: var(--th-line);
+  --tt-text: var(--th-text);
+  --tt-text-2: var(--th-text-2);
+  --tt-muted: var(--th-muted);
+  --tt-mint: var(--th-accent-tailtrend);
+  --tt-cyan: var(--th-accent-history);
+  --tt-amber: var(--th-warn);
+  --tt-red: var(--th-down);
+  --tt-violet: var(--th-accent-review);
+  --tt-radius: var(--th-r-lg);
+}
+html[data-th-stage="tailtrend"] body.tailtrend { background: radial-gradient(1000px 520px at 84% -8%, rgba(116, 227, 173, .08), transparent 60%), var(--th-bg); }
+html[data-th-stage="tailtrend"] .tt-wrap { width: min(var(--th-container), calc(100% - 2 * var(--th-gutter))); }
+html[data-th-stage="tailtrend"] .tt-hero { min-height: 0; padding-block: 48px 40px; }
+html[data-th-stage="tailtrend"] .tt-hero h1 { font-size: clamp(30px, 3.4vw, 48px); line-height: 1.12; letter-spacing: -.03em; }
+/* The scanner table scrolls inside its card instead of clipping columns. */
+html[data-th-stage="tailtrend"] .tt-table-wrap { overflow-x: auto; }
+html[data-th-stage="tailtrend"] .tt-table td:last-child,
+html[data-th-stage="tailtrend"] .tt-table th:last-child { white-space: nowrap; }
+html[data-th-stage="tailtrend"] .tt-stale-banner {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid rgba(240, 122, 133, .4);
+  border-radius: var(--th-r-md);
+  color: #ffc9cf;
+  background: var(--th-down-bg);
+  font-size: var(--th-fs-md);
+}
+
+/* ---------- 主流市场模拟分析 ---------- */
+html[data-th-stage="marketSimulation"] .ms-page {
+  --ms-bg: var(--th-bg);
+  --ms-card: var(--th-surface-1);
+  --ms-line: var(--th-line-strong);
+  --ms-muted: var(--th-muted);
+  --ms-ink: var(--th-text);
+  --ms-accent: var(--th-accent-market);
+  --ms-warn: var(--th-warn);
+  --ms-down: var(--th-down);
+  font-family: var(--th-font);
+}
+html[data-th-stage="marketSimulation"] .ms-wrap { max-width: var(--th-container-wide); padding-inline: var(--th-gutter); }
+
+/* ---------- 场外日线 ---------- */
+html[data-th-stage="otc"] {
+  --bg: var(--th-bg);
+  --panel: var(--th-surface-1);
+  --line: var(--th-line-strong);
+  --text: var(--th-text);
+  --muted: var(--th-muted);
+  --cyan: var(--th-accent-otc);
+  --green: var(--th-up);
+  --red: var(--th-down);
+  --amber: var(--th-warn);
+}
+html[data-th-stage="otc"] body { font-family: var(--th-font); }
+html[data-th-stage="otc"] body > main { max-width: var(--th-container-wide); padding-inline: var(--th-gutter); }
+
+/* ---------- 交易早晚报 reports (generated HTML) ---------- */
+html[data-th-stage="dailyTrade"] body { font-family: var(--th-font); }
+
+/* ---------- Shared component harmonisation ---------- */
+html[data-th-stage]:not([data-th-stage="home"]) :is(.rv-button, .tt-button, .io-button, .ms-page button, .btn) { border-radius: var(--th-r-md); }
+html[data-th-stage]:not([data-th-stage="home"]) :is(.rv-table thead th, .tt-table th, .io-table th) {
+  color: var(--th-muted);
+  font-size: var(--th-fs-xs);
+  font-weight: 650;
+  letter-spacing: .04em;
+}
+html[data-th-stage="tailtrend"] .tt-hero__status[data-expired] .tt-live-dot { color: var(--th-down); }
+html[data-th-stage="tailtrend"] .tt-hero__status[data-expired] .tt-live-dot::before { background: var(--th-down) !important; box-shadow: none !important; }
+html[data-th-stage="tailtrend"] .tt-fresh.stale { color: var(--th-down); }
+html[data-th-stage="incomeos"] .io-topbar-status[data-level="stale"] { color: var(--th-down); }
+html[data-th-stage="incomeos"] .io-topbar-status[data-level="stale"] i { background: var(--th-down); box-shadow: none; }
+html[data-th-stage="incomeos"] .io-topbar-status[data-level="watch"] i,
+html[data-th-stage="incomeos"] .io-topbar-status[data-level="aging"] i { background: var(--th-warn); box-shadow: none; }
+/* Short pages: the canvas below <body> matches the page background. */
+html[data-th-stage]:not([data-income-color="daylight"]):not([data-theme="light"]) { background-color: var(--th-bg); }

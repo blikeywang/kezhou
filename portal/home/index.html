@@ -3,148 +3,161 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="TraderHome 连接历史研究与交易后复盘，提供 IncomeOS、TailTrend Lab、交易早晚报、场外日线与主流市场模拟分析。">
-  <title>TraderHome · 从证据到成长的交易工作台</title>
-  <link rel="stylesheet" href="/assets/traderhome-site.css">
+  <meta name="description" content="TraderHome 连接历史研究与交易后复盘，并提供 IncomeOS、TailTrend Lab、场外日线、公开模拟盘与交易早晚报等独立研究系统。">
+  <title>TraderHome · 每一步都能验证的交易工作台</title>
+  <link rel="stylesheet" href="/assets/traderhome-site.css?v=12">
 </head>
-<body class="th-site">
+<body class="th-site th-home">
   <main id="main">
     <section class="th-container th-hero">
       <div>
         <div class="th-kicker">TraderHome · Evidence → Review → Growth</div>
-        <h1>专业，不是指标更多。<br><span>而是每一步都能验证。</span></h1>
-        <p>TraderHome 把历史研究与交易后复盘连接起来，检验假设并追踪改进。IncomeOS、TailTrend Lab、交易早晚报、场外日线与主流市场模拟分析提供各自的研究视角。每个结论都说明依据、边界和下一步；没有达到门槛时，“不行动”也是正式输出。</p>
+        <h1>专业不是指标更多，<br><span>而是每一步都能验证</span></h1>
+        <p class="th-hero__lead">交易前，用历史数据看当前走势有没有统计上的优势；交易后，用真实成交记录找出最花钱的习惯并验证改进。每个结论都写明依据和适用范围，证据不够时就明确说“不操作”。</p>
         <div class="th-actions">
           <a class="th-btn primary" href="/history/">从历史证据开始 →</a>
-          <a class="th-btn" href="/incomeos/">打开 IncomeOS →</a>
-          <a class="th-btn" href="/tailtrend/">打开 TailTrend →</a>
-          <a class="th-btn" href="/daily-trade/">打开交易早晚报 →</a>
-          <a class="th-btn" href="/otc/">打开场外日线 →</a>
-          <a class="th-btn" href="/market-simulation/">主流市场模拟分析</a>
-          <a class="th-btn" href="#contracts">查看工作台输出契约</a>
-        </div>
-        <div class="th-proofline">
-          <span><i></i>刻舟求剑每日更新</span>
-          <span><i></i>TradeReview 真实数据默认私密</span>
-          <span><i></i>IncomeOS 按每周到账与账户净值动态配比</span>
-          <span><i></i>TailTrend 只在日线边缘与趋势接受后行动</span>
-          <span><i></i>交易早晚报只发布已校验研究快照</span>
+          <a class="th-btn" href="#board">查看今日状态</a>
         </div>
       </div>
-      <div class="th-journey" aria-label="TraderHome 研究与复盘工作流">
-        <article class="th-journey-card">
-          <small>01 · RESEARCH</small><strong>历史上像什么？证据有多强？</strong>
+      <ol class="th-flow" aria-label="TraderHome 核心工作流">
+        <li style="--sys: var(--th-accent-history)">
+          <span>01 · 研究</span>
+          <strong>历史上像什么？证据有多强？</strong>
           <p>相似片段、共识概率、相对基准 Edge、区间与稳健性一起看。</p>
-          <span class="output">输出：一个可证伪的交易假设</span>
-        </article>
-        <article class="th-journey-card">
-          <small>02 · REVIEW</small><strong>哪一个错误最贵？下一批交易怎么验证？</strong>
-          <p>保留交易员原始判断，再用交易和K线证据给出唯一改进动作。</p>
-          <span class="output">输出：未来10笔的一个可观察改变</span>
-        </article>
-      </div>
+          <em>输出：一个可证伪的交易假设</em>
+        </li>
+        <li style="--sys: var(--th-accent-review)">
+          <span>02 · 复盘</span>
+          <strong>哪一个错误最贵？下一批交易怎么验证？</strong>
+          <p>保留交易员原始判断，再用成交与K线证据给出唯一改进动作。</p>
+          <em>输出：未来 10 笔交易的一个可观察改变</em>
+        </li>
+        <li class="th-flow__loop">↺ 复盘的结论带回下一轮研究。</li>
+      </ol>
     </section>
 
-    <section class="th-section" id="products"><div class="th-container">
-      <div class="th-kicker">Research and review · Independent research systems</div>
-      <h2>历史研究与交易复盘，配合独立研究系统</h2>
-      <p class="th-lead">历史研究与交易复盘组成研究和验证的闭环。长期资金、TailTrend、交易早晚报、场外日线与模拟分析各自保留独立口径。</p>
-      <div class="th-grid two">
-        <article class="th-card"><span class="index">01 / 历史研究</span><h3>刻舟求剑</h3><p>不是预测价格，而是判断“当前形态相对历史基准是否出现了值得关注的统计差异”。</p><ul><li>corr + DTW 双方法共识</li><li>Edge、95%区间与Top-K稳健性</li><li>Fresh / Cached / Stale 数据健康</li></ul><a class="go" href="/history/">打开历史证据 →</a></article>
-        <article class="th-card"><span class="index">02 / 交易后</span><h3>TradeReview OS</h3><p>不是再给一张盈亏报表，而是用真实成交与行情证据找到最高成本行为，再用下一批交易验证改进。</p><ul><li>本地导入 CSV / JSON 或读取自托管 API</li><li>匹配历史K线，逐笔重演计划与持仓路径</li><li>唯一处方、行为证据与滚动成长验证</li></ul><a class="go" href="/review/">打开交易后复盘 →</a></article>
+    <section class="th-section" id="board"><div class="th-container">
+      <div class="th-section__head">
+        <div>
+          <div class="th-kicker">今日</div>
+          <h2>今日状态</h2>
+          <p class="th-lead">按各系统自己的更新频率判断数据是否新鲜。过期的仍可回看，但不要当作今天的依据。</p>
+        </div>
+        <span class="th-fresh th-board__summary" id="boardSummary" data-state="unknown">读取状态中</span>
       </div>
-      <article class="th-independent-card incomeos-card">
-        <div>
-          <span class="th-independent-badge">INDEPENDENT SYSTEM · 独立研究工作台</span>
+
+      <h3 class="th-board__group">核心工作流</h3>
+      <div class="th-board th-board--core">
+        <article class="th-sys" data-key="history" style="--sys: var(--th-accent-history)">
+          <header><span class="th-sys__tag">01 · 历史研究</span><span class="th-fresh" data-status-for="history" data-state="unknown">读取中</span></header>
+          <h3>刻舟求剑<small>历史证据</small></h3>
+          <p>不预测价格，只判断当前走势在历史上相似的情况下，之后上涨的概率是否明显高于或低于平时。</p>
+          <ul><li>两种相似度方法互相印证</li><li>给出相对基准的优势（Edge）和置信区间</li><li>每个标的标明数据是否最新</li></ul>
+          <footer><small data-status-time="history">—</small><a class="th-sys__go" href="/history/">打开历史证据 →</a></footer>
+        </article>
+        <article class="th-sys" data-key="review" style="--sys: var(--th-accent-review)">
+          <header><span class="th-sys__tag">02 · 交易后</span><span class="th-fresh" data-state="unknown">本地运行</span></header>
+          <h3>TradeReview OS<small>交易复盘</small></h3>
+          <p>导入已平仓交易，找出最花钱的重复习惯，给一个改进动作，再用接下来 10 笔交易验证。</p>
+          <ul><li>本地导入 CSV / JSON，文件不上传</li><li>匹配历史K线，逐笔重演计划与持仓路径</li><li>唯一处方、行为证据与滚动成长验证</li></ul>
+          <footer><small>成交记录只在你的浏览器内处理</small><a class="th-sys__go" href="/review/">打开交易复盘 →</a></footer>
+        </article>
+      </div>
+
+      <h3 class="th-board__group">独立研究系统 <small>各自独立运行</small></h3>
+      <div class="th-board">
+        <article class="th-sys" data-key="incomeos" style="--sys: var(--th-accent-incomeos)">
+          <header><span class="th-sys__tag">长期资金 · 每周</span><span class="th-fresh" data-status-for="incomeos" data-state="unknown">读取中</span></header>
           <h3>IncomeOS</h3>
-          <p>面向持续进入 IBKR 的长期资金：输入本周实际到账、账户净值与 put 准备金，立即生成动态美元配比和当天操作单。</p>
-        </div>
-        <ul>
-          <li>字体 90%–130% 可调，账户输入只保存在当前浏览器</li>
-          <li>成长周期引擎同时看长期复利、预期修正、ROE、估值分位与回撤</li>
-          <li>JPM/BAC/GS 与 SPY/SCHD 同口径测试；现金担保 put 受账户集中度硬闸门约束</li>
-        </ul>
-        <div class="th-independent-actions">
-          <a class="th-btn primary" href="/incomeos/">生成本周操作单 →</a>
-          <span>静态研究快照 · IBKR 人工执行</span>
-        </div>
-      </article>
-      <article class="th-independent-card tailtrend-card">
-        <div>
-          <span class="th-independent-badge">INDEPENDENT SYSTEM · DAILY-CLOSE SHADOW TEST</span>
+          <p>输入本周实际到账、账户净值与 put 准备金，生成动态美元配比和当天操作单。</p>
+          <ul><li>账户输入只保存在当前浏览器</li><li>现金担保 put 受集中度硬闸门约束</li></ul>
+          <footer><small data-status-time="incomeos">—</small><a class="th-sys__go" href="/incomeos/">生成本周操作单 →</a></footer>
+        </article>
+        <article class="th-sys" data-key="tailtrend" style="--sys: var(--th-accent-tailtrend)">
+          <header><span class="th-sys__tag">日线收盘 · 影子测试</span><span class="th-fresh" data-status-for="tailtrend" data-state="unknown">读取中</span></header>
           <h3>TailTrend Lab</h3>
-          <p>把“下沿收复做多、上沿管理、突破后跟随、失败后退出”写成同一套可复现状态机，再由账户、波动率和集群风险决定能否占用仓位。</p>
-        </div>
-        <ul>
-          <li>Longbridge 前复权正常时段日线；公开站只发布派生状态，不发布原始K线</li>
-          <li>下沿收复、趋势接受、突破失败、下沿破位、事件隔离与中部等待分桶展示</li>
-          <li>本地压力仓位计算共享一个想法的总风险，账户输入不保存、不上传、不自动下单</li>
-        </ul>
-        <div class="th-independent-actions">
-          <a class="th-btn primary" href="/tailtrend/">开始几天影子测试 →</a>
-          <span>日线正式判定 · 盘中只做边界与硬风险提醒</span>
-        </div>
-      </article>
-      <article class="th-independent-card market-simulation-card">
-        <div><span class="th-independent-badge">INDEPENDENT SYSTEM · PAPER TRADING</span><h2>主流市场模拟分析</h2><p>BTC、ETH、黄金、白银、纳指和原油，每 10 分钟检查计划和仓位，每小时由云端模型复核。按 10M、1H、4H、1D、1W 查看结构、进出场点位、历史结果与挂起原因。</p><p>公开页面无需登录，GitHub 定时同步行情、持仓、成交和复核结果；云端交易检查不依赖电脑或网页打开。</p></div>
-        <div class="th-independent-actions"><a class="th-btn primary" href="/market-simulation/">打开模拟工作台</a></div>
-      </article>
-      <article class="th-independent-card otc-card">
-        <div>
-          <span class="th-independent-badge">INDEPENDENT SYSTEM · OTC DAILY RESEARCH</span>
+          <p>每天收盘后判断美股处在近 60 日区间的底部、顶部、中间还是已突破；只在两端给观察，仓位由账户风险决定。</p>
+          <ul><li>公开站只发布派生状态，不发布原始K线</li><li>压力仓位只在浏览器内存计算</li></ul>
+          <footer><small data-status-time="tailtrend">—</small><a class="th-sys__go" href="/tailtrend/">查看今日状态 →</a></footer>
+        </article>
+        <article class="th-sys" data-key="otc" style="--sys: var(--th-accent-otc)">
+          <header><span class="th-sys__tag">场外 · 日线研究</span><span class="th-fresh" data-status-for="otc" data-state="unknown">读取中</span></header>
           <h3>场外日线工作台</h3>
-          <p>在同一条时间轴上读进退场周期、场外指数与爆破节点。按标的和日期回看，明确研究优先级、下一确认和失效条件。</p>
-        </div>
-        <ul>
-          <li>只使用用户提供的场外原页；缺页断线，过期醒目标记</li>
-          <li>历史质量不等于当前买点，不跨缺页确认节点或补造收益曲线</li>
-          <li>可选公开加密日K或本地CSV对照，不连接账户、不自动下单</li>
-        </ul>
-        <div class="th-independent-actions">
-          <a class="th-btn primary" href="/otc/">打开场外日线 →</a>
-          <span>先核对数据日，再看方向、节点与执行缺口</span>
-        </div>
-      </article>
+          <p>把进退场周期、场外指数和爆破指数放在一条时间轴上，按日期回看，写明下一步要确认什么、什么情况算失效。</p>
+          <ul><li>缺页断线，过期醒目标记</li><li>历史质量不等于当前买点</li></ul>
+          <footer><small data-status-time="otc">—</small><a class="th-sys__go" href="/otc/">打开场外日线 →</a></footer>
+        </article>
+        <article class="th-sys" data-key="marketSimulation" style="--sys: var(--th-accent-market)">
+          <header><span class="th-sys__tag">公开模拟盘</span><span class="th-fresh" data-status-for="marketSimulation" data-state="unknown">读取中</span></header>
+          <h3>主流市场模拟分析</h3>
+          <p>BTC、ETH、黄金、白银、纳指和原油：每 10 分钟检查计划与仓位，每小时由云端模型复核。</p>
+          <ul><li>无需登录，只读公开账本</li><li>过期报价、计划和复核单独标记</li></ul>
+          <footer><small data-status-time="marketSimulation">—</small><a class="th-sys__go" href="/market-simulation/">打开模拟盘 →</a></footer>
+        </article>
+        <article class="th-sys" data-key="dailyTrade" style="--sys: var(--th-accent-daily)">
+          <header><span class="th-sys__tag">研究快照</span><span class="th-fresh" data-status-for="dailyTrade" data-state="unknown">读取中</span></header>
+          <h3>交易早晚报</h3>
+          <p>发布已经校验过的早报和晚报；数据缺失或过期的地方按原样标出。</p>
+          <ul><li>不含账户私有数据与密钥</li><li>不替用户下单</li></ul>
+          <footer><small data-status-time="dailyTrade">—</small><a class="th-sys__go" href="/daily-trade/">打开早晚报 →</a></footer>
+        </article>
+      </div>
     </div></section>
 
     <section class="th-section" id="contracts"><div class="th-container">
-      <div class="th-kicker">Product output contracts</div>
-      <h2>核心工作台都明确：输入什么、输出什么、何时拒绝</h2>
-      <p class="th-lead">专业产品不能只展示答案，还要让用户知道答案何时失效。</p>
+      <div class="th-kicker">输出契约</div>
+      <h2>输出契约：每个系统用什么数据、给出什么、什么情况下不给结论</h2>
+      <p class="th-lead" style="margin-bottom: 24px">先知道结论在什么情况下会失效，再决定用不用它。</p>
       <div class="th-contracts">
-        <div class="th-contract"><strong class="th-cyan">刻舟求剑</strong><div><span>输入</span><b>已收盘历史K线与当前形态窗口</b></div><div><span>输出</span><b>概率、Edge、区间、稳健性与相似案例</b></div><div><span>拒绝条件</span><b>数据过期、样本不足或方法明显冲突</b></div></div>
-        <div class="th-contract"><strong class="th-violet">TradeReview OS</strong><div><span>输入</span><b>浏览器本地成交、计划字段与可选历史K线</b></div><div><span>输出</span><b>真实表现、成本行为、单笔重演、唯一处方与成长变化</b></div><div><span>拒绝条件</span><b>缺K线不讲结构，缺计划不猜意图，样本不足不下确定诊断</b></div></div>
-      </div>
-      <div class="th-independent-contract">
-        <strong>IncomeOS · 独立边界</strong>
-        <span><b>输入</b>本周净入金、IBKR 净值、准备金与只读市场快照</span>
-        <span><b>输出</b>动态美元配比、成长周期证据与现金担保 put 闸门</span>
-        <span><b>拒绝</b>数据过期、盘口缺失、估值或账户集中度不过线</span>
-      </div>
-      <div class="th-independent-contract">
-        <strong>TailTrend · 独立边界</strong>
-        <span><b>输入</b>Longbridge 已收盘日线、事件日历与浏览器内存风险参数</span>
-        <span><b>输出</b>状态桶、尾部地图、管理区、阻断原因与压力股数</span>
-        <span><b>拒绝</b>中部、未确认突破、事件跳空、旧数据或账户风险闸门失败</span>
-      </div>
-    </div></section>
-
-    <section class="th-section"><div class="th-container">
-      <div class="th-kicker">Why users come back</div>
-      <h2>用户意义不是“看了一次”，而是每天知道下一步</h2>
-      <div class="th-grid two">
-        <article class="th-card"><span class="index">开盘前 / 研究</span><h3>减少无依据的方向冲动</h3><p>先看历史基准和证据强度，不把一个漂亮形态直接解释为未来一定重复。</p></article>
-        <article class="th-card"><span class="index">平仓后 / 成长</span><h3>每个周期只改一个最贵错误</h3><p>从重复行为和关联亏损中选出唯一处方，再用未来10笔交易验证变化。</p></article>
+        <table>
+          <thead><tr><th scope="col">系统</th><th scope="col">输入</th><th scope="col">输出</th><th scope="col">拒绝或降级</th></tr></thead>
+          <tbody>
+            <tr class="th-contracts__sep"><td colspan="4">核心工作流</td></tr>
+            <tr style="--sys: var(--th-accent-history)"><th scope="row"><i></i>刻舟求剑</th><td>已收盘历史K线与当前形态窗口</td><td>概率、Edge、区间、稳健性与相似案例</td><td>数据过期、样本不足或方法明显冲突</td></tr>
+            <tr style="--sys: var(--th-accent-review)"><th scope="row"><i></i>TradeReview OS</th><td>浏览器本地成交、计划字段与可选历史K线</td><td>真实表现、成本行为、单笔重演、唯一处方与成长变化</td><td>缺K线不讲结构，缺计划不猜意图，样本不足不下确定诊断</td></tr>
+            <tr class="th-contracts__sep"><td colspan="4">独立研究系统</td></tr>
+            <tr style="--sys: var(--th-accent-incomeos)"><th scope="row"><i></i>IncomeOS</th><td>本周净入金、IBKR 净值、准备金与只读市场快照</td><td>动态美元配比、成长周期证据与现金担保 put 闸门</td><td>数据过期、盘口缺失、估值或账户集中度不过线</td></tr>
+            <tr style="--sys: var(--th-accent-tailtrend)"><th scope="row"><i></i>TailTrend</th><td>Longbridge 已收盘日线、事件日历与浏览器内存风险参数</td><td>状态桶、尾部地图、管理区、阻断原因与压力股数</td><td>中部、未确认突破、事件跳空、旧数据或账户风险闸门失败</td></tr>
+            <tr style="--sys: var(--th-accent-otc)"><th scope="row"><i></i>场外日线</th><td>用户提供的场外原页、授权参考归档与独立公开日线</td><td>周期质量复核与条件式研究计划</td><td>缺页、过期、映射未核实或执行条件未确认</td></tr>
+            <tr style="--sys: var(--th-accent-market)"><th scope="row"><i></i>模拟盘</th><td>白名单公开模拟快照：行情、持仓、成交与复核</td><td>10 分钟执行检查、小时模型复核与多周期计划</td><td>行情过期或计划范围挂起</td></tr>
+            <tr style="--sys: var(--th-accent-daily)"><th scope="row"><i></i>交易早晚报</th><td>交易流程校验后的报告</td><td>早报与晚报研究快照</td><td>校验失败、报告缺失或含私有账户数据</td></tr>
+          </tbody>
+        </table>
       </div>
     </div></section>
 
-    <section class="th-section" id="community"><div class="th-container">
+
+    <section class="th-section th-section--slim" id="community"><div class="th-container">
       <div class="th-community">
-        <div><div class="th-kicker">Private community</div><h2>公开站负责证明价值，DC / TG 承接真实使用</h2><p>品类扩展、内测、问题反馈和后续服务进入私域。邀请链接未配置前保持禁用，不跳转到无关社区。</p></div>
-        <div class="th-community__actions"><span class="th-btn disabled" title="等待真实邀请链接">Discord · 待配置</span><span class="th-btn disabled" title="等待真实邀请链接">Telegram · 待配置</span></div>
+        <div><h2>社区</h2><p>Discord / Telegram 邀请链接还在准备，开放后会放在这里。</p></div>
+        <div class="th-community__actions"><span class="th-btn disabled" title="等待真实邀请链接">Discord · 待开放</span><span class="th-btn disabled" title="等待真实邀请链接">Telegram · 待开放</span></div>
       </div>
     </div></section>
   </main>
-  <footer class="th-container th-footer">TraderHome Demo · 历史研究、模拟分析、长期资金、尾部趋势研究与复盘教育工具 · 不构成投资建议</footer>
+  <footer class="th-container th-footer">TraderHome Demo · 历史研究、模拟分析、长期资金、尾部趋势研究与复盘教育工具 · 不构成投资建议 · <a href="/DISCLAIMER.md">免责声明</a></footer>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var api = window.TraderHome;
+      if (!api || !api.loadStatus) return;
+      api.loadStatus().then(function (status) {
+        var counts = { fresh: 0, late: 0, stale: 0 };
+        (status.modules || []).forEach(function (m) {
+          if (m.localOnly) return;
+          var f = m.freshness;
+          if (!m.paused && counts[f.state] !== undefined) counts[f.state] += 1;
+          var badge = document.querySelector('[data-status-for="' + m.key + '"]');
+          if (badge) { badge.setAttribute("data-state", f.state); badge.textContent = f.label; }
+          var time = document.querySelector('[data-status-time="' + m.key + '"]');
+          if (time) time.textContent = m.paused ? "来源任务暂停中 · 最新一期 " + api.shortDate(Date.parse(m.asOf)).slice(0, 5)
+            : m.asOf ? "数据 " + api.shortDate(Date.parse(m.asOf)) + " · " + f.ago + " · " + (m.cadence || "") : "暂无数据";
+        });
+        var summary = document.getElementById("boardSummary");
+        var total = counts.fresh + counts.late + counts.stale;
+        if (!summary || !total) return;
+        summary.setAttribute("data-state", counts.stale ? "stale" : counts.late ? "late" : "fresh");
+        summary.textContent = counts.stale ? counts.stale + " 个系统数据已过期" : counts.late ? counts.late + " 个系统更新延迟" : "全部 " + total + " 个系统数据正常";
+      });
+    });
+  </script>
 </body>
 </html>

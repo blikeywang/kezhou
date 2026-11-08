@@ -1,0 +1,342 @@
+{
+ "schema": "traderhome_daily_extras_v1",
+ "decision": {
+  "date": "2026-09-21",
+  "stance": {
+   "label": "防御等待",
+   "riskCap": 0.25,
+   "summary": "今天的首要动作是等待与保留现金；不把单一 P/C、IV、原始 Buy 或未确认冲浪形态当成下单触发。",
+   "confidence": "中低"
+  },
+  "actions": [
+   {
+    "market": "NQ / ES 美盘日内",
+    "state": "conditional",
+    "action": "不开盘抢第一段；只保留突破后回踩或失守后反抽的条件方案",
+    "trigger": "09:30–09:45 ET 形成开盘区间后，闭合 5 分钟结构确认；10:00–11:30 ET 再决定是否参与。",
+    "invalidation": "价格回到开盘区间内，或宏观/财报事件导致隐含波动与报价显著跳变。"
+   },
+   {
+    "market": "股票 / ETF Buy-Sell",
+    "state": "wait",
+    "action": "仅观察 AMZN 的次份S1快照与守位",
+    "trigger": "S1 Buy 连续快照代理确认 + 下跌后低波动震荡守位 + 至少一路趋势/场外同向 + 当日 13买点 L1。",
+    "invalidation": "Buy 在下一快照消失/转Sell、日线跌破震荡下沿容差、13买点仅为 L0，或标的进入财报事件窗。"
+   },
+   {
+    "market": "BTC / ETH 1h",
+    "state": "observe",
+    "action": "延续 1h 结构跟随；期权面只调节风险，不代替价格触发",
+    "trigger": "1h 闭合结构与场外加密背景同向，并有独立价格失效位。",
+    "invalidation": "1h 结构反向或场外进场状态失效。"
+   }
+  ],
+  "sources": [
+   {
+    "name": "场外指数",
+    "date": "2026-09-19",
+    "state": "来源过期",
+    "ageDays": 2
+   },
+   {
+    "name": "趋势冷热",
+    "date": "2026-09-14",
+    "state": "偏旧",
+    "ageDays": 7
+   },
+   {
+    "name": "s1",
+    "date": "2026-09-12",
+    "state": "偏旧",
+    "ageDays": 9
+   },
+   {
+    "name": "s1冲浪筛选",
+    "date": "2026-09-12",
+    "state": "偏旧",
+    "ageDays": 9
+   },
+   {
+    "name": "13买点",
+    "date": "2026-09-16",
+    "state": "本次扫描失败·历史审计",
+    "ageDays": 5
+   },
+   {
+    "name": "NQ/ES期权报价/IV",
+    "date": "2026-08-04",
+    "state": "偏旧",
+    "ageDays": 34
+   },
+   {
+    "name": "美股/ETF期权面",
+    "date": "2026-09-16",
+    "state": "本次未刷新·历史快照",
+    "ageDays": 3
+   },
+   {
+    "name": "s1 3/5日强制流量排查",
+    "date": "2026-09-16",
+    "state": "本次未刷新·历史审计",
+    "ageDays": 3
+   },
+   {
+    "name": "BTC/ETH期权面",
+    "date": "2026-09-21",
+    "state": "最新",
+    "ageDays": 0
+   },
+   {
+    "name": "市场风险三开关",
+    "date": "2026-09-16",
+    "state": "部分覆盖",
+    "ageDays": 5
+   }
+  ]
+ },
+ "risk": {
+  "date": "2026-09-21",
+  "overall": {
+   "level": "升高",
+   "coverage": "部分覆盖",
+   "summary": "触发风险预算上限降档。"
+  },
+  "questions": [
+   {
+    "question": "现在在哪？",
+    "answer": "定位洗盘区",
+    "state": "缺失"
+   },
+   {
+    "question": "油够不够？",
+    "answer": "检查准备金与流动性",
+    "state": "红色候选"
+   },
+   {
+    "question": "铃响没响？",
+    "answer": "检查资本开支二阶导",
+    "state": "缺失"
+   }
+  ],
+  "liquidity": [
+   {
+    "name": "银行准备金余额",
+    "value": 2.9913,
+    "valueText": "$2.991T",
+    "date": "2026-09-09",
+    "frequency": "weekly",
+    "state": "绿色",
+    "source": "Federal Reserve Board H.4.1 via FRED",
+    "rule": "2.9T 下方观察、2.8T 下方红色候选、2.5T 下方硬风险候选；周变化 +96.8B。"
+   },
+   {
+    "name": "SOFR - IORB",
+    "value": -3,
+    "valueText": "-3.0 bp",
+    "date": "2026-09-14",
+    "frequency": "daily",
+    "state": "绿色",
+    "source": "New York Fed SOFR + Federal Reserve IORB via FRED",
+    "rule": "连续正值 2 个观测日列黄，> 3 bp 列红；当前连续正值 0 日。"
+   },
+   {
+    "name": "美国财政部一般账户（TGA）",
+    "value": 0.8437,
+    "valueText": "$0.844T",
+    "date": "2026-09-09",
+    "frequency": "weekly",
+    "state": "绿色",
+    "source": "Federal Reserve Board H.4.1 via FRED",
+    "rule": "接近 $0.95T 进入抽水观察；$1.00T 仅作参考线。"
+   },
+   {
+    "name": "临时回购操作总额代理",
+    "value": 0.101,
+    "valueText": "$0M",
+    "date": "2026-09-15",
+    "frequency": "daily",
+    "state": "需纽约联储确认",
+    "source": "Federal Reserve Bank of New York via FRED",
+    "rule": "非零只提示回到纽约联储逐项操作结果核对；该序列不是 SRF 单项用量。"
+   }
+  ],
+  "riskCap": 0.25
+ },
+ "crypto": {
+  "date": "2026-09-21",
+  "collectedAt": "2026-09-21 00:56 UTC",
+  "source": "Deribit",
+  "instruments": [
+   {
+    "symbol": "BTC",
+    "spot": 81673.59,
+    "dvol": 35.56,
+    "dvolPctile365": 0.082,
+    "dvolHi": 82.62,
+    "dvolLo": 33.59,
+    "hv30": 32.39,
+    "volPc": 0.55,
+    "oiPc": 0.563,
+    "term": [
+     {
+      "expiry": "21SEP26",
+      "dte": 0.3,
+      "atmIv": 32.41,
+      "rr25": 8.37
+     },
+     {
+      "expiry": "22SEP26",
+      "dte": 1.3,
+      "atmIv": 36.2,
+      "rr25": 3.54
+     },
+     {
+      "expiry": "23SEP26",
+      "dte": 2.3,
+      "atmIv": 37.88,
+      "rr25": 3.36
+     },
+     {
+      "expiry": "24SEP26",
+      "dte": 3.3,
+      "atmIv": 37.27,
+      "rr25": 3.26
+     },
+     {
+      "expiry": "25SEP26",
+      "dte": 4.3,
+      "atmIv": 38.37,
+      "rr25": 1.74
+     },
+     {
+      "expiry": "2OCT26",
+      "dte": 11.3,
+      "atmIv": 36.07,
+      "rr25": 0.8
+     },
+     {
+      "expiry": "9OCT26",
+      "dte": 18.3,
+      "atmIv": 34.82,
+      "rr25": -0.32
+     },
+     {
+      "expiry": "30OCT26",
+      "dte": 39.3,
+      "atmIv": 34.68,
+      "rr25": -1.32
+     },
+     {
+      "expiry": "27NOV26",
+      "dte": 67.3,
+      "atmIv": 36.37,
+      "rr25": -1.62
+     },
+     {
+      "expiry": "25DEC26",
+      "dte": 95.3,
+      "atmIv": 37.26,
+      "rr25": -1.85
+     },
+     {
+      "expiry": "26MAR27",
+      "dte": 186.3,
+      "atmIv": 38.79,
+      "rr25": -1.67
+     },
+     {
+      "expiry": "25JUN27",
+      "dte": 277.3,
+      "atmIv": 39.97,
+      "rr25": -1.6
+     }
+    ]
+   },
+   {
+    "symbol": "ETH",
+    "spot": 2691.37,
+    "dvol": 52.79,
+    "dvolPctile365": 0.196,
+    "dvolHi": 95.78,
+    "dvolLo": 44.98,
+    "hv30": 48.61,
+    "volPc": 0.824,
+    "oiPc": 0.533,
+    "term": [
+     {
+      "expiry": "21SEP26",
+      "dte": 0.3,
+      "atmIv": 58.68,
+      "rr25": 12.95
+     },
+     {
+      "expiry": "22SEP26",
+      "dte": 1.3,
+      "atmIv": 57.22,
+      "rr25": 8.93
+     },
+     {
+      "expiry": "23SEP26",
+      "dte": 2.3,
+      "atmIv": 56.3,
+      "rr25": 7.35
+     },
+     {
+      "expiry": "24SEP26",
+      "dte": 3.3,
+      "atmIv": 55.52,
+      "rr25": 5.34
+     },
+     {
+      "expiry": "25SEP26",
+      "dte": 4.3,
+      "atmIv": 54.61,
+      "rr25": 4.56
+     },
+     {
+      "expiry": "2OCT26",
+      "dte": 11.3,
+      "atmIv": 51.17,
+      "rr25": 3.63
+     },
+     {
+      "expiry": "9OCT26",
+      "dte": 18.3,
+      "atmIv": 50.53,
+      "rr25": 1.82
+     },
+     {
+      "expiry": "30OCT26",
+      "dte": 39.3,
+      "atmIv": 50.54,
+      "rr25": 1.52
+     },
+     {
+      "expiry": "27NOV26",
+      "dte": 67.3,
+      "atmIv": 52.41,
+      "rr25": 0.4
+     },
+     {
+      "expiry": "25DEC26",
+      "dte": 95.3,
+      "atmIv": 53.38,
+      "rr25": 0.57
+     },
+     {
+      "expiry": "26MAR27",
+      "dte": 186.3,
+      "atmIv": 54.89,
+      "rr25": 0.98
+     },
+     {
+      "expiry": "25JUN27",
+      "dte": 277.3,
+      "atmIv": 55.77,
+      "rr25": 1.81
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -20,7 +20,9 @@ import {
 import {
   connectPersonalHub,
   consumeHubCredentials,
+  enablePersonalHub,
   hasPersonalHubToken,
+  personalHubEnabled,
   openIbkrWebLogin,
   personalHubFetch,
   personalHubStatus,
@@ -1188,8 +1190,8 @@ refs.exportButton.addEventListener("click", exportReport);
 refs.clearButton.addEventListener("click", clearData);
 refs.openApiButton.addEventListener("click", () => { refs.apiError.textContent = ""; refs.apiDialog.showModal(); });
 refs.connectApiButton.addEventListener("click", connectApi);
-refs.connectPersonalHubButton.addEventListener("click", loadPersonalHubTrades);
-refs.connectPersonalHubImportButton.addEventListener("click", loadPersonalHubTrades);
+refs.connectPersonalHubButton.addEventListener("click", () => { enablePersonalHub(); loadPersonalHubTrades(); });
+refs.connectPersonalHubImportButton.addEventListener("click", () => { enablePersonalHub(); loadPersonalHubTrades(); });
 refs.ibkrLoginButton.addEventListener("click", openIbkrWebLogin);
 window.addEventListener("focus", () => {
   if (!refs.ibkrLoginButton.hidden) window.setTimeout(probePersonalReviewHub, 500);
@@ -1255,7 +1257,14 @@ if ([...refs.reviewTimezone.options].some(option => option.value === browserTime
 state.ownedCaseIds = new Set(loadStoredArray(OWNED_CASES_KEY));
 window.addEventListener("hashchange", () => { try { loadSharedHash(); } catch (error) { handleError(error); } });
 try { loadSharedHash(); } catch (error) { handleError(error); }
-probePersonalReviewHub();
+if (personalHubEnabled()) {
+  probePersonalReviewHub();
+} else {
+  // Public visitors: files and the teaching case are the main path. The hub
+  // buttons stay available for the owner and opt in on first click.
+  refs.connectPersonalHubButton.classList.remove("rv-button--primary");
+  setPersonalHubState("“从券商读取”需要你自己的电脑上运行个人数据中枢；也可以直接选择成交文件或查看教学案例。", "");
+}
 if (
   hasPersonalHubToken()
   && (receivedHubCredentials || sessionStorage.getItem(HUB_IMPORT_INTENT_KEY) === "1" || new URLSearchParams(location.search).has("hub_import"))

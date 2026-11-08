@@ -1,7 +1,19 @@
 import os
 import unittest
 from unittest.mock import patch, MagicMock
-from publication_clock import dispatch, next_tick
+from publication_clock import dispatch, next_tick, publisher_busy
+
+
+def _opener_with(counts):
+    """Fake opener answering total_count per requested status."""
+    def open_(request, timeout=0):
+        status = request.full_url.split("status=")[1].split("&")[0]
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = ('{"total_count": %d}' % counts.get(status, 0)).encode()
+        return response
+    opener = MagicMock()
+    opener.open.side_effect = open_
+    return opener
 
 
 class PublicationClockTests(unittest.TestCase):
@@ -27,6 +39,22 @@ class PublicationClockTests(unittest.TestCase):
         self.assertNotIn(b"private-fixture-token", request.data)
         self.assertNotIn("private-fixture-token", request.full_url)
         self.assertEqual(request.get_method(), "POST")
+
+    def test_busy_publisher_skips_the_tick(self):
+        with patch.dict(os.environ, {"GH_TOKEN": "fixture"}), patch("urllib.request.build_opener", return_value=_opener_with({"in_progress": 1})):
+            self.assertTrue(publisher_busy("blikeywang/kezhou"))
+        with patch.dict(os.environ, {"GH_TOKEN": "fixture"}), patch("urllib.request.build_opener", return_value=_opener_with({"queued": 2})):
+            self.assertTrue(publisher_busy("blikeywang/kezhou"))
+
+    def test_idle_publisher_or_lookup_error_never_blocks(self):
+        with patch.dict(os.environ, {"GH_TOKEN": "fixture"}), patch("urllib.request.build_opener", return_value=_opener_with({})):
+            self.assertFalse(publisher_busy("blikeywang/kezhou"))
+        broken = MagicMock()
+        broken.open.side_effect = TimeoutError()
+        with patch.dict(os.environ, {"GH_TOKEN": "fixture"}), patch("urllib.request.build_opener", return_value=broken):
+            self.assertFalse(publisher_busy("blikeywang/kezhou"))
+        with self.assertRaises(ValueError):
+            publisher_busy("../other")
 
 
 if __name__ == "__main__":

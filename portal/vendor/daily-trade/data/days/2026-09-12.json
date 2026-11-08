@@ -1,0 +1,385 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-09-12",
+ "morning": {
+  "date": "2026-09-12",
+  "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 商品期货、加密币，趋势侧偏冷大类为 ETF基金。",
+  "stance": {
+   "label": "防御等待",
+   "summary": "今天的首要动作是等待与保留现金；不把单一 P/C、IV、原始 Buy 或未确认冲浪形态当成下单触发。"
+  },
+  "riskCap": 0.25,
+  "freshness": [
+   {
+    "name": "场外指数",
+    "date": "2026-09-11",
+    "state": "来源过期（1 天）",
+    "ageDays": 1
+   },
+   {
+    "name": "趋势冷热",
+    "date": "2026-09-09",
+    "state": "偏旧（3 天）",
+    "ageDays": 3
+   },
+   {
+    "name": "s1",
+    "date": "2026-09-12",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "s1冲浪筛选",
+    "date": "2026-09-12",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "13买点",
+    "date": "2026-09-12",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "NQ/ES期权报价/IV",
+    "date": "2026-08-04",
+    "state": "偏旧（28 天）",
+    "ageDays": 28
+   },
+   {
+    "name": "美股/ETF期权面",
+    "date": "2026-09-12",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "s1 3/5日强制流量排查",
+    "date": "2026-09-12",
+    "state": "最新（0 天）",
+    "ageDays": 0
+   },
+   {
+    "name": "BTC/ETH期权面",
+    "date": "2026-09-10",
+    "state": "可用（1 天）",
+    "ageDays": 1
+   },
+   {
+    "name": "市场风险三开关",
+    "date": "2026-09-12",
+    "state": "部分覆盖（0 天）",
+    "ageDays": 0
+   }
+  ],
+  "classes": [
+   {
+    "name": "商品期货",
+    "temp": "温",
+    "phase": null,
+    "date": "2026-09-10"
+   },
+   {
+    "name": "加密币",
+    "temp": "温",
+    "phase": "谷雨",
+    "date": "2026-09-09"
+   },
+   {
+    "name": "美股",
+    "temp": "平",
+    "phase": "立秋",
+    "date": "2026-09-10"
+   },
+   {
+    "name": "美国ETF",
+    "temp": "平",
+    "phase": "立秋",
+    "date": "2026-09-10"
+   },
+   {
+    "name": "A股",
+    "temp": "平",
+    "phase": null,
+    "date": "2026-09-10"
+   },
+   {
+    "name": "ETF基金",
+    "temp": "凉",
+    "phase": null,
+    "date": "2026-09-10"
+   }
+  ],
+  "buys": [],
+  "sells": [],
+  "divergences": [
+   {
+    "symbol": "PDD",
+    "market": "美股",
+    "agreement": "背离/降级 (-1)",
+    "score": -1,
+    "evidence": "标的冷热 PDD=凉；大类冷热 美股=平；场外当日来源过期，不作交叉确认；冲浪筛选 非冲浪形态 41.5/100",
+    "entry": null
+   }
+  ],
+  "unconfirmed": [
+   {
+    "symbol": "ALAB",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "AMZN",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "APH",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "BTDR",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "CRM",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "MSTR",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "NIO",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   },
+   {
+    "symbol": "SHOP",
+    "market": "美股",
+    "signal": "Buy",
+    "agreement": "待确认 (+0)",
+    "score": 0
+   }
+  ],
+  "surf": [
+   {
+    "symbol": "AMZN.US",
+    "status": "形成中·待次日B确认",
+    "score": 63.7,
+    "window": "2026-09-02→2026-09-11 (7日)",
+    "next": "下一份可用S1快照仍保留同一归一代码的Buy，并且价格不破震荡下沿。"
+   },
+   {
+    "symbol": "ALAB.US",
+    "status": "非冲浪形态",
+    "score": 57.8,
+    "window": "2026-09-04→2026-09-11 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、flat_base_slope；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "MSTR.US",
+    "status": "非冲浪形态",
+    "score": 57.7,
+    "window": "2026-09-01→2026-09-11 (8日)",
+    "next": "当前未通过：quiet_range、small_daily_moves；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "NIO.US",
+    "status": "非冲浪形态",
+    "score": 54.5,
+    "window": "2026-09-04→2026-09-11 (5日)",
+    "next": "当前未通过：red_green_alternation、flat_base_slope；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "APH.US",
+    "status": "非冲浪形态",
+    "score": 51.2,
+    "window": "2026-09-03→2026-09-11 (6日)",
+    "next": "当前未通过：small_daily_moves、no_signal_day_chase；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "BTDR.US",
+    "status": "非冲浪形态",
+    "score": 48.1,
+    "window": "2026-08-31→2026-09-11 (9日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、flat_base_slope；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "SHOP.US",
+    "status": "非冲浪形态",
+    "score": 45.1,
+    "window": "2026-09-04→2026-09-11 (5日)",
+    "next": "当前未通过：quiet_range、small_daily_moves、flat_base_slope、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "CRM.US",
+    "status": "非冲浪形态",
+    "score": 41.6,
+    "window": "2026-09-04→2026-09-11 (5日)",
+    "next": "当前未通过：prior_decline、red_green_alternation、flat_base_slope；等待新的下跌后低波动震荡结构。"
+   },
+   {
+    "symbol": "PDD.US",
+    "status": "非冲浪形态",
+    "score": 41.5,
+    "window": "2026-09-03→2026-09-11 (6日)",
+    "next": "当前未通过：red_green_alternation、flat_base_slope、no_further_breakdown；等待新的下跌后低波动震荡结构。"
+   }
+  ],
+  "buyPoints": [
+   {
+    "symbol": "ALAB",
+    "level": "L0 70 · #5 趋势线 + 量能区",
+    "entry": 291.22,
+    "stop": 288.9074,
+    "targets": "293.533 / 295.845",
+    "bar": "2026-09-11T19:55:00Z"
+   },
+   {
+    "symbol": "AMZN",
+    "level": "L0 56 · #4 SOS 强势出现",
+    "entry": 256.78,
+    "stop": 256.6342,
+    "targets": "256.926 / 257.072",
+    "bar": "2026-09-11T19:55:00Z"
+   },
+   {
+    "symbol": "BTDR",
+    "level": "L1 84 · #4 SOS 强势出现",
+    "entry": 11.96,
+    "stop": 11.7905,
+    "targets": "12.1295 / 12.2989",
+    "bar": "2026-09-11T19:55:00Z"
+   },
+   {
+    "symbol": "CRM",
+    "level": "L0 56 · #2 可能右肩 50%",
+    "entry": 247.72,
+    "stop": 246.8175,
+    "targets": "248.623 / 249.525",
+    "bar": "2026-09-11T19:55:00Z"
+   },
+   {
+    "symbol": "NIO",
+    "level": "L0 70 · #5 趋势线 + 量能区",
+    "entry": 3.69,
+    "stop": 3.6539,
+    "targets": "3.72606 / 3.76211",
+    "bar": "2026-09-11T19:55:00Z"
+   },
+   {
+    "symbol": "PDD",
+    "level": "L0 66 · #11 Fib 回撤 + 信号",
+    "entry": 77.81,
+    "stop": 77.7736,
+    "targets": "77.8464 / 77.8828",
+    "bar": "2026-09-11T19:55:00Z"
+   }
+  ],
+  "buyPointScanNote": "已扫描 9 个 A股/美股 Buy，得到 6 个 L0/L1 候选；仅使用闭合 5 分钟 K 线，研究降级行情最高为 L0。",
+  "buyPointErrors": 0,
+  "risk": {
+   "conclusion": "结论：数据不足观察；覆盖 部分覆盖。 关键变量缺失/偏旧，按数据质量将风险倍率上限降至 0.25。",
+   "questions": [
+    {
+     "question": "现在在哪？（定位洗盘区）",
+     "state": "缺失"
+    },
+    {
+     "question": "油够不够？（检查准备金与流动性）",
+     "state": "绿色"
+    },
+    {
+     "question": "铃响没响？（检查资本开支二阶导）",
+     "state": "缺失"
+    }
+   ],
+   "liquidity": [
+    {
+     "name": "银行准备金余额",
+     "value": "$2.991T",
+     "date": "2026-09-09 / weekly",
+     "state": "绿色"
+    },
+    {
+     "name": "SOFR - IORB",
+     "value": "-3.0 bp",
+     "date": "2026-09-10 / daily",
+     "state": "绿色"
+    },
+    {
+     "name": "美国财政部一般账户（TGA）",
+     "value": "$0.844T",
+     "date": "2026-09-09 / weekly",
+     "state": "绿色"
+    },
+    {
+     "name": "临时回购操作总额代理",
+     "value": "$0M",
+     "date": "2026-09-11 / daily",
+     "state": "未见操作余额"
+    }
+   ],
+   "slowMissing": 7,
+   "slowTotal": 7
+  },
+  "crypto": [
+   {
+    "symbol": "BTC",
+    "spot": 78291.89,
+    "dvol": 40.24,
+    "hv30": 32.83,
+    "ivHv": 1.23,
+    "volPc": 0.81,
+    "oiPc": 0.55,
+    "tenor": "8.3D 2026-09-18",
+    "atmIv": 40.51,
+    "rr25": -0.05
+   },
+   {
+    "symbol": "ETH",
+    "spot": 2468.16,
+    "dvol": 53.76,
+    "hv30": 43.27,
+    "ivHv": 1.24,
+    "volPc": 0.49,
+    "oiPc": 0.54,
+    "tenor": "8.3D 2026-09-18",
+    "atmIv": 51.17,
+    "rr25": 1.2
+   }
+  ],
+  "changes": [
+   "收到用户提供的当日场外/潜力原页，且页面日期、原始价位和交易所映射通过校验后，才重启对应潜力区观察。",
+   "s1、趋势/场外与闭合价格结构至少两路同向，且 13 买点达到可复核级别时，才反证“无多体系 Buy”。",
+   "NQ/ES 新鲜完整链补齐 bid/ask、尺寸、Greeks 与多时点快照后，若与当前近价 P/C/IV 背景相反，应废弃本包的日内解释。"
+  ],
+  "gaps": [
+   "趋势冷热：偏旧（3 天）",
+   "NQ/ES期权报价/IV：偏旧（28 天）",
+   "市场风险三开关：部分覆盖（0 天）",
+   "市场风险三开关：部分覆盖；下游云厂商资本开支官方季度篮子不足；可审计的价格/筹码结构位置分类缺失；",
+   "场外指数当日来源不可用：9.11原页44项完整，Δ相较9.10；9.12来源仍缺",
+   "每日潜力区来源不可用：9.11原页潜力区为Hpe兜底61，资产与交易所映射未确认，未请求行情；9.12当日来源未提供",
+   "一致度分数只表示体系是否同向，不表示成功率或收益概率"
+  ]
+ }
+}

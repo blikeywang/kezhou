@@ -3,38 +3,654 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Codex 独立交易流程的早报与晚报公开快照。">
+  <meta name="description" content="TraderHome 交易早晚报：每天的研究立场、候选信号、大类冷热、数据新鲜度与市场风险，全部用图表展示。">
   <title>交易早晚报 · TraderHome</title>
+  <link rel="stylesheet" href="/assets/traderhome-site.css?v=12">
   <style>
-    :root{color-scheme:dark;--bg:#070b14;--panel:#101827;--panel2:#151f31;--line:#263447;--text:#eef4ff;--muted:#9aa8bb;--cyan:#67e8f9;--green:#8bd98b;--amber:#f3c969}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.55}
-    main{max-width:1180px;margin:0 auto;padding:42px 18px 68px}.dt-kicker{color:var(--cyan);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
-    h1{font-size:clamp(32px,6vw,58px);line-height:1.02;margin:12px 0 14px;letter-spacing:0}h2{font-size:22px;margin:32px 0 12px}.dt-lead{color:var(--muted);font-size:17px;max-width:850px}
-    .dt-actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}.dt-actions a{border:1px solid var(--line);border-radius:8px;padding:10px 13px;color:var(--text);text-decoration:none;background:var(--panel)}
-    .dt-actions a.primary{background:var(--cyan);color:#041018;border-color:var(--cyan);font-weight:800}.dt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-    .dt-card,.dt-panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}.dt-card span{color:var(--amber);font-size:12px;font-weight:800}.dt-card h3{margin:8px 0 8px;font-size:18px}.dt-card p,.dt-card small{color:var(--muted)}
-    .dt-warning{border-color:rgba(243,201,105,.5);background:rgba(243,201,105,.08)}.dt-foot{margin-top:34px;color:var(--muted);font-size:13px}
+    /* Chart roles. Validated (dataviz validate_palette.js) on the dark surface #0d131e. */
+    .dt-page {
+      --viz-surface: var(--th-surface-1);
+      --viz-grid: rgba(148, 163, 184, .12);
+      --viz-axis: rgba(148, 163, 184, .34);
+      --viz-ink: var(--th-text);
+      --viz-ink-2: var(--th-text-2);
+      --viz-muted: var(--th-muted);
+      --viz-select: rgba(148, 163, 184, .10);
+      /* categorical (adjacent + all-pairs pass): Buy / Sell / 背离 */
+      --viz-s1: #3987e5; --viz-s2: #d95926; --viz-s3: #199e70;
+      /* stance (all-pairs pass) */
+      --viz-k1: #9085e9; --viz-k2: #c98500; --viz-k3: #d55181;
+      /* temperature, diverging: two blue steps, gray midpoint, three red steps (each arm passes --ordinal) */
+      --t-han: #6ea8ee; --t-liang: #2f6fc4; --t-ping: #505257; --t-wen: #c04e44; --t-re: #ee8a76; --t-fei: #ffd0c4;
+      /* status (fixed, always with icon + label) */
+      --st-good: #0ca30c; --st-warn: #fab219; --st-serious: #ec835a; --st-critical: #d03b3b;
+      padding: 40px 0 72px;
+    }
+    .dt-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .dt-head h1 { margin: 8px 0 8px; font-size: var(--th-fs-3xl); line-height: 1.15; letter-spacing: -.02em; }
+    .dt-head .th-lead { margin: 0; max-width: 720px; }
+    .dt-notice { margin: 16px 0 0; padding: 12px 16px; border: 1px solid rgba(242, 191, 94, .4); border-radius: var(--th-r-md); color: #f6d9a2; background: var(--th-warn-bg); font-size: var(--th-fs-md); }
+    .dt-notice[hidden] { display: none; }
+
+    .dt-daybar { position: sticky; top: var(--th-shell-h); z-index: 5; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 22px 0 0; padding: 10px 0; background: linear-gradient(var(--th-bg) 80%, transparent); }
+    .dt-daybar label { color: var(--th-muted); font-size: var(--th-fs-sm); }
+    .dt-daybar select { min-height: 36px; padding: 0 12px; border: 1px solid var(--th-line-strong); border-radius: var(--th-r-sm); color: var(--th-text); background: var(--th-input); font: 600 var(--th-fs-md) var(--th-font); font-variant-numeric: tabular-nums; }
+    .dt-daybar button { min-width: 36px; min-height: 36px; border: 1px solid var(--th-line-strong); border-radius: var(--th-r-sm); color: var(--th-text-2); background: var(--th-surface-2); font: 600 var(--th-fs-md) var(--th-font); cursor: pointer; }
+    .dt-daybar button:disabled { opacity: .4; cursor: default; }
+    .dt-daybar .dt-has { color: var(--th-muted); font-size: var(--th-fs-sm); }
+
+    .dt-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 14px; margin-top: 8px; }
+    .dt-card { padding: 20px; border: 1px solid var(--th-line-strong); border-radius: var(--th-r-lg); background: var(--th-surface-1); min-width: 0; }
+    .dt-card > h2, .dt-card > header h2 { margin: 0; font-size: var(--th-fs-lg); }
+    .dt-card > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .dt-card > header p { margin: 0; color: var(--th-muted); font-size: var(--th-fs-sm); }
+    .dt-sub { margin: 4px 0 0; color: var(--th-muted); font-size: var(--th-fs-sm); }
+    .dt-stance .th-kicker { margin-bottom: 6px; }
+    .dt-stance h2 { margin: 0; font-size: var(--th-fs-2xl); }
+    .dt-stance .dt-summary { margin: 8px 0 0; color: var(--th-text-2); font-size: var(--th-fs-md); }
+    .dt-stance .dt-headline { margin: 14px 0 0; padding: 12px 14px; border-left: 3px solid var(--th-accent); border-radius: 0 var(--th-r-sm) var(--th-r-sm) 0; color: var(--th-text); background: var(--th-surface-2); font-size: var(--th-fs-md); line-height: 1.7; }
+    .dt-kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .dt-kpi { padding: 14px 14px 12px; border: 1px solid var(--th-line); border-radius: var(--th-r-md); background: var(--th-surface-1); min-width: 0; }
+    .dt-kpi dt { color: var(--th-muted); font-size: var(--th-fs-xs); }
+    .dt-kpi dd { margin: 4px 0 0; color: var(--th-text); font-size: var(--th-fs-2xl); font-weight: 700; line-height: 1.15; }
+    .dt-kpi small { display: block; margin-top: 4px; color: var(--th-muted); font-size: var(--th-fs-xs); line-height: 1.4; }
+    .dt-meter { position: relative; height: 6px; margin-top: 8px; border-radius: 3px; background: var(--th-surface-3); }
+    .dt-meter i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--viz-s1); }
+
+    .dt-section { margin-top: 34px; }
+    .dt-section > h2 { margin: 0 0 4px; font-size: var(--th-fs-xl); }
+    .dt-section > p { margin: 0 0 14px; color: var(--th-muted); font-size: var(--th-fs-md); }
+    .dt-stack { display: grid; gap: 14px; }
+    .dt-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .dt-grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+
+    .dt-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 10px; padding: 0; list-style: none; color: var(--th-text-2); font-size: var(--th-fs-xs); }
+    .dt-legend li { display: inline-flex; align-items: center; gap: 6px; }
+    .dt-legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--c); }
+    .dt-legend i.line { height: 2px; width: 14px; border-radius: 1px; }
+    .dt-legend i.empty { background: transparent; border: 1px dashed var(--viz-axis); }
+    .dt-chart { position: relative; width: 100%; }
+    .dt-chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .dt-chart text { fill: var(--viz-muted); font: 12px var(--th-font); font-variant-numeric: tabular-nums; }
+    .dt-chart .ink { fill: var(--viz-ink-2); }
+    .dt-chart .hit { fill: transparent; cursor: pointer; }
+    .dt-chart .hit:focus { outline: none; }
+    .dt-chart .hit:focus-visible { stroke: var(--th-accent); stroke-width: 2; }
+    .dt-empty { margin: 0; padding: 10px 14px; color: var(--th-muted); font-size: var(--th-fs-sm); text-align: center; border: 1px dashed var(--th-line-strong); border-radius: var(--th-r-md); }
+    .dt-table-toggle { margin-top: 8px; color: var(--th-muted); font-size: var(--th-fs-xs); }
+    .dt-table-toggle summary { cursor: pointer; }
+    .dt-table-toggle .dt-scroll { margin-top: 8px; max-height: 280px; }
+
+    .dt-tip { position: fixed; z-index: 50; max-width: 300px; padding: 8px 10px; border: 1px solid var(--th-line-strong); border-radius: var(--th-r-sm); color: var(--th-text-2); background: #0a0f18; box-shadow: var(--th-shadow); font-size: var(--th-fs-xs); line-height: 1.5; pointer-events: none; }
+    .dt-tip[hidden] { display: none; }
+    .dt-tip b { display: block; color: var(--th-text); font-size: var(--th-fs-sm); }
+
+    .dt-scroll { overflow: auto; border: 1px solid var(--th-line); border-radius: var(--th-r-md); }
+    .dt-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: var(--th-fs-sm); }
+    .dt-table th { position: sticky; top: 0; padding: 8px 10px; color: var(--th-muted); background: var(--th-surface-2); font-weight: 600; font-size: var(--th-fs-xs); text-align: left; white-space: nowrap; }
+    .dt-table td { padding: 9px 10px; border-top: 1px solid var(--th-line); color: var(--th-text-2); vertical-align: top; }
+    .dt-table td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .dt-table td.sym { color: var(--th-text); font-weight: 700; white-space: nowrap; }
+    .dt-table td.note { color: var(--th-muted); font-size: var(--th-fs-xs); line-height: 1.55; min-width: 220px; }
+
+    .dt-chip { display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; border: 1px solid var(--th-line-strong); border-radius: 999px; color: var(--th-text-2); background: var(--th-surface-2); font-size: var(--th-fs-xs); line-height: 1.6; white-space: nowrap; }
+    .dt-chip b { font-weight: 800; }
+    .dt-chip[data-s="good"] b { color: var(--st-good); }
+    .dt-chip[data-s="warn"] b { color: var(--st-warn); }
+    .dt-chip[data-s="serious"] b { color: var(--st-serious); }
+    .dt-chip[data-s="critical"] b { color: var(--st-critical); }
+    .dt-chip .sw { width: 9px; height: 9px; border-radius: 2px; background: var(--c); }
+    .dt-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .dt-score { display: inline-flex; gap: 3px; vertical-align: middle; margin-right: 6px; }
+    .dt-score i { width: 8px; height: 8px; border-radius: 50%; background: var(--th-surface-3); }
+    .dt-score i.on { background: var(--viz-s1); }
+
+    .dt-qs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+    .dt-q { padding: 10px 12px; border: 1px solid var(--th-line); border-radius: var(--th-r-md); background: var(--th-surface-2); }
+    .dt-q p { margin: 0 0 6px; color: var(--th-text-2); font-size: var(--th-fs-sm); }
+    .dt-conclusion { margin: 0 0 12px; color: var(--th-text); font-size: var(--th-fs-md); font-weight: 600; }
+    .dt-list { margin: 0; padding-left: 18px; color: var(--th-text-2); font-size: var(--th-fs-sm); line-height: 1.7; }
+    .dt-group { margin-top: 12px; }
+    .dt-group h3 { margin: 0 0 6px; color: var(--th-text-2); font-size: var(--th-fs-sm); }
+    .dt-group h3 span { color: var(--th-muted); font-weight: 400; }
+    .dt-crypto { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .dt-crypto dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 10px; margin: 0; padding: 12px; border: 1px solid var(--th-line); border-radius: var(--th-r-md); background: var(--th-surface-2); }
+    .dt-crypto dl > div:first-child { grid-column: 1 / -1; display: flex; align-items: baseline; justify-content: space-between; }
+    .dt-crypto dt { color: var(--th-muted); font-size: var(--th-fs-xs); }
+    .dt-crypto dd { margin: 2px 0 0; color: var(--th-text); font-size: var(--th-fs-md); font-weight: 650; font-variant-numeric: tabular-nums; }
+    .dt-crypto .sym { color: var(--th-text); font-size: var(--th-fs-lg); font-weight: 800; }
+
+    .dt-archive { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; color: var(--th-muted); font-size: var(--th-fs-sm); }
+    .dt-archive a { color: var(--th-accent); }
+    .dt-foot { margin-top: 28px; color: var(--th-faint); font-size: var(--th-fs-xs); }
+
+    @media (max-width: 1080px) { .dt-hero { grid-template-columns: 1fr; } .dt-grid3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px) {
+      .dt-grid2, .dt-grid3, .dt-qs, .dt-crypto { grid-template-columns: 1fr; }
+      .dt-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dt-card { padding: 16px; }
+      .dt-daybar label { display: none; }
+      .dt-daybar select { flex: 1; min-width: 0; }
+    }
   </style>
 </head>
-<body>
-  <main>
-    <div class="dt-kicker">Codex Daily Trade Workflow</div>
-    <h1>交易早晚报</h1>
-    <p class="dt-lead">这里同步 Codex 独立交易流程已经生成的早报与晚报 HTML。页面只做研究信息展示，不发布账户私有数据，不包含密钥，不替用户下单。</p>
-    <div class="dt-actions">
-      <a class="primary" href="/daily-trade/reports/2026-08-14/morning.html">打开综合早报</a>
-      <a href="/daily-trade/reports/2026-08-14/evening.html">打开趋势晚报</a>
+<body class="th-site">
+  <main class="th-container dt-page" id="dtPage">
+    <div class="dt-head">
+      <div>
+        <div class="th-kicker">Daily trade reports</div>
+        <h1>交易早晚报</h1>
+        <p class="th-lead">每天两份研究快照：早报给出当天的立场和候选，晚报复核各大类的冷热。下面先看走势，再看某一天的细节。只做研究，不含账户数据，不替你下单。</p>
+      </div>
+      <span class="th-fresh" id="dtFresh" data-state="unknown">读取中</span>
     </div>
-    <section class="dt-grid">
-      <article class="dt-card"><span>REPORT DATE</span><h3>2026-08-14</h3><p>最新公开快照日期。</p></article>
-      <article class="dt-card"><span>SCOPE</span><h3>早报 + 晚报</h3><p>不复制美盘指导、最终动作页、期权雷达或历史工作簿。</p></article>
-      <article class="dt-card"><span>BOUNDARY</span><h3>研究用途</h3><p>非投资建议，不替用户下单，不复制账户私有数据。</p></article>
+    <p class="dt-notice" id="dtNotice" hidden></p>
+
+    <div class="dt-daybar" role="group" aria-label="选择日期">
+      <button type="button" id="dtPrev" aria-label="前一天">‹</button>
+      <label for="dtDay">报告日期</label>
+      <select id="dtDay"></select>
+      <button type="button" id="dtNext" aria-label="后一天">›</button>
+      <span class="dt-has" id="dtHas"></span>
+    </div>
+
+    <section class="dt-hero" aria-label="当日概览">
+      <article class="dt-card dt-stance">
+        <div class="th-kicker" id="dtStanceKicker">当日立场</div>
+        <h2 id="dtStance">—</h2>
+        <p class="dt-summary" id="dtSummary"></p>
+        <p class="dt-headline" id="dtHeadline" hidden></p>
+      </article>
+      <dl class="dt-kpis" id="dtKpis"></dl>
     </section>
-    <section class="dt-panel dt-warning">
-      <strong>公开边界</strong>
-      <p>本页只发布交易流程已生成的早报和晚报 HTML。场外指数与每日潜力区仍只采用用户主动提供来源；缺失、过期、回退必须按原报告显示。</p>
+
+    <section class="dt-section" aria-labelledby="dtTrendTitle">
+      <h2 id="dtTrendTitle">走势</h2>
+      <p>每一格是一天。点图上的某一天，下面的细节会切换到那一天。</p>
+      <div class="dt-stack">
+        <article class="dt-card">
+          <header><h2>每天找到多少信号</h2><p>上方是 Buy 候选，下方是 Sell / 回避和背离警示</p></header>
+          <ul class="dt-legend"><li><i style="--c:var(--viz-s1)"></i>Buy 候选</li><li><i style="--c:var(--viz-s2)"></i>Sell / 回避</li><li><i style="--c:var(--viz-s3)"></i>背离警示</li></ul>
+          <div class="dt-chart" id="chSignals"></div>
+          <details class="dt-table-toggle"><summary>查看数据表</summary><div class="dt-scroll" id="tbSignals"></div></details>
+        </article>
+        <article class="dt-card">
+          <header><h2>每天的立场</h2><p id="dtStanceNote"></p></header>
+          <ul class="dt-legend" id="lgStance"></ul>
+          <div class="dt-chart" id="chStance"></div>
+        </article>
+        <article class="dt-card">
+          <header><h2>六个大类的冷热</h2><p id="dtHeatNote">颜色越蓝越冷、越红越热；字标出温度变化的那一天</p></header>
+          <ul class="dt-legend" id="lgTemp"></ul>
+          <div class="dt-chart" id="chHeat"></div>
+        </article>
+        <div class="dt-grid2">
+          <article class="dt-card">
+            <header><h2>数据源有多新</h2><p>当天“最新”的数据源占全部数据源的比例</p></header>
+            <div class="dt-chart" id="chFresh"></div>
+          </article>
+          <article class="dt-card">
+            <header><h2>BTC / ETH 期权：隐含波动率期限结构</h2><p id="dtTermNote"></p></header>
+            <ul class="dt-legend"><li><i class="line" style="--c:var(--viz-s1)"></i>BTC</li><li><i class="line" style="--c:var(--viz-s2)"></i>ETH</li></ul>
+            <div class="dt-chart" id="chTerm"></div>
+          </article>
+        </div>
+      </div>
     </section>
-    <p class="dt-foot">研究用途，非投资建议。</p>
+
+    <section class="dt-section" aria-labelledby="dtDetailTitle">
+      <h2 id="dtDetailTitle">当天细节</h2>
+      <p id="dtDetailNote">早报内容：候选、数据新鲜度、市场风险与加密期权面。</p>
+      <div class="dt-stack">
+        <div class="dt-grid2">
+          <article class="dt-card">
+            <header><h2>数据新鲜度</h2><p>条越长，数据越旧</p></header>
+            <div class="dt-chart" id="chAge"></div>
+          </article>
+          <article class="dt-card" id="cardRisk">
+            <header><h2>市场风险三问</h2><p>决定今天能用多大风险预算</p></header>
+            <p class="dt-conclusion" id="dtRiskConclusion"></p>
+            <div class="dt-qs" id="dtQs"></div>
+            <div id="dtLiquidity"></div>
+          </article>
+        </div>
+        <article class="dt-card">
+          <header><h2>Buy 候选</h2><p>一致度：多少个体系同时支持；圆点越多越一致</p></header>
+          <div id="dtBuys"></div>
+          <div class="dt-grid2" style="margin-top:14px">
+            <div class="dt-group"><h3>Sell / 回避</h3><div id="dtSells"></div></div>
+            <div class="dt-group"><h3>背离警示 <span>（信号和冷热方向相反）</span></h3><div id="dtDivs"></div></div>
+          </div>
+          <div class="dt-group"><h3>无交叉确认 <span>（只有一个体系给出信号，暂不采用）</span></h3><div id="dtUnconfirmed"></div></div>
+        </article>
+        <div class="dt-grid2">
+          <article class="dt-card">
+            <header><h2>冲浪形态二级筛选</h2><p>结构分 0–100；只有“确认”的才进入候选</p></header>
+            <div class="dt-chart" id="chSurf"></div>
+          </article>
+          <article class="dt-card">
+            <header><h2>13 买点扫描</h2><p id="dtBpNote"></p></header>
+            <div id="dtBuyPoints"></div>
+          </article>
+        </div>
+        <article class="dt-card">
+          <header><h2>BTC / ETH 期权面</h2><p>IV/HV 高于 1 说明期权比实际波动贵；P/C 高于 1 说明看跌更多</p></header>
+          <div class="dt-crypto" id="dtCrypto"></div>
+          <div id="dtActions"></div>
+        </article>
+        <div class="dt-grid2">
+          <article class="dt-card"><header><h2>什么会改变结论</h2></header><ul class="dt-list" id="dtChanges"></ul></article>
+          <article class="dt-card"><header><h2>当前缺口</h2><p>这些数据缺失或偏旧，结论要打折扣</p></header><ul class="dt-list" id="dtGaps"></ul></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="dt-section" aria-labelledby="dtEveningTitle">
+      <h2 id="dtEveningTitle">晚报：冷热复核</h2>
+      <p id="dtEveningNote"></p>
+      <div class="dt-stack">
+        <div class="dt-grid2">
+          <article class="dt-card"><header><h2>大类整体</h2><p>和上一次采集相比的变化</p></header><div id="dtEvClasses"></div></article>
+          <article class="dt-card"><header><h2>s1 Buy 标的的冷热</h2><p>原始 Buy 信号所在标的现在的温度</p></header><div id="dtEvS1"></div></article>
+        </div>
+        <article class="dt-card"><header><h2>温转热组合</h2><p>从“温”升到“热”的标的，按市场分组</p></header><div id="dtEvWarm"></div></article>
+      </div>
+    </section>
+
+    <section class="dt-section" aria-labelledby="dtArchiveTitle">
+      <h2 id="dtArchiveTitle">旧版报告</h2>
+      <div class="dt-archive"><span>2026-08-14 的原始网页版：</span><a href="/daily-trade/reports/2026-08-14/morning.html">早报</a><a href="/daily-trade/reports/2026-08-14/evening.html">晚报</a></div>
+    </section>
+    <p class="dt-foot">研究用途，非投资建议。数据由独立交易流程生成，经公开白名单导出：不含账户、付费内容和密钥。</p>
+    <div class="dt-tip" id="dtTip" role="tooltip" hidden></div>
   </main>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    "use strict";
+    var DATA = "/daily-trade/data/";
+    var $ = function (id) { return document.getElementById(id); };
+    var TEMPS = ["寒", "凉", "平", "温", "热", "沸"];
+    var TEMP_VAR = { "寒": "--t-han", "凉": "--t-liang", "平": "--t-ping", "温": "--t-wen", "热": "--t-re", "沸": "--t-fei" };
+    var TEMP_DARK_INK = { "寒": true, "热": true, "沸": true };
+    var STANCES = ["观察优先", "防御等待", "风险优先"];
+    var STANCE_VAR = ["--viz-k1", "--viz-k2", "--viz-k3"];
+    var state = { index: [], asc: [], heat: null, extras: null, cache: {}, date: null, day: null };
+
+    function esc(v) { return String(v == null ? "" : v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+    function getJson(path) { return fetch(DATA + path, { cache: "no-store", credentials: "omit" }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
+    function md(d) { var p = String(d || "").split("-"); return p.length === 3 ? Number(p[1]) + "/" + Number(p[2]) : "—"; }
+    function fmt(v, digits) { return v == null || !isFinite(v) ? "—" : Number(v).toLocaleString("zh-CN", { maximumFractionDigits: digits == null ? 2 : digits }); }
+    function width(id) { var n = $(id); return Math.max(280, Math.round(n.clientWidth || n.parentNode.clientWidth || 640)); }
+    function tempColor(t) { return TEMP_VAR[t] ? "var(" + TEMP_VAR[t] + ")" : "transparent"; }
+    function stanceColor(s) { var i = STANCES.indexOf(s); return i >= 0 ? "var(" + STANCE_VAR[i] + ")" : null; }
+    function niceStep(max) { if (max <= 5) return 1; if (max <= 12) return 2; if (max <= 30) return 5; return 10; }
+    function tip(lines) { return ' data-tip="' + esc(lines.filter(Boolean).join("\n")) + '"'; }
+
+    /* status: icon + label, never color alone */
+    function statusOf(text) {
+      var s = String(text || "");
+      if (/^(最新|绿色|正常|通过|已确认|确认)/.test(s) && !/待|需/.test(s)) return "good";
+      if (/过期|失败|缺失|硬风险/.test(s)) return "critical";
+      if (/红色候选|未刷新|历史/.test(s)) return "serious";
+      if (/偏旧|部分|需|黄|观察|待|形成中/.test(s)) return "warn";
+      return "neutral";
+    }
+    var ICON = { good: "✓", warn: "!", serious: "▲", critical: "✕", neutral: "·" };
+    function chip(text) { var s = statusOf(text); return '<span class="dt-chip" data-s="' + s + '"><b aria-hidden="true">' + ICON[s] + "</b>" + esc(text || "—") + "</span>"; }
+    function tempChip(t, label) { return '<span class="dt-chip"><i class="sw" style="--c:' + tempColor(t) + '"></i>' + esc(label || t || "—") + "</span>"; }
+    function table(head, rows) {
+      if (!rows.length) return '<p class="dt-empty">无</p>';
+      return '<div class="dt-scroll"><table class="dt-table"><thead><tr>' + head.map(function (h) { return "<th>" + esc(h) + "</th>"; }).join("") + "</tr></thead><tbody>" + rows.join("") + "</tbody></table></div>";
+    }
+
+    /* ---------- tooltip (pointer + keyboard) ---------- */
+    var tipEl = $("dtTip");
+    function showTip(target, x, y) {
+      var text = target.getAttribute("data-tip"); if (!text) return;
+      var lines = text.split("\n");
+      tipEl.textContent = "";
+      var b = document.createElement("b"); b.textContent = lines[0]; tipEl.appendChild(b);
+      for (var i = 1; i < lines.length; i++) { var d = document.createElement("div"); d.textContent = lines[i]; tipEl.appendChild(d); }
+      tipEl.hidden = false;
+      var w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+      var left = Math.min(window.innerWidth - w - 8, Math.max(8, x + 14));
+      var top = y - h - 12 < 8 ? y + 16 : y - h - 12;
+      tipEl.style.left = left + "px"; tipEl.style.top = top + "px";
+    }
+    document.addEventListener("pointermove", function (e) {
+      var t = e.target.closest && e.target.closest("[data-tip]");
+      if (t) showTip(t, e.clientX, e.clientY); else tipEl.hidden = true;
+    });
+    document.addEventListener("focusin", function (e) {
+      var t = e.target.closest && e.target.closest("[data-tip]");
+      if (!t) { tipEl.hidden = true; return; }
+      var r = t.getBoundingClientRect(); showTip(t, r.left + r.width / 2, r.top);
+    });
+    document.addEventListener("focusout", function () { tipEl.hidden = true; });
+    document.addEventListener("click", function (e) {
+      var t = e.target.closest && e.target.closest("[data-date]");
+      if (t) select(t.getAttribute("data-date"));
+    });
+    document.addEventListener("keydown", function (e) {
+      if ((e.key === "Enter" || e.key === " ") && e.target.getAttribute && e.target.getAttribute("data-date")) { e.preventDefault(); select(e.target.getAttribute("data-date")); }
+    });
+
+    /* bar with a 4px rounded data end, anchored to the baseline */
+    function bar(x, base, end, w, color) {
+      var h = Math.abs(end - base); if (h < 0.5) return "";
+      var r = Math.min(4, w / 2, h), up = end < base;
+      var d = up
+        ? "M" + x + "," + base + "V" + (end + r) + "Q" + x + "," + end + " " + (x + r) + "," + end + "H" + (x + w - r) + "Q" + (x + w) + "," + end + " " + (x + w) + "," + (end + r) + "V" + base + "Z"
+        : "M" + x + "," + base + "V" + (end - r) + "Q" + x + "," + end + " " + (x + r) + "," + end + "H" + (x + w - r) + "Q" + (x + w) + "," + end + " " + (x + w) + "," + (end - r) + "V" + base + "Z";
+      return '<path d="' + d + '" fill="' + color + '"/>';
+    }
+    function rect(x, y, w, h, color) { return h > 0.5 ? '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + color + '"/>' : ""; }
+    function xLabels(days, x0, band, y, totalW) {
+      var every = Math.max(1, Math.ceil(days.length / Math.max(4, Math.floor(totalW / 64))));
+      var out = "";
+      days.forEach(function (d, i) {
+        if (i % every && i !== days.length - 1) return;
+        if (i !== days.length - 1 && days.length - 1 - i < every * 0.6) return;
+        out += '<text x="' + (x0 + band * (i + .5)) + '" y="' + y + '" text-anchor="middle">' + md(d) + "</text>";
+      });
+      return out;
+    }
+    /* keep at least ~8px per day; on narrow screens show the most recent days */
+    function visibleDays(list, w) { var n = Math.max(14, Math.floor((w - 60) / 8)); return list.length > n ? list.slice(-n) : list; }
+
+    /* ---------- chart: daily signals (diverging bars) ---------- */
+    function drawSignals() {
+      var W = width("chSignals"), H = 240, L = 36, R = 8, T = 18, B = 26;
+      var days = visibleDays(state.asc.filter(function (d) { return d.counts; }), W);
+      if (!days.length) { $("chSignals").innerHTML = '<p class="dt-empty">没有数据</p>'; return; }
+      var up = Math.max(1, Math.max.apply(null, days.map(function (d) { return d.counts.buy; })));
+      var dn = Math.max(1, Math.max.apply(null, days.map(function (d) { return d.counts.sell + d.counts.divergence; })));
+      var step = niceStep(Math.max(up, dn)); up = Math.ceil(up / step) * step; dn = Math.ceil(dn / step) * step;
+      var plotH = H - T - B, y = function (v) { return T + (up - v) / (up + dn) * plotH; };
+      var band = (W - L - R) / days.length, bw = Math.max(2, Math.min(24, band - 2)), base = y(0);
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="每日 Buy、Sell 与背离信号数量">';
+      for (var v = -dn; v <= up; v += step) {
+        s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="' + (v === 0 ? "var(--viz-axis)" : "var(--viz-grid)") + '"/>';
+        s += '<text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + Math.abs(v) + "</text>";
+      }
+      days.forEach(function (d, i) {
+        var x = L + band * i, c = d.counts, bx = x + (band - bw) / 2;
+        if (d.date === state.date) s += '<rect x="' + x + '" y="' + T + '" width="' + band + '" height="' + plotH + '" fill="var(--viz-select)" rx="4"/>';
+        if (c.buy) s += bar(bx, base - 1, y(c.buy), bw, "var(--viz-s1)");
+        var sellEnd = y(-c.sell);
+        if (c.divergence) {
+          if (c.sell) s += rect(bx, base + 1, bw, Math.max(0, sellEnd - base - 1), "var(--viz-s2)");
+          s += bar(bx, c.sell ? sellEnd + 2 : base + 1, y(-(c.sell + c.divergence)) + (c.sell ? 2 : 0), bw, "var(--viz-s3)");
+        } else if (c.sell) s += bar(bx, base + 1, sellEnd, bw, "var(--viz-s2)");
+        s += '<rect class="hit" tabindex="0" data-date="' + d.date + '" x="' + x + '" y="' + T + '" width="' + band + '" height="' + plotH + '"' +
+          tip([d.date + (d.stance ? " · " + d.stance : ""), "Buy 候选 " + c.buy + " · Sell / 回避 " + c.sell + " · 背离 " + c.divergence, "无交叉确认 " + c.unconfirmed + " · 13买点 " + c.buyPoints]) + "/>";
+      });
+      s += xLabels(days.map(function (d) { return d.date; }), L, band, H - 6, W);
+      s += '<text x="' + L + '" y="11" class="ink">↑ Buy</text><text x="' + L + '" y="' + (H - B + 0) + '" dy="-4" class="ink">↓ Sell / 背离</text>';
+      $("chSignals").innerHTML = s + "</svg>";
+      $("tbSignals").innerHTML = '<table class="dt-table"><thead><tr><th>日期</th><th>立场</th><th>Buy</th><th>Sell / 回避</th><th>背离</th><th>无交叉确认</th><th>13买点</th></tr></thead><tbody>' +
+        state.index.map(function (d) { var c = d.counts || {}; return "<tr><td class=num>" + d.date + "</td><td>" + esc(d.stance || "—") + "</td><td class=num>" + (c.buy ?? "—") + "</td><td class=num>" + (c.sell ?? "—") + "</td><td class=num>" + (c.divergence ?? "—") + "</td><td class=num>" + (c.unconfirmed ?? "—") + "</td><td class=num>" + (c.buyPoints ?? "—") + "</td></tr>"; }).join("") + "</tbody></table>";
+    }
+
+    /* ---------- chart: stance strip ---------- */
+    function drawStance() {
+      var W = width("chStance"), H = 62, L = 8, R = 8, T = 6;
+      var days = visibleDays(state.asc, W);
+      var band = (W - L - R) / days.length, cw = Math.max(1, band - 2);
+      var counts = {}; state.asc.forEach(function (d) { var k = d.stance || "未标注"; counts[k] = (counts[k] || 0) + 1; });
+      $("lgStance").innerHTML = STANCES.filter(function (k) { return counts[k]; }).map(function (k) { return '<li><i style="--c:' + stanceColor(k) + '"></i>' + k + " · " + counts[k] + " 天</li>"; }).join("") +
+        (counts["未标注"] ? '<li><i class="empty"></i>未标注 · ' + counts["未标注"] + " 天</li>" : "");
+      var firstCap = state.asc.filter(function (d) { return d.riskCap != null && d.riskCap < 1; })[0];
+      var after = firstCap ? state.asc.filter(function (d) { return d.date >= firstCap.date; }) : [];
+      var steady = after.every(function (d) { return d.riskCap === firstCap.riskCap; });
+      var lastCap = after.length ? after[after.length - 1].riskCap : null;
+      $("dtStanceNote").textContent = !firstCap ? "" : steady
+        ? "从 " + md(firstCap.date) + " 起，风险倍率上限一直是 " + fmt(firstCap.riskCap) + "（标准 1.0）"
+        : md(firstCap.date) + " 第一次把风险倍率上限降到 " + fmt(firstCap.riskCap) + "；最近一期是 " + (lastCap != null ? fmt(lastCap) : "标准 1.0");
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="每日立场">';
+      days.forEach(function (d, i) {
+        var x = L + band * i + 1, c = stanceColor(d.stance);
+        if (d.date === state.date) s += '<rect x="' + (x - 1) + '" y="0" width="' + band + '" height="' + (T + 30) + '" fill="var(--viz-select)" rx="4"/>';
+        s += c ? '<rect x="' + x + '" y="' + (T + 2) + '" width="' + cw + '" height="24" rx="3" fill="' + c + '"/>'
+               : '<rect x="' + (x + .5) + '" y="' + (T + 2.5) + '" width="' + Math.max(0, cw - 1) + '" height="23" rx="3" fill="none" stroke="var(--viz-axis)" stroke-dasharray="2 2"/>';
+        s += '<rect class="hit" tabindex="0" data-date="' + d.date + '" x="' + (x - 1) + '" y="0" width="' + band + '" height="' + (T + 30) + '"' + tip([d.date, "立场：" + (d.stance || "未标注"), d.riskCap != null ? "风险倍率上限 " + fmt(d.riskCap) : "风险倍率：标准"]) + "/>";
+      });
+      s += xLabels(days.map(function (d) { return d.date; }), L, band, H - 6, W);
+      $("chStance").innerHTML = s + "</svg>";
+    }
+
+    /* ---------- chart: class temperature heatmap ---------- */
+    function drawHeat() {
+      var h = state.heat;
+      if (!h || !h.dates.length) { $("chHeat").innerHTML = '<p class="dt-empty">没有冷热历史</p>'; return; }
+      $("lgTemp").innerHTML = TEMPS.map(function (t) { return '<li><i style="--c:' + tempColor(t) + '"></i>' + t + "</li>"; }).join("") + '<li><i class="empty"></i>当天无数据</li>';
+      var W = width("chHeat"), L = 70, R = 8, T = 4, rowH = 24, gap = 2, B = 24;
+      var dates = visibleDays(h.dates, W - L + 60);
+      var H = T + h.classes.length * (rowH + gap) + B;
+      var band = (W - L - R) / dates.length, cw = Math.max(1, band - gap);
+      var marker = state.day && state.day.morning && state.day.morning.classes && state.day.morning.classes[0] ? state.day.morning.classes[0].date : null;
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="六个大类的每日冷热">';
+      h.classes.forEach(function (name, r) {
+        var y = T + r * (rowH + gap), prev = null, cells = h.cells[name] || {};
+        s += '<text x="' + (L - 8) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="end" class="ink">' + esc(name) + "</text>";
+        dates.forEach(function (d, i) {
+          var t = cells[d], x = L + band * i;
+          if (!t) { s += '<rect x="' + (x + .5) + '" y="' + (y + .5) + '" width="' + Math.max(0, cw - 1) + '" height="' + (rowH - 1) + '" rx="2" fill="none" stroke="var(--viz-grid)"/>'; return; }
+          s += '<rect x="' + x + '" y="' + y + '" width="' + cw + '" height="' + rowH + '" rx="2" fill="' + tempColor(t) + '"/>';
+          if (prev && prev !== t && cw >= 13) s += '<text x="' + (x + cw / 2) + '" y="' + (y + rowH / 2 + 4) + '" text-anchor="middle" style="fill:' + (TEMP_DARK_INK[t] ? "#0d131e" : "#ffffff") + ';font-weight:700">' + t + "</text>";
+          s += '<rect class="hit" x="' + x + '" y="' + y + '" width="' + band + '" height="' + rowH + '"' + tip([name + " · " + d, "温度：" + t + (prev && prev !== t ? "（前一次是 " + prev + "）" : "")]) + "/>";
+          prev = t;
+        });
+      });
+      var mi = marker ? dates.indexOf(marker) : -1;
+      if (mi >= 0) s += '<rect x="' + (L + band * mi - 1) + '" y="' + (T - 2) + '" width="' + (cw + 2) + '" height="' + (h.classes.length * (rowH + gap) + 2) + '" rx="3" fill="none" stroke="var(--viz-ink)" stroke-width="2"/>';
+      s += xLabels(dates, L, band, H - 6, W - L);
+      $("chHeat").innerHTML = s + "</svg>";
+      $("dtHeatNote").textContent = mi >= 0 ? "白框是 " + state.date + " 早报用到的冷热数据（" + marker + "）" : "颜色越蓝越冷、越红越热；字标出温度变化的那一天";
+    }
+
+    /* ---------- chart: share of fresh sources (single line) ---------- */
+    function drawFresh() {
+      var W = width("chFresh"), H = 200, L = 40, R = 10, T = 14, B = 26;
+      var days = visibleDays(state.asc.filter(function (d) { return d.freshness && d.freshness.total; }), W);
+      if (!days.length) { $("chFresh").innerHTML = '<p class="dt-empty">没有数据</p>'; return; }
+      var plotH = H - T - B, band = (W - L - R) / days.length;
+      var y = function (p) { return T + (1 - p) * plotH; }, x = function (i) { return L + band * (i + .5); };
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="每日最新数据源占比">';
+      [0, .25, .5, .75, 1].forEach(function (p) { s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(p) + '" y2="' + y(p) + '" stroke="' + (p === 0 ? "var(--viz-axis)" : "var(--viz-grid)") + '"/><text x="' + (L - 6) + '" y="' + (y(p) + 4) + '" text-anchor="end">' + Math.round(p * 100) + "%</text>"; });
+      var pts = days.map(function (d, i) { return x(i) + "," + y(d.freshness.fresh / d.freshness.total); });
+      s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="var(--viz-s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      days.forEach(function (d, i) {
+        var p = d.freshness.fresh / d.freshness.total;
+        if (d.date === state.date) s += '<line x1="' + x(i) + '" x2="' + x(i) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="var(--viz-axis)" stroke-dasharray="3 3"/><circle cx="' + x(i) + '" cy="' + y(p) + '" r="5" fill="var(--viz-s1)" stroke="var(--viz-surface)" stroke-width="2"/>';
+        s += '<rect class="hit" tabindex="0" data-date="' + d.date + '" x="' + (L + band * i) + '" y="' + T + '" width="' + band + '" height="' + plotH + '"' + tip([d.date, d.freshness.fresh + " / " + d.freshness.total + " 个数据源是最新（" + Math.round(p * 100) + "%）"]) + "/>";
+      });
+      s += xLabels(days.map(function (d) { return d.date; }), L, band, H - 6, W);
+      $("chFresh").innerHTML = s + "</svg>";
+    }
+
+    /* ---------- chart: BTC/ETH ATM IV term structure (log DTE) ---------- */
+    function drawTerm() {
+      var c = state.extras && state.extras.crypto, inst = c ? c.instruments.filter(function (i) { return i.term && i.term.length; }) : [];
+      $("dtTermNote").textContent = c ? "最新一期 " + (c.date || "—") + "，来源 " + (c.source || "Deribit") + "；只保留最新一期" : "";
+      if (!inst.length) { $("chTerm").innerHTML = '<p class="dt-empty">没有期限结构数据</p>'; return; }
+      var W = width("chTerm"), H = 200, L = 40, R = 44, T = 14, B = 26;
+      var all = []; inst.forEach(function (i) { i.term.forEach(function (t) { all.push(t); }); });
+      var dmin = Math.max(.25, Math.min.apply(null, all.map(function (t) { return t.dte; }))), dmax = Math.max.apply(null, all.map(function (t) { return t.dte; }));
+      var vmin = Math.floor(Math.min.apply(null, all.map(function (t) { return t.atmIv; })) / 5) * 5, vmax = Math.ceil(Math.max.apply(null, all.map(function (t) { return t.atmIv; })) / 5) * 5;
+      if (vmax - vmin < 10) vmax = vmin + 10;
+      var x = function (d) { return L + (Math.log(Math.max(d, dmin)) - Math.log(dmin)) / (Math.log(dmax) - Math.log(dmin)) * (W - L - R); };
+      var y = function (v) { return T + (vmax - v) / (vmax - vmin) * (H - T - B); };
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="BTC 与 ETH 平值隐含波动率期限结构">';
+      for (var v = vmin; v <= vmax; v += (vmax - vmin > 30 ? 10 : 5)) s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="' + (v === vmin ? "var(--viz-axis)" : "var(--viz-grid)") + '"/><text x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + "%</text>";
+      var lastX = -99;
+      [1, 7, 30, 90, 180, 365].filter(function (d) { return d >= dmin && d <= dmax * 1.05; }).forEach(function (d) { if (x(d) - lastX < 48) return; lastX = x(d); s += '<text x="' + x(d) + '" y="' + (H - 6) + '" text-anchor="middle">' + (d === 1 ? "1 天" : d === 365 ? "1 年" : d + " 天") + "</text>"; });
+      inst.forEach(function (ins, k) {
+        var color = k === 0 ? "var(--viz-s1)" : "var(--viz-s2)";
+        var pts = ins.term.map(function (t) { return x(t.dte) + "," + y(t.atmIv); });
+        s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+        var last = ins.term[ins.term.length - 1];
+        s += '<line x1="' + (x(last.dte) + 6) + '" x2="' + (x(last.dte) + 14) + '" y1="' + y(last.atmIv) + '" y2="' + y(last.atmIv) + '" stroke="' + color + '" stroke-width="2"/><text x="' + (x(last.dte) + 17) + '" y="' + (y(last.atmIv) + 4) + '" class="ink">' + esc(ins.symbol) + "</text>";
+        ins.term.forEach(function (t) {
+          s += '<circle cx="' + x(t.dte) + '" cy="' + y(t.atmIv) + '" r="4" fill="' + color + '" stroke="var(--viz-surface)" stroke-width="2"/>';
+          s += '<circle class="hit" tabindex="0" cx="' + x(t.dte) + '" cy="' + y(t.atmIv) + '" r="10"' + tip([ins.symbol + " · " + t.expiry + "（" + fmt(t.dte, 1) + " 天）", "平值 IV " + fmt(t.atmIv, 1) + "%", t.rr25 != null ? "25Δ 风险逆转 " + fmt(t.rr25, 2) + "（正值=看涨期权更贵）" : ""]) + "/>";
+        });
+      });
+      $("chTerm").innerHTML = s + "</svg>";
+    }
+
+    /* ---------- chart: data age by source (status bars) ---------- */
+    function drawAge(m) {
+      var rows = (m && m.freshness || []).slice().sort(function (a, b) { return (b.ageDays || 0) - (a.ageDays || 0); });
+      if (!rows.length) { $("chAge").innerHTML = '<p class="dt-empty">这一天没有新鲜度记录</p>'; return; }
+      var W = width("chAge"), narrow = W < 520;
+      var L = narrow ? 0 : Math.min(150, Math.round(W * .34)), R = narrow ? 120 : 150, rowH = narrow ? 42 : 26, bh = 14, top = narrow ? 18 : (rowH - bh) / 2, H = rows.length * rowH + 22;
+      var max = Math.max(7, Math.max.apply(null, rows.map(function (r) { return r.ageDays || 0; })));
+      var x = function (v) { return L + v / max * (W - L - R); };
+      var COLOR = { good: "var(--st-good)", warn: "var(--st-warn)", serious: "var(--st-serious)", critical: "var(--st-critical)", neutral: "var(--viz-axis)" };
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="各数据源的数据年龄">';
+      (narrow ? [0, max] : [0, Math.round(max / 2), max]).forEach(function (v) { s += '<line x1="' + x(v) + '" x2="' + x(v) + '" y1="0" y2="' + (H - 18) + '" stroke="var(--viz-grid)"/><text x="' + x(v) + '" y="' + (H - 4) + '" text-anchor="' + (v === 0 && narrow ? "start" : "middle") + '">' + v + " 天</text>"; });
+      rows.forEach(function (r, i) {
+        var y = i * rowH + top, st = statusOf(r.state), age = r.ageDays || 0;
+        s += narrow ? '<text x="0" y="' + (y - 5) + '" class="ink">' + esc(r.name) + "</text>"
+                    : '<text x="' + (L - 8) + '" y="' + (y + bh / 2 + 4) + '" text-anchor="end" class="ink">' + esc(r.name) + "</text>";
+        if (age > 0) { var w = x(age) - L, rr = Math.min(4, w / 2); s += '<path d="M' + L + "," + y + "H" + (L + w - rr) + "Q" + (L + w) + "," + y + " " + (L + w) + "," + (y + rr) + "V" + (y + bh - rr) + "Q" + (L + w) + "," + (y + bh) + " " + (L + w - rr) + "," + (y + bh) + "H" + L + 'Z" fill="' + COLOR[st] + '"/>'; }
+        else s += '<rect x="' + L + '" y="' + y + '" width="3" height="' + bh + '" rx="1.5" fill="' + COLOR[st] + '"/>';
+        s += '<text x="' + (x(age) + 8) + '" y="' + (y + bh / 2 + 4) + '" class="ink">' + ICON[st] + " " + esc((r.state || "").replace(/（\d+ 天）/, "")) + " · " + age + " 天</text>";
+        s += '<rect class="hit" x="0" y="' + (i * rowH) + '" width="' + W + '" height="' + rowH + '"' + tip([r.name, "数据日 " + (r.date || "—"), r.state]) + "/>";
+      });
+      $("chAge").innerHTML = s + "</svg>";
+    }
+
+    /* ---------- chart: surf screen scores ---------- */
+    function drawSurf(m) {
+      var rows = (m && m.surf || []).filter(function (r) { return r.score != null; }).sort(function (a, b) { return b.score - a.score; });
+      if (!rows.length) { $("chSurf").innerHTML = '<p class="dt-empty">这一天没有冲浪筛选</p>'; return; }
+      var W = width("chSurf"), L = 82, R = 12, rowH = 40, bh = 12, H = rows.length * rowH + 20;
+      var x = function (v) { return L + v / 100 * (W - L - R); };
+      var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="冲浪形态结构分">';
+      [0, 50, 100].forEach(function (v) { s += '<line x1="' + x(v) + '" x2="' + x(v) + '" y1="0" y2="' + (H - 18) + '" stroke="var(--viz-grid)"/><text x="' + x(v) + '" y="' + (H - 4) + '" text-anchor="middle">' + v + "</text>"; });
+      rows.forEach(function (r, i) {
+        var y = i * rowH + 6, w = x(r.score) - L, rr = Math.min(4, w / 2);
+        s += '<text x="' + (L - 8) + '" y="' + (y + bh / 2 + 4) + '" text-anchor="end" class="ink" style="font-weight:700">' + esc(String(r.symbol).replace(/\.US$/, "")) + "</text>";
+        s += '<rect x="' + L + '" y="' + y + '" width="' + (W - L - R) + '" height="' + bh + '" rx="4" fill="var(--th-surface-3)"/>';
+        s += '<path d="M' + L + "," + y + "H" + (L + w - rr) + "Q" + (L + w) + "," + y + " " + (L + w) + "," + (y + rr) + "V" + (y + bh - rr) + "Q" + (L + w) + "," + (y + bh) + " " + (L + w - rr) + "," + (y + bh) + "H" + L + 'Z" fill="var(--viz-s1)"/>';
+        s += '<text x="' + L + '" y="' + (y + bh + 15) + '">' + fmt(r.score, 1) + " 分 · " + esc(r.status || "") + "</text>";
+        s += '<rect class="hit" x="0" y="' + (i * rowH) + '" width="' + W + '" height="' + rowH + '"' + tip([r.symbol + " · " + fmt(r.score, 1) + " 分", r.status, r.window ? "形态窗口 " + r.window : "", r.next ? "下一步：" + r.next : ""]) + "/>";
+      });
+      $("chSurf").innerHTML = s + "</svg>";
+    }
+
+    /* ---------- day detail ---------- */
+    function score(n) { var on = Math.max(0, Math.min(3, n || 0)), out = '<span class="dt-score" aria-hidden="true">'; for (var i = 0; i < 3; i++) out += '<i class="' + (i < on ? "on" : "") + '"></i>'; return out + "</span>"; }
+    function signalRows(list, withEntry) {
+      return list.map(function (r) {
+        return '<tr><td class="sym">' + esc(r.symbol) + "</td><td>" + esc(r.market) + '</td><td style="white-space:nowrap">' + score(r.score) + esc(r.agreement) + '</td><td class="note">' + esc(r.evidence) + "</td>" + (withEntry ? '<td class="note">' + esc(r.entry || "—") + "</td>" : "") + "</tr>";
+      });
+    }
+    function renderKpis(entry, m) {
+      var c = (entry && entry.counts) || {}, f = (entry && entry.freshness) || {};
+      var cap = m && m.riskCap != null ? m.riskCap : null;
+      var dual = m ? m.buys.filter(function (b) { return (b.score || 0) >= 2; }).length : 0;
+      var tiles = [
+        ["风险倍率上限", cap != null ? fmt(cap) : "1.0", '<div class="dt-meter" aria-hidden="true"><i style="width:' + Math.round((cap != null ? cap : 1) * 100) + '%"></i></div><small>' + (cap != null ? "按风险开关降档，标准是 1.0" : "没有降档，按标准 1.0") + "</small>"],
+        ["Buy 候选", c.buy ?? "—", "<small>其中多体系支持 " + dual + " 个</small>"],
+        ["Sell / 回避", c.sell ?? "—", "<small>背离警示 " + (c.divergence ?? "—") + " 个</small>"],
+        ["无交叉确认", c.unconfirmed ?? "—", "<small>只有单一体系给信号</small>"],
+        ["13 买点", c.buyPoints ?? "—", "<small>" + (m && m.buyPointErrors ? "本次扫描失败，只作历史参考" : "当天扫描到的买点") + "</small>"],
+        ["数据源最新", f.total ? f.fresh + " / " + f.total : "—", "<small>" + (f.total ? "其余偏旧、过期或缺失" : "") + "</small>"],
+      ];
+      $("dtKpis").innerHTML = tiles.map(function (t) { return '<div class="dt-kpi"><dt>' + t[0] + "</dt><dd>" + esc(t[1]) + "</dd>" + t[2] + "</div>"; }).join("");
+    }
+    function renderDay() {
+      var day = state.day || {}, m = day.morning, e = day.evening;
+      var entry = state.index.filter(function (d) { return d.date === state.date; })[0];
+      $("dtStanceKicker").textContent = state.date + " · 早报立场";
+      $("dtStance").textContent = m && m.stance ? m.stance.label : (m ? "未标注立场" : "这一天没有早报");
+      $("dtSummary").textContent = m && m.stance ? m.stance.summary || "" : "";
+      var hl = $("dtHeadline"); hl.hidden = !(m && m.headline); hl.textContent = m && m.headline ? "一句话结论：" + m.headline : "";
+      $("dtHas").textContent = (m ? "早报 ✓" : "早报 —") + "　" + (e ? "晚报 ✓" : "晚报 —");
+      renderKpis(entry, m);
+      drawAge(m); drawSurf(m);
+      var risk = m && m.risk || {};
+      $("dtRiskConclusion").textContent = risk.conclusion || "这一天还没有风险三问。";
+      $("dtQs").innerHTML = (risk.questions || []).map(function (q) { return '<div class="dt-q"><p>' + esc(q.question) + "</p>" + chip(q.state) + "</div>"; }).join("");
+      var rules = {}; if (state.extras && state.extras.risk && state.extras.risk.date === state.date) state.extras.risk.liquidity.forEach(function (l) { rules[l.name] = l.rule; });
+      $("dtLiquidity").innerHTML = (risk.liquidity || []).length ? table(["流动性指标", "当前值", "数据日", "状态"], risk.liquidity.map(function (l) {
+        return '<tr><td><span style="color:var(--th-text)">' + esc(l.name) + "</span>" + (rules[l.name] ? '<div class="dt-sub">' + esc(rules[l.name]) + "</div>" : "") + '</td><td class="num">' + esc(l.value) + '</td><td class="num">' + esc(l.date) + "</td><td>" + chip(l.state) + "</td></tr>";
+      })) + (risk.slowTotal ? '<p class="dt-sub">七项慢速拥挤指标：' + risk.slowMissing + " / " + risk.slowTotal + " 项缺失。</p>" : "") : "";
+      $("dtBuys").innerHTML = m ? table(["标的", "市场", "一致度", "交叉证据", "进场 / 止损"], signalRows(m.buys, true)) : '<p class="dt-empty">这一天没有早报</p>';
+      $("dtSells").innerHTML = m ? table(["标的", "市场", "一致度", "交叉证据"], signalRows(m.sells)) : "";
+      $("dtDivs").innerHTML = m ? table(["标的", "市场", "一致度", "交叉证据"], signalRows(m.divergences)) : "";
+      $("dtUnconfirmed").innerHTML = m && m.unconfirmed.length ? '<div class="dt-chips">' + m.unconfirmed.map(function (u) { return '<span class="dt-chip" data-tip="' + esc(u.symbol + "\n" + u.market + " · 原始 " + u.signal + " · " + u.agreement) + '"><b style="color:var(--th-text)">' + esc(u.symbol) + "</b>" + esc(u.signal) + "</span>"; }).join("") + "</div>" : '<p class="dt-empty">无</p>';
+      $("dtBpNote").textContent = m && m.buyPointScanNote ? m.buyPointScanNote : "按 13 种买点方法扫描的候选价位";
+      $("dtBuyPoints").innerHTML = m ? table(["标的", "级别 · 方法", "候选价", "代理止损", "目标"], m.buyPoints.map(function (b) {
+        return '<tr><td class="sym">' + esc(b.symbol) + '</td><td class="note">' + esc(b.level) + '</td><td class="num">' + fmt(b.entry, 3) + '</td><td class="num">' + fmt(b.stop, 3) + '</td><td class="note">' + esc(b.targets) + "</td></tr>";
+      })) : "";
+      $("dtCrypto").innerHTML = m && m.crypto.length ? m.crypto.map(function (c) {
+        return '<dl><div><span class="sym">' + esc(c.symbol) + '</span><span class="dt-sub">现货 ' + fmt(c.spot, 2) + "</span></div>" +
+          [["DVOL", fmt(c.dvol, 1)], ["HV30", fmt(c.hv30, 1)], ["IV / HV", fmt(c.ivHv, 2)], ["成交量 P/C", fmt(c.volPc, 2)], ["持仓 P/C", fmt(c.oiPc, 2)], ["平值 IV", c.atmIv != null ? fmt(c.atmIv, 1) + "%" : "—"]]
+            .map(function (k) { return "<div><dt>" + k[0] + "</dt><dd>" + k[1] + "</dd></div>"; }).join("") + "</dl>";
+      }).join("") : '<p class="dt-empty">这一天没有加密期权数据</p>';
+      var acts = state.extras && state.extras.decision && state.extras.decision.date === state.date ? state.extras.decision.actions : [];
+      $("dtActions").innerHTML = acts.length ? '<div class="dt-group"><h3>各市场的条件方案</h3>' + table(["市场", "状态", "现在做什么", "什么时候做", "什么情况放弃"], acts.map(function (a) {
+        return '<tr><td class="sym">' + esc(a.market) + "</td><td>" + esc({ wait: "等待", observe: "观察", conditional: "有条件" }[a.state] || a.state) + '</td><td class="note">' + esc(a.action) + '</td><td class="note">' + esc(a.trigger) + '</td><td class="note">' + esc(a.invalidation) + "</td></tr>";
+      })) + "</div>" : "";
+      $("dtChanges").innerHTML = m && m.changes.length ? m.changes.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") : "<li>无</li>";
+      $("dtGaps").innerHTML = m && m.gaps.length ? m.gaps.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") : "<li>无</li>";
+
+      $("dtEveningNote").textContent = e ? "采集时间 " + (e.collected || "—") + (e.offline ? "。这次在线采集失败，用的是本地缓存，数据可能比日期旧。" : "。") : "这一天没有晚报。";
+      var phases = e && e.classes.some(function (c) { return c.phase; });
+      $("dtEvClasses").innerHTML = e ? table(["大类", "温度"].concat(phases ? ["节气"] : [], ["较前次", "数据日"]), e.classes.map(function (c) {
+        var changed = c.change && c.change !== "不变";
+        return '<tr><td class="sym">' + esc(c.name) + "</td><td>" + tempChip(c.temp) + "</td>" + (phases ? "<td>" + esc(c.phase || "—") + "</td>" : "") + "<td" + (changed ? ' style="color:var(--th-text);font-weight:600"' : "") + ">" + esc(c.change || "—") + '</td><td class="num">' + esc(c.date) + "</td></tr>";
+      })) : '<p class="dt-empty">无</p>';
+      $("dtEvS1").innerHTML = e && e.s1.length ? '<div class="dt-chips">' + e.s1.map(function (r) { return '<span class="dt-chip" data-tip="' + esc(r.symbol + "\n" + r.market + " · " + r.temp + (r.phase ? " / " + r.phase : "")) + '"><i class="sw" style="--c:' + tempColor(r.temp) + '"></i><b style="color:var(--th-text)">' + esc(r.symbol) + "</b>" + esc(r.temp) + "</span>"; }).join("") + "</div>" : '<p class="dt-empty">无</p>';
+      $("dtEvWarm").innerHTML = e && e.warmToHot.length ? e.warmToHot.map(function (g) {
+        return '<div class="dt-group"><h3>' + esc(g.group) + " <span>· " + g.items.length + " 个</span></h3>" + (g.items.length ? '<div class="dt-chips">' + g.items.map(function (it) { return '<span class="dt-chip" data-tip="' + esc((it.name || "") + "\n" + (it.symbol || "") + " · " + (it.temp || "")) + '"><i class="sw" style="--c:' + tempColor(it.temp) + '"></i>' + esc(it.symbol || it.name) + "</span>"; }).join("") + "</div>" : '<p class="dt-sub">无</p>') + "</div>";
+      }).join("") : '<p class="dt-empty">无</p>';
+    }
+
+    function drawHistory() { drawSignals(); drawStance(); drawHeat(); drawFresh(); drawTerm(); }
+    function select(date) {
+      if (!date || !state.index.some(function (d) { return d.date === date; })) return;
+      state.date = date;
+      $("dtDay").value = date;
+      var i = state.index.findIndex(function (d) { return d.date === date; });
+      $("dtNext").disabled = i <= 0; $("dtPrev").disabled = i >= state.index.length - 1;
+      if (location.hash.slice(1) !== date) history.replaceState(null, "", "#" + date);
+      var load = state.cache[date] ? Promise.resolve(state.cache[date]) : getJson("days/" + date + ".json").then(function (j) { state.cache[date] = j || {}; return state.cache[date]; });
+      load.then(function (day) { if (state.date !== date) return; state.day = day; renderDay(); drawHistory(); });
+    }
+
+    function freshnessBadge(manifest) {
+      var badge = $("dtFresh"), api = window.TraderHome, notice = $("dtNotice");
+      var t = Date.parse(manifest && manifest.generated_at || "");
+      if (!isFinite(t) || !api || !api.freshness) { badge.textContent = "时间未知"; return; }
+      var f = api.freshness(t, { freshHours: 36, lateHours: 96 });
+      badge.setAttribute("data-state", f.state);
+      badge.textContent = f.label + " · " + f.ago;
+      if (f.state !== "fresh") {
+        notice.hidden = false;
+        notice.textContent = "最新一期停在 " + (manifest.report_date || "—") + "（" + f.ago + "）。生成早晚报的自动任务恢复后，这里会在下一份报告写完后自动更新；在那之前，下面只能当作历史回看。";
+      }
+    }
+
+    Promise.all([getJson("index.json"), getJson("trend-heatmap.json"), getJson("latest-extras.json"), getJson("manifest.json")]).then(function (r) {
+      var idx = r[0];
+      freshnessBadge(r[3]);
+      if (!idx || !idx.days || !idx.days.length) { $("dtStance").textContent = "暂时没有可显示的报告"; return; }
+      state.index = idx.days; state.asc = idx.days.slice().reverse(); state.heat = r[1]; state.extras = r[2];
+      $("dtDay").innerHTML = state.index.map(function (d) { return '<option value="' + d.date + '">' + d.date + (d.stance ? " · " + esc(d.stance) : "") + "</option>"; }).join("");
+      $("dtDay").addEventListener("change", function () { select(this.value); });
+      $("dtPrev").addEventListener("click", function () { var i = state.index.findIndex(function (d) { return d.date === state.date; }); if (i < state.index.length - 1) select(state.index[i + 1].date); });
+      $("dtNext").addEventListener("click", function () { var i = state.index.findIndex(function (d) { return d.date === state.date; }); if (i > 0) select(state.index[i - 1].date); });
+      var want = location.hash.slice(1);
+      select(state.index.some(function (d) { return d.date === want; }) ? want : idx.latest || state.index[0].date);
+      var timer = null;
+      window.addEventListener("resize", function () { clearTimeout(timer); timer = setTimeout(function () { drawHistory(); drawAge(state.day && state.day.morning); drawSurf(state.day && state.day.morning); }, 150); });
+    });
+  });
+  </script>
 </body>
 </html>
