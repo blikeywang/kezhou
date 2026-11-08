@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { expectedSession, inFridayWindow } from "./refresh-runner.mjs";
+import { expectedSession, inFridayWindow, isDue } from "./refresh-runner.mjs";
 
 // 2026-11-06 is a Friday. New York is UTC-5 in November.
 test("before the close the expected session is the previous weekday", () => {
@@ -19,4 +19,12 @@ test("Friday action window is 10:00-15:30 ET only", () => {
   assert.equal(inFridayWindow(new Date("2026-11-06T14:50:00Z")), null);        // 09:50 ET
   assert.equal(inFridayWindow(new Date("2026-11-06T20:45:00Z")), null);        // 15:45 ET
   assert.equal(inFridayWindow(new Date("2026-11-05T15:10:00Z")), null);        // Thursday
+});
+
+test("market jobs run when the stamp is older; daily-trade runs when the source fingerprint differs", () => {
+  assert.equal(isDue({ due: "afterClose" }, "2026-11-05", "2026-11-06"), true);
+  assert.equal(isDue({ due: "afterClose" }, "2026-11-06", "2026-11-06"), false);
+  assert.equal(isDue({ due: "sourceChanged" }, "2026-09-21:aaaa", "2026-09-21:bbbb"), true);
+  assert.equal(isDue({ due: "sourceChanged" }, "2026-09-21:aaaa", "2026-09-21:aaaa"), false);
+  assert.equal(isDue({ due: "sourceChanged" }, null, "unknown"), true);
 });

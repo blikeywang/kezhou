@@ -3,21 +3,22 @@
  * TraderHome scheduled data refresh for the owner's Mac (launchd).
  *
  * IncomeOS and TailTrend read private Longbridge data through the local
- * `longbridge` CLI session, so they cannot run in GitHub Actions without
- * putting broker credentials in GitHub. This runner keeps the credentials on
- * the Mac and does the same steps the READMEs describe, unattended:
+ * `longbridge` CLI session, and the daily reports come from the owner's local
+ * workflow folder, so none of them can run in GitHub Actions without putting
+ * private data or credentials in GitHub. This runner keeps both on the Mac and
+ * does the same steps the READMEs describe, unattended:
  *
- *   1. decide whether a new run is due (America/New_York market clock), so it
- *      is safe to schedule hourly in any local time zone;
+ *   1. decide whether a new run is due (America/New_York market clock, or for
+ *      daily-trade: the report folder changed), so hourly scheduling is safe;
  *   2. reset a dedicated clone to origin/main (never the working copy);
- *   3. check the Longbridge session, run the refresh and the tests;
+ *   3. check the data source, run the refresh/export and the tests;
  *   4. commit only the product's data folder and push to main.
  *
- * Usage: node refresh-runner.mjs <tailtrend|incomeos-research|incomeos-friday> [--force]
+ * Usage: node refresh-runner.mjs <tailtrend|incomeos-research|incomeos-friday|daily-trade> [--force]
  * Status: ~/.traderhome/logs/refresh-status.json; failures raise a macOS notification.
  */
 import { execFile } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -31,6 +32,8 @@ const LOG_DIR = join(BASE, "logs");
 const STATUS_PATH = join(LOG_DIR, "refresh-status.json");
 const LOCK = join(BASE, "refresh.lock");
 const MARKER = join(CLONE, ".git", "traderhome-refresh-clone");
+const DAILY_SOURCE = process.env.TRADERHOME_DAILY_SOURCE || join(HOME, "Documents", "猴认知分析");
+const DAILY_EXPORTER = "tools/daily-trade/export-public.mjs";
 
 const JOBS = {
   tailtrend: {
@@ -59,6 +62,16 @@ const JOBS = {
     refresh: ["tools/incomeos/refresh.mjs"],
     tests: [["node", ["--test", "portal/test_incomeos_engine.mjs"]]],
     due: "fridayWindow",
+  },
+  "daily-trade": {
+    label: "早晚报",
+    dataDir: "portal/vendor/daily-trade/data",
+    stampFile: "portal/vendor/daily-trade/data/index.json",
+    stamp: (data) => data?.sourceStamp ?? null,
+    refresh: [DAILY_EXPORTER, "--source", DAILY_SOURCE],
+    tests: [["node", ["--test", "tools/daily-trade/test_export_public.mjs"]]],
+    due: "sourceChanged",
+    longbridge: false,
   },
 };
 
@@ -108,12 +121,30 @@ function writeStatus(name, entry) {
   status.jobs[name] = { ...previous, ...entry, lastSuccessAt: entry.ok ? entry.finishedAt : previous.lastSuccessAt ?? null };
   writeFileSync(STATUS_PATH, `${JSON.stringify(status, null, 2)}\n`);
 }
+/** Readable source folder, else a message that says how to fix macOS privacy / iCloud. */
+function checkDailySource() {
+  try { readdirSync(join(DAILY_SOURCE, "reports", "morning")); } catch (error) {
+    if (error?.code === "EPERM" || error?.code === "EACCES") {
+      throw new Error(`macOS 不允许后台的 node 读取 ${DAILY_SOURCE}：系统设置 → 隐私与安全性 → 完全磁盘访问权限，加入 ${process.execPath}`);
+    }
+    if (error?.code === "EDEADLK") throw new Error(`${DAILY_SOURCE} 里的文件只在 iCloud 上：在访达里右键该文件夹 → 保持下载`);
+    throw new Error(`找不到早晚报文件夹 ${DAILY_SOURCE}（可用环境变量 TRADERHOME_DAILY_SOURCE 指定）`);
+  }
+}
+async function dailyTarget() {
+  checkDailySource();
+  if (!existsSync(join(CLONE, DAILY_EXPORTER))) return "unknown";
+  return sh("node", [DAILY_EXPORTER, "--stamp", "--source", DAILY_SOURCE], { timeout: 120_000 });
+}
+export const isDue = (job, stamp, target) => (job.due === "sourceChanged" ? stamp !== target : (stamp ?? "") < target);
+
 function acquireLock() {
-  try {
-    if (existsSync(LOCK) && Date.now() - statSync(LOCK).mtimeMs > 3 * 3600_000) rmSync(LOCK, { recursive: true, force: true });
-    mkdirSync(LOCK);
-    return true;
-  } catch { return false; }
+  mkdirSync(BASE, { recursive: true });
+  if (existsSync(LOCK) && Date.now() - statSync(LOCK).mtimeMs > 3 * 3600_000) rmSync(LOCK, { recursive: true, force: true });
+  try { mkdirSync(LOCK); return true; } catch (error) {
+    if (error?.code === "EEXIST") return false;
+    throw error;
+  }
 }
 
 async function resetClone() {
@@ -149,20 +180,33 @@ async function main() {
   const job = JOBS[name];
   if (!job) { console.error(`Unknown job. Use one of: ${Object.keys(JOBS).join(", ")}`); process.exit(64); }
 
-  const target = job.due === "fridayWindow" ? inFridayWindow() : expectedSession();
+  let target;
+  try {
+    target = job.due === "fridayWindow" ? inFridayWindow() : job.due === "sourceChanged" ? await dailyTarget() : expectedSession();
+  } catch (error) {
+    const message = errorSummary(error);
+    writeStatus(name, { ok: false, startedAt: new Date().toISOString(), finishedAt: new Date().toISOString(), message });
+    await notify(`TraderHome · ${job.label}更新失败`, message);
+    console.error(message);
+    process.exitCode = 1;
+    return;
+  }
   if (!force) {
     if (!target) { log(`${name}: outside the Friday 10:00–15:30 ET window, skipped`); return; }
-    if ((stampOf(job) ?? "") >= target) { log(`${name}: already has ${target}, skipped`); return; }
+    if (!isDue(job, stampOf(job), target)) { log(`${name}: already has ${target}, skipped`); return; }
   }
   if (!acquireLock()) { log(`${name}: another refresh is running, skipped`); return; }
   const startedAt = new Date().toISOString();
   try {
     await resetClone();
     const before = stampOf(job);
-    if (!force && target && (before ?? "") >= target) { log(`${name}: origin/main already has ${target}`); return; }
+    if (job.due === "sourceChanged") target = await dailyTarget();
+    if (!force && target && !isDue(job, before, target)) { log(`${name}: origin/main already has ${target}`); return; }
 
-    try { await sh("longbridge", ["quote", "SPY.US", "--format", "json"], { timeout: 60_000, cwd: "/tmp" }); } catch {
-      throw new Error("Longbridge 无法访问或登录已过期：在终端运行 longbridge login 后会在下一个整点自动重试");
+    if (job.longbridge !== false) {
+      try { await sh("longbridge", ["quote", "SPY.US", "--format", "json"], { timeout: 60_000, cwd: "/tmp" }); } catch {
+        throw new Error("Longbridge 无法访问或登录已过期：在终端运行 longbridge login 后会在下一个整点自动重试");
+      }
     }
 
     log(`${name}: refreshing (expected ${target ?? "forced"})`);

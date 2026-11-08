@@ -18,9 +18,12 @@
     <string>__HOME__</string>
     <key>TRADERHOME_REFRESH_REPO</key>
     <string>__CLONE__</string>
+    <key>TRADERHOME_DAILY_SOURCE</key>
+    <string>__DAILY_SOURCE__</string>
   </dict>
   <!-- Fires every hour at the given minute. The runner itself decides from
-       the New York market clock whether anything is due, so the schedule
+       the New York market clock (or, for 早晚报, whether the report folder
+       changed) whether anything is due, so the schedule
        keeps working if the Mac's time zone changes. A run missed during sleep
        starts once when the Mac wakes. -->
   <key>StartCalendarInterval</key>
