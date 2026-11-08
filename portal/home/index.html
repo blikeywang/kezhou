@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="TraderHome 连接历史研究与交易后复盘，并提供 IncomeOS、TailTrend Lab、场外日线、公开模拟盘与交易早晚报等独立研究系统。">
   <title>TraderHome · 每一步都能验证的交易工作台</title>
-  <link rel="stylesheet" href="/assets/traderhome-site.css?v=12">
+  <link rel="stylesheet" href="/assets/traderhome-site.css?v=13">
 </head>
 <body class="th-site th-home">
   <main id="main">
@@ -97,7 +97,7 @@
         <article class="th-sys" data-key="dailyTrade" style="--sys: var(--th-accent-daily)">
           <header><span class="th-sys__tag">研究快照</span><span class="th-fresh" data-status-for="dailyTrade" data-state="unknown">读取中</span></header>
           <h3>交易早晚报</h3>
-          <p>发布已经校验过的早报和晚报；数据缺失或过期的地方按原样标出。</p>
+          <p>每天的立场、候选信号和六大类冷热，用图表看几十天的走势；点任意一天看当天细节。</p>
           <ul><li>不含账户私有数据与密钥</li><li>不替用户下单</li></ul>
           <footer><small data-status-time="dailyTrade">—</small><a class="th-sys__go" href="/daily-trade/">打开早晚报 →</a></footer>
         </article>
@@ -150,6 +150,9 @@
           var time = document.querySelector('[data-status-time="' + m.key + '"]');
           if (time) time.textContent = m.paused ? "来源任务暂停中 · 最新一期 " + api.shortDate(Date.parse(m.asOf)).slice(0, 5)
             : m.asOf ? "数据 " + api.shortDate(Date.parse(m.asOf)) + " · " + f.ago + " · " + (m.cadence || "") : "暂无数据";
+          // A stale system should not invite "generate this week's plan": say it is a look-back.
+          var go = document.querySelector('.th-sys[data-key="' + m.key + '"] .th-sys__go');
+          if (go && f.state === "stale") { go.textContent = "回看上次结果 →"; go.classList.add("is-stale"); }
         });
         var summary = document.getElementById("boardSummary");
         var total = counts.fresh + counts.late + counts.stale;

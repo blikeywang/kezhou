@@ -20,9 +20,22 @@ export function validSnapshot(d){
 export function closedBars(rows,step,now){
   return (rows??[]).filter(b=>[b.time,b.open,b.high,b.low,b.close].every(finite)&&b.open>0&&b.low>0&&b.high>=b.low&&b.time+step<=now).sort((a,b)=>a.time-b.time);
 }
+/** CME futures proxies (XAU/XAG/NQ/CL) trade Sun 18:00 – Fri 17:00 New York time with a daily 17:00–18:00 break.
+ *  Holidays are not modelled: an exchange holiday still shows as a lagging quote. */
+export function futuresClosed(symbol,now){
+  if(symbol==='BTC'||symbol==='ETH')return false;
+  const parts=Object.fromEntries(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',weekday:'short',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(now)).map(p=>[p.type,p.value]));
+  const minutes=Number(parts.hour)*60+Number(parts.minute),day=parts.weekday;
+  if(day==='Sat')return true;
+  if(day==='Fri')return minutes>=17*60;
+  if(day==='Sun')return minutes<18*60;
+  return minutes>=17*60&&minutes<18*60;
+}
 export function quote(m,now){
   const rows=closedBars(m?.executionBars?.length?m.executionBars:m?.bars,m?.executionBars?.length?300000:600000,now), bar=rows.at(-1), step=m?.executionBars?.length?300000:600000;
-  return {price:bar?.close??null,through:bar?bar.time+step:null,stale:!bar||now-bar.time-step>1200000||!!m?.dataError};
+  const stale=!bar||now-bar.time-step>1200000||!!m?.dataError;
+  // "closed": the quote is old only because the market is shut, not because the feed failed.
+  return {price:bar?.close??null,through:bar?bar.time+step:null,stale,closed:stale&&!!bar&&!m?.dataError&&futuresClosed(m?.symbol,now)};
 }
 export function chartBars(m,h,now){
   if(h==='10M')return closedBars(m?.bars,600000,now).slice(-80);

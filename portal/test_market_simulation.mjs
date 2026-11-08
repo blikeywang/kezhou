@@ -16,7 +16,7 @@ test('fresh publication and heartbeat never conceal a stalled paper ledger',()=>
  assert.ok(pipelineNotice({...data,publication:{executionOutcome:'failure'}},now).some(x=>x.includes('执行失败')));
 });
 import {reviewSections,reviewTarget,reviewFresh,renderReviewCards} from './vendor/market-simulation/reviews.mjs';
-import {quote,chartBars,planState,currentGate,lastCheck,legTargets,conditionalPrices,escape,estimatedNet,tradeHorizonOf} from './vendor/market-simulation/model.mjs';
+import {quote,futuresClosed,chartBars,planState,currentGate,lastCheck,legTargets,conditionalPrices,escape,estimatedNet,tradeHorizonOf} from './vendor/market-simulation/model.mjs';
 
 test('legacy hourly trades retain their original horizon after the ten-minute migration',()=>{
   assert.equal(tradeHorizonOf({version:'rules-1.0',executionIntervalMs:300000}),'1H');
@@ -139,4 +139,18 @@ test('a fresh publication cannot turn an expired review into current approval',(
   assert.ok(!html.includes('class="good"'));
   assert.ok(!html.includes('<script>bad</script>'));
   assert.ok(html.includes('&lt;img src=x&gt;'));
+});
+
+test('futures proxies show as closed over the weekend and the daily break, crypto never closes',()=>{
+  const at=iso=>Date.parse(iso);
+  assert.equal(futuresClosed('XAU',at('2026-11-08T03:30:00Z')),true);   // Sat 22:30 ET
+  assert.equal(futuresClosed('NQ',at('2026-11-08T22:30:00Z')),true);    // Sun 17:30 ET
+  assert.equal(futuresClosed('NQ',at('2026-11-09T00:00:00Z')),false);   // Sun 19:00 ET
+  assert.equal(futuresClosed('CL',at('2026-11-10T22:30:00Z')),true);    // Tue 17:30 ET daily break
+  assert.equal(futuresClosed('CL',at('2026-11-10T15:00:00Z')),false);   // Tue 10:00 ET
+  assert.equal(futuresClosed('BTC',at('2026-11-08T03:30:00Z')),false);
+  const friClose={symbol:'XAU',bars:[{time:at('2026-11-06T21:50:00Z'),open:1,high:1,low:1,close:1}]};
+  const q=quote(friClose,at('2026-11-08T03:30:00Z'));
+  assert.equal(q.stale,true); assert.equal(q.closed,true);
+  assert.equal(quote({...friClose,dataError:'x'},at('2026-11-08T03:30:00Z')).closed,false);
 });

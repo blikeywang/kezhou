@@ -63,13 +63,15 @@ function accountCard(book,title){
 }
 function renderStatus(){
   if(!data)return;
-  const now=Date.now(),stale=data.markets.filter(m=>quote(m,now).stale);
+  const now=Date.now(),stale=data.markets.filter(m=>{const q=quote(m,now);return q.stale&&!q.closed;}),shut=data.markets.filter(m=>quote(m,now).closed);
   $('status').innerHTML=pipelineHealth(data,now).map(s=>'<span class="ms-health '+(s.healthy?'healthy':'late')+'"><small>'+s.label+' · '+(s.healthy?'已更新':'待恢复')+'</small><b>'+dt(s.time||null)+'</b><small>'+age(s.time,now)+' · '+s.cadence+'</small></span>').join('');
   const notes=pipelineNotice(data,now);
   if(stale.length)notes.push(stale.map(m=>m.symbol).join(' / ')+' 的执行行情滞后或不可用；下方显示最后有效报价');
-  $('connection').className='ms-notice'+(notes.length?' warn':'');
+  const warn=notes.length>0;
+  if(shut.length)notes.push(shut.map(m=>m.symbol).join(' / ')+' 期货休市中（美东周日 18:00 开盘）；显示收盘前最后报价，休市期间不开新仓');
+  $('connection').className='ms-notice'+(warn?' warn':'');
   $('connection').textContent=notes.join('。')+(notes.length?'。':'无需登录 · 模拟盘云端运行中 · 页面数据会自动更新');
-  $('markets').innerHTML=SYMBOLS.map(s=>{const m=market(s),q=quote(m,now);return '<button class="ms-ticker" data-symbol="'+s+'"><div class="ms-ticker-head"><strong>'+s+'</strong>'+badge(q.stale?'行情滞后':'已更新',q.stale?'warn':'good')+'</div><div class="ms-ticker-price">'+fmt(q.price)+'</div><small>'+E(INSTRUMENTS[s].name)+'</small><small>截至 '+dt(q.through,true)+'</small></button>';}).join('');
+  $('markets').innerHTML=SYMBOLS.map(s=>{const m=market(s),q=quote(m,now);return '<button class="ms-ticker" data-symbol="'+s+'"><div class="ms-ticker-head"><strong>'+s+'</strong>'+badge(q.closed?'休市':q.stale?'行情滞后':'已更新',q.closed?'':q.stale?'warn':'good')+'</div><div class="ms-ticker-price">'+fmt(q.price)+'</div><small>'+E(INSTRUMENTS[s].name)+'</small><small>截至 '+dt(q.through,true)+'</small></button>';}).join('');
 }
 function render(){
   renderStatus();$('accounts').innerHTML=accountCard('single','单标的')+accountCard('pair','相对价值组合');

@@ -18,7 +18,7 @@
       </div>
       <div class="rv-header__actions">
         <span class="rv-local"><i></i>原始记录仅在本页内存处理</span>
-        <button class="rv-button rv-button--primary" id="connectPersonalHubButton" type="button">从券商读取</button>
+        <button class="rv-button rv-button--primary" id="connectPersonalHubButton" type="button" hidden>从券商读取</button>
         <button class="rv-button" id="openApiButton" type="button">连接自托管 API</button>
       </div>
     </header>
@@ -40,7 +40,7 @@
           <button class="rv-button rv-button--primary" id="chooseTradeButton" type="button">选择成交文件</button>
           <label class="rv-provider-picker"><span>只读来源</span><select id="personalHubProvider"><option value="auto">自动选择</option><option value="ibkr">IBKR</option><option value="longbridge">Longbridge</option><option value="binance">Binance</option></select></label>
           <label class="rv-provider-picker rv-binance-symbols" id="binanceSymbolsField" hidden><span>U本位合约</span><input id="binanceReviewSymbols" type="text" autocomplete="off" spellcheck="false" placeholder="自动发现，或 BTCUSDT,ETHUSDT"></label>
-          <button class="rv-button" id="connectPersonalHubImportButton" type="button">读取本机券商</button>
+          <button class="rv-button" id="connectPersonalHubImportButton" type="button">从券商读取</button>
           <button class="rv-button" id="ibkrLoginButton" type="button" hidden>登录 IBKR</button>
           <button class="rv-button" id="loadSampleButton" type="button">查看完整教学案例</button>
           <button class="rv-button rv-button--quiet" id="downloadTemplateButton" type="button">下载字段模板</button>
@@ -48,6 +48,12 @@
         <p class="rv-hub-state" id="personalHubState">本机只读连接尚未检测</p>
         <p class="rv-format-note">请导出“已平仓交易”或“持仓历史”，不要导出逐笔成交（fills / executions）：加仓、分批平仓没合并时，单笔买卖方向会被误读。</p>
         <p class="rv-sample-note">教学案例是 24 笔虚构交易，其中一笔带完整分钟K线，可以先用它看看效果。</p>
+        <ol class="rv-flow" aria-label="导入后会看到什么">
+          <li><b>数据体检</b><span>字段、重复和样本量够不够下结论</span></li>
+          <li><b>最花钱的习惯</b><span>按亏掉的钱排序，附逐笔证据</span></li>
+          <li><b>一个改进动作</b><span>只给一条，避免同时改太多</span></li>
+          <li><b>接下来 10 笔验证</b><span>新交易导入后自动对比改没改</span></li>
+        </ol>
       </div>
 
       <aside class="rv-import__side" aria-label="复盘所需数据">

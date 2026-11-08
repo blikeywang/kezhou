@@ -668,7 +668,7 @@ function renderDash(){
 function updateQuota(){var u=usedCount();var q=document.getElementById('quota');if(!q)return;
  q.innerHTML='<div class="ring" style="--p:6"></div><span>'+t('q_today')+' <b>'+u+'</b> '+t('q_syms')+' · '+t('q_free')+'</span>'}
 function legendHTML(){return '<div class="legend"><h4>'+t('leg_title')+'</h4>'+
- [['chart-line','leg_k1','leg_v1'],['chart-bar','leg_k2','leg_v2'],['calendar','leg_k3','leg_v3'],['grid-dots','leg_k4','leg_v4'],['','leg_k5','leg_v5'],['alert-triangle','leg_k6','leg_v6']].map(function(r){
+ [['chart-line','leg_k1','leg_v1'],['chart-bar','leg_k2','leg_v2'],['calendar','leg_k3','leg_v3'],['grid-dots','leg_k4','leg_v4'],['info-circle','leg_k5','leg_v5'],['alert-triangle','leg_k6','leg_v6']].map(function(r){
    return '<div class="legrow"><div class="lk">'+(r[0]?'<i class="ti ti-'+r[0]+'"></i>':'')+t(r[1])+'</div><div class="lv">'+t(r[2])+'</div></div>'}).join('')+'</div>'}
 function renderEmpty(g){
  if(window.HistoryReplay)HistoryReplay.destroy();

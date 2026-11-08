@@ -1165,7 +1165,7 @@ async function loadPersonalHubTrades() {
     setPersonalHubState(error.message, "error");
     showToast(error.message, "error");
   } finally {
-    buttons.forEach((button, index) => { button.disabled = false; button.textContent = index ? "读取本机券商" : "从券商读取"; });
+    buttons.forEach((button, index) => { button.disabled = false; button.textContent = "从券商读取"; });
   }
 }
 

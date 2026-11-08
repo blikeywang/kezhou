@@ -160,7 +160,9 @@ function renderRows() {
       <td data-label="状态"><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span><small class="tt-cell-sub">复核优先级 ${record.priority}</small></td>
       <td data-label="位置"><div class="tt-position"><div class="tt-position__bar"><i style="left:${position}%"></i></div><small class="tt-cell-sub">60日区间 ${number(record.rangePositionPct, 0)}%</small></div></td>
       <td data-label="周线 / 波动"><b>${escapeHtml(weeklyLabel(record.weeklyRegime))}</b><small class="tt-cell-sub">ATR ${number(record.atrPct)}% · HV p${number(record.hvPercentile, 0)}</small></td>
-      <td data-label="动作" class="tt-action">${escapeHtml(record.action)}${record.blockers?.length ? `<small class="tt-cell-sub">${escapeHtml(record.blockers[0])}</small>` : ""}</td>
+      <td data-label="动作" class="tt-action">${record.dataStatus === "STALE"
+        ? `<span class="tt-action--stale">数据过期，暂不判断</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)} 时的结论：${escapeHtml(record.action)}</small>`
+        : `${escapeHtml(record.action)}${record.blockers?.length ? `<small class="tt-cell-sub">${escapeHtml(record.blockers[0])}</small>` : ""}`}</td>
       <td data-label="数据"><span class="tt-fresh ${dataClass(record.dataStatus)}">${escapeHtml(record.dataStatus)}</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)}</small></td>
     </tr>`;
   }).join("");
