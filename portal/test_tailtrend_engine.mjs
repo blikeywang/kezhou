@@ -606,3 +606,93 @@ test("daily snapshots are immutable while latest and index expose missing runs s
   assert.equal(partial.displayLatest.records[0].newPositionAllowed, false);
   assert.equal(partial.displayLatest.records[0].dataStatus, "STALE");
 });
+
+
+function frozenReclaimFixture(close, { frozenHigh = 120, stable = 4 } = {}) {
+  const base = Array.from({ length: 100 }, (_, index) => ({
+    time: dateAt(index), open: 100, high: 120, low: 80, close: 100,
+    volume: 2_000_000, turnover: 150_000_000,
+  }));
+  const previousState = { tradingDate: dateAt(99), stateMemory: {
+    version: 1, upper: null, trend: null, lower: {
+      boundary: 88, rangeLow: 80, rangeHigh: frozenHigh, atrAtLock: 40,
+      lockedAt: dateAt(95), lockedBy: "LOWER_TAIL_FALLING", ageSessions: 3,
+      stableSessions: stable, trackedLow: 80,
+    },
+  } };
+  return analyzeBars(withLast(base, [{ open: close - 1, high: close + 1, low: close - 2, close }]),
+    { symbol: "TEST.US", previousState });
+}
+
+test("frozen reclaim retains evidence but cannot open at/beyond first management target", () => {
+  for (const close of [100, 101, 113, 121]) {
+    const row = frozenReclaimFixture(close);
+    assert.equal(row.state, "LOWER_TAIL_RECLAIMED");
+    assert.equal(row.signalBoundary.boundary, 88);
+    assert.equal(row.signalBoundary.lockedAt, dateAt(95));
+    assert.equal(row.management.firstZone, 100);
+    assert.equal(row.newPositionAllowed, false);
+    assert.equal(row.entryEligibility.tailEntryExpired, true);
+    assert.equal(row.nextCondition.targetState, "REASSESS");
+    assert.match(row.action, /仅管理已有仓位/);
+    assert.equal(row.stateMemory.lower, null); // confirmation still consumes lock
+    const risk = calculateRiskPlan({ equity: 100000, entry: row.close,
+      stop: row.management.hardStop, module: "tail_core", signalGate: row });
+    assert.equal(risk.allowed, false);
+    assert.equal(risk.shares, 0);
+  }
+});
+
+test("reclaim new entry remains eligible strictly below nearest first zone", () => {
+  const row = frozenReclaimFixture(99.999);
+  assert.equal(row.state, "LOWER_TAIL_RECLAIMED");
+  assert.equal(row.newPositionAllowed, true);
+  assert.equal(row.entryEligibility.tailEntryExpired, false);
+});
+
+test("rolling midpoint vetoes a frozen target that has drifted above current value", () => {
+  const row = frozenReclaimFixture(113, { frozenHigh: 160 });
+  assert.equal(row.management.firstZone, 120);
+  assert.equal(row.tailMap.midpoint, 100);
+  assert.equal(row.entryEligibility.tailEntryLimit, 100);
+  assert.equal(row.newPositionAllowed, false);
+});
+
+test("nearer frozen first zone still vetoes below rolling midpoint", () => {
+  const row = frozenReclaimFixture(96, { frozenHigh: 110 });
+  assert.equal(row.management.firstZone, 95);
+  assert.equal(row.tailMap.midpoint, 100);
+  assert.equal(row.entryEligibility.tailEntryLimit, 95);
+  assert.equal(row.newPositionAllowed, false);
+});
+
+test("rally alone never bypasses the five-session stability requirement", () => {
+  const row = frozenReclaimFixture(113, { stable: 2 });
+  assert.equal(row.state, "LOWER_TAIL_FALLING");
+  assert.equal(row.locked.lowerStableSessions, 3);
+  assert.equal(row.newPositionAllowed, false);
+  assert.equal(row.entryEligibility.tailEntryExpired, false);
+});
+
+test("AMZN published close and frozen/rolling levels reproduce the expired entry gate", () => {
+  // Synthetic bars, not a replay of provider OHLCV. Levels and closing reference
+  // reproduce the immutable Nov-09 public snapshot; do not rewrite that snapshot.
+  const base = Array.from({ length: 100 }, (_, index) => ({
+    time: dateAt(index), open: 259.3, high: 273.23, low: 229.363, close: 259.3,
+    volume: 2_000_000, turnover: 150_000_000,
+  }));
+  const previousState = { tradingDate: dateAt(99), stateMemory: {
+    version: 1, upper: null, trend: null, lower: {
+      boundary: 252.88, rangeLow: 244.3, rangeHigh: 287.2, atrAtLock: 6.405,
+      lockedAt: "2026-10-26", ageSessions: 8, stableSessions: 5, trackedLow: 244.3,
+    },
+  } };
+  const row = analyzeBars(withLast(base, [{ open: 260, high: 268, low: 259, close: 266.93 }]),
+    { symbol: "AMZN.US", previousState });
+  assert.equal(row.state, "LOWER_TAIL_RECLAIMED");
+  assert.equal(row.management.firstZone, 265.75);
+  assert.equal(row.tailMap.upperTailBottom, 264.457);
+  assert.equal(row.rangePositionPct, 85.6);
+  assert.equal(row.newPositionAllowed, false);
+  assert.equal(row.nextCondition.targetState, "REASSESS");
+});

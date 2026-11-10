@@ -25,3 +25,51 @@ class PublicationPolicyTests(unittest.TestCase):
         self.assertEqual(workflow.count("run: python tools/market_simulation/run_cycle.py"), 1)
         clock = (root / "tools/market_simulation/publication_clock.py").read_text()
         self.assertIn('dispatch(args.repository, "pages.yml")', clock)
+
+
+class DailyRefreshTriggerTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.root = Path(__file__).resolve().parents[2]
+        cls.daily = (cls.root / '.github/workflows/daily.yml').read_text()
+        block = cls.daily.split('    paths:\n', 1)[1].split('  schedule:', 1)[0]
+        cls.paths = [line.strip()[3:-1] for line in block.splitlines()
+                     if line.strip().startswith('- "')]
+
+    def triggered(self, path):
+        from fnmatch import fnmatchcase
+        return any(fnmatchcase(path, pattern) for pattern in self.paths)
+
+    def test_refresh_dependencies_still_trigger(self):
+        for path in ('pipeline/daily/run.py', 'pipeline/daily/meta.json',
+                     'pipeline/daily/requirements.txt', 'pipeline/daily/ui-v21.patch',
+                     'tools/tailtrend/refresh.mjs', 'tools/incomeos/data-quality.mjs',
+                     'tools/scheduler/refresh-runner.mjs', 'personal-data-hub/server.py',
+                     'portal/test_tailtrend_engine.mjs', 'portal/vendor/tailtrend/tailtrend-engine.mjs',
+                     'portal/vendor/incomeos/incomeos-engine.mjs', 'portal/vendor/otc/engine.mjs',
+                     'portal/vendor/review/review-community.mjs',
+                     'portal/assets/personal-data-hub.mjs',
+                     'tools/otc/update_public_prices.py', 'portal/vendor/otc/data/snapshot.json',
+                     '.github/workflows/daily.yml'):
+            with self.subTest(path=path):
+                self.assertTrue(self.triggered(path))
+
+    def test_ui_and_published_outputs_do_not_duplicate_refresh(self):
+        for path in ('portal/home/index.html', 'portal/assets/app.css',
+                     'portal/vendor/tailtrend/data/latest.json',
+                     'portal/vendor/daily-trade/data/index.json',
+                     'portal/vendor/otc/data/prices.json', 'prototype/app.html',
+                     'README.md', 'docs/METHODS_AND_SOURCES.md'):
+            with self.subTest(path=path):
+                self.assertFalse(self.triggered(path))
+
+    def test_existing_schedule_and_dispatch_are_unchanged(self):
+        self.assertEqual(self.daily.count('cron:'), 2)
+        self.assertIn('cron: "35 0 * * *"', self.daily)
+        self.assertIn('cron: "30 6 * * *"', self.daily)
+        self.assertIn('workflow_dispatch: {}', self.daily)
+        self.assertIn('python tools/otc/update_public_prices.py', self.daily)
+        self.assertIn('python pipeline/daily/run.py', self.daily)
+        pages = (self.root / '.github/workflows/pages.yml').read_text()
+        self.assertIn("- 'portal/**'", pages)
+        self.assertIn('workflows: [daily-refresh]', pages)

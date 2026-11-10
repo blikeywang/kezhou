@@ -102,6 +102,14 @@ function comparisonNote(fromDate, toDate) {
 function renderHeader() {
   const snapshot = state.snapshot;
   const quality = snapshot.dataQuality;
+  if (snapshot.revision && !document.getElementById("ttRevisionNote")) {
+    const note = document.createElement("p");
+    note.id = "ttRevisionNote";
+    note.className = "th-pagenote";
+    note.setAttribute("role", "status");
+    note.textContent = `事后新版研究重算，非当时信号。数据日 ${snapshot.tradingDate}；重算时间 ${snapshot.runAt}。原始快照及历史审计账本未改写，不能据此计算当时收益。`;
+    document.querySelector("#scanner .tt-wrap")?.prepend(note);
+  }
   const newest = state.index?.entries?.[0];
   $("#snapshotMode").textContent = snapshot.expired
     ? `快照已过期 · ${snapshot.ageDays} 天未更新`

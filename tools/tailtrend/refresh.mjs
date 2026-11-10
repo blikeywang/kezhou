@@ -23,6 +23,10 @@ import {
 import { expectedSession } from "../scheduler/refresh-runner.mjs";
 import { assertTailtrendQuality, snapshotHashes, assertHistoryUnchanged, validatedCalendarEvents } from "./publication-quality.mjs";
 
+import { persistResearchRevision, assertNoRevisionDowngrade } from "./research-revision.mjs";
+const args = process.argv.slice(2);
+if (args.some(arg => arg !== "--research-revision") || args.length > 1) throw new Error("Usage: refresh.mjs [--research-revision]");
+const researchRevision = args.includes("--research-revision");
 const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
@@ -71,6 +75,7 @@ async function buildMetadata(universe) {
       "tools/tailtrend/refresh.mjs",
       "tools/tailtrend/snapshot-store.mjs",
       "tools/tailtrend/publication-quality.mjs",
+      "tools/tailtrend/research-revision.mjs",
       "tools/scheduler/refresh-runner.mjs",
       "tools/tailtrend/universe.json",
     ], { cwd: projectDir });
@@ -406,6 +411,12 @@ const snapshot = {
 
 const calendarDates = [...new Set(outcomes.flatMap((item) => item.calendarDates ?? []))].sort();
 assertTailtrendQuality(snapshot, expectedSession(new Date(runAt)));
+if (researchRevision) {
+  const stored = await persistResearchRevision({dataDir, snapshot, expectedDate: expectedSession(new Date(runAt))});
+  console.log(`research revision ${stored.file}: 事后新版研究重算，非当时信号`);
+  process.exit(0);
+}
+assertNoRevisionDowngrade(await readJson(latestPath, null), tradingDate);
 const oldSnapshotHashes = await snapshotHashes(resolve(dataDir, "snapshots"));
 const stored = await persistDailySnapshots({ dataDir, snapshot, calendarDates });
 assertHistoryUnchanged(oldSnapshotHashes, await snapshotHashes(resolve(dataDir, "snapshots")));

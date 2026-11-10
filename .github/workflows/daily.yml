@@ -4,15 +4,23 @@ name: daily-refresh
 on:
   push:
     branches: [main]
+    # UI/derived-data pushes already publish through pages.yml. Avoid a second
+    # refresh for those, while retaining the existing engine/test CI coverage
+    # and the OTC universe input. Code/test changes may still refresh/publish.
     paths:
       - "pipeline/daily/**"
-      - "portal/**"
       - "tools/tailtrend/**"
-      - "tools/otc/**"
+      - "tools/incomeos/**"
+      - "tools/scheduler/**"
       - "personal-data-hub/**"
-      - "docs/METHODS_AND_SOURCES.md"
-      - "docs/TRADERHOME_PRODUCT_SYSTEM.md"
-      - "README.md"
+      - "portal/test*"
+      - "portal/vendor/**/*-engine.mjs"
+      - "portal/vendor/otc/engine.mjs"
+      - "portal/vendor/review/review-benchmarks.mjs"
+      - "portal/vendor/review/review-community.mjs"
+      - "portal/assets/personal-data-hub.mjs"
+      - "tools/otc/**"
+      - "portal/vendor/otc/data/snapshot.json"
       - ".github/workflows/daily.yml"
   schedule:
     - cron: "35 0 * * *"   # 加密 UTC 日线闭合后；同时检查股票已闭合日线

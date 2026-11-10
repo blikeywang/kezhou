@@ -2,7 +2,7 @@ const DAY_MS = 86_400_000;
 
 export const TAILTREND_CONFIG = Object.freeze({
   schema: "traderhome_tailtrend_snapshot_v1",
-  version: "0.3.0",
+  version: "0.3.1",
   tailLookback: 60,
   tailFraction: 0.20,
   atrTailWidth: 1.5,
@@ -790,6 +790,21 @@ export function analyzeBars(inputRows, options = {}) {
     trailingExit: structural?.trailingExit,
   });
   const blockers = [];
+  // A frozen reclaim is structural evidence, not permission to chase it.
+  // Keep its state/boundaries for audit; current location and the nearest
+  // already-defined first management zone independently veto new tail risk.
+  const tailEntryLimit = state === "LOWER_TAIL_RECLAIMED"
+    ? Math.min(management.firstZone, map.midpoint, map.upperTailBottom)
+    : null;
+  const tailEntryExpired = Number.isFinite(tailEntryLimit) && current.close >= tailEntryLimit;
+  if (tailEntryExpired) {
+    blockers.push("下沿收复已到达中轴或上尾管理区，仅管理已有仓位，不新增尾部核心仓");
+    explanation.nextCondition = {
+      targetState: "REASSESS", label: "等待新结构",
+      condition: "保留本次收复证据；等待新的边缘结构或独立的突破接受，不沿用已越过的第一目标追入",
+      distanceAtr: null,
+    };
+  }
   const overextended = state === "TREND_ACCEPTED" && (breakoutEvidence?.extensionAtr ?? 0) > TAILTREND_CONFIG.maximumTrendExtensionAtr;
   if (state === "BREAKOUT_CANDIDATE") blockers.push("日线接受尚未完成");
   if (state === "TREND_ACCEPTED" && regime !== "UP") blockers.push("纯趋势与周线未同向");
@@ -820,8 +835,14 @@ export function analyzeBars(inputRows, options = {}) {
     state,
     bucket: meta.bucket,
     label: meta.label,
-    action: meta.action,
+    action: tailEntryExpired ? "收复已延伸，仅管理已有仓位" : meta.action,
     newPositionAllowed: allowed,
+    entryEligibility: {
+      structuralState: state,
+      tailEntryLimit: round(tailEntryLimit, 3),
+      tailEntryExpired,
+      policy: "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE",
+    },
     candidateModule,
     riskModule: allowed ? meta.riskModule ?? null : null,
     shortQualified: meta.riskModule === "us_short" ? market === "US" && options.borrowVerified === true : null,

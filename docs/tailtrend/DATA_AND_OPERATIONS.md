@@ -209,3 +209,20 @@ git diff --stat -- portal/vendor/tailtrend/data
 检查dataAsOf/真实目标日、每行日期、health、事件查询结果、engineDirty/hash、COMPLETE/MISSING、旧日文件未变化、审计forward是否连续，然后只暂存审过的数据路径。算法修改应先版本化，再以干净代码生成新研究记录；同日已冻结时必须使用明确的修订方案，不能强行覆盖。
 
 推送后分别验证GitHub文件和公开站点的dataAsOf、engineVersion、index、状态闸门与过期行为。Pages成功仅证明部署，不证明当天行情成功取得。日志、GitHub令牌、Longbridge凭据、账户配置文件和原始K线不得作为交接资料提交。
+
+## 显式同日新版研究重算（不是历史信号修订）
+
+仅经明确授权后运行 `node tools/tailtrend/refresh.mjs --research-revision`。
+它重新获取完整数据并执行原有30标的、日线、日历与源质量门禁；需要已有同日
+COMPLETE原始快照以及不同引擎哈希。通过后独占创建
+`data/revisions/YYYY-MM-DD-完整引擎hash.json`，再更新 `latest.json` 和
+`tailtrend-snapshot.json` 展示别名。页面明确显示“事后新版研究重算，非当时信号”。
+实际重算时间记录为runAt，数据日不变；revision provenance记录原始快照路径、
+runAt和原始字节SHA256。不能把重新获取时间说成原始信号发布时间。
+
+所有 `snapshots/`、`index.json`、`run-history.json`、`tailtrend-audit.json`
+逐字保持；不补漏跑、不中途修改审计epoch、不回填历史收益。revision不输出
+假装当时发布的状态转换。重复引擎/数据日的revision拒绝覆盖，失败须先读回核对；
+别名各自原子替换，但两个文件不构成跨文件事务，中断时需核对immutable revision
+及两个别名后恢复，不能假称发布成功。普通同日刷新在现有revision存在时明确
+拒绝降级到旧快照；下一完整交易日仍按原正常流程生成，不改任何定时。

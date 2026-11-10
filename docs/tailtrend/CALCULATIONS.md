@@ -352,3 +352,17 @@ maxDownPct = min(0, 所有downPct)
 | drawdownMultiplier / volatilityMultiplier / calculateRiskPlan | §7 |
 | updateAuditLedger / 前端renderAudit | §8 |
 | populateRisk / applySnapshotAge / 本地导入 | §7、[数据与运维说明](DATA_AND_OPERATIONS.md) |
+
+
+
+## 0.3.1：结构收复与新仓资格分开
+
+冻结下沿确认仍记录 `LOWER_TAIL_RECLAIMED` 和原锁定边界；它描述结构事件，
+不保证当前价格还适合新开尾部核心仓。新增风险要求收盘严格低于
+`min(冻结地图第一管理区, 当前滚动中轴, 当前滚动上尾下界)`；到达即阻断，
+`entryEligibility` 记录限价及是否已延伸，`blockers` 明确只管理已有仓位。
+不将已经越过的第一目标继续显示为尚待到达的下一条件；改为等待新的结构。
+稳定不足五日仍等待，不因反弹进入区间中部就放行。
+
+本次不改变结构确认、原始止损、目标或持仓退出规则。历史日快照不可重写；
+新版未来生成结果使用 0.3.1 版本及已有引擎哈希审计 epoch，不将修正回填成历史收益。
