@@ -39,16 +39,38 @@
     marketSimulation: "公开模拟盘与小时复核",
     dailyTrade: "已校验的早报与晚报",
   };
+  // One page bar on every product page: what the page is for, what it outputs, where it stops,
+  // and how fresh its data is. Names here are the canonical names (docs/DESIGN_SYSTEM.md).
   var stages = {
     history: {
-      step: "01", label: "研究", title: "先看历史证据，再形成交易想法",
+      step: "01 · 研究", name: "历史证据", title: "先看历史证据，再形成交易想法",
       output: "上涨概率 · 相对基准的优势 · 置信区间", boundary: "不预测价格，不给买卖指令",
       next: "/review/", nextText: "下一步：交易后验证"
     },
     review: {
-      step: "02", label: "复盘", title: "找出最花钱的重复错误，并检验改了没有",
+      step: "02 · 复盘", name: "交易复盘", title: "找出最花钱的重复错误，并检验改了没有",
       output: "花钱的习惯 · 证据 · 一个改进动作", boundary: "伴随的亏损不等于能挽回的钱",
       next: "/history/", nextText: "下一步：开始下一轮研究"
+    },
+    incomeos: {
+      step: "独立研究", name: "IncomeOS", title: "把每周入金拆成买入清单，期权另过闸门",
+      output: "按美元下单的清单 · 期权闸门结论", boundary: "账户只读，不替你下单"
+    },
+    tailtrend: {
+      step: "独立研究", name: "TailTrend", title: "只在 60 日区间两端观察，中部不开新仓",
+      output: "每只股票的状态 · 压力仓位", boundary: "影子观察，不自动下单"
+    },
+    otc: {
+      step: "独立研究", name: "场外日线", title: "场外指数、爆破指数和周期放在一条时间轴上看",
+      output: "周期质量复核 · 条件式研究计划", boundary: "只用提供的原页，缺页不补值"
+    },
+    marketSimulation: {
+      step: "独立研究", name: "模拟盘", title: "六个主流市场的公开模拟账本",
+      output: "多周期计划 · 模拟成交 · 小时复核", boundary: "仅模拟，不连接真实账户"
+    },
+    dailyTrade: {
+      step: "独立研究", name: "早晚报", title: "每天的立场、候选信号和六大类冷热",
+      output: "早报立场与候选 · 晚报冷热复核", boundary: "只发布白名单摘要，不含账户"
     }
   };
 
@@ -109,7 +131,14 @@
       });
     return statusPromise;
   }
+  // Daily products are dated by their data day ("11-09"), not by a converted clock time.
+  function dataStamp(m) {
+    if (!m || !m.asOf) return "";
+    return m.dataDate ? "数据日 " + String(m.dataDate).slice(5) + " · " + m.freshness.ago
+      : "数据 " + shortDate(Date.parse(m.asOf)) + " · " + m.freshness.ago;
+  }
   window.TraderHome = window.TraderHome || {};
+  window.TraderHome.dataStamp = dataStamp;
   window.TraderHome.ago = ago;
   window.TraderHome.freshness = freshness;
   window.TraderHome.loadStatus = loadStatus;
@@ -163,11 +192,13 @@
     bar.className = "th-stagebar";
     bar.setAttribute("aria-label", "当前工作阶段");
     bar.innerHTML = '<div class="th-stagebar__inner">'
-      + '<span class="th-stagebar__step">' + stage.step + " · " + stage.label + "</span>"
-      + '<strong class="th-stagebar__title">' + stage.title + "</strong>"
+      + '<span class="th-stagebar__step">' + stage.step + "</span>"
+      + '<strong class="th-stagebar__title"><b>' + stage.name + "</b>" + stage.title + "</strong>"
       + '<span class="th-stagebar__chip"><b>输出</b>' + stage.output + "</span>"
       + '<span class="th-stagebar__chip"><b>边界</b>' + stage.boundary + "</span>"
-      + '<a class="th-stagebar__next" href="' + stage.next + '">' + stage.nextText + " →</a></div>";
+      + '<span class="th-stagebar__fresh"><span class="th-fresh" data-state="unknown">读取中</span><small></small></span>'
+      + (stage.next ? '<a class="th-stagebar__next" href="' + stage.next + '">' + stage.nextText + " →</a>" : "")
+      + "</div>";
     header.insertAdjacentElement("afterend", bar);
   }
 
@@ -198,6 +229,15 @@
     if (!menuPanel.hidden) { setOpen(menuButton, menuPanel, false); menuButton.focus(); }
   });
   document.addEventListener("click", function (event) {
+    var opener = event.target.closest && event.target.closest("[data-th-open-status]");
+    if (opener) {
+      event.preventDefault();
+      setOpen(menuButton, menuPanel, false);
+      setOpen(statusButton, statusPanel, true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      statusButton.focus({ preventScroll: true });
+      return;
+    }
     if (!header.contains(event.target)) {
       setOpen(statusButton, statusPanel, false);
       setOpen(menuButton, menuPanel, false);
@@ -224,10 +264,20 @@
       var m = (status.modules || []).filter(function (x) { return x.key === a.getAttribute("data-key"); })[0];
       if (m && !m.localOnly && !m.paused) a.setAttribute("data-state", m.freshness.state);
     });
+    var barFresh = document.querySelector(".th-stagebar__fresh");
+    var current = (status.modules || []).filter(function (x) { return x.key === section; })[0];
+    if (barFresh && current) {
+      var badge = barFresh.querySelector(".th-fresh"), note = barFresh.querySelector("small");
+      badge.setAttribute("data-state", current.localOnly ? "unknown" : current.freshness.state);
+      badge.textContent = current.freshness.label;
+      note.textContent = current.localOnly ? "只在你的浏览器内处理"
+        : current.asOf ? dataStamp(current) + (current.cadence ? " · " + current.cadence : "")
+        : "尚无数据";
+    } else if (barFresh) barFresh.hidden = true;
     var list = header.querySelector(".th-shell__statuslist");
     list.innerHTML = (status.modules || []).map(function (m) {
       var f = m.freshness;
-      var when = m.asOf ? shortDate(Date.parse(m.asOf)) + " · " + f.ago : (m.localOnly ? "只在你的浏览器内运行" : "尚无数据");
+      var when = m.asOf ? dataStamp(m) : (m.localOnly ? "只在你的浏览器内处理" : "尚无数据");
       return '<li><a href="' + escapeText(m.route) + '"><span class="th-shell__statusname">' + escapeText(m.name)
         + "</span><small>" + escapeText(when) + "</small></a>"
         + '<span class="th-fresh" data-state="' + escapeText(m.localOnly ? "unknown" : f.state) + '">' + escapeText(f.label) + "</span></li>";

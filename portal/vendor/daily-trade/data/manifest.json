@@ -4,11 +4,7 @@
  "generated_at": "2026-11-10T00:37:03.490Z",
  "source_project": "独立交易流程（公开摘要）",
  "public_boundary": "allowlisted_sections_no_account_no_desk_no_keys",
- "legacyRoutes": {
-  "index": "/daily-trade/",
-  "morning": "/daily-trade/reports/2026-08-14/morning.html",
-  "evening": "/daily-trade/reports/2026-08-14/evening.html"
- },
+ "legacyRoutes": {},
  "reports": [],
  "publishing": {
   "state": "active",

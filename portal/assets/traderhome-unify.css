@@ -236,3 +236,109 @@ html[data-th-stage="review"] .rv-flow span { display: block; margin-top: 2px; co
 
 /* Market simulation: "休市" is a neutral state, not a warning. */
 html[data-th-stage="marketSimulation"] .ms-badge:not(.good):not(.warn):not(.bad) { color: var(--th-muted); border-color: var(--th-line-strong); background: var(--th-surface-2); }
+
+/* ============================================================
+   Unification pass 3 (2026-11-10)
+   Every product page: page bar (shell) → compact page header → content → page note → site footer.
+   ============================================================ */
+
+/* ---------- Page note: one short, page-specific data note above the site footer ---------- */
+.th-pagenote {
+  box-sizing: border-box;
+  margin: 32px auto 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--th-line);
+  color: var(--th-muted);
+  font: 400 var(--th-fs-xs)/1.6 var(--th-font);
+  text-align: left;
+}
+html[data-th-stage="otc"] .th-pagenote { margin-inline: 0; }
+html[data-th-stage="marketSimulation"] .ms-footer {
+  margin-top: 32px; padding: 14px 0 0; border-top: 1px solid var(--th-line);
+  color: var(--th-muted); font-size: var(--th-fs-xs); line-height: 1.6;
+}
+html[data-th-stage="marketSimulation"] .ms-footer p { margin: 0 0 4px; }
+html[data-th-stage="dailyTrade"] .dt-page { padding-bottom: 0; }
+
+/* ---------- One page-header scale for product pages (the home page keeps its landing hero) ---------- */
+html[data-th-stage="review"] .rv-header h1,
+html[data-th-stage="dailyTrade"] .dt-head h1,
+html[data-th-stage="otc"] .workhead h1,
+html[data-th-stage="marketSimulation"] .ms-hero h1,
+html[data-th-stage="incomeos"] .io-hero h1,
+html[data-th-stage="tailtrend"] .tt-hero h1 {
+  margin: 0 0 10px;
+  font-family: var(--th-font);
+  font-size: var(--th-fs-3xl);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -.02em;
+}
+html[data-th-stage="incomeos"] .io-hero h1 br,
+html[data-th-stage="tailtrend"] .tt-hero h1 br { display: none; }
+html[data-th-stage="incomeos"] .io-hero h1 span,
+html[data-th-stage="tailtrend"] .tt-hero h1 span { color: var(--th-accent); background: none; -webkit-background-clip: border-box; background-clip: border-box; }
+html[data-th-stage="incomeos"] .io-hero-copy > p,
+html[data-th-stage="tailtrend"] .tt-hero__copy > p,
+html[data-th-stage="marketSimulation"] .ms-subtitle,
+html[data-th-stage="review"] .rv-header p {
+  max-width: 760px;
+  color: var(--th-text-2);
+  font-size: var(--th-fs-base);
+  line-height: 1.7;
+}
+
+/* IncomeOS: content lines up with the navigation; the hero is a header, not a landing page. */
+html[data-th-stage="incomeos"] .io-wrap { width: min(var(--th-container), calc(100% - 2 * var(--th-gutter))); }
+html[data-th-stage="incomeos"] .io-hero,
+html[data-th-stage="incomeos"] .io-hero.compact-hero { min-height: 0; align-items: start; gap: 40px; padding-block: 40px 36px; }
+html[data-th-stage="incomeos"] .io-hero-proof { margin: 20px 0 14px; }
+html[data-th-stage="incomeos"] .io-control-panel { box-shadow: none; border-radius: var(--th-r-lg); }
+
+/* TailTrend: same header; the ornament goes, the source facts stay. */
+html[data-th-stage="tailtrend"] .tt-hero { min-height: 0; align-items: start; gap: 40px; padding: 40px 0 28px; }
+html[data-th-stage="tailtrend"] .tt-orbit { display: none; }
+html[data-th-stage="tailtrend"] .tt-hero__status { padding: 18px 20px; border-radius: var(--th-r-lg); box-shadow: none; }
+html[data-th-stage="tailtrend"] .tt-statusline { margin-bottom: 12px; }
+html[data-th-stage="tailtrend"] .tt-actions { margin-top: 18px; }
+html[data-th-stage="tailtrend"] .tt-hero__rules { margin-top: 14px; }
+html[data-th-stage="tailtrend"] .tt-health { margin-bottom: 0; }
+html[data-th-stage="tailtrend"] .tt-section { padding-block: 40px; }
+
+/* Section headings: one size for h2 across product pages. */
+html[data-th-stage="tailtrend"] .tt-section h2,
+html[data-th-stage="incomeos"] .io-section-head h2 { font-size: var(--th-fs-2xl); line-height: 1.25; letter-spacing: -.01em; }
+
+/* TailTrend on phones: one compact card per stock instead of a tall stack of labelled fields. */
+@media (max-width: 760px) {
+  html[data-th-stage="tailtrend"] .tt-table tbody tr { grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; padding: 12px 14px; }
+  html[data-th-stage="tailtrend"] .tt-table td::before { display: none; }
+  html[data-th-stage="tailtrend"] .tt-table td:first-child { grid-column: 1; padding-bottom: 0; border-bottom: 0; }
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="状态"] { grid-column: 2; grid-row: 1; text-align: right; }
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="位置"],
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="动作"] { grid-column: 1 / -1; }
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="周线 / 波动"] { grid-column: 1 / -1; display: flex; gap: 8px; align-items: baseline; }
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="周线 / 波动"] .tt-cell-sub { margin: 0; }
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="数据"] { grid-column: 1 / -1; display: flex; gap: 8px; align-items: baseline; }
+  /* A fresh row does not need to repeat "fresh + date" on every card; anything else stays visible. */
+  html[data-th-stage="tailtrend"] .tt-table td[data-label="数据"]:has(.tt-fresh.fresh) { display: none; }
+  html[data-th-stage="incomeos"] .io-hero, html[data-th-stage="incomeos"] .io-hero.compact-hero { padding-block: 28px; gap: 24px; }
+  html[data-th-stage="tailtrend"] .tt-hero { padding: 28px 0 20px; gap: 20px; }
+  html[data-th-stage="review"] .rv-header h1, html[data-th-stage="dailyTrade"] .dt-head h1, html[data-th-stage="otc"] .workhead h1,
+  html[data-th-stage="marketSimulation"] .ms-hero h1, html[data-th-stage="incomeos"] .io-hero h1, html[data-th-stage="tailtrend"] .tt-hero h1 { font-size: var(--th-fs-2xl); }
+}
+
+/* TailTrend audit: missing runs are a visible gap, not "0 changes". */
+html[data-th-stage="tailtrend"] .tt-audit-changes > article.tt-audit-missing { border-style: dashed; background: transparent; }
+html[data-th-stage="tailtrend"] .tt-audit-changes > article.tt-audit-missing b { color: var(--th-warn); }
+html[data-th-stage="tailtrend"] .tt-audit-versus { display: block; margin-top: 4px; color: var(--th-muted); font-size: var(--th-fs-xs); }
+html[data-th-stage="tailtrend"] .tt-audit-changes details { margin-top: 6px; color: var(--th-muted); font-size: var(--th-fs-xs); }
+html[data-th-stage="tailtrend"] .tt-audit-changes summary { cursor: pointer; }
+
+/* OTC: the plan panel's date drops under its heading instead of squeezing the heading into two lines. */
+html[data-th-stage="otc"] .plan .panelhead { flex-wrap: wrap; }
+html[data-th-stage="otc"] .plan .panelhead h2 { white-space: nowrap; }
+html[data-th-stage="otc"] .plan .panelhead span { color: var(--th-muted); font-size: var(--th-fs-xs); }
+@media (max-width: 760px) {
+  html[data-th-stage="incomeos"] .io-hero-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

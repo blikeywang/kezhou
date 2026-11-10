@@ -22,12 +22,16 @@
 /* Align the shell with each product's own content width. */
 html[data-th-stage="history"] .th-shell, html[data-th-stage="history"] .th-stagebar { --th-page-w: 1400px; }
 html[data-th-stage="review"] .th-shell, html[data-th-stage="review"] .th-stagebar { --th-page-w: 1360px; }
-html[data-th-stage="otc"] .th-shell,
-html[data-th-stage="marketSimulation"] .th-shell { --th-page-w: var(--th-container-wide, 1600px); }
+html[data-th-stage="otc"] .th-shell, html[data-th-stage="otc"] .th-stagebar, html[data-th-stage="otc"] .th-sitefoot,
+html[data-th-stage="marketSimulation"] .th-shell, html[data-th-stage="marketSimulation"] .th-stagebar,
+html[data-th-stage="marketSimulation"] .th-sitefoot { --th-page-w: var(--th-container-wide, 1600px); }
+html[data-th-stage="history"] .th-sitefoot { --th-page-w: 1400px; }
+html[data-th-stage="review"] .th-sitefoot { --th-page-w: 1360px; }
 
 .th-shell__inner,
-.th-stagebar__inner {
-  width: min(var(--th-page-w), calc(100% - 2 * var(--th-gutter, 32px)));
+.th-stagebar__inner,
+.th-sitefoot__inner {
+  width: min(var(--th-page-w, var(--th-container, 1280px)), calc(100% - 2 * var(--th-gutter, 32px)));
   margin: 0 auto;
 }
 
@@ -167,7 +171,7 @@ header.th-shell .th-shell__panel a[aria-current="page"] { color: var(--th-text, 
 .th-shell__statuslist small { color: var(--th-muted, #93a1b4); font-size: 12px; font-variant-numeric: tabular-nums; }
 .th-shell__statusempty { color: var(--th-muted, #93a1b4); font-size: 13px; }
 
-/* Stage bar for the two core workflow products: one slim line. */
+/* Page bar on every product page: name, purpose, output, boundary, data freshness. */
 .th-stagebar {
   width: 100%;
   color: var(--th-text, #eef2f8);
@@ -177,7 +181,11 @@ header.th-shell .th-shell__panel a[aria-current="page"] { color: var(--th-text, 
 }
 .th-stagebar__inner { min-height: 48px; padding: 8px 0; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .th-stagebar__step { color: var(--th-accent, #67e8f9); font: 700 12px/1 var(--th-font-mono, monospace); letter-spacing: .06em; white-space: nowrap; }
-.th-stagebar__title { font-size: 14px; font-weight: 650; margin-right: auto; }
+.th-stagebar__title { font-size: 14px; font-weight: 500; margin-right: auto; color: var(--th-text-2, #c4cedb); }
+.th-stagebar__title b { margin-right: 10px; color: var(--th-text, #eef2f8); font-weight: 700; }
+.th-stagebar__fresh { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+.th-stagebar__fresh[hidden] { display: none; }
+.th-stagebar__fresh small { color: var(--th-muted, #93a1b4); font-size: 12px; font-variant-numeric: tabular-nums; }
 .th-stagebar__chip { display: inline-flex; gap: 6px; align-items: center; padding: 5px 9px; border: 1px solid var(--th-line, rgba(148, 163, 184, .16)); border-radius: var(--th-r-sm, 8px); color: var(--th-text-2, #c4cedb); background: rgba(8, 12, 20, .45); font-size: 12px; white-space: nowrap; }
 .th-stagebar__chip b { color: var(--th-accent, #67e8f9); font-weight: 700; }
 .th-stagebar__next { display: inline-flex; align-items: center; min-height: 32px; padding: 0 12px; border: 1px solid color-mix(in srgb, var(--th-accent, #67e8f9) 45%, transparent); border-radius: var(--th-r-sm, 8px); color: var(--th-text, #eef2f8) !important; background: color-mix(in srgb, var(--th-accent, #67e8f9) 10%, transparent); font-size: 13px; font-weight: 650; text-decoration: none !important; white-space: nowrap; }
@@ -186,9 +194,11 @@ header.th-shell .th-shell__panel a[aria-current="page"] { color: var(--th-text, 
 .th-shell button:focus-visible,
 .th-stagebar a:focus-visible { outline: 2px solid var(--th-accent, #67e8f9); outline-offset: 2px; }
 
+@media (max-width: 1480px) {
+  .th-stagebar__chip { display: none; }
+}
 @media (max-width: 1240px) {
   .th-shell__brandtext small { display: none; }
-  .th-stagebar__chip { display: none; }
 }
 
 @media (max-width: 1080px) {
@@ -203,8 +213,10 @@ header.th-shell .th-shell__panel a[aria-current="page"] { color: var(--th-text, 
   .th-shell__status i { width: 10px; height: 10px; }
   .th-stagebar__inner { gap: 6px 10px; min-height: 0; }
   .th-stagebar__title { font-size: 13px; flex: 1 1 100%; order: 2; }
-  .th-stagebar__step { order: 1; }
-  .th-stagebar__next { order: 1; min-height: 28px; margin-left: auto; font-size: 12px; }
+  .th-stagebar__step { order: 1; margin-right: auto; }
+  .th-stagebar__fresh { order: 1; }
+  .th-stagebar__fresh small { display: none; }
+  .th-stagebar__next { order: 3; min-height: 28px; font-size: 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -214,3 +226,21 @@ header.th-shell .th-shell__panel a[aria-current="page"] { color: var(--th-text, 
 /* Product-native sticky bars sit directly below the shared shell. */
 html[data-th-stage="history"] .appbar,
 html[data-th-stage="history"] .mnav { top: var(--th-shell-h, 60px) !important; }
+
+/* ---------- Site footer (injected at build time on every page) ---------- */
+.th-sitefoot, .th-sitefoot * { box-sizing: border-box; }
+.th-sitefoot {
+  width: 100%;
+  margin-top: 48px;
+  border-top: 1px solid var(--th-line, rgba(148, 163, 184, .16));
+  color: var(--th-muted, #93a1b4);
+  background: var(--th-bg, #080c14);
+  font: 400 12px/1.6 var(--th-font, system-ui, sans-serif);
+}
+.th-sitefoot__inner { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; padding: 20px 0 28px; }
+.th-sitefoot p { margin: 0; }
+.th-sitefoot b { color: var(--th-text-2, #c4cedb); font-weight: 650; }
+.th-sitefoot nav { display: flex; gap: 18px; }
+.th-sitefoot a { color: var(--th-text-2, #c4cedb) !important; text-decoration: none !important; }
+.th-sitefoot a:hover { color: var(--th-text, #eef2f8) !important; text-decoration: underline !important; }
+.th-sitefoot a:focus-visible { outline: 2px solid var(--th-accent, #67e8f9); outline-offset: 2px; }

@@ -13,13 +13,22 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "portal"
-ASSET_VERSION = "13"
+ASSET_VERSION = "14"
 SHELL_CSS = (
     f'<link rel="stylesheet" href="/assets/traderhome-tokens.css?v={ASSET_VERSION}">\n  '
     f'<link rel="stylesheet" href="/assets/traderhome-shell.css?v={ASSET_VERSION}" data-traderhome-shell="v4">\n  '
     f'<link rel="stylesheet" href="/assets/traderhome-unify.css?v={ASSET_VERSION}">'
 )
 SHELL_JS = f'<script src="/assets/traderhome-shell.js?v={ASSET_VERSION}" data-traderhome-shell="v4" defer></script>'
+# One site footer on every page, in the static HTML so the disclaimer does not depend on JavaScript.
+# Pages keep their own short data note above it; they no longer repeat the disclaimer.
+SITE_FOOTER = (
+    '<footer class="th-sitefoot" data-traderhome-footer><div class="th-sitefoot__inner">'
+    '<p><b>TraderHome</b> · 研究与教育用途，不构成投资建议。网页没有交易权限，不替你下单。</p>'
+    '<nav aria-label="页脚"><a href="/">首页</a>'
+    '<a href="/#board" data-th-open-status>数据状态</a>'
+    '<a href="/DISCLAIMER.md">免责声明</a></nav></div></footer>'
+)
 STAGES = (
     ("history/", "history"), ("review/", "review"), ("incomeos/", "incomeos"),
     ("tailtrend/", "tailtrend"), ("daily-trade/", "dailyTrade"), ("otc/", "otc"),
@@ -153,7 +162,7 @@ def _inject_shell(path: Path, output: Path) -> None:
     html = html[:head_at] + "  " + SHELL_CSS + "\n" + html[head_at:]
     lower = html.lower()
     body_at = lower.rfind("</body>")
-    html = html[:body_at] + "  " + SHELL_JS + "\n" + html[body_at:]
+    html = html[:body_at] + "  " + SITE_FOOTER + "\n  " + SHELL_JS + "\n" + html[body_at:]
     path.write_text(html, encoding="utf-8")
 
 
@@ -235,22 +244,23 @@ def _write_status(output: Path) -> dict:
     # The page reads incomeos-full.json; research-snapshot.json is the frozen
     # growth-cycle study and is not rewritten by the weekly refresh.
     income = _read_json(output / "incomeos" / "data" / "incomeos-full.json") or {}
-    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192, cadence="每个交易日 · 周五出操作单")
+    # asOf is when the file was generated; tradingDate is the session the research refers to.
+    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192, cadence="每个交易日", dataDate=income.get("tradingDate"))
 
     tail = _read_json(output / "tailtrend" / "data" / "latest.json") or {}
     tail_date = tail.get("dataAsOf")
-    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 168, cadence="每交易日收盘")
+    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 168, cadence="每个交易日收盘后", dataDate=tail_date)
 
     otc = _read_json(output / "otc" / "data" / "snapshot.json") or {}
     otc_date = otc.get("dataDate")
-    add("otc", "场外日线", "/otc/", f"{otc_date}T23:59:00+08:00" if otc_date else None, 48, 96, cadence="每日")
+    add("otc", "场外日线", "/otc/", f"{otc_date}T23:59:00+08:00" if otc_date else None, 48, 96, cadence="每日，随来源原页", dataDate=otc_date)
 
     add("marketSimulation", "模拟盘", "/market-simulation/", None, 0.5, 3, cadence="每 10 分钟", runtime="/market-simulation/data/status.json")
 
     daily = _read_json(output / "daily-trade" / "data" / "manifest.json") or {}
     paused = (daily.get("publishing") or {}).get("state") == "paused"
     add("dailyTrade", "早晚报", "/daily-trade/", daily.get("generated_at"), 36, 96,
-        cadence="每交易日", **({"paused": True} if paused else {}))
+        cadence="每个交易日", dataDate=daily.get("report_date"), **({"paused": True} if paused else {}))
 
     status = {"schema": "traderhome_status_v1", "modules": modules}
     (output / "assets" / "traderhome-status.json").write_text(

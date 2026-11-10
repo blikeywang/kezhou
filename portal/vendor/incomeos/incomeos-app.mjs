@@ -206,10 +206,10 @@ function snapshotState(data) {
   const minutes = Number(clock.hour) * 60 + Number(clock.minute);
   if (ageHours > 72) {
     const age = ageHours >= 48 ? `${Math.floor(ageHours / 24)} 天` : `${Math.round(ageHours)} 小时`;
-    return { level: "stale", label: "STALE · 旧快照", detail: `已 ${age}未更新（超过 72 小时），只用于研究，不按合约执行。` };
+    return { level: "stale", label: "已过期 · 旧快照", detail: `已 ${age}未更新（超过 72 小时），只用于研究，不按合约执行。` };
   }
-  if (clock.weekday === "Fri" && minutes >= 600 && minutes < 960 && ageHours <= 24) return { level: "review", label: "FRIDAY REVIEW", detail: "周五执行窗口；仍需在 IBKR 复核现金、持仓和限价。" };
-  return { level: "preview", label: "PREVIEW · 最新可得快照", detail: "非周五 10:00 ET 执行窗口；本页先生成预案。" };
+  if (clock.weekday === "Fri" && minutes >= 600 && minutes < 960 && ageHours <= 24) return { level: "review", label: "周五复核窗口", detail: "周五执行窗口；仍需在 IBKR 复核现金、持仓和限价。" };
+  return { level: "preview", label: "预览 · 最新可得快照", detail: "非周五 10:00 ET 执行窗口；本页先生成预案。" };
 }
 
 function statusLabel(status) {

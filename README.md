@@ -42,6 +42,11 @@ V2.1 已加入“可信度层”：五秒结论、corr/DTW 共识概率、相对
 
 以上为文档交接，不迁移账户、凭证、付费原文，也不证明生产调度或交易策略有效。
 
+## 网站维护约定
+
+- 页面结构、统一名称和用词见 [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)。改页面前先读。
+- 数据和引擎由 dot 维护，网页由 Claude 维护；互相需要对方处理的事项写在 [docs/DOT_REQUESTS.md](docs/DOT_REQUESTS.md)。
+
 ## 目录结构
 
 ```
