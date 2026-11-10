@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "portal"
-ASSET_VERSION = "14"
+ASSET_VERSION = "15"
 SHELL_CSS = (
     f'<link rel="stylesheet" href="/assets/traderhome-tokens.css?v={ASSET_VERSION}">\n  '
     f'<link rel="stylesheet" href="/assets/traderhome-shell.css?v={ASSET_VERSION}" data-traderhome-shell="v4">\n  '

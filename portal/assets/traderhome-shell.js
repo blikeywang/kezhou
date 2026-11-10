@@ -135,7 +135,7 @@
   function dataStamp(m) {
     if (!m || !m.asOf) return "";
     return m.dataDate ? "数据日 " + String(m.dataDate).slice(5) + " · " + m.freshness.ago
-      : "数据 " + shortDate(Date.parse(m.asOf)) + " · " + m.freshness.ago;
+      : "数据 " + shortDate(typeof m.asOf === "number" ? m.asOf : Date.parse(m.asOf)) + " · " + m.freshness.ago;
   }
   window.TraderHome = window.TraderHome || {};
   window.TraderHome.dataStamp = dataStamp;
