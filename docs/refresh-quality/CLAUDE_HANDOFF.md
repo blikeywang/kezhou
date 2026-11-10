@@ -44,3 +44,16 @@ Longbridge财报日历会返回所选标的的下一次事件，即使合法事�
 参考2026-11-09完整交易日的一期隔离测试：TailTrend30/30新鲜、COMPLETE、错误0；8月12日旧快照未改，后续漏跑明确MISSING。IncomeOS71价格/71基本面/71预期，18标的期权双边市场及日历校验完成；但71现货报价缺来源时间，36个期权盘口缺深度来源时间，MRK/AMZN共识接口失败，故仍partial且禁止自动发布。AVGO/COST/NVDA/MU期权因到期前财报标记WAIT_EARNINGS，而不是可交易信号。
 
 兼容修正后全套Node160/160通过；此前门户Python11/11通过。这些是手动隔离测试，不是定时触发回执。本期候选行情未随源码上传或发布，不能据此声称网页行情已更新。先完整验证，再确定是否启用任何新定时；本次没有创建或修改定时。
+
+## 用户另行授权的正式 TailTrend 数据发布
+
+2026-11-10，用户明确同意发布最新验证通过的TailTrend派生结果。随后从干净main `96be950` 重新获取并校验，而非直接使用先前临时测试文件：
+
+- 最新完整美股交易日：2026-11-09；生成时间：2026-11-10T03:15:09.840Z。
+- 30/30 FRESH、COMPLETE，缓存/过期/缺失/错误均0；30标的事件日历验证通过。
+- 原2026-08-12不可变快照逐字不变；2026-08-13至2026-11-06共61个漏跑交易日明确MISSING，不补造信号或收益。
+- 仅发布 `portal/vendor/tailtrend/data/` 派生JSON；不含原始OHLCV、账户、凭证，不发送订单。
+- IncomeOS本次不发布，继续保留源时间缺失阻断。不能把其旧历史快照或有bid/ask的无时间盘口当作最新实时行情。
+- 未新建或修改任何定时；本次是明确授权的人工端到端验收，不是定时成功证据。
+
+Claude后续可整理UI和代码，但须保留缺失/过期/partial提示、冻结历史和数据门禁；移动模块路径须同步验证import与现有CI。请先读本说明和两个模块的计算文档，再改界面，不将“可复核研究候选”改名为“可自动执行交易”。正式网页及日戳应从[页面](https://traderhome-histroy.xyz/tailtrend/)与[latest.json](https://traderhome-histroy.xyz/tailtrend/data/latest.json)核验，部署结果查看[现有Pages工作流](https://github.com/blikeywang/kezhou/actions/workflows/pages.yml)。
