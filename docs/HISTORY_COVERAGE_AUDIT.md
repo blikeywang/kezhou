@@ -1,6 +1,6 @@
 # Historical Data Coverage Audit
 
-Generated: 2026-11-10T04:25:03Z
+Generated: 2026-11-10T05:37:01Z
 
 Fresh data is not proof of complete lifetime history. No series is certified as fully verified.
 Network genesis is not a market-price start. Provider firstTradeDate is not independent IPO evidence.
@@ -146,18 +146,18 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 | IWM | primary: Yahoo Finance 1d | 2000-05-26 | 2026-11-09 | 6653 | unverified | unverified | 0 | 0 |
 | DIA | base: Yahoo Finance 1d | 1998-01-20 | 2026-11-09 | 7247 | unverified | unverified | 0 | 0 |
 | DIA | primary: Yahoo Finance 1d | 1998-01-20 | 2026-11-09 | 7247 | unverified | unverified | 0 | 0 |
-| NQ | base: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1999-06-21 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 24 |
-| NQ | primary: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1999-06-21 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 24 |
-| ES | base: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1997-09-09 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 10 |
-| ES | primary: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1997-09-09 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 10 |
-| YM | base: Yahoo Finance 1d | 2002-04-05 | 2026-11-06 | 6191 | unverified | unverified | not audited | 29 |
-| YM | primary: Yahoo Finance 1d | 2002-04-05 | 2026-11-06 | 6191 | unverified | unverified | not audited | 29 |
-| RTY | base: Yahoo Finance 1d | 2017-07-10 | 2026-11-06 | 2350 | unverified | unverified | not audited | 0 |
-| RTY | primary: Yahoo Finance 1d | 2017-07-10 | 2026-11-06 | 2350 | unverified | unverified | not audited | 0 |
-| GC | base: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6573 | unverified | unverified | not audited | 441 |
-| GC | primary: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6573 | unverified | unverified | not audited | 441 |
-| SI | base: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6574 | unverified | unverified | not audited | 243 |
-| SI | primary: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6574 | unverified | unverified | not audited | 243 |
+| NQ | base: Yahoo Finance 1d | 2000-09-18 | 2026-11-09 | 6601 | [1999-06-21 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 24 |
+| NQ | primary: Yahoo Finance 1d | 2000-09-18 | 2026-11-09 | 6601 | [1999-06-21 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 24 |
+| ES | base: Yahoo Finance 1d | 2000-09-18 | 2026-11-09 | 6601 | [1997-09-09 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 10 |
+| ES | primary: Yahoo Finance 1d | 2000-09-18 | 2026-11-09 | 6601 | [1997-09-09 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 10 |
+| YM | base: Yahoo Finance 1d | 2002-04-05 | 2026-11-09 | 6192 | unverified | unverified | not audited | 29 |
+| YM | primary: Yahoo Finance 1d | 2002-04-05 | 2026-11-09 | 6192 | unverified | unverified | not audited | 29 |
+| RTY | base: Yahoo Finance 1d | 2017-07-10 | 2026-11-09 | 2351 | unverified | unverified | not audited | 0 |
+| RTY | primary: Yahoo Finance 1d | 2017-07-10 | 2026-11-09 | 2351 | unverified | unverified | not audited | 0 |
+| GC | base: Yahoo Finance 1d | 2000-08-30 | 2026-11-09 | 6574 | unverified | unverified | not audited | 441 |
+| GC | primary: Yahoo Finance 1d | 2000-08-30 | 2026-11-09 | 6574 | unverified | unverified | not audited | 441 |
+| SI | base: Yahoo Finance 1d | 2000-08-30 | 2026-11-09 | 6575 | unverified | unverified | not audited | 243 |
+| SI | primary: Yahoo Finance 1d | 2000-08-30 | 2026-11-09 | 6575 | unverified | unverified | not audited | 243 |
 | GLD | base: Yahoo Finance 1d | 2004-11-18 | 2026-11-09 | 5528 | unverified | unverified | 0 | 0 |
 | GLD | primary: Yahoo Finance 1d | 2004-11-18 | 2026-11-09 | 5528 | unverified | unverified | 0 | 0 |
 | SLV | base: Yahoo Finance 1d | 2006-04-28 | 2026-11-09 | 5166 | unverified | unverified | 0 | 0 |
