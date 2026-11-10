@@ -26,7 +26,7 @@ export function assertHistoryUnchanged(before, after) {
 
 
 export function validatedCalendarEvents(response, requestedSymbols, {from, through, limit = 100} = {}) {
- if(!Array.isArray(response?.list) || response.has_more===true || response.hasMore===true || response.next_cursor || response.nextCursor || response.next_page_token) throw new Error('calendar response malformed or incomplete');
+ if(!Array.isArray(response?.list) || response.has_more===true || response.hasMore===true || response.next_cursor || response.nextCursor || response.next_page_token || response.next_date) throw new Error('calendar response malformed or incomplete');
  const events=[];
  for(const group of response.list) {
   if(!group || !Array.isArray(group.infos)) throw new Error('calendar group missing infos array');
@@ -36,10 +36,12 @@ export function validatedCalendarEvents(response, requestedSymbols, {from, throu
    const symbol=parts.length>=3?`${parts.at(-1)}.${parts.at(-2)}`.toUpperCase():null;
    const raw=info.ext?.local_date ?? info.date ?? group.date;
    const date=String(raw ?? '').match(/^\d{4}[-.]\d{2}[-.]\d{2}/)?.[0]?.replaceAll('.','-');
-   if(!symbol || !requestedSymbols.includes(symbol) || !date || !Number.isFinite(Date.parse(`${date}T00:00:00Z`)) || new Date(`${date}T00:00:00Z`).toISOString().slice(0,10)!==date || (from && date<from) || (through && date>through)) throw new Error('calendar event has invalid symbol or date');
+   if(!symbol || !requestedSymbols.includes(symbol) || !date || !Number.isFinite(Date.parse(`${date}T00:00:00Z`)) || new Date(`${date}T00:00:00Z`).toISOString().slice(0,10)!==date || (from && date<from)) throw new Error('calendar event has invalid symbol or date');
    events.push({symbol,date,timing:info.ext?.financial_report?.market_time ?? info.date_type ?? null,label:info.content ?? '业绩披露'});
   }
  }
  if(events.length>=limit || (Number.isFinite(response.total) && response.total>events.length)) throw new Error('calendar response potentially truncated');
+ // Provider returns each symbol next event, including valid dates beyond through.
+ // Keep that evidence; callers select their applicable horizon.
  return events;
 }

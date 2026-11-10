@@ -10,3 +10,15 @@ const calEvent={counter_id:'ST/US/MSFT',ext:{local_date:'2026.11.10'}};
 const range={from:'2026-11-09',through:'2026-12-31'};
 test('calendar explicitly empty and valid events accepted',()=>{assert.deepEqual(validatedCalendarEvents({list:[]},['MSFT.US'],range),[]);assert.equal(validatedCalendarEvents({list:[{infos:[calEvent]}]},['MSFT.US'],range)[0].date,'2026-11-10');});
 for(const [name,data] of Object.entries({missing:{},group:{list:[{}]},event:{list:[{infos:[{}]}]},invalidDate:{list:[{infos:[{...calEvent,ext:{local_date:'2026.11.31'}}]}]},outsideRange:{list:[{infos:[{...calEvent,ext:{local_date:'2020.01.01'}}]}]},wrongSymbol:{list:[{infos:[{...calEvent,counter_id:'ST/US/OTHER'}]}]},page:{list:[],has_more:true},total:{list:[],total:10}}))test(`calendar rejects ${name}`,()=>assert.throws(()=>validatedCalendarEvents(data,['MSFT.US'],range)));
+
+test('provider next-event results may extend beyond query window; valid future events retained for caller horizon selection',()=>{
+ const r={list:[{infos:[{counter_id:'ST/US/NVDA',ext:{local_date:'2026-11-17'}},{counter_id:'ST/US/AVGO',ext:{local_date:'2026-12-09'}}]}],next_date:''};
+ const events=validatedCalendarEvents(r,['NVDA.US','AVGO.US'],{from:'2026-11-09',through:'2026-11-30'});
+ assert.deepEqual(events.map(e=>e.symbol),['NVDA.US','AVGO.US']);
+ assert.throws(()=>validatedCalendarEvents({...r,next_date:'2026-12-01'},['NVDA.US','AVGO.US'],{from:'2026-11-09',through:'2026-11-30'}));
+});
+test('calendar truncation counted before future event filtering',()=>{
+ const response={list:[{infos:[{counter_id:'ST/US/MSFT',ext:{local_date:'2027-01-28'}}]}]};
+ assert.throws(()=>validatedCalendarEvents(response,['MSFT.US'],{from:'2026-11-09',through:'2026-11-30',limit:1}));
+ assert.equal(validatedCalendarEvents(response,['MSFT.US'],{from:'2026-11-09',through:'2026-11-30',limit:100}).length,1);
+});

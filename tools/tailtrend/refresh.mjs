@@ -70,6 +70,8 @@ async function buildMetadata(universe) {
       "portal/vendor/tailtrend/tailtrend-engine.mjs",
       "tools/tailtrend/refresh.mjs",
       "tools/tailtrend/snapshot-store.mjs",
+      "tools/tailtrend/publication-quality.mjs",
+      "tools/scheduler/refresh-runner.mjs",
       "tools/tailtrend/universe.json",
     ], { cwd: projectDir });
     gitCommit = commit.stdout.trim();
