@@ -16,7 +16,11 @@ import {
 } from "./vendor/incomeos/incomeos-engine.mjs";
 
 const snapshot = JSON.parse(await readFile(new URL("./vendor/incomeos/data/research-snapshot.json", import.meta.url), "utf8"));
-const fullSnapshot = JSON.parse(await readFile(new URL("./vendor/incomeos/data/incomeos-full.json", import.meta.url), "utf8"));
+const rawFullSnapshot = JSON.parse(await readFile(new URL("./vendor/incomeos/data/incomeos-full.json", import.meta.url), "utf8"));
+// Explicitly trusted synthetic execution fixture tests calculation logic, not the
+// freshness/executability of the mutable published research snapshot.
+const fullSnapshot = {...rawFullSnapshot, asOf:new Date().toISOString(), mode:"live", publicationMode:"verified_test_fixture", executionAllowed:true, dataQuality:{...rawFullSnapshot.dataQuality,publicationReady:true,publicationErrors:[]},
+ options:[{symbol:"SPY.US",ticker:"SPY",executionAllowed:true,put:{executionAllowed:true,action:"REVIEW_CASH",gates:[],cashRequired:73000}},{symbol:"JPM.US",ticker:"JPM",executionAllowed:true,put:{executionAllowed:true,action:"WAIT_VALUATION",gates:["底层估值闸门未通过"],cashRequired:30000}}]};
 const operationHistory = JSON.parse(await readFile(new URL("./vendor/incomeos/data/operation-history.json", import.meta.url), "utf8"));
 
 test("allocation changes continuously with account size and always sums to one", () => {
@@ -68,7 +72,7 @@ test("JPM put cannot pass solely because the account can fund it", () => {
 
 test("a fully verified SCHD put can pass after account and cash gates", () => {
   const schd = snapshot.puts.find((candidate) => candidate.symbol === "SCHD");
-  const verified = { ...schd, hasBidAsk: true };
+  const verified = { ...schd, hasBidAsk: true, executionAllowed:true };
   assert.equal(evaluatePut(verified, 20_000, 3_300).eligible, true);
 });
 

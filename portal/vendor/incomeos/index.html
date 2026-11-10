@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="IncomeOS：每周扫描候选池、更新 Top 50、构建动态组合，并生成 Sell Call / Cash-Secured Put 风险闸门与 IBKR 操作单。">
+  <meta name="description" content="IncomeOS：每周扫描候选池、更新 Top 50、构建动态组合，展示 Sell Call / Cash-Secured Put 研究条件与缺失信息，不代表实时交易指示。">
   <title>IncomeOS · TraderHome</title>
   <link rel="stylesheet" href="/incomeos/incomeos.css">
 </head>
@@ -17,12 +17,13 @@
   </header>
 
   <main>
+    <div class="io-wrap io-status stale"><b>研究展示，不是实时可执行行情</b><span>请核对生成时间、参考交易日和各项源时间。未知/过期数据不会被提升为实时；历史操作单不代表当前建议。</span></div>
     <div class="io-alert" id="appError" hidden></div>
 
     <section class="io-wrap io-hero compact-hero">
       <div class="io-hero-copy">
-        <h1>把每周入金变成买入清单，<br><span>每周重新找更好的组合。</span></h1>
-        <p>每周给 71 只候选股票和 ETF 打分（长期回报、盈利预期、质量、估值、风险、股息、流动性），选出前 50 并配成组合。填入本周入金和券商净值，就得到今天按美元下单的清单。</p>
+        <h1>按模型审阅每周研究结果，<br><span>每周重新找更好的组合。</span></h1>
+        <p>每周给 71 只候选股票和 ETF 打分（长期回报、盈利预期、质量、估值、风险、股息、流动性），选出前 50 并配成组合。填入假设入金和净值仅作模型讨论；研究版不生成订单，来源时间未知不等于实时行情。</p>
         <div class="io-hero-proof">
           <div><b id="candidateCount">—</b><span>候选扫描</span></div>
           <div><b id="top50Count">—</b><span>当期 Top 50</span></div>
@@ -73,7 +74,7 @@
           </div>
           <div class="io-action-grid">
             <div>
-              <div class="io-subhead"><span>今天在 IBKR 执行</span><h3>按美元下单</h3><p>只分配本周新增的钱，不会根据你已有的持仓再做调整。</p></div>
+              <div class="io-subhead"><span>研究配置 · 非交易指示</span><h3>模型配置（非订单）</h3><p>只分配本周新增的钱，不会根据你已有的持仓再做调整。</p></div>
               <div id="orders" class="io-orders"></div>
             </div>
             <aside class="io-put-callout">

@@ -6,6 +6,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { sourceTime } from "./data-quality.mjs";
+
 const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
@@ -36,7 +38,8 @@ const executionAssets = definitions.map((item) => {
     price,
     dayChange: numeric(quote.change_percentage),
     dollarVolume: numeric(quote.turnover),
-    quoteTimestamp: requestedAt,
+    quoteTimestamp: sourceTime(quote),
+    retrievedAt: requestedAt,
     source: "Longbridge Securities",
   };
 });

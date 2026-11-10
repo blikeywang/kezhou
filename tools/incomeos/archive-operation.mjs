@@ -4,6 +4,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { executionSnapshotAllowed } from "../../portal/vendor/incomeos/incomeos-engine.mjs";
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
 const snapshotPath = resolve(projectDir, "portal/vendor/incomeos/data/incomeos-full.json");
@@ -32,6 +33,7 @@ async function loadHistory() {
 }
 
 const data = JSON.parse(await readFile(snapshotPath, "utf8"));
+if(!executionSnapshotAllowed(data)) throw new Error("Research/partial snapshot cannot create operation-history records");
 const history = await loadHistory();
 const clock = newYorkParts(data.asOf);
 const actionDate = `${clock.year}-${clock.month}-${clock.day}`;

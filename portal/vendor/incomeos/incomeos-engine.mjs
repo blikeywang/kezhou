@@ -91,6 +91,7 @@ export function evaluatePut(candidate, accountValue, optionReserve) {
   const account = Math.max(0, Number(accountValue) || 0);
   const reserve = Math.max(0, Number(optionReserve) || 0);
   const reasons = [];
+  if(candidate.executionAllowed!==true || candidate.action==="RESEARCH_ONLY") reasons.push("研究版不可执行");
   const concentration = account > 0 ? candidate.cashRequired / account : Infinity;
   if (reserve < candidate.cashRequired) reasons.push(`准备金还差 $${Math.ceil(candidate.cashRequired - reserve).toLocaleString("en-US")}`);
   if (concentration > candidate.maxConcentration) {
@@ -110,7 +111,7 @@ export function evaluatePut(candidate, accountValue, optionReserve) {
   };
 }
 
-export function contributionPlan(input, snapshot) {
+function compute_contributionPlan(input, snapshot) {
   const accountValue = Math.max(0, Number(input.accountValue) || 0);
   const weeklyContribution = Math.max(0, Number(input.weeklyContribution) || 0);
   const optionReserve = Math.max(0, Number(input.optionReserve) || 0);
@@ -220,7 +221,7 @@ function wholeShareAssetMap(data) {
   return new Map([...(data?.assets ?? []), ...(data?.executionAssets ?? [])].map((asset) => [asset.ticker, asset]));
 }
 
-export function allocateWholeShareOrders(totalDollars, weights, data, options = {}) {
+function compute_allocateWholeShareOrders(totalDollars, weights, data, options = {}) {
   const budget = Math.max(0, round(Number(totalDollars) || 0));
   const cashBuffer = Math.min(budget, Math.max(0, round(Number(options.cashBuffer) || 0)));
   const spendableBudget = round(budget - cashBuffer);
@@ -354,6 +355,7 @@ export function evaluateLivePut(optionRow, assets, accountValue, isolatedCash) {
   const account = Math.max(0, Number(accountValue) || 0);
   const reserve = Math.max(0, Number(isolatedCash) || 0);
   const reasons = [...(put.gates ?? [])];
+  if(optionRow.executionAllowed!==true || put.executionAllowed!==true) reasons.push("研究版不可执行");
   if (!String(put.action).startsWith("REVIEW")) {
     if (!reasons.length) reasons.push(put.action === "WAIT_VALUATION" ? "底层估值闸门未通过" : "期权结构闸门未通过");
   }
@@ -370,7 +372,7 @@ export function evaluateLivePut(optionRow, assets, accountValue, isolatedCash) {
   };
 }
 
-export function portfolioContributionPlan(input, data) {
+function compute_portfolioContributionPlan(input, data) {
   const accountValue = Math.max(0, Number(input.accountValue) || 0);
   const weeklyContribution = Math.max(0, Number(input.weeklyContribution) || 0);
   const optionReserve = Math.max(0, Number(input.optionReserve) || 0);
@@ -399,7 +401,7 @@ export function portfolioContributionPlan(input, data) {
   };
 }
 
-export function wholeShareContributionPlan(input, data) {
+function compute_wholeShareContributionPlan(input, data) {
   const accountValue = Math.max(0, Number(input.accountValue) || 0);
   const weeklyContribution = Math.max(0, Number(input.weeklyContribution) || 0);
   const carryCash = Math.max(0, Number(input.carryCash) || 0);
@@ -407,7 +409,7 @@ export function wholeShareContributionPlan(input, data) {
   const optionReserve = Math.max(0, Number(input.optionReserve) || 0);
   const postDepositValue = accountValue + weeklyContribution;
   const weights = dynamicPortfolioWeights(data.portfolio, postDepositValue);
-  const allocation = allocateWholeShareOrders(weeklyContribution + carryCash, weights, data, { cashBuffer });
+  const allocation = compute_allocateWholeShareOrders(weeklyContribution + carryCash, weights, data, { cashBuffer });
   const baseStage = accountStage(postDepositValue);
   const stage = baseStage.id === "accumulate"
     ? { ...baseStage, detail: "整股核心优先；不足一股的小额目标先停泊在 SGOV，剩余现金滚入下次。" }
@@ -445,3 +447,24 @@ export function wholeShareContributionPlan(input, data) {
 }
 
 export const formatPercentValue = (value, digits = 1) => Number.isFinite(value) ? `${value.toFixed(digits)}%` : "—";
+
+// Public snapshot safety boundary: no orders from missing/unverified flags.
+export function executionSnapshotAllowed(data, now = new Date()) {
+ const age=now.getTime()-Date.parse(data?.asOf);
+ return data?.mode==='live' && data?.publicationMode!=='research_partial' && data?.executionAllowed===true && data?.dataQuality?.publicationReady===true && Array.isArray(data?.dataQuality?.publicationErrors) && data.dataQuality.publicationErrors.length===0 && Number.isFinite(age) && age>=-300000 && age<=72*3600000;
+}
+function guardSnapshotPlan(plan,data) {
+ if(executionSnapshotAllowed(data)) return plan;
+ const reason='研究/未验证快照：不生成订单或可执行期权';
+ return {...plan,executionAllowed:false,orders:[],executablePut:null,investedAmount:0,cashRemaining:plan.budget??plan.weeklyContribution??0,
+  optionReviews:(plan.optionReviews??[]).map(row=>({...row,accountEvaluation:{...row.accountEvaluation,eligible:false,reasons:[reason,...(row.accountEvaluation?.reasons??[])]}})),
+  puts:(plan.puts??[]).map(row=>({...row,evaluation:{...row.evaluation,eligible:false,reasons:[reason,...(row.evaluation?.reasons??[])]}}))};
+}
+export function contributionPlan(input,data){return guardSnapshotPlan(compute_contributionPlan(input,data),data);}
+export function portfolioContributionPlan(input,data){return guardSnapshotPlan(compute_portfolioContributionPlan(input,data),data);}
+export function wholeShareContributionPlan(input,data){return guardSnapshotPlan(compute_wholeShareContributionPlan(input,data),data);}
+
+export function allocateWholeShareOrders(totalDollars,weights,data,options={}) {
+ const p=compute_allocateWholeShareOrders(totalDollars,weights,data,options);
+ return executionSnapshotAllowed(data)?p:{...p,executionAllowed:false,orders:[],investedAmount:0,cashRemaining:p.budget};
+}
