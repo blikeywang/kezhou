@@ -1,7 +1,7 @@
 {
  "schema": "traderhome_daily_extras_v1",
  "decision": {
-  "date": "2026-09-21",
+  "date": "2026-11-10",
   "stance": {
    "label": "防御等待",
    "riskCap": 0.25,
@@ -19,7 +19,7 @@
    {
     "market": "股票 / ETF Buy-Sell",
     "state": "wait",
-    "action": "仅观察 AMZN 的次份S1快照与守位",
+    "action": "没有同时满足冲浪确认与多体系支持的 Buy；不从原始 s1 池直接开仓",
     "trigger": "S1 Buy 连续快照代理确认 + 下跌后低波动震荡守位 + 至少一路趋势/场外同向 + 当日 13买点 L1。",
     "invalidation": "Buy 在下一快照消失/转Sell、日线跌破震荡下沿容差、13买点仅为 L0，或标的进入财报事件窗。"
    },
@@ -34,68 +34,68 @@
   "sources": [
    {
     "name": "场外指数",
-    "date": "2026-09-19",
+    "date": "2026-11-07",
     "state": "来源过期",
-    "ageDays": 2
+    "ageDays": 3
    },
    {
     "name": "趋势冷热",
-    "date": "2026-09-14",
+    "date": "2026-11-08",
     "state": "偏旧",
-    "ageDays": 7
+    "ageDays": 2
    },
    {
     "name": "s1",
     "date": "2026-09-12",
     "state": "偏旧",
-    "ageDays": 9
+    "ageDays": 59
    },
    {
     "name": "s1冲浪筛选",
     "date": "2026-09-12",
     "state": "偏旧",
-    "ageDays": 9
+    "ageDays": 59
    },
    {
     "name": "13买点",
-    "date": "2026-09-16",
-    "state": "本次扫描失败·历史审计",
-    "ageDays": 5
+    "date": "2026-11-10",
+    "state": "最新",
+    "ageDays": 0
    },
    {
     "name": "NQ/ES期权报价/IV",
     "date": "2026-08-04",
     "state": "偏旧",
-    "ageDays": 34
+    "ageDays": 70
    },
    {
     "name": "美股/ETF期权面",
-    "date": "2026-09-16",
-    "state": "本次未刷新·历史快照",
-    "ageDays": 3
-   },
-   {
-    "name": "s1 3/5日强制流量排查",
-    "date": "2026-09-16",
-    "state": "本次未刷新·历史审计",
-    "ageDays": 3
-   },
-   {
-    "name": "BTC/ETH期权面",
-    "date": "2026-09-21",
+    "date": "2026-11-10",
     "state": "最新",
     "ageDays": 0
    },
    {
+    "name": "s1 3/5日强制流量排查",
+    "date": "2026-11-10",
+    "state": "最新",
+    "ageDays": 0
+   },
+   {
+    "name": "BTC/ETH期权面",
+    "date": "2026-09-25",
+    "state": "偏旧",
+    "ageDays": 32
+   },
+   {
     "name": "市场风险三开关",
-    "date": "2026-09-16",
+    "date": "2026-11-10",
     "state": "部分覆盖",
-    "ageDays": 5
+    "ageDays": 0
    }
   ]
  },
  "risk": {
-  "date": "2026-09-21",
+  "date": "2026-11-10",
   "overall": {
    "level": "升高",
    "coverage": "部分覆盖",
@@ -163,177 +163,189 @@
   "riskCap": 0.25
  },
  "crypto": {
-  "date": "2026-09-21",
-  "collectedAt": "2026-09-21 00:56 UTC",
+  "date": "2026-09-25",
+  "collectedAt": "2026-09-25 01:02 UTC",
   "source": "Deribit",
   "instruments": [
    {
     "symbol": "BTC",
-    "spot": 81673.59,
-    "dvol": 35.56,
-    "dvolPctile365": 0.082,
+    "spot": 84624.82,
+    "dvol": 35.97,
+    "dvolPctile365": 0.098,
     "dvolHi": 82.62,
     "dvolLo": 33.59,
-    "hv30": 32.39,
-    "volPc": 0.55,
-    "oiPc": 0.563,
+    "hv30": 37.14,
+    "volPc": 0.551,
+    "oiPc": 0.608,
     "term": [
      {
-      "expiry": "21SEP26",
-      "dte": 0.3,
-      "atmIv": 32.41,
-      "rr25": 8.37
-     },
-     {
-      "expiry": "22SEP26",
-      "dte": 1.3,
-      "atmIv": 36.2,
-      "rr25": 3.54
-     },
-     {
-      "expiry": "23SEP26",
-      "dte": 2.3,
-      "atmIv": 37.88,
-      "rr25": 3.36
-     },
-     {
-      "expiry": "24SEP26",
-      "dte": 3.3,
-      "atmIv": 37.27,
-      "rr25": 3.26
-     },
-     {
       "expiry": "25SEP26",
-      "dte": 4.3,
-      "atmIv": 38.37,
-      "rr25": 1.74
+      "dte": 0.3,
+      "atmIv": 34.36,
+      "rr25": -0.82
+     },
+     {
+      "expiry": "26SEP26",
+      "dte": 1.3,
+      "atmIv": 32.5,
+      "rr25": -0.71
+     },
+     {
+      "expiry": "27SEP26",
+      "dte": 2.3,
+      "atmIv": 27.05,
+      "rr25": -1.03
+     },
+     {
+      "expiry": "28SEP26",
+      "dte": 3.3,
+      "atmIv": 26.79,
+      "rr25": -1.94
      },
      {
       "expiry": "2OCT26",
-      "dte": 11.3,
-      "atmIv": 36.07,
-      "rr25": 0.8
+      "dte": 7.3,
+      "atmIv": 32.52,
+      "rr25": -2.04
      },
      {
       "expiry": "9OCT26",
-      "dte": 18.3,
-      "atmIv": 34.82,
-      "rr25": -0.32
+      "dte": 14.3,
+      "atmIv": 33.48,
+      "rr25": -1.24
+     },
+     {
+      "expiry": "16OCT26",
+      "dte": 21.3,
+      "atmIv": 34.33,
+      "rr25": -1.37
      },
      {
       "expiry": "30OCT26",
-      "dte": 39.3,
-      "atmIv": 34.68,
-      "rr25": -1.32
+      "dte": 35.3,
+      "atmIv": 34.95,
+      "rr25": -1.09
      },
      {
       "expiry": "27NOV26",
-      "dte": 67.3,
-      "atmIv": 36.37,
-      "rr25": -1.62
+      "dte": 63.3,
+      "atmIv": 36.9,
+      "rr25": -1.11
      },
      {
       "expiry": "25DEC26",
-      "dte": 95.3,
-      "atmIv": 37.26,
-      "rr25": -1.85
+      "dte": 91.3,
+      "atmIv": 37.61,
+      "rr25": -1.01
      },
      {
       "expiry": "26MAR27",
-      "dte": 186.3,
-      "atmIv": 38.79,
-      "rr25": -1.67
+      "dte": 182.3,
+      "atmIv": 38.46,
+      "rr25": -1.2
      },
      {
       "expiry": "25JUN27",
-      "dte": 277.3,
-      "atmIv": 39.97,
-      "rr25": -1.6
+      "dte": 273.3,
+      "atmIv": 39.09,
+      "rr25": -0.72
+     },
+     {
+      "expiry": "24SEP27",
+      "dte": 364.3,
+      "atmIv": 39.65,
+      "rr25": -0.82
      }
     ]
    },
    {
     "symbol": "ETH",
-    "spot": 2691.37,
-    "dvol": 52.79,
-    "dvolPctile365": 0.196,
+    "spot": 2694.78,
+    "dvol": 51.06,
+    "dvolPctile365": 0.138,
     "dvolHi": 95.78,
     "dvolLo": 44.98,
-    "hv30": 48.61,
-    "volPc": 0.824,
-    "oiPc": 0.533,
+    "hv30": 50.82,
+    "volPc": 0.857,
+    "oiPc": 0.582,
     "term": [
      {
-      "expiry": "21SEP26",
-      "dte": 0.3,
-      "atmIv": 58.68,
-      "rr25": 12.95
-     },
-     {
-      "expiry": "22SEP26",
-      "dte": 1.3,
-      "atmIv": 57.22,
-      "rr25": 8.93
-     },
-     {
-      "expiry": "23SEP26",
-      "dte": 2.3,
-      "atmIv": 56.3,
-      "rr25": 7.35
-     },
-     {
-      "expiry": "24SEP26",
-      "dte": 3.3,
-      "atmIv": 55.52,
-      "rr25": 5.34
-     },
-     {
       "expiry": "25SEP26",
-      "dte": 4.3,
-      "atmIv": 54.61,
-      "rr25": 4.56
+      "dte": 0.3,
+      "atmIv": 33.76,
+      "rr25": 1.37
+     },
+     {
+      "expiry": "26SEP26",
+      "dte": 1.3,
+      "atmIv": 41.11,
+      "rr25": 0.67
+     },
+     {
+      "expiry": "27SEP26",
+      "dte": 2.3,
+      "atmIv": 36.98,
+      "rr25": 1.08
+     },
+     {
+      "expiry": "28SEP26",
+      "dte": 3.3,
+      "atmIv": 36.56,
+      "rr25": 1.2
      },
      {
       "expiry": "2OCT26",
-      "dte": 11.3,
-      "atmIv": 51.17,
-      "rr25": 3.63
+      "dte": 7.3,
+      "atmIv": 45.03,
+      "rr25": 0.08
      },
      {
       "expiry": "9OCT26",
-      "dte": 18.3,
-      "atmIv": 50.53,
-      "rr25": 1.82
+      "dte": 14.3,
+      "atmIv": 46.83,
+      "rr25": 0.55
+     },
+     {
+      "expiry": "16OCT26",
+      "dte": 21.3,
+      "atmIv": 47.76,
+      "rr25": -0.24
      },
      {
       "expiry": "30OCT26",
-      "dte": 39.3,
-      "atmIv": 50.54,
-      "rr25": 1.52
+      "dte": 35.3,
+      "atmIv": 49.27,
+      "rr25": 0.34
      },
      {
       "expiry": "27NOV26",
-      "dte": 67.3,
-      "atmIv": 52.41,
-      "rr25": 0.4
+      "dte": 63.3,
+      "atmIv": 51.75,
+      "rr25": -0.21
      },
      {
       "expiry": "25DEC26",
-      "dte": 95.3,
-      "atmIv": 53.38,
-      "rr25": 0.57
+      "dte": 91.3,
+      "atmIv": 52.39,
+      "rr25": 0.04
      },
      {
       "expiry": "26MAR27",
-      "dte": 186.3,
-      "atmIv": 54.89,
-      "rr25": 0.98
+      "dte": 182.3,
+      "atmIv": 54.12,
+      "rr25": 0.09
      },
      {
       "expiry": "25JUN27",
-      "dte": 277.3,
-      "atmIv": 55.77,
-      "rr25": 1.81
+      "dte": 273.3,
+      "atmIv": 54.93,
+      "rr25": 0.74
+     },
+     {
+      "expiry": "24SEP27",
+      "dte": 364.3,
+      "atmIv": 55.58,
+      "rr25": 0.78
      }
     ]
    }

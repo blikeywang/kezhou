@@ -15,7 +15,12 @@ on:
     workflows: [daily-refresh]
     types: [completed]
     branches: [main]
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      publish_only:
+        description: Publish existing snapshots without executing paper plans (legacy clock defaults false)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -53,8 +58,15 @@ jobs:
           node --test tools/daily-trade/test_export_public.mjs tools/scheduler/test_refresh_runner.mjs
       - name: Build public pages
         run: python portal/build_site.py --output _site
+      - name: Select publication mode
+        id: publication_policy
+        env:
+          PUBLICATION_EVENT: ${{ github.event_name }}
+          PUBLISH_ONLY: ${{ inputs.publish_only || false }}
+        run: python tools/market_simulation/publication_policy.py
       - name: Execute current paper plans before publication
         id: paper_cycle
+        if: steps.publication_policy.outputs.run_paper_cycle == 'true'
         continue-on-error: true
         env:
           MARKET_SIMULATION_SITE_TOKEN: ${{ secrets.MARKET_SIMULATION_SITE_TOKEN }}

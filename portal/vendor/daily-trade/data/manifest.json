@@ -1,7 +1,7 @@
 {
  "schema_version": 2,
- "report_date": "2026-09-21",
- "generated_at": "2026-09-21T15:59:00.000Z",
+ "report_date": "2026-11-10",
+ "generated_at": "2026-11-10T00:37:03.490Z",
  "source_project": "独立交易流程（公开摘要）",
  "public_boundary": "allowlisted_sections_no_account_no_desk_no_keys",
  "legacyRoutes": {

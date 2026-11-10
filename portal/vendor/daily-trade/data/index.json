@@ -1,9 +1,59 @@
 {
  "schema": "traderhome_daily_index_v1",
- "exportedAt": "2026-11-08T01:45:35.206Z",
- "sourceStamp": "2026-09-21:0c135c65611aaf1c",
- "latest": "2026-09-21",
+ "exportedAt": "2026-11-10T01:01:42.846Z",
+ "sourceStamp": "2026-11-10:bd5b1ec98ab3be3c",
+ "latest": "2026-11-10",
  "days": [
+  {
+   "date": "2026-11-10",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 1,
+    "unconfirmed": 8,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-09",
+   "stance": null,
+   "riskCap": null,
+   "headline": null,
+   "counts": null,
+   "freshness": null,
+   "hasMorning": false,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-08",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 美股、加密币，趋势侧偏冷大类为 …",
+   "counts": {
+    "buy": 1,
+    "sell": 0,
+    "divergence": 2,
+    "unconfirmed": 6,
+    "buyPoints": 1,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 0,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
   {
    "date": "2026-09-21",
    "stance": "防御等待",

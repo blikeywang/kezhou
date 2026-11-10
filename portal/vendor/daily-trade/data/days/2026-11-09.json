@@ -1,0 +1,160 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-11-09",
+ "evening": {
+  "date": "2026-11-09",
+  "collected": "2026-11-09 08:17",
+  "offline": false,
+  "classes": [
+   {
+    "name": "加密币",
+    "date": "2026-11-07",
+    "temp": "平",
+    "phase": null,
+    "change": "温 → 平"
+   },
+   {
+    "name": "A股",
+    "date": "2026-11-06",
+    "temp": "凉",
+    "phase": "冬至",
+    "change": "凉 → 凉/冬至"
+   },
+   {
+    "name": "ETF基金",
+    "date": "2026-11-06",
+    "temp": "凉",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "美股",
+    "date": "2026-11-06",
+    "temp": "寒",
+    "phase": "寒露",
+    "change": "温 → 寒/寒露"
+   },
+   {
+    "name": "商品期货",
+    "date": "2026-11-06",
+    "temp": "寒",
+    "phase": "立冬",
+    "change": "平 → 寒/立冬"
+   },
+   {
+    "name": "美国ETF",
+    "date": "2026-11-06",
+    "temp": "寒",
+    "phase": "寒露",
+    "change": "平 → 寒/寒露"
+   }
+  ],
+  "warmToHot": [
+   {
+    "group": "ETF基金",
+    "items": [
+     {
+      "name": "短融ETF",
+      "symbol": "625930",
+      "temp": "热"
+     },
+     {
+      "name": "货币ETF",
+      "symbol": "328118",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "美股",
+    "items": [
+     {
+      "name": "哈门那",
+      "symbol": "HUM",
+      "temp": "热"
+     },
+     {
+      "name": "卡地纳健康",
+      "symbol": "CAH",
+      "temp": "热"
+     },
+     {
+      "name": "梯瓦制药",
+      "symbol": "TEVA",
+      "temp": "热"
+     },
+     {
+      "name": "Evergy",
+      "symbol": "EVRG",
+      "temp": "热"
+     },
+     {
+      "name": "Corpay Inc",
+      "symbol": "CPAY",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "商品期货",
+    "items": []
+   }
+  ],
+  "s1": [
+   {
+    "symbol": "AMZN",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "CRM",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "MSTR",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "PDD",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "SHOP",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "ALAB",
+    "temp": "凉",
+    "phase": "冬至",
+    "market": "美股"
+   },
+   {
+    "symbol": "APH",
+    "temp": "凉",
+    "phase": "寒露",
+    "market": "美股"
+   },
+   {
+    "symbol": "BTDR",
+    "temp": "凉",
+    "phase": "冬至",
+    "market": "美股"
+   },
+   {
+    "symbol": "NIO",
+    "temp": "凉",
+    "phase": "大寒",
+    "market": "美股"
+   }
+  ]
+ }
+}
