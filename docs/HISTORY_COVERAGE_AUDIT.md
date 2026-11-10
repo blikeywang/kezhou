@@ -1,6 +1,6 @@
 # Historical Data Coverage Audit
 
-Generated: 2026-11-10T01:06:09Z
+Generated: 2026-11-10T02:55:10Z
 
 Fresh data is not proof of complete lifetime history. No series is certified as fully verified.
 Network genesis is not a market-price start. Provider firstTradeDate is not independent IPO evidence.
@@ -34,102 +34,102 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 | LINK | primary: Binance 1d | 2019-01-16 | 2026-11-09 | 2855 | unverified | unverified | 0 | 0 |
 | LTC | base: Binance 4h | 2017-12-13 | 2026-11-09 | 19508 | unverified | unverified | 16 | 0 |
 | LTC | primary: Binance 1d | 2017-12-13 | 2026-11-09 | 3254 | unverified | unverified | 0 | 0 |
-| AAPL | base: Yahoo Finance 1d | 1980-12-12 | 2026-11-06 | 11569 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
-| AAPL | primary: Yahoo Finance 1d | 1980-12-12 | 2026-11-06 | 11569 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
-| NVDA | base: Yahoo Finance 1d | 1999-01-22 | 2026-11-06 | 6992 | [1999-01-22 (ipo)](https://investor.nvidia.com/investor-resources/faqs/default.aspx?sh_print=yes) | start-reached | 0 | 0 |
-| NVDA | primary: Yahoo Finance 1d | 1999-01-22 | 2026-11-06 | 6992 | [1999-01-22 (ipo)](https://investor.nvidia.com/investor-resources/faqs/default.aspx?sh_print=yes) | start-reached | 0 | 0 |
-| MSFT | base: Yahoo Finance 1d | 1986-03-13 | 2026-11-06 | 10243 | [1986-03-13 (ipo)](https://www.microsoft.com/en-us/investor/faq) | start-reached | 0 | 0 |
-| MSFT | primary: Yahoo Finance 1d | 1986-03-13 | 2026-11-06 | 10243 | [1986-03-13 (ipo)](https://www.microsoft.com/en-us/investor/faq) | start-reached | 0 | 0 |
-| AMZN | base: Yahoo Finance 1d | 1997-05-15 | 2026-11-06 | 7417 | [1997-05-15 (ipo)](https://ir.aboutamazon.com/faqs/default.aspx) | start-reached | 0 | 0 |
-| AMZN | primary: Yahoo Finance 1d | 1997-05-15 | 2026-11-06 | 7417 | [1997-05-15 (ipo)](https://ir.aboutamazon.com/faqs/default.aspx) | start-reached | 0 | 0 |
-| GOOGL | base: Yahoo Finance 1d | 2004-08-19 | 2026-11-06 | 5591 | unverified | unverified | 0 | 0 |
-| GOOGL | primary: Yahoo Finance 1d | 2004-08-19 | 2026-11-06 | 5591 | unverified | unverified | 0 | 0 |
-| META | base: Yahoo Finance 1d | 2012-05-18 | 2026-11-06 | 3639 | unverified | unverified | 0 | 0 |
-| META | primary: Yahoo Finance 1d | 2012-05-18 | 2026-11-06 | 3639 | unverified | unverified | 0 | 0 |
-| TSLA | base: Yahoo Finance 1d | 2010-06-29 | 2026-11-06 | 4116 | unverified | unverified | 0 | 0 |
-| TSLA | primary: Yahoo Finance 1d | 2010-06-29 | 2026-11-06 | 4116 | unverified | unverified | 0 | 0 |
-| AMD | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | [1972-09-27 (ipo)](https://ir.amd.com/contacts-faq/faq) | missing-early | 0 | 0 |
-| AMD | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | [1972-09-27 (ipo)](https://ir.amd.com/contacts-faq/faq) | missing-early | 0 | 0 |
-| AVGO | base: Yahoo Finance 1d | 2009-08-06 | 2026-11-06 | 4341 | unverified | unverified | 0 | 0 |
-| AVGO | primary: Yahoo Finance 1d | 2009-08-06 | 2026-11-06 | 4341 | unverified | unverified | 0 | 0 |
-| MU | base: Yahoo Finance 1d | 1984-06-01 | 2026-11-06 | 10692 | unverified | unverified | 0 | 0 |
-| MU | primary: Yahoo Finance 1d | 1984-06-01 | 2026-11-06 | 10692 | unverified | unverified | 0 | 0 |
-| PLTR | base: Yahoo Finance 1d | 2020-09-30 | 2026-11-06 | 1534 | unverified | unverified | 0 | 0 |
-| PLTR | primary: Yahoo Finance 1d | 2020-09-30 | 2026-11-06 | 1534 | unverified | unverified | 0 | 0 |
-| NFLX | base: Yahoo Finance 1d | 2002-05-23 | 2026-11-06 | 6155 | unverified | unverified | 0 | 0 |
-| NFLX | primary: Yahoo Finance 1d | 2002-05-23 | 2026-11-06 | 6155 | unverified | unverified | 0 | 0 |
-| JPM | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | unverified | unverified | 0 | 0 |
-| JPM | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | unverified | unverified | 0 | 0 |
-| GS | base: Yahoo Finance 1d | 1999-05-04 | 2026-11-06 | 6922 | unverified | unverified | 0 | 0 |
-| GS | primary: Yahoo Finance 1d | 1999-05-04 | 2026-11-06 | 6922 | unverified | unverified | 0 | 0 |
-| BAC | base: Yahoo Finance 1d | 1973-02-21 | 2026-11-06 | 13543 | unverified | unverified | 0 | 0 |
-| BAC | primary: Yahoo Finance 1d | 1973-02-21 | 2026-11-06 | 13543 | unverified | unverified | 0 | 0 |
-| COIN | base: Yahoo Finance 1d | 2021-04-14 | 2026-11-06 | 1400 | unverified | unverified | 0 | 0 |
-| COIN | primary: Yahoo Finance 1d | 2021-04-14 | 2026-11-06 | 1400 | unverified | unverified | 0 | 0 |
-| MSTR | base: Yahoo Finance 1d | 1998-06-11 | 2026-11-06 | 7147 | unverified | unverified | 0 | 0 |
-| MSTR | primary: Yahoo Finance 1d | 1998-06-11 | 2026-11-06 | 7147 | unverified | unverified | 0 | 0 |
-| TSM | base: Yahoo Finance 1d | 1997-10-09 | 2026-11-06 | 7315 | [1997-10-08 (adr)](https://investor.tsmc.com/english/faq) | missing-early | 0 | 0 |
-| TSM | primary: Yahoo Finance 1d | 1997-10-09 | 2026-11-06 | 7315 | [1997-10-08 (adr)](https://investor.tsmc.com/english/faq) | missing-early | 0 | 0 |
-| ARM | base: Yahoo Finance 1d | 2023-09-14 | 2026-11-06 | 791 | unverified | unverified | 0 | 0 |
-| ARM | primary: Yahoo Finance 1d | 2023-09-14 | 2026-11-06 | 791 | unverified | unverified | 0 | 0 |
-| ASML | base: Yahoo Finance 1d | 1995-03-15 | 2026-11-06 | 7966 | unverified | unverified | 0 | 0 |
-| ASML | primary: Yahoo Finance 1d | 1995-03-15 | 2026-11-06 | 7966 | unverified | unverified | 0 | 0 |
-| QCOM | base: Yahoo Finance 1d | 1991-12-13 | 2026-11-06 | 8787 | unverified | unverified | 0 | 0 |
-| QCOM | primary: Yahoo Finance 1d | 1991-12-13 | 2026-11-06 | 8787 | unverified | unverified | 0 | 0 |
-| INTC | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | [1971-10-13 (ipo)](https://www.intc.com/stock-info/faq) | missing-early | 0 | 0 |
-| INTC | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | [1971-10-13 (ipo)](https://www.intc.com/stock-info/faq) | missing-early | 0 | 0 |
-| AMAT | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | [1972-10-05 (ipo)](https://ir.appliedmaterials.com/shareholder-services/investor-faqs/) | missing-early | 0 | 0 |
-| AMAT | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-06 | 11757 | [1972-10-05 (ipo)](https://ir.appliedmaterials.com/shareholder-services/investor-faqs/) | missing-early | 0 | 0 |
-| SMCI | base: Yahoo Finance 1d | 2007-03-29 | 2026-11-06 | 4935 | unverified | unverified | 0 | 0 |
-| SMCI | primary: Yahoo Finance 1d | 2007-03-29 | 2026-11-06 | 4935 | unverified | unverified | 0 | 0 |
-| ORCL | base: Yahoo Finance 1d | 1986-03-12 | 2026-11-06 | 10244 | [1986-03-12 (ipo)](https://investor.oracle.com/faq/default.aspx) | start-reached | 0 | 0 |
-| ORCL | primary: Yahoo Finance 1d | 1986-03-12 | 2026-11-06 | 10244 | [1986-03-12 (ipo)](https://investor.oracle.com/faq/default.aspx) | start-reached | 0 | 0 |
-| CRM | base: Yahoo Finance 1d | 2004-06-23 | 2026-11-06 | 5631 | unverified | unverified | 0 | 0 |
-| CRM | primary: Yahoo Finance 1d | 2004-06-23 | 2026-11-06 | 5631 | unverified | unverified | 0 | 0 |
-| ADBE | base: Yahoo Finance 1d | 1986-08-13 | 2026-11-06 | 10137 | [1986-08-20 (ipo)](https://www.adobe.com/investor-relations/faq.html) | before-reference | 0 | 0 |
-| ADBE | primary: Yahoo Finance 1d | 1986-08-13 | 2026-11-06 | 10137 | [1986-08-20 (ipo)](https://www.adobe.com/investor-relations/faq.html) | before-reference | 0 | 0 |
-| NOW | base: Yahoo Finance 1d | 2012-06-29 | 2026-11-06 | 3610 | unverified | unverified | 0 | 0 |
-| NOW | primary: Yahoo Finance 1d | 2012-06-29 | 2026-11-06 | 3610 | unverified | unverified | 0 | 0 |
-| CRWD | base: Yahoo Finance 1d | 2019-06-12 | 2026-11-06 | 1863 | unverified | unverified | 0 | 0 |
-| CRWD | primary: Yahoo Finance 1d | 2019-06-12 | 2026-11-06 | 1863 | unverified | unverified | 0 | 0 |
-| PANW | base: Yahoo Finance 1d | 2012-07-20 | 2026-11-06 | 3596 | unverified | unverified | 0 | 0 |
-| PANW | primary: Yahoo Finance 1d | 2012-07-20 | 2026-11-06 | 3596 | unverified | unverified | 0 | 0 |
-| NET | base: Yahoo Finance 1d | 2019-09-13 | 2026-11-06 | 1798 | unverified | unverified | 0 | 0 |
-| NET | primary: Yahoo Finance 1d | 2019-09-13 | 2026-11-06 | 1798 | unverified | unverified | 0 | 0 |
-| SNOW | base: Yahoo Finance 1d | 2020-09-16 | 2026-11-06 | 1544 | unverified | unverified | 0 | 0 |
-| SNOW | primary: Yahoo Finance 1d | 2020-09-16 | 2026-11-06 | 1544 | unverified | unverified | 0 | 0 |
-| DDOG | base: Yahoo Finance 1d | 2019-09-19 | 2026-11-06 | 1794 | unverified | unverified | 0 | 0 |
-| DDOG | primary: Yahoo Finance 1d | 2019-09-19 | 2026-11-06 | 1794 | unverified | unverified | 0 | 0 |
-| UBER | base: Yahoo Finance 1d | 2019-05-10 | 2026-11-06 | 1885 | unverified | unverified | 0 | 0 |
-| UBER | primary: Yahoo Finance 1d | 2019-05-10 | 2026-11-06 | 1885 | unverified | unverified | 0 | 0 |
-| ABNB | base: Yahoo Finance 1d | 2020-12-10 | 2026-11-06 | 1484 | unverified | unverified | 0 | 0 |
-| ABNB | primary: Yahoo Finance 1d | 2020-12-10 | 2026-11-06 | 1484 | unverified | unverified | 0 | 0 |
-| SHOP | base: Yahoo Finance 1d | 2015-05-20 | 2026-11-06 | 2885 | unverified | unverified | 0 | 0 |
-| SHOP | primary: Yahoo Finance 1d | 2015-05-20 | 2026-11-06 | 2885 | unverified | unverified | 0 | 0 |
-| SPOT | base: Yahoo Finance 1d | 2018-04-03 | 2026-11-06 | 2163 | unverified | unverified | 0 | 0 |
-| SPOT | primary: Yahoo Finance 1d | 2018-04-03 | 2026-11-06 | 2163 | unverified | unverified | 0 | 0 |
-| PYPL | base: Yahoo Finance 1d | 2015-07-06 | 2026-11-06 | 2854 | unverified | unverified | 0 | 0 |
-| PYPL | primary: Yahoo Finance 1d | 2015-07-06 | 2026-11-06 | 2854 | unverified | unverified | 0 | 0 |
-| HOOD | base: Yahoo Finance 1d | 2021-07-29 | 2026-11-06 | 1326 | unverified | unverified | 0 | 0 |
-| HOOD | primary: Yahoo Finance 1d | 2021-07-29 | 2026-11-06 | 1326 | unverified | unverified | 0 | 0 |
-| SOFI | base: Yahoo Finance 1d | 2021-01-04 | 2026-11-06 | 1469 | [2021-06-01 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2021-21) | before-reference | 0 | 0 |
-| SOFI | primary: Yahoo Finance 1d | 2021-01-04 | 2026-11-06 | 1469 | [2021-06-01 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2021-21) | before-reference | 0 | 0 |
-| RDDT | base: Yahoo Finance 1d | 2024-03-21 | 2026-11-06 | 661 | unverified | unverified | 0 | 0 |
-| RDDT | primary: Yahoo Finance 1d | 2024-03-21 | 2026-11-06 | 661 | unverified | unverified | 0 | 0 |
-| RKLB | base: Yahoo Finance 1d | 2020-11-24 | 2026-11-06 | 1495 | [2021-08-25 (operating-ticker)](https://investors.rocketlabcorp.com/static-files/8dfd352c-0070-4ffd-9c5e-966bf4cdcc21) | before-reference | 0 | 0 |
-| RKLB | primary: Yahoo Finance 1d | 2020-11-24 | 2026-11-06 | 1495 | [2021-08-25 (operating-ticker)](https://investors.rocketlabcorp.com/static-files/8dfd352c-0070-4ffd-9c5e-966bf4cdcc21) | before-reference | 0 | 0 |
-| ASTS | base: Yahoo Finance 1d | 2019-11-01 | 2026-11-06 | 1763 | [2021-04-07 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2021-59) | before-reference | 0 | 0 |
-| ASTS | primary: Yahoo Finance 1d | 2019-11-01 | 2026-11-06 | 1763 | [2021-04-07 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2021-59) | before-reference | 0 | 0 |
-| IONQ | base: Yahoo Finance 1d | 2021-01-04 | 2026-11-06 | 1469 | [2021-10-01 (operating-ticker)](https://www.ionq.com/news/october-01-2021-ionq-listed-on-nyse) | before-reference | 0 | 0 |
-| IONQ | primary: Yahoo Finance 1d | 2021-01-04 | 2026-11-06 | 1469 | [2021-10-01 (operating-ticker)](https://www.ionq.com/news/october-01-2021-ionq-listed-on-nyse) | before-reference | 0 | 0 |
-| APP | base: Yahoo Finance 1d | 2021-04-15 | 2026-11-06 | 1399 | unverified | unverified | 0 | 0 |
-| APP | primary: Yahoo Finance 1d | 2021-04-15 | 2026-11-06 | 1399 | unverified | unverified | 0 | 0 |
-| DUOL | base: Yahoo Finance 1d | 2021-07-28 | 2026-11-06 | 1327 | unverified | unverified | 0 | 0 |
-| DUOL | primary: Yahoo Finance 1d | 2021-07-28 | 2026-11-06 | 1327 | unverified | unverified | 0 | 0 |
-| BABA | base: Yahoo Finance 1d | 2014-09-19 | 2026-11-06 | 3052 | unverified | unverified | 0 | 0 |
-| BABA | primary: Yahoo Finance 1d | 2014-09-19 | 2026-11-06 | 3052 | unverified | unverified | 0 | 0 |
-| PDD | base: Yahoo Finance 1d | 2018-07-26 | 2026-11-06 | 2083 | unverified | unverified | 0 | 0 |
-| PDD | primary: Yahoo Finance 1d | 2018-07-26 | 2026-11-06 | 2083 | unverified | unverified | 0 | 0 |
+| AAPL | base: Yahoo Finance 1d | 1980-12-12 | 2026-11-09 | 11570 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
+| AAPL | primary: Yahoo Finance 1d | 1980-12-12 | 2026-11-09 | 11570 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
+| NVDA | base: Yahoo Finance 1d | 1999-01-22 | 2026-11-09 | 6993 | [1999-01-22 (ipo)](https://investor.nvidia.com/investor-resources/faqs/default.aspx?sh_print=yes) | start-reached | 0 | 0 |
+| NVDA | primary: Yahoo Finance 1d | 1999-01-22 | 2026-11-09 | 6993 | [1999-01-22 (ipo)](https://investor.nvidia.com/investor-resources/faqs/default.aspx?sh_print=yes) | start-reached | 0 | 0 |
+| MSFT | base: Yahoo Finance 1d | 1986-03-13 | 2026-11-09 | 10244 | [1986-03-13 (ipo)](https://www.microsoft.com/en-us/investor/faq) | start-reached | 0 | 0 |
+| MSFT | primary: Yahoo Finance 1d | 1986-03-13 | 2026-11-09 | 10244 | [1986-03-13 (ipo)](https://www.microsoft.com/en-us/investor/faq) | start-reached | 0 | 0 |
+| AMZN | base: Yahoo Finance 1d | 1997-05-15 | 2026-11-09 | 7418 | [1997-05-15 (ipo)](https://ir.aboutamazon.com/faqs/default.aspx) | start-reached | 0 | 0 |
+| AMZN | primary: Yahoo Finance 1d | 1997-05-15 | 2026-11-09 | 7418 | [1997-05-15 (ipo)](https://ir.aboutamazon.com/faqs/default.aspx) | start-reached | 0 | 0 |
+| GOOGL | base: Yahoo Finance 1d | 2004-08-19 | 2026-11-09 | 5592 | unverified | unverified | 0 | 0 |
+| GOOGL | primary: Yahoo Finance 1d | 2004-08-19 | 2026-11-09 | 5592 | unverified | unverified | 0 | 0 |
+| META | base: Yahoo Finance 1d | 2012-05-18 | 2026-11-09 | 3640 | unverified | unverified | 0 | 0 |
+| META | primary: Yahoo Finance 1d | 2012-05-18 | 2026-11-09 | 3640 | unverified | unverified | 0 | 0 |
+| TSLA | base: Yahoo Finance 1d | 2010-06-29 | 2026-11-09 | 4117 | unverified | unverified | 0 | 0 |
+| TSLA | primary: Yahoo Finance 1d | 2010-06-29 | 2026-11-09 | 4117 | unverified | unverified | 0 | 0 |
+| AMD | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | [1972-09-27 (ipo)](https://ir.amd.com/contacts-faq/faq) | missing-early | 0 | 0 |
+| AMD | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | [1972-09-27 (ipo)](https://ir.amd.com/contacts-faq/faq) | missing-early | 0 | 0 |
+| AVGO | base: Yahoo Finance 1d | 2009-08-06 | 2026-11-09 | 4342 | unverified | unverified | 0 | 0 |
+| AVGO | primary: Yahoo Finance 1d | 2009-08-06 | 2026-11-09 | 4342 | unverified | unverified | 0 | 0 |
+| MU | base: Yahoo Finance 1d | 1984-06-01 | 2026-11-09 | 10693 | unverified | unverified | 0 | 0 |
+| MU | primary: Yahoo Finance 1d | 1984-06-01 | 2026-11-09 | 10693 | unverified | unverified | 0 | 0 |
+| PLTR | base: Yahoo Finance 1d | 2020-09-30 | 2026-11-09 | 1535 | unverified | unverified | 0 | 0 |
+| PLTR | primary: Yahoo Finance 1d | 2020-09-30 | 2026-11-09 | 1535 | unverified | unverified | 0 | 0 |
+| NFLX | base: Yahoo Finance 1d | 2002-05-23 | 2026-11-09 | 6156 | unverified | unverified | 0 | 0 |
+| NFLX | primary: Yahoo Finance 1d | 2002-05-23 | 2026-11-09 | 6156 | unverified | unverified | 0 | 0 |
+| JPM | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | unverified | unverified | 0 | 0 |
+| JPM | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | unverified | unverified | 0 | 0 |
+| GS | base: Yahoo Finance 1d | 1999-05-04 | 2026-11-09 | 6923 | unverified | unverified | 0 | 0 |
+| GS | primary: Yahoo Finance 1d | 1999-05-04 | 2026-11-09 | 6923 | unverified | unverified | 0 | 0 |
+| BAC | base: Yahoo Finance 1d | 1973-02-21 | 2026-11-09 | 13544 | unverified | unverified | 0 | 0 |
+| BAC | primary: Yahoo Finance 1d | 1973-02-21 | 2026-11-09 | 13544 | unverified | unverified | 0 | 0 |
+| COIN | base: Yahoo Finance 1d | 2021-04-14 | 2026-11-09 | 1401 | unverified | unverified | 0 | 0 |
+| COIN | primary: Yahoo Finance 1d | 2021-04-14 | 2026-11-09 | 1401 | unverified | unverified | 0 | 0 |
+| MSTR | base: Yahoo Finance 1d | 1998-06-11 | 2026-11-09 | 7148 | unverified | unverified | 0 | 0 |
+| MSTR | primary: Yahoo Finance 1d | 1998-06-11 | 2026-11-09 | 7148 | unverified | unverified | 0 | 0 |
+| TSM | base: Yahoo Finance 1d | 1997-10-09 | 2026-11-09 | 7316 | [1997-10-08 (adr)](https://investor.tsmc.com/english/faq) | missing-early | 0 | 0 |
+| TSM | primary: Yahoo Finance 1d | 1997-10-09 | 2026-11-09 | 7316 | [1997-10-08 (adr)](https://investor.tsmc.com/english/faq) | missing-early | 0 | 0 |
+| ARM | base: Yahoo Finance 1d | 2023-09-14 | 2026-11-09 | 792 | unverified | unverified | 0 | 0 |
+| ARM | primary: Yahoo Finance 1d | 2023-09-14 | 2026-11-09 | 792 | unverified | unverified | 0 | 0 |
+| ASML | base: Yahoo Finance 1d | 1995-03-15 | 2026-11-09 | 7967 | unverified | unverified | 0 | 0 |
+| ASML | primary: Yahoo Finance 1d | 1995-03-15 | 2026-11-09 | 7967 | unverified | unverified | 0 | 0 |
+| QCOM | base: Yahoo Finance 1d | 1991-12-13 | 2026-11-09 | 8788 | unverified | unverified | 0 | 0 |
+| QCOM | primary: Yahoo Finance 1d | 1991-12-13 | 2026-11-09 | 8788 | unverified | unverified | 0 | 0 |
+| INTC | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | [1971-10-13 (ipo)](https://www.intc.com/stock-info/faq) | missing-early | 0 | 0 |
+| INTC | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | [1971-10-13 (ipo)](https://www.intc.com/stock-info/faq) | missing-early | 0 | 0 |
+| AMAT | base: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | [1972-10-05 (ipo)](https://ir.appliedmaterials.com/shareholder-services/investor-faqs/) | missing-early | 0 | 0 |
+| AMAT | primary: Yahoo Finance 1d | 1980-03-17 | 2026-11-09 | 11758 | [1972-10-05 (ipo)](https://ir.appliedmaterials.com/shareholder-services/investor-faqs/) | missing-early | 0 | 0 |
+| SMCI | base: Yahoo Finance 1d | 2007-03-29 | 2026-11-09 | 4936 | unverified | unverified | 0 | 0 |
+| SMCI | primary: Yahoo Finance 1d | 2007-03-29 | 2026-11-09 | 4936 | unverified | unverified | 0 | 0 |
+| ORCL | base: Yahoo Finance 1d | 1986-03-12 | 2026-11-09 | 10245 | [1986-03-12 (ipo)](https://investor.oracle.com/faq/default.aspx) | start-reached | 0 | 0 |
+| ORCL | primary: Yahoo Finance 1d | 1986-03-12 | 2026-11-09 | 10245 | [1986-03-12 (ipo)](https://investor.oracle.com/faq/default.aspx) | start-reached | 0 | 0 |
+| CRM | base: Yahoo Finance 1d | 2004-06-23 | 2026-11-09 | 5632 | unverified | unverified | 0 | 0 |
+| CRM | primary: Yahoo Finance 1d | 2004-06-23 | 2026-11-09 | 5632 | unverified | unverified | 0 | 0 |
+| ADBE | base: Yahoo Finance 1d | 1986-08-13 | 2026-11-09 | 10138 | [1986-08-20 (ipo)](https://www.adobe.com/investor-relations/faq.html) | before-reference | 0 | 0 |
+| ADBE | primary: Yahoo Finance 1d | 1986-08-13 | 2026-11-09 | 10138 | [1986-08-20 (ipo)](https://www.adobe.com/investor-relations/faq.html) | before-reference | 0 | 0 |
+| NOW | base: Yahoo Finance 1d | 2012-06-29 | 2026-11-09 | 3611 | unverified | unverified | 0 | 0 |
+| NOW | primary: Yahoo Finance 1d | 2012-06-29 | 2026-11-09 | 3611 | unverified | unverified | 0 | 0 |
+| CRWD | base: Yahoo Finance 1d | 2019-06-12 | 2026-11-09 | 1864 | unverified | unverified | 0 | 0 |
+| CRWD | primary: Yahoo Finance 1d | 2019-06-12 | 2026-11-09 | 1864 | unverified | unverified | 0 | 0 |
+| PANW | base: Yahoo Finance 1d | 2012-07-20 | 2026-11-09 | 3597 | unverified | unverified | 0 | 0 |
+| PANW | primary: Yahoo Finance 1d | 2012-07-20 | 2026-11-09 | 3597 | unverified | unverified | 0 | 0 |
+| NET | base: Yahoo Finance 1d | 2019-09-13 | 2026-11-09 | 1799 | unverified | unverified | 0 | 0 |
+| NET | primary: Yahoo Finance 1d | 2019-09-13 | 2026-11-09 | 1799 | unverified | unverified | 0 | 0 |
+| SNOW | base: Yahoo Finance 1d | 2020-09-16 | 2026-11-09 | 1545 | unverified | unverified | 0 | 0 |
+| SNOW | primary: Yahoo Finance 1d | 2020-09-16 | 2026-11-09 | 1545 | unverified | unverified | 0 | 0 |
+| DDOG | base: Yahoo Finance 1d | 2019-09-19 | 2026-11-09 | 1795 | unverified | unverified | 0 | 0 |
+| DDOG | primary: Yahoo Finance 1d | 2019-09-19 | 2026-11-09 | 1795 | unverified | unverified | 0 | 0 |
+| UBER | base: Yahoo Finance 1d | 2019-05-10 | 2026-11-09 | 1886 | unverified | unverified | 0 | 0 |
+| UBER | primary: Yahoo Finance 1d | 2019-05-10 | 2026-11-09 | 1886 | unverified | unverified | 0 | 0 |
+| ABNB | base: Yahoo Finance 1d | 2020-12-10 | 2026-11-09 | 1485 | unverified | unverified | 0 | 0 |
+| ABNB | primary: Yahoo Finance 1d | 2020-12-10 | 2026-11-09 | 1485 | unverified | unverified | 0 | 0 |
+| SHOP | base: Yahoo Finance 1d | 2015-05-20 | 2026-11-09 | 2886 | unverified | unverified | 0 | 0 |
+| SHOP | primary: Yahoo Finance 1d | 2015-05-20 | 2026-11-09 | 2886 | unverified | unverified | 0 | 0 |
+| SPOT | base: Yahoo Finance 1d | 2018-04-03 | 2026-11-09 | 2164 | unverified | unverified | 0 | 0 |
+| SPOT | primary: Yahoo Finance 1d | 2018-04-03 | 2026-11-09 | 2164 | unverified | unverified | 0 | 0 |
+| PYPL | base: Yahoo Finance 1d | 2015-07-06 | 2026-11-09 | 2855 | unverified | unverified | 0 | 0 |
+| PYPL | primary: Yahoo Finance 1d | 2015-07-06 | 2026-11-09 | 2855 | unverified | unverified | 0 | 0 |
+| HOOD | base: Yahoo Finance 1d | 2021-07-29 | 2026-11-09 | 1327 | unverified | unverified | 0 | 0 |
+| HOOD | primary: Yahoo Finance 1d | 2021-07-29 | 2026-11-09 | 1327 | unverified | unverified | 0 | 0 |
+| SOFI | base: Yahoo Finance 1d | 2021-01-04 | 2026-11-09 | 1470 | [2021-06-01 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2021-21) | before-reference | 0 | 0 |
+| SOFI | primary: Yahoo Finance 1d | 2021-01-04 | 2026-11-09 | 1470 | [2021-06-01 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=dtn2021-21) | before-reference | 0 | 0 |
+| RDDT | base: Yahoo Finance 1d | 2024-03-21 | 2026-11-09 | 662 | unverified | unverified | 0 | 0 |
+| RDDT | primary: Yahoo Finance 1d | 2024-03-21 | 2026-11-09 | 662 | unverified | unverified | 0 | 0 |
+| RKLB | base: Yahoo Finance 1d | 2020-11-24 | 2026-11-09 | 1496 | [2021-08-25 (operating-ticker)](https://investors.rocketlabcorp.com/static-files/8dfd352c-0070-4ffd-9c5e-966bf4cdcc21) | before-reference | 0 | 0 |
+| RKLB | primary: Yahoo Finance 1d | 2020-11-24 | 2026-11-09 | 1496 | [2021-08-25 (operating-ticker)](https://investors.rocketlabcorp.com/static-files/8dfd352c-0070-4ffd-9c5e-966bf4cdcc21) | before-reference | 0 | 0 |
+| ASTS | base: Yahoo Finance 1d | 2019-11-01 | 2026-11-09 | 1764 | [2021-04-07 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2021-59) | before-reference | 0 | 0 |
+| ASTS | primary: Yahoo Finance 1d | 2019-11-01 | 2026-11-09 | 1764 | [2021-04-07 (operating-ticker)](https://www.nasdaqtrader.com/TraderNews.aspx?id=ECA2021-59) | before-reference | 0 | 0 |
+| IONQ | base: Yahoo Finance 1d | 2021-01-04 | 2026-11-09 | 1470 | [2021-10-01 (operating-ticker)](https://www.ionq.com/news/october-01-2021-ionq-listed-on-nyse) | before-reference | 0 | 0 |
+| IONQ | primary: Yahoo Finance 1d | 2021-01-04 | 2026-11-09 | 1470 | [2021-10-01 (operating-ticker)](https://www.ionq.com/news/october-01-2021-ionq-listed-on-nyse) | before-reference | 0 | 0 |
+| APP | base: Yahoo Finance 1d | 2021-04-15 | 2026-11-09 | 1400 | unverified | unverified | 0 | 0 |
+| APP | primary: Yahoo Finance 1d | 2021-04-15 | 2026-11-09 | 1400 | unverified | unverified | 0 | 0 |
+| DUOL | base: Yahoo Finance 1d | 2021-07-28 | 2026-11-09 | 1328 | unverified | unverified | 0 | 0 |
+| DUOL | primary: Yahoo Finance 1d | 2021-07-28 | 2026-11-09 | 1328 | unverified | unverified | 0 | 0 |
+| BABA | base: Yahoo Finance 1d | 2014-09-19 | 2026-11-09 | 3053 | unverified | unverified | 0 | 0 |
+| BABA | primary: Yahoo Finance 1d | 2014-09-19 | 2026-11-09 | 3053 | unverified | unverified | 0 | 0 |
+| PDD | base: Yahoo Finance 1d | 2018-07-26 | 2026-11-09 | 2084 | unverified | unverified | 0 | 0 |
+| PDD | primary: Yahoo Finance 1d | 2018-07-26 | 2026-11-09 | 2084 | unverified | unverified | 0 | 0 |
 | NDX | base: Yahoo Finance 1d | 1985-10-01 | 2026-11-09 | 10357 | unverified | unverified | 0 | 0 |
 | NDX | primary: Yahoo Finance 1d | 1985-10-01 | 2026-11-09 | 10357 | unverified | unverified | 0 | 0 |
 | SPX | base: Yahoo Finance 1d | 1927-12-30 | 2026-11-09 | 24832 | unverified | unverified | 0 | 0 |
@@ -138,14 +138,14 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 | DJI | primary: Yahoo Finance 1d | 1992-01-02 | 2026-11-09 | 8776 | unverified | unverified | 0 | 0 |
 | RUT | base: Yahoo Finance 1d | 1987-09-10 | 2026-11-09 | 9866 | unverified | unverified | 0 | 0 |
 | RUT | primary: Yahoo Finance 1d | 1987-09-10 | 2026-11-09 | 9866 | unverified | unverified | 0 | 0 |
-| QQQ | base: Yahoo Finance 1d | 1999-03-10 | 2026-11-06 | 6960 | unverified | unverified | 0 | 0 |
-| QQQ | primary: Yahoo Finance 1d | 1999-03-10 | 2026-11-06 | 6960 | unverified | unverified | 0 | 0 |
-| SPY | base: Yahoo Finance 1d | 1993-01-29 | 2026-11-06 | 8502 | unverified | unverified | 0 | 0 |
-| SPY | primary: Yahoo Finance 1d | 1993-01-29 | 2026-11-06 | 8502 | unverified | unverified | 0 | 0 |
-| IWM | base: Yahoo Finance 1d | 2000-05-26 | 2026-11-06 | 6652 | unverified | unverified | 0 | 0 |
-| IWM | primary: Yahoo Finance 1d | 2000-05-26 | 2026-11-06 | 6652 | unverified | unverified | 0 | 0 |
-| DIA | base: Yahoo Finance 1d | 1998-01-20 | 2026-11-06 | 7246 | unverified | unverified | 0 | 0 |
-| DIA | primary: Yahoo Finance 1d | 1998-01-20 | 2026-11-06 | 7246 | unverified | unverified | 0 | 0 |
+| QQQ | base: Yahoo Finance 1d | 1999-03-10 | 2026-11-09 | 6961 | unverified | unverified | 0 | 0 |
+| QQQ | primary: Yahoo Finance 1d | 1999-03-10 | 2026-11-09 | 6961 | unverified | unverified | 0 | 0 |
+| SPY | base: Yahoo Finance 1d | 1993-01-29 | 2026-11-09 | 8503 | unverified | unverified | 0 | 0 |
+| SPY | primary: Yahoo Finance 1d | 1993-01-29 | 2026-11-09 | 8503 | unverified | unverified | 0 | 0 |
+| IWM | base: Yahoo Finance 1d | 2000-05-26 | 2026-11-09 | 6653 | unverified | unverified | 0 | 0 |
+| IWM | primary: Yahoo Finance 1d | 2000-05-26 | 2026-11-09 | 6653 | unverified | unverified | 0 | 0 |
+| DIA | base: Yahoo Finance 1d | 1998-01-20 | 2026-11-09 | 7247 | unverified | unverified | 0 | 0 |
+| DIA | primary: Yahoo Finance 1d | 1998-01-20 | 2026-11-09 | 7247 | unverified | unverified | 0 | 0 |
 | NQ | base: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1999-06-21 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 24 |
 | NQ | primary: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1999-06-21 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 24 |
 | ES | base: Yahoo Finance 1d | 2000-09-18 | 2026-11-06 | 6600 | [1997-09-09 (product)](https://www.cmegroup.com/media-room/historical-first-trade-dates.html) | missing-early | not audited | 10 |
@@ -158,18 +158,18 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 | GC | primary: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6573 | unverified | unverified | not audited | 441 |
 | SI | base: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6574 | unverified | unverified | not audited | 243 |
 | SI | primary: Yahoo Finance 1d | 2000-08-30 | 2026-11-06 | 6574 | unverified | unverified | not audited | 243 |
-| GLD | base: Yahoo Finance 1d | 2004-11-18 | 2026-11-06 | 5527 | unverified | unverified | 0 | 0 |
-| GLD | primary: Yahoo Finance 1d | 2004-11-18 | 2026-11-06 | 5527 | unverified | unverified | 0 | 0 |
-| SLV | base: Yahoo Finance 1d | 2006-04-28 | 2026-11-06 | 5165 | unverified | unverified | 0 | 0 |
-| SLV | primary: Yahoo Finance 1d | 2006-04-28 | 2026-11-06 | 5165 | unverified | unverified | 0 | 0 |
-| USO | base: Yahoo Finance 1d | 2006-04-10 | 2026-11-06 | 5178 | unverified | unverified | 0 | 0 |
-| USO | primary: Yahoo Finance 1d | 2006-04-10 | 2026-11-06 | 5178 | unverified | unverified | 0 | 0 |
-| UNG | base: Yahoo Finance 1d | 2007-04-18 | 2026-11-06 | 4922 | unverified | unverified | 0 | 0 |
-| UNG | primary: Yahoo Finance 1d | 2007-04-18 | 2026-11-06 | 4922 | unverified | unverified | 0 | 0 |
-| DBC | base: Yahoo Finance 1d | 2006-02-06 | 2026-11-06 | 5222 | unverified | unverified | 0 | 0 |
-| DBC | primary: Yahoo Finance 1d | 2006-02-06 | 2026-11-06 | 5222 | unverified | unverified | 0 | 0 |
-| CPER | base: Yahoo Finance 1d | 2011-11-15 | 2026-11-06 | 3766 | unverified | unverified | 0 | 0 |
-| CPER | primary: Yahoo Finance 1d | 2011-11-15 | 2026-11-06 | 3766 | unverified | unverified | 0 | 0 |
+| GLD | base: Yahoo Finance 1d | 2004-11-18 | 2026-11-09 | 5528 | unverified | unverified | 0 | 0 |
+| GLD | primary: Yahoo Finance 1d | 2004-11-18 | 2026-11-09 | 5528 | unverified | unverified | 0 | 0 |
+| SLV | base: Yahoo Finance 1d | 2006-04-28 | 2026-11-09 | 5166 | unverified | unverified | 0 | 0 |
+| SLV | primary: Yahoo Finance 1d | 2006-04-28 | 2026-11-09 | 5166 | unverified | unverified | 0 | 0 |
+| USO | base: Yahoo Finance 1d | 2006-04-10 | 2026-11-09 | 5179 | unverified | unverified | 0 | 0 |
+| USO | primary: Yahoo Finance 1d | 2006-04-10 | 2026-11-09 | 5179 | unverified | unverified | 0 | 0 |
+| UNG | base: Yahoo Finance 1d | 2007-04-18 | 2026-11-09 | 4923 | unverified | unverified | 0 | 0 |
+| UNG | primary: Yahoo Finance 1d | 2007-04-18 | 2026-11-09 | 4923 | unverified | unverified | 0 | 0 |
+| DBC | base: Yahoo Finance 1d | 2006-02-06 | 2026-11-09 | 5223 | unverified | unverified | 0 | 0 |
+| DBC | primary: Yahoo Finance 1d | 2006-02-06 | 2026-11-09 | 5223 | unverified | unverified | 0 | 0 |
+| CPER | base: Yahoo Finance 1d | 2011-11-15 | 2026-11-09 | 3767 | unverified | unverified | 0 | 0 |
+| CPER | primary: Yahoo Finance 1d | 2011-11-15 | 2026-11-09 | 3767 | unverified | unverified | 0 | 0 |
 
 ## Gap Samples
 
