@@ -4,14 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="TraderHome TailTrend Lab：用日线收盘状态统一观察尾部均值回归、趋势接受、突破失败、事件隔离与账户风险预算。">
-  <title>TailTrend Lab · 尾部与趋势影子观察 | TraderHome</title>
+  <title>TailTrend · TraderHome</title>
   <link rel="stylesheet" href="/tailtrend/tailtrend.css">
 </head>
 <body class="tailtrend">
   <main class="tt-main">
     <section class="tt-wrap tt-hero">
       <div class="tt-hero__copy">
-        <div class="tt-kicker">TailTrend Lab · 日线观察</div>
         <h1>只在区间边缘出手，<br><span>趋势站稳了才继续持有。</span></h1>
         <p>每个交易日收盘后检查一组流动性好的美股：价格处在近 60 日区间的什么位置，是在底部收回、在顶部受阻，还是已经突破并站稳。只在区间两端给出观察；价格在中间时不开新仓。能买多少，最终由你的账户风险决定。</p>
         <div class="tt-actions">
@@ -39,12 +38,12 @@
       <div><span>边缘候选</span><strong id="metricEdges">—</strong><small>在区间两端、值得复核</small></div>
       <div><span>中部等待</span><strong id="metricMiddle">—</strong><small>在区间中间，暂不操作</small></div>
       <div><span>数据健康</span><strong id="metricFresh">—</strong><small id="metricQuality">—</small></div>
-      <div><span>状态变化</span><strong id="metricTransitions">—</strong><small>与上一个交易日相比</small></div>
+      <div><span>状态变化</span><strong id="metricTransitions">—</strong><small id="metricTransitionsNote">与上一份快照相比</small></div>
     </section>
 
     <section class="tt-section" id="scanner"><div class="tt-wrap">
       <div class="tt-section__head">
-        <div><div class="tt-kicker">今日状态</div><h2>每只股票现在处于哪种状态</h2><p>按状态分组。“复核优先级”只决定先看哪只，不代表胜率或收益。点一行可以看到判断依据和下一步要满足的条件。</p></div>
+        <div><div class="tt-kicker">今日状态</div><h2>每只股票现在处于哪种状态</h2><p>按状态分组。“复核优先级”只决定先看哪只，不代表胜率或收益。状态按锁定当天的边界判断，所以可能和“位置”一栏的最新 60 日区间不一致。点一行可以看到判断依据和下一步要满足的条件。</p></div>
         <div class="tt-search"><label for="symbolSearch">查找标的</label><input id="symbolSearch" type="search" placeholder="SPXC / NVDA / 名称"></div>
       </div>
       <div id="bucketFilters" class="tt-filters" aria-label="状态筛选"></div>
@@ -78,7 +77,7 @@
       <p class="tt-lead">状态只在每天收盘后判定一次，盘中波动不会改变它。盘前和盘中提醒还没有开发。</p>
       <div class="tt-cadence">
         <article><span>每周 · 人工</span><strong>周末复核股票池</strong><p>检查股票名单、周线大方向、行业分组和相关性。</p></article>
-        <article><span>每个交易日 · 自动</span><strong>收盘后正式判定</strong><p>更新波动率，确认底部收回、突破站稳、突破失败和退出。</p></article>
+        <article><span>每个交易日 · 收盘后</span><strong>正式判定并发布</strong><p>30 只股票的日线全部最新、财报日历核对通过才发布。没通过或没运行的那一天记为缺失，不事后补造。</p></article>
         <article><span>盘前 · 未开发</span><strong>只看持仓和候选</strong><p>计划检查财报等事件、跳空和止损。</p></article>
         <article><span>盘中 · 未开发</span><strong>只在靠近边界时提醒</strong><p>提醒不会推翻收盘规则。</p></article>
       </div>
@@ -144,7 +143,7 @@
       </div>
     </div></section>
   </main>
-  <footer class="tt-wrap tt-footer"><span>TailTrend Lab v0.3 · TraderHome independent research system</span><span>数据来源：Longbridge Securities · 仅派生状态</span></footer>
+  <p class="tt-wrap th-pagenote">TailTrend Lab v0.3 影子观察：规则还没有完成样本外验证。数据来自 Longbridge Securities，只发布派生状态，不发布原始 K 线。</p>
   <script type="module" src="/tailtrend/tailtrend-app.mjs"></script>
 </body>
 </html>

@@ -84,26 +84,38 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # Pages processes one deployment at a time and is occasionally slow
-    # (GitHub incidents, large artifacts). Wait up to 20 minutes, then retry
-    # once after a pause: a 502 on create or a cancelled stuck deployment
-    # usually clears on the second attempt. Job limit covers both attempts.
+    # (GitHub incidents, large artifacts). A create can also be refused with
+    # "in progress deployment" for a few minutes after the previous run has
+    # already finished (seen 2026-11-10 after a large data push). Try three
+    # times: at once, after 90 seconds, then after four more minutes.
+    # deploy-pages caps its own wait at 10 minutes. Job limit covers all three.
     timeout-minutes: 50
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url || steps.deploy_retry.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy_retry.outputs.page_url || steps.deploy_last.outputs.page_url }}
     steps:
       - id: deploy
         continue-on-error: true
         uses: actions/deploy-pages@v5
         with:
           artifact_name: ${{ needs.build.outputs.artifact_name }}
-          timeout: '1200000'
+          timeout: '600000'
       - name: Pause before retrying Pages deployment
         if: steps.deploy.outcome == 'failure'
         run: sleep 90
       - id: deploy_retry
         if: steps.deploy.outcome == 'failure'
+        continue-on-error: true
         uses: actions/deploy-pages@v5
         with:
           artifact_name: ${{ needs.build.outputs.artifact_name }}
-          timeout: '1200000'
+          timeout: '600000'
+      - name: Pause before the last Pages deployment attempt
+        if: steps.deploy.outcome == 'failure' && steps.deploy_retry.outcome == 'failure'
+        run: sleep 240
+      - id: deploy_last
+        if: steps.deploy.outcome == 'failure' && steps.deploy_retry.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact_name }}
+          timeout: '600000'

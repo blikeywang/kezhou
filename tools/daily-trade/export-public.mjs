@@ -303,7 +303,6 @@ export function exportPublic({ source = DEFAULT_SOURCE, out = DEFAULT_OUT, now =
   }
   files["index.json"] = { schema: "traderhome_daily_index_v1", exportedAt: now.toISOString(), sourceStamp: sourceStamp(source), latest: latest?.date ?? null, days: index };
 
-  // Keep the legacy HTML routes so older links keep working.
   const manifestPath = join(out, "manifest.json");
   const previous = readJson(manifestPath) ?? {};
   files["manifest.json"] = {
@@ -312,9 +311,10 @@ export function exportPublic({ source = DEFAULT_SOURCE, out = DEFAULT_OUT, now =
     generated_at: generatedAt,
     source_project: "独立交易流程（公开摘要）",
     public_boundary: "allowlisted_sections_no_account_no_desk_no_keys",
-    // Only the pre-November HTML issue (2026-08-14) has routes; newer days live in index.json.
-    legacyRoutes: previous.legacyRoutes ?? previous.routes ?? {},
-    reports: previous.reports ?? [],
+    // The raw HTML issue of 2026-08-14 was withdrawn on 2026-11-10: it carried the full private
+    // report (account section, paid Desk text). Every day is published through index.json only.
+    legacyRoutes: {},
+    reports: [],
     publishing: { state: "active", exporter: "tools/daily-trade/export-public.mjs" },
   };
 

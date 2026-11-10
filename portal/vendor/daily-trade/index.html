@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="TraderHome 交易早晚报：每天的研究立场、候选信号、大类冷热、数据新鲜度与市场风险，全部用图表展示。">
-  <title>交易早晚报 · TraderHome</title>
-  <link rel="stylesheet" href="/assets/traderhome-site.css?v=13">
+  <title>早晚报 · TraderHome</title>
+  <link rel="stylesheet" href="/assets/traderhome-site.css?v=14">
   <style>
     /* Chart roles. Validated (dataviz validate_palette.js) on the dark surface #0d131e. */
     .dt-page {
@@ -45,6 +45,8 @@
     .dt-card > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
     .dt-card > header p { margin: 0; color: var(--th-muted); font-size: var(--th-fs-sm); }
     .dt-sub { margin: 4px 0 0; color: var(--th-muted); font-size: var(--th-fs-sm); }
+    .dt-old, .dt-sub.dt-old, .dt-card > header p.dt-old { color: var(--th-warn); white-space: normal; }
+    .dt-sub.dt-old { font-size: var(--th-fs-xs); }
     .dt-stance .th-kicker { margin-bottom: 6px; }
     .dt-stance h2 { margin: 0; font-size: var(--th-fs-2xl); }
     .dt-stance .dt-summary { margin: 8px 0 0; color: var(--th-text-2); font-size: var(--th-fs-md); }
@@ -63,6 +65,7 @@
     .dt-stack { display: grid; gap: 14px; }
     .dt-grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .dt-grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .dt-stack > *, .dt-grid2 > *, .dt-grid3 > *, .dt-group { min-width: 0; }
 
     .dt-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0 0 10px; padding: 0; list-style: none; color: var(--th-text-2); font-size: var(--th-fs-xs); }
     .dt-legend li { display: inline-flex; align-items: center; gap: 6px; }
@@ -120,8 +123,6 @@
     .dt-crypto dd { margin: 2px 0 0; color: var(--th-text); font-size: var(--th-fs-md); font-weight: 650; font-variant-numeric: tabular-nums; }
     .dt-crypto .sym { color: var(--th-text); font-size: var(--th-fs-lg); font-weight: 800; }
 
-    .dt-archive { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; color: var(--th-muted); font-size: var(--th-fs-sm); }
-    .dt-archive a { color: var(--th-accent); }
     .dt-foot { margin-top: 28px; color: var(--th-faint); font-size: var(--th-fs-xs); }
 
     @media (max-width: 1080px) { .dt-hero { grid-template-columns: 1fr; } .dt-grid3 { grid-template-columns: 1fr 1fr; } }
@@ -138,11 +139,9 @@
   <main class="th-container dt-page" id="dtPage">
     <div class="dt-head">
       <div>
-        <div class="th-kicker">Daily trade reports</div>
-        <h1>交易早晚报</h1>
+        <h1>早晚报</h1>
         <p class="th-lead">每天两份研究快照：早报给出当天的立场和候选，晚报复核各大类的冷热。下面先看走势，再看某一天的细节。只做研究，不含账户数据，不替你下单。</p>
       </div>
-      <span class="th-fresh" id="dtFresh" data-state="unknown">读取中</span>
     </div>
     <p class="dt-notice" id="dtNotice" hidden></p>
 
@@ -204,7 +203,7 @@
       <div class="dt-stack">
         <div class="dt-grid2">
           <article class="dt-card">
-            <header><h2>数据新鲜度</h2><p>条越长，数据越旧</p></header>
+            <header><h2>数据新鲜度</h2><p>条越长，数据越旧；天数取自报告原文</p></header>
             <div class="dt-chart" id="chAge"></div>
           </article>
           <article class="dt-card" id="cardRisk">
@@ -257,11 +256,7 @@
       </div>
     </section>
 
-    <section class="dt-section" aria-labelledby="dtArchiveTitle">
-      <h2 id="dtArchiveTitle">旧版报告</h2>
-      <div class="dt-archive"><span>2026-08-14 的原始网页版：</span><a href="/daily-trade/reports/2026-08-14/morning.html">早报</a><a href="/daily-trade/reports/2026-08-14/evening.html">晚报</a></div>
-    </section>
-    <p class="dt-foot">研究用途，非投资建议。数据由独立交易流程生成，经公开白名单导出：不含账户、付费内容和密钥。</p>
+    <p class="th-pagenote">数据由独立交易流程生成，经公开白名单导出：不含账户、付费内容和密钥。</p>
     <div class="dt-tip" id="dtTip" role="tooltip" hidden></div>
   </main>
   <script>
@@ -356,6 +351,19 @@
       return out;
     }
     /* keep at least ~8px per day; on narrow screens show the most recent days */
+    function dayDiff(a, b) { return Math.round((Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000); }
+    /* Where reports stopped for more than a week, mark the break so neighbours do not look consecutive. */
+    function gapMarks(dates, x0, band, top, bottom) {
+      var out = "";
+      for (var i = 1; i < dates.length; i++) {
+        var gap = dayDiff(dates[i - 1], dates[i]);
+        if (!(gap > 7)) continue;
+        var gx = x0 + band * i;
+        out += '<line x1="' + gx + '" x2="' + gx + '" y1="' + top + '" y2="' + bottom + '" stroke="var(--viz-axis)" stroke-dasharray="2 3"/>'
+          + '<text x="' + (gx - 4) + '" y="' + (top + 10) + '" text-anchor="end">中断 ' + gap + " 天</text>";
+      }
+      return out;
+    }
     function visibleDays(list, w) { var n = Math.max(14, Math.floor((w - 60) / 8)); return list.length > n ? list.slice(-n) : list; }
 
     /* ---------- chart: daily signals (diverging bars) ---------- */
@@ -385,6 +393,7 @@
         s += '<rect class="hit" tabindex="0" data-date="' + d.date + '" x="' + x + '" y="' + T + '" width="' + band + '" height="' + plotH + '"' +
           tip([d.date + (d.stance ? " · " + d.stance : ""), "Buy 候选 " + c.buy + " · Sell / 回避 " + c.sell + " · 背离 " + c.divergence, "无交叉确认 " + c.unconfirmed + " · 13买点 " + c.buyPoints]) + "/>";
       });
+      s += gapMarks(days.map(function (d) { return d.date; }), L, band, T, H - B);
       s += xLabels(days.map(function (d) { return d.date; }), L, band, H - 6, W);
       s += '<text x="' + L + '" y="11" class="ink">↑ Buy</text><text x="' + L + '" y="' + (H - B + 0) + '" dy="-4" class="ink">↓ Sell / 背离</text>';
       $("chSignals").innerHTML = s + "</svg>";
@@ -415,6 +424,7 @@
                : '<rect x="' + (x + .5) + '" y="' + (T + 2.5) + '" width="' + Math.max(0, cw - 1) + '" height="23" rx="3" fill="none" stroke="var(--viz-axis)" stroke-dasharray="2 2"/>';
         s += '<rect class="hit" tabindex="0" data-date="' + d.date + '" x="' + (x - 1) + '" y="0" width="' + band + '" height="' + (T + 30) + '"' + tip([d.date, "立场：" + (d.stance || "未标注"), d.riskCap != null ? "风险倍率上限 " + fmt(d.riskCap) : "风险倍率：标准"]) + "/>";
       });
+      s += gapMarks(days.map(function (d) { return d.date; }), L, band, T + 34, T + 44).replace(/<text[^>]*>[^<]*<\/text>/g, "");
       s += xLabels(days.map(function (d) { return d.date; }), L, band, H - 6, W);
       $("chStance").innerHTML = s + "</svg>";
     }
@@ -444,6 +454,7 @@
       });
       var mi = marker ? dates.indexOf(marker) : -1;
       if (mi >= 0) s += '<rect x="' + (L + band * mi - 1) + '" y="' + (T - 2) + '" width="' + (cw + 2) + '" height="' + (h.classes.length * (rowH + gap) + 2) + '" rx="3" fill="none" stroke="var(--viz-ink)" stroke-width="2"/>';
+      s += gapMarks(dates, L, band, T, T + h.classes.length * (rowH + gap)).replace(/<text[^>]*>[^<]*<\/text>/g, "");
       s += xLabels(dates, L, band, H - 6, W - L);
       $("chHeat").innerHTML = s + "</svg>";
       $("dtHeatNote").textContent = mi >= 0 ? "白框是 " + state.date + " 早报用到的冷热数据（" + marker + "）" : "颜色越蓝越冷、越红越热；字标出温度变化的那一天";
@@ -458,8 +469,16 @@
       var y = function (p) { return T + (1 - p) * plotH; }, x = function (i) { return L + band * (i + .5); };
       var s = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="每日最新数据源占比">';
       [0, .25, .5, .75, 1].forEach(function (p) { s += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(p) + '" y2="' + y(p) + '" stroke="' + (p === 0 ? "var(--viz-axis)" : "var(--viz-grid)") + '"/><text x="' + (L - 6) + '" y="' + (y(p) + 4) + '" text-anchor="end">' + Math.round(p * 100) + "%</text>"; });
-      var pts = days.map(function (d, i) { return x(i) + "," + y(d.freshness.fresh / d.freshness.total); });
-      s += '<polyline points="' + pts.join(" ") + '" fill="none" stroke="var(--viz-s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>';
+      var runs = [[]];
+      days.forEach(function (d, i) {
+        if (i && dayDiff(days[i - 1].date, d.date) > 7) runs.push([]);
+        runs[runs.length - 1].push(x(i) + "," + y(d.freshness.fresh / d.freshness.total));
+      });
+      runs.forEach(function (pts) {
+        s += pts.length > 1 ? '<polyline points="' + pts.join(" ") + '" fill="none" stroke="var(--viz-s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+          : '<circle cx="' + pts[0].split(",")[0] + '" cy="' + pts[0].split(",")[1] + '" r="3" fill="var(--viz-s1)"/>';
+      });
+      s += gapMarks(days.map(function (d) { return d.date; }), L, band, T, H - B);
       days.forEach(function (d, i) {
         var p = d.freshness.fresh / d.freshness.total;
         if (d.date === state.date) s += '<line x1="' + x(i) + '" x2="' + x(i) + '" y1="' + T + '" y2="' + (H - B) + '" stroke="var(--viz-axis)" stroke-dasharray="3 3"/><circle cx="' + x(i) + '" cy="' + y(p) + '" r="5" fill="var(--viz-s1)" stroke="var(--viz-surface)" stroke-width="2"/>';
@@ -472,7 +491,11 @@
     /* ---------- chart: BTC/ETH ATM IV term structure (log DTE) ---------- */
     function drawTerm() {
       var c = state.extras && state.extras.crypto, inst = c ? c.instruments.filter(function (i) { return i.term && i.term.length; }) : [];
-      $("dtTermNote").textContent = c ? "最新一期 " + (c.date || "—") + "，来源 " + (c.source || "Deribit") + "；只保留最新一期" : "";
+      var latestReport = state.index.length ? state.index[0].date : null;
+      var termAge = c && c.date && latestReport ? dayDiff(c.date, latestReport) : 0;
+      var termNote = $("dtTermNote");
+      termNote.textContent = c ? "采集于 " + (c.date || "—") + "，来源 " + (c.source || "Deribit") + (termAge > 3 ? "；早于最新一期报告，只能当旧数据看" : "；只保留最新一期") : "";
+      termNote.className = termAge > 3 ? "dt-old" : "";
       if (!inst.length) { $("chTerm").innerHTML = '<p class="dt-empty">没有期限结构数据</p>'; return; }
       var W = width("chTerm"), H = 200, L = 40, R = 44, T = 14, B = 26;
       var all = []; inst.forEach(function (i) { i.term.forEach(function (t) { all.push(t); }); });
@@ -557,7 +580,7 @@
         ["Buy 候选", c.buy ?? "—", "<small>其中多体系支持 " + dual + " 个</small>"],
         ["Sell / 回避", c.sell ?? "—", "<small>背离警示 " + (c.divergence ?? "—") + " 个</small>"],
         ["无交叉确认", c.unconfirmed ?? "—", "<small>只有单一体系给信号</small>"],
-        ["13 买点", c.buyPoints ?? "—", "<small>" + (m && m.buyPointErrors ? "本次扫描失败，只作历史参考" : "当天扫描到的买点") + "</small>"],
+        ["13 买点", c.buyPoints ?? "—", "<small>" + (m && /失败/.test(m.buyPointScanNote || "") ? "本次扫描失败，只作历史参考" : m && m.buyPointErrors ? "扫描部分完成，" + m.buyPointErrors + " 项异常" : "当天扫描到的买点") + "</small>"],
         ["数据源最新", f.total ? f.fresh + " / " + f.total : "—", "<small>" + (f.total ? "其余偏旧、过期或缺失" : "") + "</small>"],
       ];
       $("dtKpis").innerHTML = tiles.map(function (t) { return '<div class="dt-kpi"><dt>' + t[0] + "</dt><dd>" + esc(t[1]) + "</dd>" + t[2] + "</div>"; }).join("");
@@ -577,7 +600,11 @@
       $("dtQs").innerHTML = (risk.questions || []).map(function (q) { return '<div class="dt-q"><p>' + esc(q.question) + "</p>" + chip(q.state) + "</div>"; }).join("");
       var rules = {}; if (state.extras && state.extras.risk && state.extras.risk.date === state.date) state.extras.risk.liquidity.forEach(function (l) { rules[l.name] = l.rule; });
       $("dtLiquidity").innerHTML = (risk.liquidity || []).length ? table(["流动性指标", "当前值", "数据日", "状态"], risk.liquidity.map(function (l) {
-        return '<tr><td><span style="color:var(--th-text)">' + esc(l.name) + "</span>" + (rules[l.name] ? '<div class="dt-sub">' + esc(rules[l.name]) + "</div>" : "") + '</td><td class="num">' + esc(l.value) + '</td><td class="num">' + esc(l.date) + "</td><td>" + chip(l.state) + "</td></tr>";
+        var dataDay = (String(l.date || "").match(/\d{4}-\d{2}-\d{2}/) || [])[0];
+        var age = dataDay ? dayDiff(dataDay, state.date) : 0;
+        var limit = /weekly/.test(l.date || "") ? 14 : 5;
+        var old = age > limit ? '<div class="dt-sub dt-old">比报告早 ' + age + " 天，状态可能已变</div>" : "";
+        return '<tr><td><span style="color:var(--th-text)">' + esc(l.name) + "</span>" + (rules[l.name] ? '<div class="dt-sub">' + esc(rules[l.name]) + "</div>" : "") + '</td><td class="num">' + esc(l.value) + '</td><td class="num">' + esc(l.date) + old + "</td><td>" + chip(l.state) + "</td></tr>";
       })) + (risk.slowTotal ? '<p class="dt-sub">七项慢速拥挤指标：' + risk.slowMissing + " / " + risk.slowTotal + " 项缺失。</p>" : "") : "";
       $("dtBuys").innerHTML = m ? table(["标的", "市场", "一致度", "交叉证据", "进场 / 止损"], signalRows(m.buys, true)) : '<p class="dt-empty">这一天没有早报</p>';
       $("dtSells").innerHTML = m ? table(["标的", "市场", "一致度", "交叉证据"], signalRows(m.sells)) : "";
@@ -624,12 +651,11 @@
     }
 
     function freshnessBadge(manifest) {
-      var badge = $("dtFresh"), api = window.TraderHome, notice = $("dtNotice");
+      // The page bar (shared shell) shows the freshness badge; this page only adds the explanation.
+      var api = window.TraderHome, notice = $("dtNotice");
       var t = Date.parse(manifest && manifest.generated_at || "");
-      if (!isFinite(t) || !api || !api.freshness) { badge.textContent = "时间未知"; return; }
+      if (!isFinite(t) || !api || !api.freshness) return;
       var f = api.freshness(t, { freshHours: 36, lateHours: 96 });
-      badge.setAttribute("data-state", f.state);
-      badge.textContent = f.label + " · " + f.ago;
       if (f.state !== "fresh") {
         notice.hidden = false;
         notice.textContent = "最新一期停在 " + (manifest.report_date || "—") + "（" + f.ago + "）。生成早晚报的自动任务恢复后，这里会在下一份报告写完后自动更新；在那之前，下面只能当作历史回看。";

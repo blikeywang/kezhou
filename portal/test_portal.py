@@ -38,6 +38,18 @@ class PortalBuildTests(unittest.TestCase):
             self.assertIn('rel="canonical"', html, rel)
             self.assertIn('name="theme-color"', html, rel)
             self.assertIn('rel="icon"', html, rel)
+            # One shared footer in the static HTML of every page (disclaimer without JavaScript).
+            self.assertEqual(html.count("data-traderhome-footer"), 1, rel)
+            self.assertIn("不构成投资建议", html, rel)
+        # Raw report HTML is never published; daily reports go through the allowlisted JSON only.
+        self.assertFalse((self.site / "daily-trade" / "reports").exists())
+        status = json.loads((self.site / "assets" / "traderhome-status.json").read_text(encoding="utf-8"))
+        names = {m["key"]: m["name"] for m in status["modules"]}
+        self.assertEqual(names, {"history": "历史证据", "review": "交易复盘", "incomeos": "IncomeOS", "tailtrend": "TailTrend",
+                                 "otc": "场外日线", "marketSimulation": "模拟盘", "dailyTrade": "早晚报"})
+        shell = (self.site / "assets" / "traderhome-shell.js").read_text(encoding="utf-8")
+        for name in names.values():
+            self.assertIn(f'name: "{name}"', shell, name)
 
         for retired in ("decision", "incomeos-whole", "flow", "standards"):
             self.assertFalse((self.site / retired).exists(), retired)

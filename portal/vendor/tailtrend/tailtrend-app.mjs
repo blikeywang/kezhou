@@ -83,7 +83,20 @@ function applySnapshotAge(snapshot) {
 }
 
 function dataClass(value) {
-  return value === "FRESH" ? "" : value === "CACHED" ? "cached" : "stale";
+  return value === "FRESH" ? "fresh" : value === "CACHED" ? "cached" : "stale";
+}
+// The snapshot keeps the engine's English status codes; the page shows them in Chinese.
+function dataLabel(value) {
+  return ({ FRESH: "最新", CACHED: "缓存", STALE: "过期", MISSING: "缺失", ERROR: "失败", INSUFFICIENT: "数据不足", LOCAL: "本地导入" })[value] ?? value ?? "—";
+}
+// How many scheduled runs are missing between two data days (index entries are newest first).
+function missingBetween(fromDate, toDate) {
+  return (state.index?.entries ?? []).filter((entry) => entry.status === "MISSING" && entry.dataAsOf > fromDate && entry.dataAsOf < toDate).length;
+}
+function comparisonNote(fromDate, toDate) {
+  if (!fromDate) return "这是第一份快照，没有可比的上一份";
+  const gap = missingBetween(fromDate, toDate);
+  return gap ? `与上一份快照（${fromDate}）相比；中间 ${gap} 个交易日没有运行` : `与上一份快照（${fromDate}）相比`;
 }
 
 function renderHeader() {
@@ -117,8 +130,11 @@ function renderHeader() {
     ? `数据停在 ${snapshot.tradingDate} · 不作为今日依据`
     : newest?.status === "MISSING"
     ? `${newest.dataAsOf} 已写入 MISSING，不沿用旧信号`
-    : quality.errors.length ? `${quality.errors.length} 项失败，已禁止缓存触发新仓` : "全部 Fresh · 无缺失";
+    : quality.errors.length ? `${quality.errors.length} 项失败，已禁止缓存触发新仓` : "全部最新 · 无缺失";
   $("#metricTransitions").textContent = snapshot.transitions.length;
+  const compared = snapshot.records.map((record) => record.change?.comparisonDate).filter(Boolean).sort().at(-1) ?? null;
+  const note = document.getElementById("metricTransitionsNote");
+  if (note) note.textContent = comparisonNote(compared, snapshot.tradingDate);
 }
 
 function renderFilters() {
@@ -157,13 +173,13 @@ function renderRows() {
     const selected = state.selected?.symbol === record.symbol;
     return `<tr data-symbol="${escapeHtml(record.symbol)}" aria-selected="${selected}">
       <td data-label="标的"><div class="tt-symbol"><strong>${escapeHtml(record.ticker)}</strong><small>${escapeHtml(record.name)}</small></div></td>
-      <td data-label="状态"><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span><small class="tt-cell-sub">复核优先级 ${record.priority}</small></td>
+      <td data-label="状态"><span class="tt-state ${toneFor(record)}">${escapeHtml(record.label)}</span><small class="tt-cell-sub">复核优先级 ${record.priority}${record.signalBoundary?.lockedAt ? ` · 按 ${escapeHtml(String(record.signalBoundary.lockedAt).slice(5))} 锁定的边界` : ""}</small></td>
       <td data-label="位置"><div class="tt-position"><div class="tt-position__bar"><i style="left:${position}%"></i></div><small class="tt-cell-sub">60日区间 ${number(record.rangePositionPct, 0)}%</small></div></td>
       <td data-label="周线 / 波动"><b>${escapeHtml(weeklyLabel(record.weeklyRegime))}</b><small class="tt-cell-sub">ATR ${number(record.atrPct)}% · HV p${number(record.hvPercentile, 0)}</small></td>
       <td data-label="动作" class="tt-action">${record.dataStatus === "STALE"
         ? `<span class="tt-action--stale">数据过期，暂不判断</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)} 时的结论：${escapeHtml(record.action)}</small>`
         : `${escapeHtml(record.action)}${record.blockers?.length ? `<small class="tt-cell-sub">${escapeHtml(record.blockers[0])}</small>` : ""}`}</td>
-      <td data-label="数据"><span class="tt-fresh ${dataClass(record.dataStatus)}">${escapeHtml(record.dataStatus)}</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)}</small></td>
+      <td data-label="数据"><span class="tt-fresh ${dataClass(record.dataStatus)}">${escapeHtml(dataLabel(record.dataStatus))}</span><small class="tt-cell-sub">${escapeHtml(record.tradingDate)}</small></td>
     </tr>`;
   }).join("");
   body.querySelectorAll("tr[data-symbol]").forEach((row) => row.addEventListener("click", () => selectRecord(row.dataset.symbol, { openDetail: true })));
@@ -189,12 +205,14 @@ function changeMarkup(record) {
   const comparison = change?.comparisonDate;
   const priorLabel = change?.from ? STATE_META[change.from]?.label ?? change.from : null;
   const headline = !comparison
-    ? "首份审计基线，暂无昨日对照"
+    ? "第一份快照，没有可比的上一份"
     : change.changed
-      ? `${comparison}：${priorLabel} → ${record.label}`
-      : `较 ${comparison} 状态未变化`;
+      ? `${priorLabel} → ${record.label}`
+      : "状态没有变化";
   const reasons = record.stateReason?.length ? record.stateReason : [change?.reason ?? record.action];
-  return `<div class="tt-explain"><div><span>较昨日变化</span><strong>${escapeHtml(headline)}</strong></div><ul>${reasons.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`;
+  const gap = comparison ? missingBetween(comparison, record.tradingDate) : 0;
+  const label = !comparison ? "状态变化" : gap ? `较上一份快照（${comparison}，中间缺 ${gap} 个交易日）` : `较上一份快照（${comparison}）`;
+  return `<div class="tt-explain"><div><span>${escapeHtml(label)}</span><strong>${escapeHtml(headline)}</strong></div><ul>${reasons.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`;
 }
 
 function nextConditionMarkup(record) {
@@ -235,7 +253,7 @@ function detailMarkup(record, compact = false) {
     <div class="tt-detail__plan"><h4>预先写下的管理方式</h4><ul>${managementRows(record).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
     <div class="tt-detail__plan"><h4>阻断 / 复核</h4><ul>${blockers.map((item) => `<li class="${record.blockers?.length ? "tt-blocker" : ""}">${escapeHtml(item)}</li>`).join("")}</ul></div>
     <div class="tt-detail__plan"><h4>优先级构成 · 只用于复核排序</h4>${priorityMarkup(record)}</div>
-    ${compact ? "" : `<div class="tt-detail__plan"><h4>地图版本</h4><ul><li>${escapeHtml(map.version)} · prior completed bars only</li><li>数据：${escapeHtml(record.dataStatus)} · ${escapeHtml(record.source)}</li></ul></div>`}`;
+    ${compact ? "" : `<div class="tt-detail__plan"><h4>地图版本</h4><ul><li>${escapeHtml(map.version)} · prior completed bars only</li><li>数据：${escapeHtml(dataLabel(record.dataStatus))} · ${escapeHtml(record.source)}</li></ul></div>`}`;
 }
 
 function closeDetail() {
@@ -385,21 +403,37 @@ function renderAudit() {
     && Math.max(Math.abs(entry.forward?.running?.maxUpPct ?? 0), Math.abs(entry.forward?.running?.maxDownPct ?? 0)) >= 5).length;
   $("#auditProgress").textContent = `${Math.min(days, 10)}/10 个交易日`;
   $("#auditSummary").innerHTML = [
-    ["真实交易日", days, "目标先积累 5–10 日"],
+    ["已运行的交易日", days, "先积累 5–10 天再看结果"],
     ["方向性观察", trackedSignals, "含被硬闸门阻断的影子候选"],
     ["次日参考", nextReferences, "用于计算提醒到下一可交易日偏差"],
     ["5日结果", completedFive, "派生 MFE / MAE 已完成"],
     ["主动放弃后大幅运行", skippedLargeMoves, "中部/观察状态后绝对波动 ≥5%"],
   ].map(([label, value, note]) => `<article><span>${escapeHtml(label)}</span><strong>${value}</strong><small>${escapeHtml(note)}</small></article>`).join("");
 
-  const daysHistory = state.history?.records ?? [];
-  $("#auditChanges").innerHTML = daysHistory.slice(0, 5).map((run) => {
+  // Newest first. Days that were never run are shown as one "missing" block, not as "0 changes".
+  const runs = state.history?.records ?? [];
+  const item = (t) => `<li><b>${escapeHtml(t.symbol)}</b> ${escapeHtml(STATE_META[t.from]?.label ?? t.from)} → ${escapeHtml(STATE_META[t.to]?.label ?? t.to)}<small>${escapeHtml(t.reason ?? "等待原因记录")}</small></li>`;
+  const blocks = [];
+  for (let i = 0; i < runs.length && blocks.length < 6; i += 1) {
+    const run = runs[i];
+    if (run.mode === "missing") {
+      let j = i;
+      while (j + 1 < runs.length && runs[j + 1].mode === "missing") j += 1;
+      const count = j - i + 1;
+      blocks.push(`<article class="tt-audit-missing"><div><span>${escapeHtml(count > 1 ? `${runs[j].tradingDate} 至 ${run.tradingDate}` : run.tradingDate)}</span><b>${count} 个交易日没有运行</b></div><p>这些天没有生成快照，记为缺失。不会用后来的数据补造当时的状态或收益。</p></article>`);
+      i = j;
+      continue;
+    }
+    const previous = runs.slice(i + 1).find((entry) => entry.mode !== "missing");
     const transitions = run.transitions ?? [];
+    const SHOWN = 8;
     const body = transitions.length
-      ? `<ul>${transitions.map((item) => `<li><b>${escapeHtml(item.symbol)}</b> ${escapeHtml(STATE_META[item.from]?.label ?? item.from)} → ${escapeHtml(STATE_META[item.to]?.label ?? item.to)}<small>${escapeHtml(item.reason ?? "等待原因记录")}</small></li>`).join("")}</ul>`
-      : '<p>这是首份审计基线，或相对上一交易日没有状态变化；不补造历史转换。</p>';
-    return `<article><div><span>${escapeHtml(run.tradingDate)}</span><b>${transitions.length} 个状态变化</b></div>${body}</article>`;
-  }).join("") || '<div class="tt-empty">尚无真实日更记录。</div>';
+      ? `<ul>${transitions.slice(0, SHOWN).map(item).join("")}</ul>${transitions.length > SHOWN ? `<details><summary>展开其余 ${transitions.length - SHOWN} 个</summary><ul>${transitions.slice(SHOWN).map(item).join("")}</ul></details>` : ""}`
+      : `<p>${previous ? "相对上一份快照没有状态变化。" : "这是第一份快照，作为之后比较的基线。"}</p>`;
+    const versus = previous ? `<small class="tt-audit-versus">${escapeHtml(comparisonNote(previous.tradingDate, run.tradingDate))}</small>` : "";
+    blocks.push(`<article><div><span>${escapeHtml(run.tradingDate)}</span><b>${transitions.length} 个状态变化</b></div>${versus}${body}</article>`);
+  }
+  $("#auditChanges").innerHTML = blocks.join("") || '<div class="tt-empty">还没有运行记录。</div>';
 }
 
 function parseCsv(text) {
