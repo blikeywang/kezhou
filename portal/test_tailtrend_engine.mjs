@@ -696,3 +696,45 @@ test("AMZN published close and frozen/rolling levels reproduce the expired entry
   assert.equal(row.newPositionAllowed, false);
   assert.equal(row.nextCondition.targetState, "REASSESS");
 });
+
+test('weekly cadence distinguishes planned non-runs prospectively and preserves frozen bytes', async t => {
+  const { readFile } = await import('node:fs/promises');
+  const { scheduledSessionForWeek, isPlannedNonRun } = await import('../tools/tailtrend/schedule.mjs');
+  assert.equal(scheduledSessionForWeek('2026-12-25'), '2026-12-24');
+  assert.equal(isPlannedNonRun('2026-12-24'), false);
+  assert.equal(isPlannedNonRun('2026-11-09'), false); // before policy
+  assert.equal(isPlannedNonRun('2026-11-10'), true);
+  const dataDir = await mkdtemp(join(tmpdir(), 'tailtrend-weekly-'));
+  t.after(() => rm(dataDir, {recursive:true,force:true}));
+  const snap = date => ({schema:'traderhome_tailtrend_snapshot_v1',mode:'complete',dataAsOf:date,runAt:date+'T22:00:00Z',records:[]});
+  await persistDailySnapshots({dataDir,snapshot:snap('2026-11-06')});
+  const original = await readFile(join(dataDir,'snapshots/2026-11-06.json'),'utf8');
+  const next = await persistDailySnapshots({dataDir,snapshot:snap('2026-11-20'),calendarDates:['2026-11-09','2026-11-10','2026-11-11','2026-11-12','2026-11-13','2026-11-16','2026-11-17','2026-11-18','2026-11-19']});
+  assert.deepEqual(next.index.missingDates,['2026-11-13','2026-11-09']);
+  assert.equal(next.index.notScheduledDates.length,7);
+  assert.equal(next.persistedSnapshot.schedule.version,'weekly-close-v1');
+  assert.equal(await readFile(join(dataDir,'snapshots/2026-11-06.json'),'utf8'),original);
+  const planned = JSON.parse(await readFile(join(dataDir,'snapshots/2026-11-10.json'),'utf8'));
+  assert.equal(planned.status,'NOT_SCHEDULED');
+  assert.equal(planned.records.length,0);
+  assert.equal(planned.missingReason,null);
+});
+
+test('weekly audit backfills daily horizons without manufacturing daily signals; epochs stay separate', async () => {
+  const { assertAuditContinuity } = await import('../tools/tailtrend/schedule.mjs');
+  for (const reference of [null,undefined,'',0,-1,'bad']) {
+    assertAuditContinuity({entries:[{originDate:'2026-11-13',symbol:'INVALID.US',execution:{alertReference:reference}}]}, new Map(), '2026-11-30');
+  }
+  const record={symbol:'TEST.US',tradingDate:'2026-11-13',signalDirection:'LONG',management:{entryReference:100}};
+  const original=updateAuditLedger(null,[record],new Map(),{epochId:'0.3.0:old'});
+  const dates=['2026-11-16','2026-11-17','2026-11-18','2026-11-19','2026-11-20','2026-11-23','2026-11-24','2026-11-25','2026-11-27','2026-11-30'];
+  const bars=dates.map((date,i)=>({date,open:100,high:101+i,low:99-i,close:100}));
+  assertAuditContinuity(original,new Map([['TEST.US',bars]]),'2026-11-30');
+  assert.throws(()=>assertAuditContinuity(original,new Map([['TEST.US',bars.slice(1)]]),'2026-11-30'),/AUDIT_CONTINUITY_GAP/);
+  const result=updateAuditLedger(original,[{...record,tradingDate:'2026-11-30'}],new Map([['TEST.US',bars]]),{epochId:'0.3.1:new'});
+  assert.equal(result.daysCollected,1);
+  assert.equal(result.entries.length,2);
+  const old=result.entries.find(e=>e.epochId==='0.3.0:old');
+  for(const h of [1,3,5,10]) {assert.equal(old.forward.horizons[h].asOf,dates[h-1]);assert.equal(old.forward.horizons[h].mfePct,h);}
+  assert.equal(original.entries[0].forward.sessions,0);
+});

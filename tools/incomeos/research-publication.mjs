@@ -1,4 +1,4 @@
-import { sourceTime, timestampErrors, finalPublicationErrors } from './data-quality.mjs';
+import { sourceTime, timestampErrors, finalPublicationErrors, attachStructuredQuality } from './data-quality.mjs';
 export const RESEARCH_UNIVERSE = ["SPY.US", "QQQ.US", "IWM.US", "DIA.US", "SCHD.US", "VIG.US", "JEPI.US", "JEPQ.US", "QQQI.US", "SPYI.US", "DIVO.US", "DGRO.US", "VYM.US", "TLT.US", "SGOV.US", "KO.US", "PEP.US", "PG.US", "JNJ.US", "ABBV.US", "MRK.US", "PFE.US", "XOM.US", "CVX.US", "O.US", "VZ.US", "T.US", "MO.US", "PM.US", "HD.US", "LOW.US", "JPM.US", "BAC.US", "MCD.US", "NEE.US", "AAPL.US", "MSFT.US", "NVDA.US", "GOOGL.US", "META.US", "AMZN.US", "AVGO.US", "AMD.US", "TSLA.US", "NFLX.US", "COST.US", "ORCL.US", "CRM.US", "MU.US", "COIN.US", "GS.US", "BRK.B.US", "V.US", "MA.US", "BLK.US", "CME.US", "MS.US", "WFC.US", "LLY.US", "UNH.US", "AMGN.US", "WMT.US", "LIN.US", "CAT.US", "ETN.US", "ADP.US", "TXN.US", "QCOM.US", "ACN.US", "COP.US", "PGR.US"];
 export const RESEARCH_NOTICE = '仅供模型研究与反馈；来源时间未知或未核实，不能作为实时可执行行情，不生成买卖订单。';
 export function researchPublicationErrors(data, expectedDate, now = new Date(), { manual = false } = {}) {
@@ -41,5 +41,5 @@ export function prepareResearchPublication(data, expectedDate, now = new Date(),
   }
  }
  result.limitations=[...new Set([RESEARCH_NOTICE,...(result.limitations??[])])];
- return result;
+ return attachStructuredQuality(result);
 }

@@ -1,7 +1,8 @@
 import { expectedSession, isTradingDay } from "../scheduler/refresh-runner.mjs";
 // Pure quality checks. Retrieval time is never a substitute for source time.
 export function sourceTime(row = {}) {
-  const value = row.timestamp ?? row.time ?? row.trade_time;
+  const raw = row.timestamp ?? row.time ?? row.trade_time;
+  const value = typeof raw === 'string' && /^\d+(?:\.\d+)?$/.test(raw) ? Number(raw) : raw;
   if (value === undefined || value === null || value === '') return null;
   const parsed = typeof value === 'number' ? new Date(value < 1e12 ? value * 1000 : value) : new Date(value);
   return Number.isFinite(parsed.getTime()) ? parsed.toISOString() : null;
@@ -62,5 +63,29 @@ export function applyFinalPublicationQuality(data, expectedDate, now = new Date(
  const errors=finalPublicationErrors(data,expectedDate,now,options);
  data.dataQuality={...data.dataQuality, publicationReady:errors.length===0, publicationErrors:errors};
  data.mode=errors.length?'partial':'live';
+ return attachStructuredQuality(data);
+}
+
+// Additive machine-readable disclosures; legacy strings remain unchanged.
+export function structuredQualityIssues(data) {
+ const entries=new Map();
+ function add(symbol,field,code,scope){const key=JSON.stringify([symbol,field,code]);const old=entries.get(key);if(old){if(!old.scopes.includes(scope))old.scopes.push(scope);}else entries.set(key,{symbol,field,code,scopes:[scope]});}
+ function decode(message,scope,fallbackSymbol=null,fallbackField='publication'){
+  const text=String(message);const match=text.match(/^([A-Z][A-Z0-9.]*)\s*(call|put)?(?:\s+(quote|depth))?:\s*(.*)$/);
+  let symbol=fallbackSymbol,field=fallbackField,body=text;
+  if(match){symbol=match[1].replace(/\.US$/,'');field=match[3]??(match[2]?'option':'quote');body=match[4];if(match[2])field=`${match[2]}.${field}`;}
+  const prefix=body.match(/^(history|research|financial|forecast|consensus|valuation|quote|expectations):\s*(.*)$/);
+  if(prefix){field=prefix[1];body=prefix[2];}
+  const code=/source timestamp unavailable/.test(body)?'SOURCE_TIME_MISSING':/source timestamp is in the future/.test(body)?'SOURCE_TIME_FUTURE':/source timestamp predates/.test(body)?'SOURCE_TIME_STALE':/failed|unavailable|REQUEST_|RATE_LIMITED|AUTHORIZATION_FAILED/.test(body)?'SOURCE_REQUEST_FAILED':/coverage incomplete/.test(body)?'COVERAGE_INCOMPLETE':/calendar unknown/.test(body)?'CALENDAR_UNVERIFIED':/reference.*session/.test(body)?'SESSION_MISMATCH':/invalid two-sided/.test(body)?'INVALID_TWO_SIDED_MARKET':/missing|insufficient/.test(body)?'DATA_MISSING':'QUALITY_CHECK_FAILED';
+  add(symbol,field,code,scope);
+ }
+ for(const error of data.dataQuality?.errors??[])decode(error,'research');
+ for(const error of data.dataQuality?.publicationErrors??[])decode(error,'publication');
+ for(const error of data.optionDataQuality?.errors??[])decode(error,'options',null,'option');
+ for(const asset of data.executionAssets??[])if(!sourceTime({timestamp:asset.quoteTimestamp}))add(asset.symbol.replace(/\.US$/,''),'quote','SOURCE_TIME_MISSING','execution');
+ return [...entries.values()];
+}
+export function attachStructuredQuality(data) {
+ data.dataQuality={...data.dataQuality,issues:structuredQualityIssues(data)};
  return data;
 }

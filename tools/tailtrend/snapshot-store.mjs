@@ -1,3 +1,4 @@
+import { TAILTREND_SCHEDULE, isPlannedNonRun } from "./schedule.mjs";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -91,6 +92,8 @@ function indexEntry(snapshot) {
     summary: snapshot.summary ?? null,
     health: snapshot.health ?? snapshot.dataQuality ?? null,
     transitions: snapshot.transitions ?? [],
+    schedule: snapshot.schedule ?? null,
+    missingReason: snapshot.missingReason ?? null,
   };
 }
 
@@ -136,14 +139,34 @@ export async function persistDailySnapshots({ dataDir, snapshot, calendarDates =
     privacy: snapshot.privacy,
   };
   const generatedMissing = [];
+  const generatedNotScheduled = [];
   for (const date of findMissingTradingDates(previousIndex, calendarDates, snapshot.dataAsOf)) {
+    const planned = isPlannedNonRun(date);
     const placeholder = missingSnapshot(date, snapshot.runAt, metadata);
+    if (planned) Object.assign(placeholder, {
+      status: "NOT_SCHEDULED", mode: "not_scheduled", missingReason: null,
+      schedule: TAILTREND_SCHEDULE, researchStatus: "planned_non_observation",
+      health: { fresh: 0, cached: 0, stale: 0, error: 0, missing: [], errors: [] },
+      dataQuality: { fresh: 0, cached: 0, stale: 0, missing: 0, errors: [] },
+    });
     const result = await writeImmutable(resolve(snapshotsDir, `${date}.json`), placeholder);
-    if (result.created) generatedMissing.push(date);
+    if (result.created) (planned ? generatedNotScheduled : generatedMissing).push(date);
   }
 
+  const previousComplete = previousIndex.entries?.filter(entry => entry.status === "COMPLETE" && entry.dataAsOf < snapshot.dataAsOf)
+    .map(entry => entry.dataAsOf).sort().at(-1) ?? null;
+  const gapDates = [...new Set(calendarDates)].filter(date => previousComplete && date > previousComplete && date < snapshot.dataAsOf);
+  const knownStatuses = new Map((previousIndex.entries ?? []).map(entry => [entry.dataAsOf, entry.status]));
+  const plannedGap = date => knownStatuses.has(date) ? knownStatuses.get(date) === "NOT_SCHEDULED" : isPlannedNonRun(date);
+  const observationContext = {
+    previousObservationDate: previousComplete,
+    gapTradingSessions: gapDates.length,
+    plannedNonRunSessions: gapDates.filter(plannedGap).length,
+    missingScheduledSessions: gapDates.filter(date => !plannedGap(date)).length,
+    countBasis: "available_calendar_dates_between_complete_observations",
+  };
   const official = snapshot.mode === "complete"
-    ? { ...snapshot, status: "COMPLETE" }
+    ? { ...snapshot, observationContext, status: "COMPLETE", ...(snapshot.dataAsOf >= TAILTREND_SCHEDULE.effectiveFrom ? { schedule: TAILTREND_SCHEDULE } : {}) }
     : missingSnapshot(snapshot.dataAsOf, snapshot.runAt, {
       ...metadata,
       health: snapshot.health ?? snapshot.dataQuality,
@@ -159,6 +182,7 @@ export async function persistDailySnapshots({ dataDir, snapshot, calendarDates =
     updatedAt: snapshot.runAt,
     latestDataAsOf: entries[0]?.dataAsOf ?? null,
     latestCompleteDataAsOf: entries.find((entry) => entry.status === "COMPLETE")?.dataAsOf ?? null,
+    notScheduledDates: entries.filter((entry) => entry.status === "NOT_SCHEDULED").map((entry) => entry.dataAsOf),
     missingDates: entries.filter((entry) => entry.status === "MISSING").map((entry) => entry.dataAsOf),
     entries,
   };
@@ -169,7 +193,7 @@ export async function persistDailySnapshots({ dataDir, snapshot, calendarDates =
     ? await readJson(resolve(dataDir, latestCompleteEntry.file), null)
     : null;
   const displayLatest = latestComplete
-    ? staleLatest(latestComplete, entries[0])
+    ? staleLatest(latestComplete, entries.find((entry) => entry.status !== "NOT_SCHEDULED"))
     : entries[0] ? await readJson(resolve(dataDir, entries[0].file), null) : null;
   if (displayLatest) {
     await writeFile(latestPath, `${JSON.stringify(displayLatest, null, 2)}\n`, "utf8");
@@ -179,6 +203,7 @@ export async function persistDailySnapshots({ dataDir, snapshot, calendarDates =
     persistedSnapshot: persisted.value,
     created: persisted.created,
     generatedMissing,
+    generatedNotScheduled,
     index,
     displayLatest,
   };

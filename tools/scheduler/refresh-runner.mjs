@@ -43,7 +43,7 @@ const JOBS = {
     stamp: (data) => data?.dataAsOf ?? data?.tradingDate ?? null,
     refresh: ["tools/tailtrend/refresh.mjs"],
     tests: [["node", ["--test", "portal/test_tailtrend_engine.mjs"]]],
-    due: "afterClose",
+    due: "weeklyClose",
   },
   "incomeos-research": {
     label: "IncomeOS 研究快照",
@@ -52,7 +52,7 @@ const JOBS = {
     stamp: (data) => data?.tradingDate ?? null,
     refresh: ["tools/incomeos/refresh.mjs", "--no-archive"],
     tests: [["node", ["--test", "portal/test_incomeos_engine.mjs"]]],
-    due: "afterClose",
+    due: "weeklyClose",
   },
   "incomeos-friday": {
     label: "IncomeOS 周五操作单",
@@ -114,6 +114,18 @@ export function hoursSinceClose(session, now = new Date()) {
   const ny = nyParts(now);
   const dayDiff = Math.round((Date.parse(`${ny.date}T00:00:00Z`) - Date.parse(`${session}T00:00:00Z`)) / 86_400_000);
   return (dayDiff * 1440 + ny.minutes - closeReadyMinutes(session)) / 60;
+}
+/** Only release a weekly target while that week's last session is the latest
+ * completed session. Late weekday catch-up requires an explicit manual run;
+ * never silently publish Monday prices labelled as Friday. */
+export function weeklyCloseTarget(now = new Date()) {
+  const ny = nyParts(now);
+  const friday = new Date(`${ny.date}T12:00:00Z`);
+  friday.setUTCDate(friday.getUTCDate() + 5 - (friday.getUTCDay() || 7));
+  let target = friday.toISOString().slice(0, 10);
+  if (!isTradingDay(target)) target = previousTradingDay(target);
+  if (ny.date < target || (ny.date === target && ny.minutes < closeReadyMinutes(target))) return null;
+  return expectedSession(now) === target ? target : null;
 }
 export function inFridayWindow(now = new Date()) {
   const ny = nyParts(now);
@@ -201,7 +213,7 @@ async function main() {
 
   let target;
   try {
-    target = job.due === "fridayWindow" ? inFridayWindow() : job.due === "sourceChanged" ? await dailyTarget() : expectedSession();
+    target = job.due === "fridayWindow" ? inFridayWindow() : job.due === "sourceChanged" ? await dailyTarget() : job.due === "weeklyClose" ? weeklyCloseTarget() : expectedSession();
   } catch (error) {
     const message = errorSummary(error);
     writeStatus(name, { ok: false, startedAt: new Date().toISOString(), finishedAt: new Date().toISOString(), message });
@@ -211,7 +223,7 @@ async function main() {
     return;
   }
   if (!force) {
-    if (!target) { log(`${name}: outside the Friday 10:00–15:30 ET window, skipped`); return; }
+    if (!target) { log(`${name}: outside the configured release window, skipped`); return; }
     if (!isDue(job, stampOf(job), target)) { log(`${name}: already has ${target}, skipped`); return; }
   }
   if (!acquireLock()) { log(`${name}: another refresh is running, skipped`); return; }
@@ -233,7 +245,7 @@ async function main() {
     const beforeHashes = quality ? await quality.snapshotHashes(join(CLONE, job.dataDir, "snapshots")) : null;
     await sh("node", job.refresh, { timeout: 30 * 60_000 });
     const after = stampOf(job);
-    if (job.due === "afterClose" && !force && (after ?? "") <= (before ?? "")) {
+    if (["afterClose", "weeklyClose"].includes(job.due) && !force && (after ?? "") <= (before ?? "")) {
       // Holidays never reach here (the calendar skips them), so a missing close on a trading day
       // is either "not published yet" or a real data failure. Discard the churn either way, but
       // after three hours call it a failure instead of reporting success.

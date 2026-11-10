@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { TAILTREND_SCHEDULE, assertAuditContinuity } from "./schedule.mjs";
 
 import { execFile } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
@@ -281,7 +282,7 @@ const outcomes = await pooled(universe.symbols, 4, async (item) => {
         refreshedAt: runAt,
         source: "Longbridge Securities",
       },
-      auditBars: normalized.slice(-20),
+      auditBars: normalized,
       calendarDates: normalized.map((bar) => bar.date),
       error: null,
     };
@@ -417,6 +418,11 @@ if (researchRevision) {
   process.exit(0);
 }
 assertNoRevisionDowngrade(await readJson(latestPath, null), tradingDate);
+const previousAudit = await readJson(auditPath, { schema: "traderhome_tailtrend_audit_v1", entries: [] });
+const auditBars = new Map(outcomes
+  .filter((item) => item.record?.symbol && item.auditBars?.length)
+  .map((item) => [item.record.symbol, item.auditBars]));
+assertAuditContinuity(previousAudit, auditBars, tradingDate);
 const oldSnapshotHashes = await snapshotHashes(resolve(dataDir, "snapshots"));
 const stored = await persistDailySnapshots({ dataDir, snapshot, calendarDates });
 assertHistoryUnchanged(oldSnapshotHashes, await snapshotHashes(resolve(dataDir, "snapshots")));
@@ -436,10 +442,6 @@ const runHistory = {
   })),
 };
 
-const previousAudit = await readJson(auditPath, { schema: "traderhome_tailtrend_audit_v1", entries: [] });
-const auditBars = new Map(outcomes
-  .filter((item) => item.record?.symbol && item.auditBars?.length)
-  .map((item) => [item.record.symbol, item.auditBars]));
 const auditLedger = updateAuditLedger(previousAudit, officialRecords, auditBars, {
   updatedAt: runAt,
   epochId: `${TAILTREND_CONFIG.version}:${build.engineSourceHash.slice(0, 12)}:${build.paramsHash.slice(0, 12)}`,
@@ -447,6 +449,9 @@ const auditLedger = updateAuditLedger(previousAudit, officialRecords, auditBars,
 
 await mkdir(dataDir, { recursive: true });
 await writeFile(historyPath, `${JSON.stringify(runHistory, null, 2)}\n`, "utf8");
+auditLedger.sampleUnit = "signal_observation";
+auditLedger.forwardHorizonUnit = "trading_session";
+auditLedger.schedule = TAILTREND_SCHEDULE;
 await writeFile(auditPath, `${JSON.stringify(auditLedger, null, 2)}\n`, "utf8");
 console.log(`${stored.created ? "froze" : "kept"} snapshots/${tradingDate}.json status=${stored.persistedSnapshot.status}`);
 if (stored.generatedMissing.length) console.log(`recorded missing sessions=${stored.generatedMissing.join(",")}`);

@@ -44,3 +44,18 @@ test("hours since close separate 'not yet' from 'failed'", () => {
 
 test('Friday holiday cannot enter the action window',()=>assert.equal(inFridayWindow(new Date('2026-12-25T16:00:00Z')),null));
 test('unsupported calendar year fails closed',()=>assert.throws(()=>expectedSession(new Date('2028-05-01T22:00:00Z')),/calendar unavailable/));
+
+test('weekly close waits for Friday/holiday final session, keeps other windows unchanged', async () => {
+  const { weeklyCloseTarget } = await import('./refresh-runner.mjs');
+  assert.equal(weeklyCloseTarget(new Date('2026-11-10T22:00:00Z')), null);
+  assert.equal(weeklyCloseTarget(new Date('2026-11-13T21:19:00Z')), null);
+  assert.equal(weeklyCloseTarget(new Date('2026-11-13T21:20:00Z')), '2026-11-13');
+  assert.equal(weeklyCloseTarget(new Date('2026-11-14T12:00:00Z')), '2026-11-13');
+  assert.equal(weeklyCloseTarget(new Date('2026-11-16T22:00:00Z')), null);
+  // Christmas Friday closed; Christmas Eve closes early at 13:00 ET.
+  assert.equal(weeklyCloseTarget(new Date('2026-12-24T18:19:00Z')), null);
+  assert.equal(weeklyCloseTarget(new Date('2026-12-24T18:20:00Z')), '2026-12-24');
+  assert.equal(weeklyCloseTarget(new Date('2026-12-26T12:00:00Z')), '2026-12-24');
+  assert.equal(weeklyCloseTarget(new Date('2026-07-02T20:30:00Z')), '2026-07-02');
+  assert.throws(()=>weeklyCloseTarget(new Date('2028-01-07T22:00:00Z')),/calendar|日历|2028/i);
+});

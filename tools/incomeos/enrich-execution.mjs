@@ -1,14 +1,13 @@
 #!/usr/bin/env node
 
-import { execFile } from "node:child_process";
+import { createLongbridgeClient, attachRetrieval } from "./request-diagnostics.mjs";
+const client = createLongbridgeClient();
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
 import { sourceTime } from "./data-quality.mjs";
 
-const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
 const dataPath = resolve(projectDir, "portal/vendor/incomeos/data/incomeos-full.json");
@@ -22,12 +21,7 @@ const numeric = (value) => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
-const { stdout } = await execFileAsync("longbridge", ["quote", ...definitions.map((item) => item.symbol), "--format", "json"], {
-  cwd: "/private/tmp",
-  timeout: 60_000,
-  maxBuffer: 4 * 1024 * 1024,
-});
-const rows = JSON.parse(stdout);
+const rows = await client.request(["quote", ...definitions.map((item) => item.symbol)], 60_000);
 const bySymbol = new Map(rows.map((row) => [row.symbol, row]));
 const executionAssets = definitions.map((item) => {
   const quote = bySymbol.get(item.symbol) ?? {};
@@ -47,5 +41,6 @@ const executionAssets = definitions.map((item) => {
 const data = JSON.parse(await readFile(dataPath, "utf8"));
 data.executionAssets = executionAssets;
 data.executionAsOf = requestedAt;
+attachRetrieval(data,"execution",requestedAt,client.requests);
 await writeFile(dataPath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 console.log(`IncomeOS whole-share execution: ${executionAssets.map((item) => `${item.ticker} $${item.price}`).join(", ")}`);

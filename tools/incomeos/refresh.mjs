@@ -4,6 +4,7 @@ import { spawn } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+process.env.INCOMEOS_RETRIEVAL_STARTED_AT = new Date().toISOString();
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 
 function run(script) {

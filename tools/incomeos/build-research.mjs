@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 
-import { execFile } from "node:child_process";
+import { createLongbridgeClient, attachRetrieval } from "./request-diagnostics.mjs";
+const retrievalStartedAt = new Date().toISOString();
+const client = createLongbridgeClient();
+const longbridge = client.request;
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
-import { sourceTime, closedSessionDate, assetDataErrors } from "./data-quality.mjs";
+import { sourceTime, closedSessionDate, assetDataErrors, attachStructuredQuality } from "./data-quality.mjs";
 
 import { expectedSession } from "../scheduler/refresh-runner.mjs";
 const qualityNow = new Date();
 const expectedDate = expectedSession(qualityNow);
-const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
 const outputPath = resolve(projectDir, "portal/vendor/incomeos/data/incomeos-full.json");
@@ -125,23 +126,6 @@ const average = (values) => {
   return valid.length ? valid.reduce((sum, value) => sum + value, 0) / valid.length : null;
 };
 
-async function longbridge(args, timeout = 75_000) {
-  let lastError;
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    try {
-      const { stdout } = await execFileAsync("longbridge", [...args, "--format", "json"], {
-        cwd: "/private/tmp",
-        timeout,
-        maxBuffer: 64 * 1024 * 1024,
-      });
-      return stdout.trim() ? JSON.parse(stdout) : null;
-    } catch (error) {
-      lastError = error;
-      if (attempt < 3) await new Promise((resolveDelay) => setTimeout(resolveDelay, attempt * 1_000));
-    }
-  }
-  throw lastError;
-}
 
 async function pooled(items, concurrency, worker, label) {
   const results = new Array(items.length);
@@ -565,6 +549,8 @@ const output = {
   ],
 };
 
+attachStructuredQuality(output);
+attachRetrieval(output,"research",retrievalStartedAt,client.requests);
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`, "utf8");
 console.log(`wrote ${outputPath}`);

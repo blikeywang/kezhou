@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
-import { execFile } from "node:child_process";
+import { createLongbridgeClient, attachRetrieval } from "./request-diagnostics.mjs";
+const retrievalStartedAt = new Date().toISOString();
+const client = createLongbridgeClient();
+const longbridge = client.request;
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { promisify } from "node:util";
 
 import { sourceTime, applyFinalPublicationQuality } from "./data-quality.mjs";
 import { expectedSession } from "../scheduler/refresh-runner.mjs";
 import { validatedCalendarEvents } from "../tailtrend/publication-quality.mjs";
-const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
 const dataPath = resolve(projectDir, "portal/vendor/incomeos/data/incomeos-full.json");
@@ -24,23 +25,6 @@ const numeric = (value) => {
 const round = (value, digits = 2) => Number.isFinite(value) ? Number(value.toFixed(digits)) : null;
 const asMap = (rows) => new Map((Array.isArray(rows) ? rows : []).map((row) => [row.symbol, row]));
 
-async function longbridge(args, timeout = 75_000) {
-  let lastError;
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    try {
-      const { stdout } = await execFileAsync("longbridge", [...args, "--format", "json"], {
-        cwd: "/private/tmp",
-        timeout,
-        maxBuffer: 64 * 1024 * 1024,
-      });
-      return stdout.trim() ? JSON.parse(stdout) : null;
-    } catch (error) {
-      lastError = error;
-      if (attempt < 3) await new Promise((resolveDelay) => setTimeout(resolveDelay, attempt * 1_000));
-    }
-  }
-  throw lastError;
-}
 
 async function pooled(items, concurrency, worker) {
   const results = new Array(items.length);
@@ -267,6 +251,7 @@ data.optionDataQuality = {
 };
 const optionLimitation = "期权快照是单一时点的 28–49 DTE 横截面；没有完整历史期权面，因此不能把当前权利金年化代理当作长期已实现收益。";
 if (!data.limitations.includes(optionLimitation)) data.limitations.push(optionLimitation);
+attachRetrieval(data,"options",retrievalStartedAt,client.requests);
 applyFinalPublicationQuality(data, expectedSession());
 await writeFile(dataPath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 console.log(`wrote ${dataPath}`);
