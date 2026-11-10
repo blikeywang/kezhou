@@ -1,6 +1,6 @@
 # Historical Data Coverage Audit
 
-Generated: 2026-11-09T16:46:02Z
+Generated: 2026-11-10T01:06:09Z
 
 Fresh data is not proof of complete lifetime history. No series is certified as fully verified.
 Network genesis is not a market-price start. Provider firstTradeDate is not independent IPO evidence.
@@ -12,28 +12,28 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 
 | Symbol | Series | Actual first | Actual last | Bars | Verified lifecycle reference | Start status | Suspected gaps | OHLC-invalid bars |
 |---|---|---|---|---:|---|---|---:|---:|
-| BTC | base: Binance 4h | 2017-08-17 | 2026-11-09 | 20213 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
-| BTC | primary: Binance 1d | 2017-08-17 | 2026-11-08 | 3371 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | 0 |
-| BTC | usd: Coin Metrics 1d | 2010-07-18 | 2026-11-08 | 5958 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | n/a (close-only) |
-| ETH | base: Binance 4h | 2017-08-17 | 2026-11-09 | 20213 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
-| ETH | primary: Binance 1d | 2017-08-17 | 2026-11-08 | 3371 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | 0 |
-| ETH | usd: Coin Metrics 1d | 2015-08-08 | 2026-11-08 | 4111 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | n/a (close-only) |
-| SOL | base: Binance 4h | 2020-08-11 | 2026-11-09 | 13689 | unverified | unverified | 0 | 0 |
-| SOL | primary: Binance 1d | 2020-08-11 | 2026-11-08 | 2281 | unverified | unverified | 0 | 0 |
-| BNB | base: Binance 4h | 2017-11-06 | 2026-11-09 | 19728 | unverified | unverified | 16 | 0 |
-| BNB | primary: Binance 1d | 2017-11-06 | 2026-11-08 | 3290 | unverified | unverified | 0 | 0 |
-| XRP | base: Binance 4h | 2018-05-04 | 2026-11-09 | 18659 | unverified | unverified | 9 | 0 |
-| XRP | primary: Binance 1d | 2018-05-04 | 2026-11-08 | 3111 | unverified | unverified | 0 | 0 |
-| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-09 | 16103 | unverified | unverified | 2 | 0 |
-| DOGE | primary: Binance 1d | 2019-07-05 | 2026-11-08 | 2684 | unverified | unverified | 0 | 0 |
-| ADA | base: Binance 4h | 2018-04-17 | 2026-11-09 | 18762 | unverified | unverified | 9 | 0 |
-| ADA | primary: Binance 1d | 2018-04-17 | 2026-11-08 | 3128 | unverified | unverified | 0 | 0 |
-| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-09 | 13437 | unverified | unverified | 0 | 0 |
-| AVAX | primary: Binance 1d | 2020-09-22 | 2026-11-08 | 2239 | unverified | unverified | 0 | 0 |
-| LINK | base: Binance 4h | 2019-01-16 | 2026-11-09 | 17121 | unverified | unverified | 5 | 0 |
-| LINK | primary: Binance 1d | 2019-01-16 | 2026-11-08 | 2854 | unverified | unverified | 0 | 0 |
-| LTC | base: Binance 4h | 2017-12-13 | 2026-11-09 | 19506 | unverified | unverified | 16 | 0 |
-| LTC | primary: Binance 1d | 2017-12-13 | 2026-11-08 | 3253 | unverified | unverified | 0 | 0 |
+| BTC | base: Binance 4h | 2017-08-17 | 2026-11-09 | 20215 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
+| BTC | primary: Binance 1d | 2017-08-17 | 2026-11-09 | 3372 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | 0 |
+| BTC | usd: Coin Metrics 1d | 2010-07-18 | 2026-11-09 | 5959 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | n/a (close-only) |
+| ETH | base: Binance 4h | 2017-08-17 | 2026-11-09 | 20215 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
+| ETH | primary: Binance 1d | 2017-08-17 | 2026-11-09 | 3372 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | 0 |
+| ETH | usd: Coin Metrics 1d | 2015-08-08 | 2026-11-09 | 4112 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | n/a (close-only) |
+| SOL | base: Binance 4h | 2020-08-11 | 2026-11-09 | 13691 | unverified | unverified | 0 | 0 |
+| SOL | primary: Binance 1d | 2020-08-11 | 2026-11-09 | 2282 | unverified | unverified | 0 | 0 |
+| BNB | base: Binance 4h | 2017-11-06 | 2026-11-09 | 19730 | unverified | unverified | 16 | 0 |
+| BNB | primary: Binance 1d | 2017-11-06 | 2026-11-09 | 3291 | unverified | unverified | 0 | 0 |
+| XRP | base: Binance 4h | 2018-05-04 | 2026-11-09 | 18661 | unverified | unverified | 9 | 0 |
+| XRP | primary: Binance 1d | 2018-05-04 | 2026-11-09 | 3112 | unverified | unverified | 0 | 0 |
+| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-09 | 16105 | unverified | unverified | 2 | 0 |
+| DOGE | primary: Binance 1d | 2019-07-05 | 2026-11-09 | 2685 | unverified | unverified | 0 | 0 |
+| ADA | base: Binance 4h | 2018-04-17 | 2026-11-09 | 18764 | unverified | unverified | 9 | 0 |
+| ADA | primary: Binance 1d | 2018-04-17 | 2026-11-09 | 3129 | unverified | unverified | 0 | 0 |
+| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-09 | 13439 | unverified | unverified | 0 | 0 |
+| AVAX | primary: Binance 1d | 2020-09-22 | 2026-11-09 | 2240 | unverified | unverified | 0 | 0 |
+| LINK | base: Binance 4h | 2019-01-16 | 2026-11-09 | 17123 | unverified | unverified | 5 | 0 |
+| LINK | primary: Binance 1d | 2019-01-16 | 2026-11-09 | 2855 | unverified | unverified | 0 | 0 |
+| LTC | base: Binance 4h | 2017-12-13 | 2026-11-09 | 19508 | unverified | unverified | 16 | 0 |
+| LTC | primary: Binance 1d | 2017-12-13 | 2026-11-09 | 3254 | unverified | unverified | 0 | 0 |
 | AAPL | base: Yahoo Finance 1d | 1980-12-12 | 2026-11-06 | 11569 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
 | AAPL | primary: Yahoo Finance 1d | 1980-12-12 | 2026-11-06 | 11569 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
 | NVDA | base: Yahoo Finance 1d | 1999-01-22 | 2026-11-06 | 6992 | [1999-01-22 (ipo)](https://investor.nvidia.com/investor-resources/faqs/default.aspx?sh_print=yes) | start-reached | 0 | 0 |
@@ -130,14 +130,14 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 | BABA | primary: Yahoo Finance 1d | 2014-09-19 | 2026-11-06 | 3052 | unverified | unverified | 0 | 0 |
 | PDD | base: Yahoo Finance 1d | 2018-07-26 | 2026-11-06 | 2083 | unverified | unverified | 0 | 0 |
 | PDD | primary: Yahoo Finance 1d | 2018-07-26 | 2026-11-06 | 2083 | unverified | unverified | 0 | 0 |
-| NDX | base: Yahoo Finance 1d | 1985-10-01 | 2026-11-06 | 10356 | unverified | unverified | 0 | 0 |
-| NDX | primary: Yahoo Finance 1d | 1985-10-01 | 2026-11-06 | 10356 | unverified | unverified | 0 | 0 |
-| SPX | base: Yahoo Finance 1d | 1927-12-30 | 2026-11-06 | 24831 | unverified | unverified | 0 | 0 |
-| SPX | primary: Yahoo Finance 1d | 1927-12-30 | 2026-11-06 | 24831 | unverified | unverified | 0 | 0 |
-| DJI | base: Yahoo Finance 1d | 1992-01-02 | 2026-11-06 | 8775 | unverified | unverified | 0 | 0 |
-| DJI | primary: Yahoo Finance 1d | 1992-01-02 | 2026-11-06 | 8775 | unverified | unverified | 0 | 0 |
-| RUT | base: Yahoo Finance 1d | 1987-09-10 | 2026-11-06 | 9865 | unverified | unverified | 0 | 0 |
-| RUT | primary: Yahoo Finance 1d | 1987-09-10 | 2026-11-06 | 9865 | unverified | unverified | 0 | 0 |
+| NDX | base: Yahoo Finance 1d | 1985-10-01 | 2026-11-09 | 10357 | unverified | unverified | 0 | 0 |
+| NDX | primary: Yahoo Finance 1d | 1985-10-01 | 2026-11-09 | 10357 | unverified | unverified | 0 | 0 |
+| SPX | base: Yahoo Finance 1d | 1927-12-30 | 2026-11-09 | 24832 | unverified | unverified | 0 | 0 |
+| SPX | primary: Yahoo Finance 1d | 1927-12-30 | 2026-11-09 | 24832 | unverified | unverified | 0 | 0 |
+| DJI | base: Yahoo Finance 1d | 1992-01-02 | 2026-11-09 | 8776 | unverified | unverified | 0 | 0 |
+| DJI | primary: Yahoo Finance 1d | 1992-01-02 | 2026-11-09 | 8776 | unverified | unverified | 0 | 0 |
+| RUT | base: Yahoo Finance 1d | 1987-09-10 | 2026-11-09 | 9866 | unverified | unverified | 0 | 0 |
+| RUT | primary: Yahoo Finance 1d | 1987-09-10 | 2026-11-09 | 9866 | unverified | unverified | 0 | 0 |
 | QQQ | base: Yahoo Finance 1d | 1999-03-10 | 2026-11-06 | 6960 | unverified | unverified | 0 | 0 |
 | QQQ | primary: Yahoo Finance 1d | 1999-03-10 | 2026-11-06 | 6960 | unverified | unverified | 0 | 0 |
 | SPY | base: Yahoo Finance 1d | 1993-01-29 | 2026-11-06 | 8502 | unverified | unverified | 0 | 0 |
