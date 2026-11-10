@@ -204,6 +204,12 @@ def _prepare_tailtrend(output: Path) -> None:
         '<noscript><div class="tt-alert tt-noscript">JavaScript 未运行：以下是构建时冻结的只读日线快照；'
         '仓位计算、本地导入和交互筛选已停用。</div></noscript>'
     )
+    if snapshot.get("revision"):
+        data_day = html_module.escape(str(snapshot.get("dataAsOf", "—")), quote=True)
+        revised_at = html_module.escape(str(snapshot.get("runAt", "—")), quote=True)
+        notice = (f'<p id="ttRevisionNote" class="th-pagenote" role="status">'
+                  f'事后新版研究重算，非当时信号。数据日 {data_day}；重算时间 {revised_at}。'
+                  '原始快照及历史审计账本未改写，不能据此计算当时收益。</p>') + notice
     page_html = page_html.replace(notice_anchor, notice + notice_anchor, 1)
     page.write_text(page_html, encoding="utf-8")
 
