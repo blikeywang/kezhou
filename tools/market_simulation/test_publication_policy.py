@@ -73,3 +73,13 @@ class DailyRefreshTriggerTests(unittest.TestCase):
         pages = (self.root / '.github/workflows/pages.yml').read_text()
         self.assertIn("- 'portal/**'", pages)
         self.assertIn('workflows: [daily-refresh]', pages)
+
+    def test_queued_refresh_checks_out_latest_main_not_event_sha(self):
+        checkout = self.daily.split("- uses: actions/checkout@v6", 1)[1].split("- uses:", 1)[0]
+        self.assertIn("with:", checkout)
+        self.assertIn("ref: main", checkout)
+        self.assertNotIn("github.sha", checkout)
+        self.assertIn("cancel-in-progress: false", self.daily)
+        self.assertIn("git pull --rebase origin main", self.daily)
+        self.assertIn("git rebase --abort; exit 1", self.daily)
+        self.assertNotIn("git push --force", self.daily)

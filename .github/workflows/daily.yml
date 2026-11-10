@@ -39,6 +39,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          # A queued push event can predate the previous serialized refresh's
+          # data commit. Start from current main, not that stale event SHA.
+          ref: main
 
       - uses: actions/setup-python@v6
         with:
