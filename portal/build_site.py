@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "portal"
-ASSET_VERSION = "16"
+ASSET_VERSION = "17"
 SHELL_CSS = (
     f'<link rel="stylesheet" href="/assets/traderhome-tokens.css?v={ASSET_VERSION}">\n  '
     f'<link rel="stylesheet" href="/assets/traderhome-shell.css?v={ASSET_VERSION}" data-traderhome-shell="v4">\n  '
@@ -231,6 +231,9 @@ def _read_json(path: Path):
         return None
 
 
+WEEKLY_CADENCE = "每周五收盘后"
+
+
 def _write_status(output: Path) -> dict:
     """Publish one small status file: each product's data time and cadence.
 
@@ -261,17 +264,26 @@ def _write_status(output: Path) -> dict:
     # growth-cycle study and is not rewritten by the weekly refresh.
     income = _read_json(output / "incomeos" / "data" / "incomeos-full.json") or {}
     # asOf is when the file was generated; tradingDate is the session the research refers to.
+    # Owner decision 2026-11-10: IncomeOS and TailTrend are refreshed once a week, after Friday's
+    # close (dot runs the fetch; see docs/DOT_REQUESTS.md). `cadenceDays` tells the pages. The
+    # thresholds follow that rhythm: a weekly snapshot is on schedule for a week plus two days of
+    # slack, so a missed Friday shows up the following Monday instead of every Tuesday.
     # A research edition is published by hand after the automatic source-time checks fail: it is
     # current, but it must never read as "updated, go trade". Say which edition it is.
     income_research = income.get("publicationMode") == "research_partial"
-    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192,
-        cadence="手动发布" if income_research else "每个交易日", dataDate=income.get("tradingDate"),
+    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 216, 360,
+        cadence=WEEKLY_CADENCE, cadenceDays=7, dataDate=income.get("tradingDate"),
         **({"edition": "研究版", "note": "不生成订单"} if income_research else {}))
 
     tail = _read_json(output / "tailtrend" / "data" / "latest.json") or {}
     tail_date = tail.get("dataAsOf")
-    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 168,
-        cadence="每个交易日收盘后", dataDate=tail_date, **({"note": "事后重算版"} if tail.get("revision") else {}))
+    # TailTrend states are judged on daily closes, so a snapshot older than four days is no longer
+    # a signal (the page marks every row expired). With one run a week that happens every
+    # Wednesday by design: `idle` is the neutral badge for that stretch, not a delay. One day
+    # after the next Friday's close without a new snapshot, the wait is over and it reads 已过期.
+    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 192,
+        cadence=WEEKLY_CADENCE, cadenceDays=7, idle="等周五更新", dataDate=tail_date,
+        **({"note": "事后重算版"} if tail.get("revision") else {}))
 
     otc = _read_json(output / "otc" / "data" / "snapshot.json") or {}
     otc_date = otc.get("dataDate")

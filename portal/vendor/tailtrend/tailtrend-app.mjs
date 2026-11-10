@@ -60,6 +60,23 @@ function bindingLabel(value) {
   })[value] ?? value ?? "—";
 }
 
+// How often the snapshot is published. The site status file is the one place that says so
+// (portal/build_site.py); without it the page assumes the engine's own daily rhythm.
+const cadence = { days: 1, label: null };
+async function loadCadence() {
+  try {
+    const status = await window.TraderHome?.loadStatus?.();
+    const entry = status?.modules?.find((module) => module.key === "tailtrend");
+    if (Number(entry?.cadenceDays) > 0) { cadence.days = Number(entry.cadenceDays); cadence.label = entry.cadence ?? null; }
+  } catch { /* keep the daily default */ }
+}
+const isWeekly = () => cadence.days >= 5;
+// On a weekly rhythm the trading days between two runs are not run by design (at most four).
+const scheduledGap = (missingDays) => isWeekly() && missingDays > 0 && missingDays <= 4;
+// Old, but the next weekly run is not overdue yet (up to one day after the following close):
+// waiting, not broken. Same boundary as the status file's lateHours for TailTrend.
+const waitingForNextRun = (snapshot) => isWeekly() && snapshot.expired && snapshot.ageDays <= cadence.days;
+
 // A daily-close snapshot stays current across a weekend (Friday close →
 // Tuesday morning). Past that the published states describe an old market:
 // show them as history and never let them open a new position.
@@ -124,6 +141,7 @@ function renderRevisionNote(snapshot) {
 function comparisonNote(fromDate, toDate) {
   if (!fromDate) return "这是第一份快照，没有可比的上一份";
   const gap = missingBetween(fromDate, toDate);
+  if (scheduledGap(gap)) return `与上一份快照（${fromDate}）相比；每周一份`;
   return gap ? `与上一份快照（${fromDate}）相比；中间 ${gap} 个交易日没有运行` : `与上一份快照（${fromDate}）相比`;
 }
 
@@ -135,12 +153,13 @@ function renderHeader() {
   if (version && snapshot.frameworkVersion) version.textContent = `v${snapshot.frameworkVersion}`;
   const newest = state.index?.entries?.[0];
   $("#snapshotMode").textContent = snapshot.expired
-    ? `快照已过期 · ${snapshot.ageDays} 天未更新`
+    ? (waitingForNextRun(snapshot) ? `快照已过 ${snapshot.ageDays} 天 · 等周五更新` : `快照已过期 · ${snapshot.ageDays} 天未更新`)
     : newest?.status === "MISSING"
       ? `缺少 ${newest.dataAsOf} · 已禁新仓`
       : snapshot.mode !== "complete" ? "部分数据降级"
       : snapshot.revision ? "完整日线 · 事后重算版" : "完整日线快照";
   $("#snapshotMode").closest(".tt-hero__status")?.toggleAttribute("data-expired", Boolean(snapshot.expired));
+  $("#snapshotMode").closest(".tt-hero__status")?.toggleAttribute("data-waiting", waitingForNextRun(snapshot));
   $("#snapshotDate").textContent = newest?.status === "MISSING"
     ? `最近完整 ${snapshot.tradingDate}`
     : `截至 ${snapshot.tradingDate}`;
@@ -148,9 +167,16 @@ function renderHeader() {
   if (snapshot.expired && !banner) {
     const note = document.createElement("div");
     note.id = "ttStaleBanner";
-    note.className = "tt-stale-banner";
     note.setAttribute("role", "status");
-    note.textContent = `日线快照停在 ${snapshot.tradingDate}，已经 ${snapshot.ageDays} 天没有更新。下方状态只能当作历史回看，全部标为过期且不允许新开仓；等快照恢复后自动解除。`;
+    if (waitingForNextRun(snapshot)) {
+      // On schedule, but past the four-day signal window: a caution, not an outage.
+      note.className = "th-notice";
+      note.dataset.tone = "warn";
+      note.innerHTML = `<b>快照已过 ${snapshot.ageDays} 天，现在只能回看</b><span>这是 ${escapeHtml(snapshot.tradingDate)} 收盘的快照。TailTrend ${escapeHtml(cadence.label ?? "每周")}更新一次；超过 4 天的状态不再是当前信号，全部标为过期且不允许新开仓，下一份快照发布后自动解除。</span>`;
+    } else {
+      note.className = "tt-stale-banner";
+      note.textContent = `日线快照停在 ${snapshot.tradingDate}，已经 ${snapshot.ageDays} 天没有更新。下方状态只能当作历史回看，全部标为过期且不允许新开仓；等快照恢复后自动解除。`;
+    }
     document.querySelector("#scanner .tt-wrap")?.prepend(note);
   }
   $("#metricUniverse").textContent = snapshot.universe.published;
@@ -258,7 +284,7 @@ function changeMarkup(record) {
       : "状态没有变化";
   const reasons = record.stateReason?.length ? record.stateReason : [change?.reason ?? record.action];
   const gap = comparison ? missingBetween(comparison, record.tradingDate) : 0;
-  const label = !comparison ? "状态变化" : gap ? `较上一份快照（${comparison}，中间缺 ${gap} 个交易日）` : `较上一份快照（${comparison}）`;
+  const label = !comparison ? "状态变化" : gap && !scheduledGap(gap) ? `较上一份快照（${comparison}，中间缺 ${gap} 个交易日）` : `较上一份快照（${comparison}）`;
   return `<div class="tt-explain"><div><span>${escapeHtml(label)}</span><strong>${escapeHtml(headline)}</strong></div><ul>${reasons.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`;
 }
 
@@ -467,7 +493,11 @@ function renderAudit() {
       let j = i;
       while (j + 1 < runs.length && runs[j + 1].mode === "missing") j += 1;
       const count = j - i + 1;
-      blocks.push(`<article class="tt-audit-missing"><div><span>${escapeHtml(count > 1 ? `${runs[j].tradingDate} 至 ${run.tradingDate}` : run.tradingDate)}</span><b>${count} 个交易日没有运行</b></div><p>这些天没有生成快照，记为缺失。不会用后来的数据补造当时的状态或收益。</p></article>`);
+      // Between two weekly runs the gap is the schedule, not a failure; anything longer is a real miss.
+      const planned = scheduledGap(count) && i > 0 && runs[i - 1].mode !== "missing";
+      blocks.push(planned
+        ? `<article class="tt-audit-missing is-planned"><div><span>${escapeHtml(count > 1 ? `${runs[j].tradingDate} 至 ${run.tradingDate}` : run.tradingDate)}</span><b>${count} 个交易日按计划不运行</b></div><p>现在每周五收盘后更新一次，这几天没有快照。不会用后来的数据补造当时的状态或收益。</p></article>`
+        : `<article class="tt-audit-missing"><div><span>${escapeHtml(count > 1 ? `${runs[j].tradingDate} 至 ${run.tradingDate}` : run.tradingDate)}</span><b>${count} 个交易日没有运行</b></div><p>这些天没有生成快照，记为缺失。不会用后来的数据补造当时的状态或收益。</p></article>`);
       i = j;
       continue;
     }
@@ -540,6 +570,7 @@ async function load() {
     state.audit = auditResponse.ok ? await auditResponse.json() : { entries: [], daysCollected: 0 };
     if (state.snapshot.schema !== "traderhome_tailtrend_snapshot_v1") throw new Error("unknown TailTrend snapshot schema");
     applySnapshotAge(state.snapshot);
+    await loadCadence();
     renderHeader();
     renderFilters();
     renderRows();

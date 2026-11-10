@@ -74,9 +74,9 @@
           <footer><small data-status-time="incomeos">—</small><a class="th-sys__go" href="/incomeos/">打开 IncomeOS →</a></footer>
         </article>
         <article class="th-sys" data-key="tailtrend" style="--sys: var(--th-accent-tailtrend)">
-          <header><span class="th-sys__tag">日线收盘 · 影子测试</span><span class="th-fresh" data-status-for="tailtrend" data-state="unknown">读取中</span></header>
+          <header><span class="th-sys__tag">日线收盘 · 每周五 · 影子测试</span><span class="th-fresh" data-status-for="tailtrend" data-state="unknown">读取中</span></header>
           <h3>TailTrend<small>尾部与趋势</small></h3>
-          <p>每天收盘后判断美股处在近 60 日区间的底部、顶部、中间还是已突破；只在两端给观察，仓位由账户风险决定。</p>
+          <p>每周五收盘后判断美股处在近 60 日区间的底部、顶部、中间还是已突破；只在两端给观察，仓位由账户风险决定。</p>
           <ul><li>公开站只发布派生状态，不发布原始K线</li><li>压力仓位只在浏览器内存计算</li></ul>
           <footer><small data-status-time="tailtrend">—</small><a class="th-sys__go" href="/tailtrend/">打开 TailTrend →</a></footer>
         </article>
@@ -143,7 +143,9 @@
         (status.modules || []).forEach(function (m) {
           if (m.localOnly) return;
           var f = m.freshness;
-          if (!m.paused && counts[f.state] !== undefined) counts[f.state] += 1;
+          // A weekly module waiting for its next scheduled run is on schedule, not delayed.
+          var counted = api.onSchedule && api.onSchedule(m) ? "fresh" : f.state;
+          if (!m.paused && counts[counted] !== undefined) counts[counted] += 1;
           // The badge names the edition when the data is current but not meant to be acted on.
           var chip = api.chip ? api.chip(m) : { state: f.state, label: f.label };
           var badge = document.querySelector('[data-status-for="' + m.key + '"]');

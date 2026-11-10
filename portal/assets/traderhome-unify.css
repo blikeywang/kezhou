@@ -331,6 +331,7 @@ html[data-th-stage="incomeos"] .io-section-head h2 { font-size: var(--th-fs-2xl)
 /* TailTrend audit: missing runs are a visible gap, not "0 changes". */
 html[data-th-stage="tailtrend"] .tt-audit-changes > article.tt-audit-missing { border-style: dashed; background: transparent; }
 html[data-th-stage="tailtrend"] .tt-audit-changes > article.tt-audit-missing b { color: var(--th-warn); }
+html[data-th-stage="tailtrend"] .tt-audit-changes > article.tt-audit-missing.is-planned b { color: var(--th-muted); }
 html[data-th-stage="tailtrend"] .tt-audit-versus { display: block; margin-top: 4px; color: var(--th-muted); font-size: var(--th-fs-xs); }
 html[data-th-stage="tailtrend"] .tt-audit-changes details { margin-top: 6px; color: var(--th-muted); font-size: var(--th-fs-xs); }
 html[data-th-stage="tailtrend"] .tt-audit-changes summary { cursor: pointer; }
@@ -399,3 +400,8 @@ html[data-th-stage="tailtrend"] #ttRevisionNote { margin: 0 0 16px; }
 
 /* Home: a status line that wraps should not leave two characters on the second line. */
 html[data-th-stage="home"] .th-sys footer small { text-wrap: balance; }
+
+/* TailTrend on a weekly rhythm: past the four-day window but on schedule reads as a caution, not an outage. */
+html[data-th-stage="tailtrend"] .tt-hero__status[data-expired][data-waiting] .tt-live-dot { color: var(--th-warn); }
+html[data-th-stage="tailtrend"] .tt-hero__status[data-expired][data-waiting] .tt-live-dot::before { background: var(--th-warn) !important; }
+html[data-th-stage="tailtrend"] #ttStaleBanner.th-notice { margin: 0 0 20px; }

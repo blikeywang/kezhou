@@ -50,6 +50,20 @@ Data can be up to date and still not be "today's signal". Two such editions exis
 - The labels required by the publication rules stay on the page in every layout: `研究版`, `不可执行`, `仅研究 · 不可执行` on each option row, source times shown as known or `未知`, `事后新版研究重算，非当时信号`. Restyling may move or merge them, never drop them. `portal/test_site_display.mjs` and `portal/test_portal.py` check this.
 - The no-JavaScript text of a notice is the cautious reading (`研究展示，不是实时可执行行情`); the script replaces it with the edition actually published.
 
+## Update rhythm
+
+`_write_status()` in `build_site.py` is the one place that says how often a module updates. Pages read it from the status file (`TraderHome.loadStatus()`); they do not hard-code a rhythm.
+
+| Field | Meaning |
+|---|---|
+| `cadence` | The phrase shown in the status line (`每周五收盘后`, `每 10 分钟`). |
+| `cadenceDays` | Days between scheduled runs, when it is more than one (IncomeOS and TailTrend: `7`). |
+| `policy.freshHours` / `lateHours` | When the badge turns `更新延迟` and `已过期`. For a weekly module these follow the week, so a snapshot on schedule never reads as a delay and a missed run still shows. |
+| `idle` | Badge label for the stretch where the data is old by design but the next run is not overdue (TailTrend: `等周五更新`, neutral, not counted in "N 项延迟"). |
+
+- A rhythm change never loosens a safety window. TailTrend still expires its states four days after the close (`STALE_AFTER_DAYS` in `tailtrend-app.mjs`); on a weekly rhythm that state is worded as a caution (`快照已过 5 天，现在只能回看`) instead of an outage, and nothing else changes.
+- Don't call a snapshot "today's" on a page that updates weekly: `最新快照`, `最新状态`.
+
 ## Canonical names
 
 Use exactly these in navigation, page bar, `<title>`, home cards, the contracts table and cross-links.
