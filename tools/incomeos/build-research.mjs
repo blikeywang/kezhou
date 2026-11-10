@@ -6,6 +6,11 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { sourceTime, closedSessionDate, assetDataErrors } from "./data-quality.mjs";
+
+import { expectedSession } from "../scheduler/refresh-runner.mjs";
+const qualityNow = new Date();
+const expectedDate = expectedSession(qualityNow);
 const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
@@ -447,10 +452,11 @@ function choosePortfolio(investable, histories) {
 
 console.log(`IncomeOS candidate scan: ${universe.length} assets`);
 const symbols = universe.map((asset) => asset.symbol);
-const [quoteRows, indexRows, marketRows] = await Promise.all([
+const [quoteRows, indexRows, marketRows, sessionRows] = await Promise.all([
   longbridge(["quote", ...symbols], 90_000),
   longbridge(["calc-index", ...symbols, "--fields", "last_done,ytd_change_rate,half_year_change_rate,mktcap,pe,pb,dps_rate,turnover_rate"], 90_000),
   longbridge(["market-temp", "US"], 60_000),
+  longbridge(["kline", "SPY.US", "--period", "day", "--count", "5", "--adjust", "forward", "--session", "intraday"], 60_000),
 ]);
 const quotes = mapBySymbol(quoteRows);
 const indexes = mapBySymbol(indexRows);
@@ -466,16 +472,16 @@ const researchRows = await pooled(stocks, 4, async (asset) => {
   const bookValued = new Set(["JPM.US", "BAC.US", "WFC.US", "GS.US", "MS.US", "BRK.B.US"]);
   const valuationIndicator = bookValued.has(asset.symbol) ? "pb" : "pe";
   const [financial, forecast, consensus, valuation] = await Promise.all([
-    longbridge(["financial-report", asset.symbol, "--latest"], 75_000),
-    longbridge(["forecast-eps", asset.symbol], 75_000),
-    longbridge(["consensus", asset.symbol], 75_000),
-    longbridge(["valuation", asset.symbol, "--history", "--indicator", valuationIndicator, "--range", "5"], 75_000),
+    longbridge(["financial-report", asset.symbol, "--latest"], 75_000).catch(() => ({ error: "source request failed after retries" })),
+    longbridge(["forecast-eps", asset.symbol], 75_000).catch(() => ({ error: "source request failed after retries" })),
+    longbridge(["consensus", asset.symbol], 75_000).catch(() => ({ error: "source request failed after retries" })),
+    longbridge(["valuation", asset.symbol, "--history", "--indicator", valuationIndicator, "--range", "5"], 75_000).catch(() => ({ error: "source request failed after retries" })),
   ]);
   return { financial, forecast, consensus, valuation, valuationIndicator };
 }, "fundamentals");
 const research = new Map(stocks.map((asset, index) => [asset.symbol, researchRows[index]]));
 
-const assets = universe.map((asset) => {
+const assets = universe.map((asset, assetIndex) => {
   const quote = quotes.get(asset.symbol) ?? {};
   const index = indexes.get(asset.symbol) ?? {};
   const details = research.get(asset.symbol) ?? {};
@@ -500,7 +506,9 @@ const assets = universe.map((asset) => {
     fundamentals,
     expectations: forecast || consensus ? { ...forecast, ...consensus } : null,
     valuation: parseValuation(details.valuation, details.valuationIndicator, valuationCurrent),
-    dataErrors: [details.financial?.error, details.forecast?.error, details.consensus?.error, details.valuation?.error].filter(Boolean),
+    sourceTimestamp: sourceTime(quote),
+    historyDataThrough: histories.get(asset.symbol)?.at(-1)?.date ?? null,
+    dataErrors: assetDataErrors({ kind: asset.kind, details, historyResult: historyRows[assetIndex], price: numeric(quote.last ?? index.last_done), fundamentals, expectations: forecast || consensus, quoteTime: sourceTime(quote), expectedDate, now: qualityNow }),
   };
 });
 
@@ -509,11 +517,14 @@ const portfolio = choosePortfolio(investable, histories);
 const market = Array.isArray(marketRows) ? marketRows : [];
 const marketFields = new Map(market.map((row) => [String(row?.field ?? "").toLowerCase(), row?.value]));
 const errors = assets.flatMap((asset) => asset.dataErrors.map((error) => `${asset.ticker}: ${error}`));
+if (closedSessionDate(sessionRows, qualityNow) !== expectedDate) errors.push("session: reference bar does not match expected completed session");
 const selected = investable.filter((asset) => asset.selectedTop50);
 const output = {
   version: 2,
   asOf: new Date().toISOString(),
-  tradingDate: todayEt,
+  tradingDate: closedSessionDate(sessionRows, qualityNow),
+  tradingDateSource: "SPY.US regular-session daily bar; reference session only, not proof of individual quote freshness",
+  requestedThrough: todayEt,
   source: "Longbridge Securities",
   mode: errors.length ? "partial" : "live",
   market: {
@@ -538,6 +549,9 @@ const output = {
   assets: assets.sort((left, right) => (left.rank ?? 999) - (right.rank ?? 999)),
   portfolio,
   dataQuality: {
+    publicationReady: false, // options enrichment and final gate must run first
+    researchReady: errors.length === 0 && closedSessionDate(sessionRows, qualityNow) === expectedDate,
+    quoteTimestampsVerified: assets.filter((asset) => asset.sourceTimestamp !== null).length,
     priced: assets.filter((asset) => asset.price !== null).length,
     historical: assets.filter((asset) => asset.history?.months >= 36).length,
     fundamentals: assets.filter((asset) => asset.kind !== "Stock" || asset.fundamentals).length,

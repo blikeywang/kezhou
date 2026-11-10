@@ -41,3 +41,6 @@ test("hours since close separate 'not yet' from 'failed'", () => {
   assert.equal(hoursSinceClose("2026-11-06", new Date("2026-11-06T22:20:00Z")), 1); // Fri 17:20 ET
   assert.equal(hoursSinceClose("2026-11-06", new Date("2026-11-07T15:20:00Z")), 18); // Sat 10:20 ET
 });
+
+test('Friday holiday cannot enter the action window',()=>assert.equal(inFridayWindow(new Date('2026-12-25T16:00:00Z')),null));
+test('unsupported calendar year fails closed',()=>assert.throws(()=>expectedSession(new Date('2028-05-01T22:00:00Z')),/calendar unavailable/));

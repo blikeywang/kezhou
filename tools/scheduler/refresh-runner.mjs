@@ -86,13 +86,16 @@ function nyParts(date = new Date()) {
 }
 // NYSE full-day closures and 1:00 p.m. early closes, from NYSE Group's 2026–2028 calendar
 // (announced 2025-12-23). Extend this list before 2028; after it runs out, holidays fall back
-// to "no new data" handling.
+// to a fail-closed calendar error.
 const NYSE_HOLIDAYS = new Set([
   "2026-01-01", "2026-01-19", "2026-02-16", "2026-04-03", "2026-05-25", "2026-06-19", "2026-07-03", "2026-09-07", "2026-11-26", "2026-12-25",
   "2027-01-01", "2027-01-18", "2027-02-15", "2027-03-26", "2027-05-31", "2027-06-18", "2027-07-05", "2027-09-06", "2027-11-25", "2027-12-24",
 ]);
 const NYSE_EARLY_CLOSE = new Set(["2026-11-27", "2026-12-24", "2027-11-26"]);
-export const isTradingDay = (dateText) => ![0, 6].includes(new Date(`${dateText}T12:00:00Z`).getUTCDay()) && !NYSE_HOLIDAYS.has(dateText);
+export function isTradingDay(dateText) {
+  if (!/^202[67]-\d{2}-\d{2}$/.test(dateText) || new Date(`${dateText}T12:00:00Z`).toISOString().slice(0,10)!==dateText) throw new Error("Market calendar unavailable for date: "+dateText);
+  return ![0,6].includes(new Date(`${dateText}T12:00:00Z`).getUTCDay()) && !NYSE_HOLIDAYS.has(dateText);
+}
 /** Minutes after New York midnight when that day's daily close should be available (close + 20 min). */
 export const closeReadyMinutes = (dateText) => (NYSE_EARLY_CLOSE.has(dateText) ? 13 * 60 : 16 * 60) + 20;
 function previousTradingDay(dateText) {
@@ -114,7 +117,7 @@ export function hoursSinceClose(session, now = new Date()) {
 }
 export function inFridayWindow(now = new Date()) {
   const ny = nyParts(now);
-  return ny.weekday === "Fri" && ny.minutes >= 10 * 60 && ny.minutes < 15 * 60 + 30 ? ny.date : null;
+  return isTradingDay(ny.date) && ny.weekday === "Fri" && ny.minutes >= 10 * 60 && ny.minutes < 15 * 60 + 30 ? ny.date : null;
 }
 
 /* ---------- Helpers ---------- */
@@ -226,6 +229,8 @@ async function main() {
     }
 
     log(`${name}: refreshing (expected ${target ?? "forced"})`);
+    const quality = name === "tailtrend" ? await import(pathToFileURL(join(CLONE, "tools/tailtrend/publication-quality.mjs")).href) : null;
+    const beforeHashes = quality ? await quality.snapshotHashes(join(CLONE, job.dataDir, "snapshots")) : null;
     await sh("node", job.refresh, { timeout: 30 * 60_000 });
     const after = stampOf(job);
     if (job.due === "afterClose" && !force && (after ?? "") <= (before ?? "")) {
@@ -244,6 +249,15 @@ async function main() {
       return;
     }
 
+    if (quality) {
+      quality.assertHistoryUnchanged(beforeHashes, await quality.snapshotHashes(join(CLONE, job.dataDir, "snapshots")));
+      quality.assertTailtrendQuality(readJson(join(CLONE, job.stampFile)), expectedSession(), { persisted: true });
+    }
+    if (name.startsWith("incomeos")) {
+      const research = readJson(join(CLONE, "portal/vendor/incomeos/data/incomeos-full.json"));
+      const incomeQuality = await import(pathToFileURL(join(CLONE, "tools/incomeos/data-quality.mjs")).href);
+      if (incomeQuality.finalPublicationErrors(research, expectedSession()).length || research?.dataQuality?.publicationReady !== true || research?.mode !== "live") throw new Error("IncomeOS publication blocked: incomplete or unverified source data");
+    }
     for (const [cmd, args] of job.tests) await sh(cmd, args);
     await sh("python3", ["-m", "unittest", "portal.test_portal"], { timeout: 15 * 60_000 });
 
@@ -255,8 +269,8 @@ async function main() {
     }
     await sh("git", ["commit", "--quiet", "-m", `chore(data): ${name} refresh ${after ?? target} [scheduled]`]);
     await pushWithRetry();
-    writeStatus(name, { ok: true, startedAt, finishedAt: new Date().toISOString(), stamp: after, message: `已发布 ${after}` });
-    log(`${name}: published ${after}`);
+    writeStatus(name, { ok: true, startedAt, finishedAt: new Date().toISOString(), stamp: after, message: `已推送 ${after}；部署及网页尚待核验` });
+    log(`${name}: pushed ${after}; deployment and public readback not yet verified`);
   } catch (error) {
     const message = errorSummary(error);
     writeStatus(name, { ok: false, startedAt, finishedAt: new Date().toISOString(), message });

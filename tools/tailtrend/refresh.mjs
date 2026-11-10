@@ -20,6 +20,9 @@ import {
   sha256Json,
 } from "./snapshot-store.mjs";
 
+import { expectedSession } from "../scheduler/refresh-runner.mjs";
+import { assertTailtrendQuality, snapshotHashes, assertHistoryUnchanged, validatedCalendarEvents } from "./publication-quality.mjs";
+
 const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
@@ -217,21 +220,27 @@ try {
 }
 const staticBySymbol = new Map((Array.isArray(staticRows) ? staticRows : []).map((row) => [row.symbol, row]));
 
+const calendarErrors = [];
+const calendarCovered = [];
 const eventResponses = await pooled(batch(symbols, 10), 2, async (group) => {
   try {
-    return await longbridge([
+    const response = await longbridge([
       "finance-calendar", "report",
       ...group.flatMap((symbol) => ["--symbol", symbol]),
       "--start", todayEt,
       "--end", calendarEnd,
       "--count", "100",
     ], 90_000);
+    const parsed = validatedCalendarEvents(response, group, {from:todayEt, through:calendarEnd});
+    calendarCovered.push(...group);
+    return parsed;
   } catch (error) {
+    calendarErrors.push(`calendar unavailable: ${group.join(",")}`);
     console.warn(`earnings calendar unavailable for ${group.join(",")}: ${errorText(error)}`);
     return null;
   }
 });
-const events = eventResponses.flatMap(calendarEvents);
+const events = eventResponses.flatMap(events => events ?? []);
 
 let completed = 0;
 const outcomes = await pooled(universe.symbols, 4, async (item) => {
@@ -389,11 +398,16 @@ const snapshot = {
   },
   researchStatus: "shadow_test_not_validated",
   records,
+  eventCalendar: { status: calendarErrors.length ? "UNKNOWN" : "VERIFIED", coveredSymbols: calendarCovered, errors: calendarErrors, from: todayEt, through: calendarEnd },
   disclaimer: "研究影子运行，不是投资建议，不自动下单。状态与参数尚未完成样本外验证。",
 };
 
 const calendarDates = [...new Set(outcomes.flatMap((item) => item.calendarDates ?? []))].sort();
+assertTailtrendQuality(snapshot, expectedSession(new Date(runAt)));
+const oldSnapshotHashes = await snapshotHashes(resolve(dataDir, "snapshots"));
 const stored = await persistDailySnapshots({ dataDir, snapshot, calendarDates });
+assertHistoryUnchanged(oldSnapshotHashes, await snapshotHashes(resolve(dataDir, "snapshots")));
+assertTailtrendQuality(stored.persistedSnapshot, expectedSession(new Date(runAt)), { persisted: true });
 const officialRecords = stored.persistedSnapshot?.status === "COMPLETE" ? stored.persistedSnapshot.records ?? [] : [];
 const runHistory = {
   schema: "traderhome_tailtrend_run_history_v3",

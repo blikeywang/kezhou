@@ -6,6 +6,9 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
+import { sourceTime, applyFinalPublicationQuality } from "./data-quality.mjs";
+import { expectedSession } from "../scheduler/refresh-runner.mjs";
+import { validatedCalendarEvents } from "../tailtrend/publication-quality.mjs";
 const execFileAsync = promisify(execFile);
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const projectDir = resolve(scriptDir, "../..");
@@ -148,7 +151,8 @@ function optionResult(asset, selected, depth, side, expiry, dte, targetDelta, ea
     earningsBeforeExpiry,
     action,
     gates,
-    quoteTimestamp: selected.quote.timestamp ?? null,
+    quoteTimestamp: sourceTime(selected.quote),
+    depthTimestamp: sourceTime(depth),
   };
 }
 
@@ -159,23 +163,26 @@ for (const asset of data.assets) {
   if (topQualifiedStocks.some((candidate) => candidate.symbol === asset.symbol) || forcedTickers.has(asset.ticker)) targets.push(asset);
 }
 
+const calendarEnd = new Date(`${data.tradingDate}T00:00:00Z`);
+calendarEnd.setUTCDate(calendarEnd.getUTCDate()+60);
+const calendarThrough=calendarEnd.toISOString().slice(0,10);
 const calendarBySymbol = new Map();
+const calendarErrors = [];
+const calendarCovered = [];
 for (let index = 0; index < targets.length; index += 10) {
   const group = targets.slice(index, index + 10);
-  const args = ["finance-calendar", "report", ...group.flatMap((asset) => ["--symbol", asset.symbol]), "--start", data.tradingDate, "--end", "2027-01-31", "--count", "100"];
+  const args = ["finance-calendar", "report", ...group.flatMap((asset) => ["--symbol", asset.symbol]), "--start", data.tradingDate, "--end", calendarThrough, "--count", "100"];
   try {
     const response = await longbridge(args, 75_000);
-    for (const dateGroup of response?.list ?? []) {
-      for (const info of dateGroup.infos ?? []) {
-        const symbol = String(info.counter_id ?? "").split("/").at(-1);
-        const date = info.ext?.local_date ?? dateGroup.date;
-        if (!symbol || !date || date < data.tradingDate) continue;
-        const current = calendarBySymbol.get(symbol);
-        if (!current || date < current) calendarBySymbol.set(symbol, date);
-      }
+    const events=validatedCalendarEvents(response,group.map(a=>a.symbol),{from:data.tradingDate,through:calendarThrough});
+    calendarCovered.push(...group.map(a=>a.symbol));
+    for(const event of events) {
+      const symbol=event.symbol.replace(/\.US$/, '');
+      const current=calendarBySymbol.get(symbol);
+      if(!current||event.date<current) calendarBySymbol.set(symbol,event.date);
     }
   } catch {
-    // Calendar gaps are surfaced in the per-contract data rather than aborting the option scan.
+    calendarErrors.push(`calendar unavailable or invalid: ${group.map(a=>a.symbol).join(',')}`);
   }
 }
 
@@ -252,6 +259,7 @@ const validRows = optionRows.filter((row) => !row.error);
 data.options = validRows.sort((left, right) => (left.rank ?? 999) - (right.rank ?? 999));
 data.optionDataQuality = {
   scanned: targets.length,
+  eventCalendar:{status:calendarErrors.length?"UNKNOWN":"VERIFIED",coveredSymbols:calendarCovered,errors:calendarErrors},
   usable: validRows.length,
   callsWithMarket: validRows.filter((row) => row.call?.bid !== null && row.call?.ask !== null).length,
   putsWithMarket: validRows.filter((row) => row.put?.bid !== null && row.put?.ask !== null).length,
@@ -259,6 +267,7 @@ data.optionDataQuality = {
 };
 const optionLimitation = "期权快照是单一时点的 28–49 DTE 横截面；没有完整历史期权面，因此不能把当前权利金年化代理当作长期已实现收益。";
 if (!data.limitations.includes(optionLimitation)) data.limitations.push(optionLimitation);
+applyFinalPublicationQuality(data, expectedSession());
 await writeFile(dataPath, `${JSON.stringify(data, null, 2)}\n`, "utf8");
 console.log(`wrote ${dataPath}`);
 console.log(`put review: ${validRows.map((row) => `${row.ticker}:${row.put?.action ?? "DATA"}`).join(", ")}`);
