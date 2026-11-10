@@ -8,7 +8,7 @@ Previous research code used four concurrent workers, each launching four request
 
 ## Source-time scope
 
-Current checked historical research snapshot lacks asset quote and option depth source timestamps, while option quote timestamps exist. The parser reads only explicit `timestamp`, `time`, or `trade_time`; numeric epoch strings are now parsed as seconds/milliseconds like numeric epochs. It does not use retrieval time, report period or a SPY reference trading date as per-asset quote freshness. No live provider schema probe has yet been completed for this change. Therefore retain `unknown`/`SOURCE_TIME_MISSING`, not a blanket claim that Longbridge does not provide source timestamps.
+Current checked historical research snapshot lacks asset quote and option depth source timestamps, while option quote timestamps exist. The parser reads only explicit `timestamp`, `time`, or `trade_time`; numeric epoch strings are now parsed as seconds/milliseconds like numeric epochs. It does not use retrieval time, report period or a SPY reference trading date as per-asset quote freshness. An authenticated manual run completed below; it still does not establish that the provider never supplies these fields. Therefore retain `unknown`/`SOURCE_TIME_MISSING`, not a blanket claim that Longbridge does not provide source timestamps.
 
 ## Validation and remaining operational check
 
@@ -22,3 +22,16 @@ Authenticated verification, in an isolated current checkout only:
 4. Confirm `research_partial`, `executionAllowed=false`, no operation-history changes; retain source-time gaps. Publish only approved derived data with separate deployment and online read-back verification.
 
 No scheduler, TailTrend, simulation logic, public snapshot, operation history or production service is changed by this patch.
+
+## Authenticated manual verification receipt
+
+2026-11-10 UTC, on the owner's authenticated Mac, as reported and verified by the coordinating dot:
+
+- `refresh.mjs --no-archive`: 09:05:30–09:12:44Z.
+- 71 assets and 18 option pairs; 413 requests, two retried requests, zero final request failures.
+- Explicit `prepare-research.mjs --manual-research`: succeeded at 09:13:17Z.
+- Result: `publicationMode=research_partial`, `executionAllowed=false`, `publicationReady=false`, `researchPublicationReady=true`.
+- 108 source-time gaps remain. Retrieval success does not make these quotes/depth observations current, executable, or timestamp-verified.
+- Original operation/history hashes remained unchanged.
+
+This was a user-authorized **manual** validation, not a scheduled Friday trigger. It proves the authenticated fetch and research preparation path worked once, not ongoing scheduler health or improved strategy performance. The zero final failures do not prove historical errors were rate limiting. Website deployment and online byte read-back are separate checks; this receipt alone does not assert this prepared snapshot was published. Credentials and raw private output are excluded.
