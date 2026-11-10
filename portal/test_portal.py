@@ -62,12 +62,31 @@ class PortalBuildTests(unittest.TestCase):
         if income.get("publicationMode") == "research_partial":
             self.assertEqual(income_status.get("edition"), "研究版")
             self.assertEqual(income_status.get("note"), "不生成订单")
-            self.assertEqual(income_status.get("cadence"), "手动发布")
         else:
             self.assertNotIn("edition", income_status)
         tail = json.loads((self.site / "tailtrend" / "data" / "latest.json").read_text(encoding="utf-8"))
         tail_status = next(m for m in status["modules"] if m["key"] == "tailtrend")
         self.assertEqual(tail_status.get("note"), "事后重算版" if tail.get("revision") else None)
+        # Weekly rhythm (owner decision 2026-11-10): both are refreshed after Friday's close.
+        for weekly in (income_status, tail_status):
+            self.assertEqual(weekly.get("cadence"), "每周五收盘后", weekly["key"])
+            self.assertEqual(weekly.get("cadenceDays"), 7, weekly["key"])
+            self.assertGreater(weekly["policy"]["lateHours"], 7 * 24, weekly["key"])
+        # A weekly snapshot must not raise a "delay" every Tuesday, and a missed Friday must still show.
+        self.assertGreaterEqual(income_status["policy"]["freshHours"], 7 * 24)
+        # TailTrend keeps its four-day signal window; after it the badge waits for Friday instead of alarming.
+        self.assertEqual(tail_status["policy"]["freshHours"], 96)
+        self.assertEqual(tail_status.get("idle"), "等周五更新")
+        self.assertNotIn("idle", income_status)
+        self.assertIn("function onSchedule(m)", shell)
+        self.assertIn('state: "idle"', shell)
+        self.assertIn('.th-fresh[data-state="idle"]', tokens)
+        tail_app = (self.site / "tailtrend" / "tailtrend-app.mjs").read_text(encoding="utf-8")
+        self.assertIn("const STALE_AFTER_DAYS = 4;", tail_app)  # the safety window itself is unchanged
+        self.assertIn("waitingForNextRun", tail_app)
+        tail_page = (self.site / "tailtrend" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("每周五收盘后", tail_page)
+        self.assertNotIn("每个交易日收盘后检查", tail_page)
 
         for retired in ("decision", "incomeos-whole", "flow", "standards"):
             self.assertFalse((self.site / retired).exists(), retired)

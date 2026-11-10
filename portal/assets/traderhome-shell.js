@@ -137,12 +137,19 @@
     return m.dataDate ? "数据日 " + String(m.dataDate).slice(5) + " · " + m.freshness.ago
       : "数据 " + shortDate(typeof m.asOf === "number" ? m.asOf : Date.parse(m.asOf)) + " · " + m.freshness.ago;
   }
+  // Fresh, or waiting for a scheduled weekly run: nothing is wrong with the pipeline.
+  function onSchedule(m) {
+    return !!m && !!m.freshness && (m.freshness.state === "fresh" || (m.freshness.state === "late" && !!m.idle));
+  }
   // The badge every surface shows for a module. Up-to-date data can still be an edition that must
   // not be read as "today's signal" (a research edition): name the edition instead of "已更新".
   // A late or stale module keeps its freshness label — being old matters more than the edition.
   function chip(m) {
     if (!m || !m.freshness) return { state: "unknown", label: "未知" };
     if (m.localOnly) return { state: "unknown", label: m.freshness.label };
+    // A weekly module is old by design between "still current" and its next run: say when it
+    // updates, in a neutral badge. Past the late threshold it is a real miss and reads 已过期.
+    if (onSchedule(m) && m.freshness.state === "late") return { state: "idle", label: m.idle };
     if (m.edition && m.freshness.state === "fresh") return { state: "research", label: m.edition };
     return { state: m.freshness.state, label: m.freshness.label };
   }
@@ -156,6 +163,7 @@
   window.TraderHome = window.TraderHome || {};
   window.TraderHome.dataStamp = dataStamp;
   window.TraderHome.chip = chip;
+  window.TraderHome.onSchedule = onSchedule;
   window.TraderHome.statusLine = statusLine;
   window.TraderHome.ago = ago;
   window.TraderHome.freshness = freshness;
@@ -271,8 +279,8 @@
   loadStatus().then(function (status) {
     var modules = (status.modules || []).filter(function (m) { return !m.localOnly && !m.paused; });
     var bad = modules.filter(function (m) { return m.freshness.state === "stale"; }).length;
-    var late = modules.filter(function (m) { return m.freshness.state === "late"; }).length;
-    var ok = modules.filter(function (m) { return m.freshness.state === "fresh"; }).length;
+    var late = modules.filter(function (m) { return m.freshness.state === "late" && !onSchedule(m); }).length;
+    var ok = modules.filter(onSchedule).length;
     var state = bad ? "stale" : late ? "late" : modules.length ? "fresh" : "unknown";
     statusButton.setAttribute("data-state", state);
     statusButton.querySelector("span").textContent = modules.length
@@ -280,7 +288,7 @@
       : "数据状态";
     header.querySelectorAll(".th-shell__nav a, .th-shell__panel a").forEach(function (a) {
       var m = (status.modules || []).filter(function (x) { return x.key === a.getAttribute("data-key"); })[0];
-      if (m && !m.localOnly && !m.paused) a.setAttribute("data-state", m.freshness.state);
+      if (m && !m.localOnly && !m.paused) a.setAttribute("data-state", m.freshness.state === "late" && onSchedule(m) ? "idle" : m.freshness.state);
     });
     var barFresh = document.querySelector(".th-stagebar__fresh");
     var current = (status.modules || []).filter(function (x) { return x.key === section; })[0];
