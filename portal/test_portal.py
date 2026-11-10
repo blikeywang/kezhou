@@ -50,6 +50,24 @@ class PortalBuildTests(unittest.TestCase):
         shell = (self.site / "assets" / "traderhome-shell.js").read_text(encoding="utf-8")
         for name in names.values():
             self.assertIn(f'name: "{name}"', shell, name)
+        # Editions: a current snapshot that must not be acted on gets its own badge, never "已更新".
+        self.assertIn("function chip(m)", shell)
+        self.assertIn('state: "research"', shell)
+        tokens = (self.site / "assets" / "traderhome-tokens.css").read_text(encoding="utf-8")
+        self.assertIn('.th-fresh[data-state="research"]', tokens)
+        unify = (self.site / "assets" / "traderhome-unify.css").read_text(encoding="utf-8")
+        self.assertIn(".th-notice {", unify)
+        income = json.loads((self.site / "incomeos" / "data" / "incomeos-full.json").read_text(encoding="utf-8"))
+        income_status = next(m for m in status["modules"] if m["key"] == "incomeos")
+        if income.get("publicationMode") == "research_partial":
+            self.assertEqual(income_status.get("edition"), "研究版")
+            self.assertEqual(income_status.get("note"), "不生成订单")
+            self.assertEqual(income_status.get("cadence"), "手动发布")
+        else:
+            self.assertNotIn("edition", income_status)
+        tail = json.loads((self.site / "tailtrend" / "data" / "latest.json").read_text(encoding="utf-8"))
+        tail_status = next(m for m in status["modules"] if m["key"] == "tailtrend")
+        self.assertEqual(tail_status.get("note"), "事后重算版" if tail.get("revision") else None)
 
         for retired in ("decision", "incomeos-whole", "flow", "standards"):
             self.assertFalse((self.site / retired).exists(), retired)
@@ -249,6 +267,13 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('id="operationHistoryRecords"', page)
         self.assertIn('id="historyArchive"', page)
         self.assertIn("每周重新找更好的组合", page)
+        # One snapshot notice in the page header. Its static text is the safe reading if the
+        # script never runs; the script replaces it with the edition of the published snapshot.
+        self.assertEqual(page.count('id="snapshotStatus"'), 1)
+        self.assertIn('<div class="th-notice" id="snapshotStatus" role="status"><b>研究展示，不是实时可执行行情</b>', page)
+        self.assertNotIn('class="io-wrap io-status', page)
+        for hook in ("reportTab", "reportTitle", "ordersTitle", "rankingSourceNote", "callSourceNote", "putSourceNote", "dataGaps", "dataSourceRows"):
+            self.assertIn(f'id="{hook}"', page, hook)
         self.assertIn('data-tab="overview"', page)
         self.assertIn('data-tab="ranking"', page)
         self.assertIn('data-tab="portfolio"', page)
@@ -268,6 +293,15 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn("syncTopbarOffset", app)
         self.assertIn("syncIbkrAccount", app)
         self.assertNotIn("window.scrollTo", app)
+        # Wording for editions, times and data gaps lives in one pure module (portal/test_site_display.mjs).
+        display = (self.site / "incomeos" / "incomeos-display.mjs").read_text(encoding="utf-8")
+        self.assertIn("研究版 · 不可执行", display)
+        self.assertIn('from "./incomeos-display.mjs"', app)
+        self.assertIn("renderExecutionFraming", app)
+        self.assertIn("executionSnapshotAllowed", app)
+        # Raw ISO timestamps and the per-symbol dump are no longer written straight into the page.
+        self.assertNotIn("报价源时间：${", app)
+        self.assertNotIn("生成于 ${data.asOf}", app)
 
         css = (self.site / "incomeos" / "incomeos.css").read_text(encoding="utf-8")
         self.assertIn(':root[data-income-color="daylight"]', css)
@@ -392,7 +426,8 @@ class PortalBuildTests(unittest.TestCase):
             self.assertEqual(snapshot["transitions"], [])
             self.assertTrue(all(row["change"] is None and row["prevState"] is None for row in snapshot["records"]))
             self.assertIn("事后新版研究重算，非当时信号", (self.site / "tailtrend" / "tailtrend-app.mjs").read_text())
-            self.assertIn('id="ttRevisionNote"', page)
+            self.assertIn('<div id="ttRevisionNote" class="th-notice" role="status">', page)
+            self.assertNotIn(snapshot["runAt"], page.split('id="ttRevisionNote"', 1)[1].split("</div>", 1)[0])
             self.assertIn("事后新版研究重算，非当时信号", page)
         else:
             self.assertEqual(daily, snapshot)

@@ -53,8 +53,8 @@
       next: "/history/", nextText: "下一步：开始下一轮研究"
     },
     incomeos: {
-      step: "独立研究", name: "IncomeOS", title: "把每周入金拆成买入清单，期权另过闸门",
-      output: "按美元下单的清单 · 期权闸门结论", boundary: "账户只读，不替你下单"
+      step: "独立研究", name: "IncomeOS", title: "每周给候选打分、配成组合，期权另过闸门",
+      output: "组合配比 · 候选排名 · 期权闸门结论", boundary: "账户只读，不替你下单"
     },
     tailtrend: {
       step: "独立研究", name: "TailTrend", title: "只在 60 日区间两端观察，中部不开新仓",
@@ -137,8 +137,26 @@
     return m.dataDate ? "数据日 " + String(m.dataDate).slice(5) + " · " + m.freshness.ago
       : "数据 " + shortDate(typeof m.asOf === "number" ? m.asOf : Date.parse(m.asOf)) + " · " + m.freshness.ago;
   }
+  // The badge every surface shows for a module. Up-to-date data can still be an edition that must
+  // not be read as "today's signal" (a research edition): name the edition instead of "已更新".
+  // A late or stale module keeps its freshness label — being old matters more than the edition.
+  function chip(m) {
+    if (!m || !m.freshness) return { state: "unknown", label: "未知" };
+    if (m.localOnly) return { state: "unknown", label: m.freshness.label };
+    if (m.edition && m.freshness.state === "fresh") return { state: "research", label: m.edition };
+    return { state: m.freshness.state, label: m.freshness.label };
+  }
+  // One line under the badge: data day, age, cadence, and the edition's one-phrase consequence.
+  function statusLine(m) {
+    if (!m) return "";
+    if (m.localOnly) return "只在你的浏览器内处理";
+    if (!m.asOf) return "尚无数据";
+    return [dataStamp(m), m.cadence, m.note].filter(Boolean).join(" · ");
+  }
   window.TraderHome = window.TraderHome || {};
   window.TraderHome.dataStamp = dataStamp;
+  window.TraderHome.chip = chip;
+  window.TraderHome.statusLine = statusLine;
   window.TraderHome.ago = ago;
   window.TraderHome.freshness = freshness;
   window.TraderHome.loadStatus = loadStatus;
@@ -268,19 +286,18 @@
     var current = (status.modules || []).filter(function (x) { return x.key === section; })[0];
     if (barFresh && current) {
       var badge = barFresh.querySelector(".th-fresh"), note = barFresh.querySelector("small");
-      badge.setAttribute("data-state", current.localOnly ? "unknown" : current.freshness.state);
-      badge.textContent = current.freshness.label;
-      note.textContent = current.localOnly ? "只在你的浏览器内处理"
-        : current.asOf ? dataStamp(current) + (current.cadence ? " · " + current.cadence : "")
-        : "尚无数据";
+      var currentChip = chip(current);
+      badge.setAttribute("data-state", currentChip.state);
+      badge.textContent = currentChip.label;
+      note.textContent = statusLine(current);
     } else if (barFresh) barFresh.hidden = true;
     var list = header.querySelector(".th-shell__statuslist");
     list.innerHTML = (status.modules || []).map(function (m) {
-      var f = m.freshness;
-      var when = m.asOf ? dataStamp(m) : (m.localOnly ? "只在你的浏览器内处理" : "尚无数据");
+      var c = chip(m);
+      var when = m.asOf ? [dataStamp(m), m.note].filter(Boolean).join(" · ") : (m.localOnly ? "只在你的浏览器内处理" : "尚无数据");
       return '<li><a href="' + escapeText(m.route) + '"><span class="th-shell__statusname">' + escapeText(m.name)
         + "</span><small>" + escapeText(when) + "</small></a>"
-        + '<span class="th-fresh" data-state="' + escapeText(m.localOnly ? "unknown" : f.state) + '">' + escapeText(f.label) + "</span></li>";
+        + '<span class="th-fresh" data-state="' + escapeText(c.state) + '">' + escapeText(c.label) + "</span></li>";
     }).join("") || '<li class="th-shell__statusempty">状态文件不可用</li>';
   });
 })();

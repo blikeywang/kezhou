@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PORTAL = ROOT / "portal"
-ASSET_VERSION = "15"
+ASSET_VERSION = "16"
 SHELL_CSS = (
     f'<link rel="stylesheet" href="/assets/traderhome-tokens.css?v={ASSET_VERSION}">\n  '
     f'<link rel="stylesheet" href="/assets/traderhome-shell.css?v={ASSET_VERSION}" data-traderhome-shell="v4">\n  '
@@ -205,13 +205,23 @@ def _prepare_tailtrend(output: Path) -> None:
         '仓位计算、本地导入和交互筛选已停用。</div></noscript>'
     )
     if snapshot.get("revision"):
+        # Static copy for readers without JavaScript; tailtrend-app.mjs rewrites the times in the
+        # visitor's clock. Same wording, same notice component as every other edition notice.
         data_day = html_module.escape(str(snapshot.get("dataAsOf", "—")), quote=True)
-        revised_at = html_module.escape(str(snapshot.get("runAt", "—")), quote=True)
-        notice = (f'<p id="ttRevisionNote" class="th-pagenote" role="status">'
-                  f'事后新版研究重算，非当时信号。数据日 {data_day}；重算时间 {revised_at}。'
-                  '原始快照及历史审计账本未改写，不能据此计算当时收益。</p>') + notice
+        revised_at = html_module.escape(_utc_stamp(snapshot.get("runAt")), quote=True)
+        notice = ('<div id="ttRevisionNote" class="th-notice" role="status">'
+                  '<b>事后新版研究重算，非当时信号</b>'
+                  f'<span>下表是用新版规则对 {data_day} 收盘数据重新计算的结果（重算于 {revised_at}），'
+                  '不是当天收盘后发布的那一份。原始快照及历史审计账本未改写，不能据此计算当时收益。</span></div>') + notice
     page_html = page_html.replace(notice_anchor, notice + notice_anchor, 1)
     page.write_text(page_html, encoding="utf-8")
+
+
+def _utc_stamp(value) -> str:
+    """'2026-11-10T05:27:55.933Z' -> '11-10 05:27 UTC' for the no-JavaScript copy."""
+    text = str(value or "")
+    match = re.match(r"\d{4}-(\d{2}-\d{2})T(\d{2}:\d{2})", text)
+    return f"{match.group(1)} {match.group(2)} UTC" if match else (text or "—")
 
 
 def _read_json(path: Path):
@@ -251,11 +261,17 @@ def _write_status(output: Path) -> dict:
     # growth-cycle study and is not rewritten by the weekly refresh.
     income = _read_json(output / "incomeos" / "data" / "incomeos-full.json") or {}
     # asOf is when the file was generated; tradingDate is the session the research refers to.
-    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192, cadence="每个交易日", dataDate=income.get("tradingDate"))
+    # A research edition is published by hand after the automatic source-time checks fail: it is
+    # current, but it must never read as "updated, go trade". Say which edition it is.
+    income_research = income.get("publicationMode") == "research_partial"
+    add("incomeos", "IncomeOS", "/incomeos/", income.get("asOf"), 72, 192,
+        cadence="手动发布" if income_research else "每个交易日", dataDate=income.get("tradingDate"),
+        **({"edition": "研究版", "note": "不生成订单"} if income_research else {}))
 
     tail = _read_json(output / "tailtrend" / "data" / "latest.json") or {}
     tail_date = tail.get("dataAsOf")
-    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 168, cadence="每个交易日收盘后", dataDate=tail_date)
+    add("tailtrend", "TailTrend", "/tailtrend/", f"{tail_date}T21:00:00Z" if tail_date else None, 96, 168,
+        cadence="每个交易日收盘后", dataDate=tail_date, **({"note": "事后重算版"} if tail.get("revision") else {}))
 
     otc = _read_json(output / "otc" / "data" / "snapshot.json") or {}
     otc_date = otc.get("dataDate")

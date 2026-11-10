@@ -93,6 +93,34 @@ function dataLabel(value) {
 function missingBetween(fromDate, toDate) {
   return (state.index?.entries ?? []).filter((entry) => entry.status === "MISSING" && entry.dataAsOf > fromDate && entry.dataAsOf < toDate).length;
 }
+// "11-10 13:27" on the visitor's clock.
+function localStamp(value) {
+  const time = new Date(value);
+  if (!value || !Number.isFinite(time.getTime())) return null;
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(time.getMonth() + 1)}-${pad(time.getDate())} ${pad(time.getHours())}:${pad(time.getMinutes())}`;
+}
+// The day's original snapshot in the index — untouched by a later recalculation.
+function originalEntry(snapshot) {
+  return (state.index?.entries ?? []).find((entry) => entry.dataAsOf === snapshot.tradingDate && entry.status === "COMPLETE") ?? null;
+}
+// A recalculated edition (same data day, newer engine) is not the signal that was published that
+// evening. One notice above the table says so; the wording is fixed by the publication rules.
+function renderRevisionNote(snapshot) {
+  if (!snapshot.revision) return;
+  let note = document.getElementById("ttRevisionNote");
+  if (!note) {
+    note = document.createElement("div");
+    note.id = "ttRevisionNote";
+    const board = document.querySelector("#scanner .tt-board");
+    if (board) board.before(note); else document.querySelector("#scanner .tt-wrap")?.prepend(note);
+  }
+  note.className = "th-notice";
+  note.setAttribute("role", "status");
+  const revised = localStamp(snapshot.revision.revisedAt ?? snapshot.runAt);
+  const original = localStamp(snapshot.revision.originalRunAt);
+  note.innerHTML = `<b>事后新版研究重算，非当时信号</b><span>下表是用新版规则（${escapeHtml(snapshot.frameworkVersion ?? "新版")}）对 ${escapeHtml(snapshot.tradingDate)} 收盘数据重新计算的结果${revised ? `，重算于 ${revised}` : ""}${original ? `；当天原始快照发布于 ${original}` : ""}${revised || original ? "（你的本地时间）" : ""}。原始快照及历史审计账本未改写，不能据此计算当时收益。</span>`;
+}
 function comparisonNote(fromDate, toDate) {
   if (!fromDate) return "这是第一份快照，没有可比的上一份";
   const gap = missingBetween(fromDate, toDate);
@@ -102,20 +130,16 @@ function comparisonNote(fromDate, toDate) {
 function renderHeader() {
   const snapshot = state.snapshot;
   const quality = snapshot.dataQuality;
-  if (snapshot.revision && !document.getElementById("ttRevisionNote")) {
-    const note = document.createElement("p");
-    note.id = "ttRevisionNote";
-    note.className = "th-pagenote";
-    note.setAttribute("role", "status");
-    note.textContent = `事后新版研究重算，非当时信号。数据日 ${snapshot.tradingDate}；重算时间 ${snapshot.runAt}。原始快照及历史审计账本未改写，不能据此计算当时收益。`;
-    document.querySelector("#scanner .tt-wrap")?.prepend(note);
-  }
+  renderRevisionNote(snapshot);
+  const version = document.getElementById("ttVersion");
+  if (version && snapshot.frameworkVersion) version.textContent = `v${snapshot.frameworkVersion}`;
   const newest = state.index?.entries?.[0];
   $("#snapshotMode").textContent = snapshot.expired
     ? `快照已过期 · ${snapshot.ageDays} 天未更新`
     : newest?.status === "MISSING"
       ? `缺少 ${newest.dataAsOf} · 已禁新仓`
-      : snapshot.mode === "complete" ? "完整日线快照" : "部分数据降级";
+      : snapshot.mode !== "complete" ? "部分数据降级"
+      : snapshot.revision ? "完整日线 · 事后重算版" : "完整日线快照";
   $("#snapshotMode").closest(".tt-hero__status")?.toggleAttribute("data-expired", Boolean(snapshot.expired));
   $("#snapshotDate").textContent = newest?.status === "MISSING"
     ? `最近完整 ${snapshot.tradingDate}`
@@ -139,9 +163,19 @@ function renderHeader() {
     : newest?.status === "MISSING"
     ? `${newest.dataAsOf} 已写入 MISSING，不沿用旧信号`
     : quality.errors.length ? `${quality.errors.length} 项失败，已禁止缓存触发新仓` : "全部最新 · 无缺失";
+  const note = document.getElementById("metricTransitionsNote");
+  if (snapshot.revision) {
+    // A recalculation deliberately carries no transitions: it must not rewrite what changed that day.
+    // The day's own count stays in the audit ledger below.
+    const original = originalEntry(snapshot);
+    $("#metricTransitions").textContent = "—";
+    if (note) note.textContent = original?.transitions
+      ? `重算版不比较变化；当天原始快照有 ${original.transitions.length} 个，见“事后验证”`
+      : "重算版不比较状态变化";
+    return;
+  }
   $("#metricTransitions").textContent = snapshot.transitions.length;
   const compared = snapshot.records.map((record) => record.change?.comparisonDate).filter(Boolean).sort().at(-1) ?? null;
-  const note = document.getElementById("metricTransitionsNote");
   if (note) note.textContent = comparisonNote(compared, snapshot.tradingDate);
 }
 
@@ -193,6 +227,11 @@ function renderRows() {
   body.querySelectorAll("tr[data-symbol]").forEach((row) => row.addEventListener("click", () => selectRecord(row.dataset.symbol, { openDetail: true })));
 }
 
+// What locked the boundary: a state code from the engine, shown in Chinese.
+function lockLabel(code) {
+  return STATE_META[code]?.label ?? ({ STRUCTURE_RESET: "结构重置", BREAKOUT_CANDIDATE: "突破候选" })[code] ?? code ?? "—";
+}
+
 function managementRows(record) {
   const rows = [];
   if (record.signalBoundary?.boundary) rows.push(`本状态冻结边界：${money(record.signalBoundary.boundary)}${record.signalBoundary.atrAtLock ? ` · 锁定 ATR ${money(record.signalBoundary.atrAtLock)}` : ""}`);
@@ -213,7 +252,7 @@ function changeMarkup(record) {
   const comparison = change?.comparisonDate;
   const priorLabel = change?.from ? STATE_META[change.from]?.label ?? change.from : null;
   const headline = !comparison
-    ? "第一份快照，没有可比的上一份"
+    ? (state.snapshot?.revision ? "重算版不比较状态变化" : "第一份快照，没有可比的上一份")
     : change.changed
       ? `${priorLabel} → ${record.label}`
       : "状态没有变化";
@@ -256,7 +295,7 @@ function detailMarkup(record, compact = false) {
       <div><span>量比 / 20日</span><b>${number(record.volumeRatio, 2)}×</b></div>
       <div><span>平均成交额</span><b>${money(record.averageTurnover20, 0)}</b></div>
       <div><span>ATR 尾部对照 · 仅影子</span><b>${escapeHtml(STATE_META[record.comparisonStates?.atr]?.label ?? "—")}</b></div>
-      <div><span>边界记忆</span><b>${record.locked?.lockedAt ? `${escapeHtml(record.locked.lockedAt)} · ${escapeHtml(record.locked.lockedBy)}` : "无活动锁"}</b></div>
+      <div><span>边界记忆</span><b>${record.locked?.lockedAt ? `${escapeHtml(record.locked.lockedAt)} · ${escapeHtml(lockLabel(record.locked.lockedBy))}` : "无活动锁"}</b></div>
     </div>
     <div class="tt-detail__plan"><h4>预先写下的管理方式</h4><ul>${managementRows(record).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
     <div class="tt-detail__plan"><h4>阻断 / 复核</h4><ul>${blockers.map((item) => `<li class="${record.blockers?.length ? "tt-blocker" : ""}">${escapeHtml(item)}</li>`).join("")}</ul></div>
@@ -438,7 +477,8 @@ function renderAudit() {
     const body = transitions.length
       ? `<ul>${transitions.slice(0, SHOWN).map(item).join("")}</ul>${transitions.length > SHOWN ? `<details><summary>展开其余 ${transitions.length - SHOWN} 个</summary><ul>${transitions.slice(SHOWN).map(item).join("")}</ul></details>` : ""}`
       : `<p>${previous ? "相对上一份快照没有状态变化。" : "这是第一份快照，作为之后比较的基线。"}</p>`;
-    const versus = previous ? `<small class="tt-audit-versus">${escapeHtml(comparisonNote(previous.tradingDate, run.tradingDate))}</small>` : "";
+    const recalculated = state.snapshot?.revision && run.tradingDate === state.snapshot.tradingDate ? "这是当天的原始快照；页面上方的表是之后的重算版。" : "";
+    const versus = previous || recalculated ? `<small class="tt-audit-versus">${escapeHtml([recalculated, previous ? comparisonNote(previous.tradingDate, run.tradingDate) : ""].filter(Boolean).join(""))}</small>` : "";
     blocks.push(`<article><div><span>${escapeHtml(run.tradingDate)}</span><b>${transitions.length} 个状态变化</b></div>${versus}${body}</article>`);
   }
   $("#auditChanges").innerHTML = blocks.join("") || '<div class="tt-empty">还没有运行记录。</div>';

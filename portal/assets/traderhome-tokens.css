@@ -124,5 +124,7 @@ html[data-th-stage="dailyTrade"] { --th-accent: var(--th-accent-daily); }
 .th-fresh[data-state="fresh"] { color: var(--th-up); border-color: rgba(79, 209, 139, .35); background: var(--th-up-bg); }
 .th-fresh[data-state="late"] { color: var(--th-warn); border-color: rgba(242, 191, 94, .38); background: var(--th-warn-bg); }
 .th-fresh[data-state="stale"] { color: var(--th-down); border-color: rgba(240, 122, 133, .38); background: var(--th-down-bg); }
+/* A research edition is up to date but must not be acted on: its own colour, never the "late" amber. */
+.th-fresh[data-state="research"] { color: var(--th-info); border-color: rgba(122, 174, 255, .38); background: var(--th-info-bg); }
 .th-fresh[data-state="unknown"],
 .th-fresh[data-state="paused"] { color: var(--th-muted); }
