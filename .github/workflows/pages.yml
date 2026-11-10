@@ -56,6 +56,7 @@ jobs:
           node --test portal/test_history_universe.mjs
           node --test portal/test_history_replay.mjs
           node --test tools/daily-trade/test_export_public.mjs tools/scheduler/test_refresh_runner.mjs tools/incomeos/test_data_quality.mjs tools/incomeos/test_research_publication.mjs
+          node --test portal/test_site_display.mjs
       - name: Build public pages
         run: python portal/build_site.py --output _site
       - name: Select publication mode

@@ -6,6 +6,17 @@ import {
   wholeShareContributionPlan,
 } from "./incomeos-engine.mjs";
 import {
+  groupIssues,
+  isResearch,
+  marketStamp,
+  optionRowTimes,
+  optionTimeNote,
+  quoteTimeNote,
+  snapshotNotice,
+  sourceStatusLabel,
+  timePolicyLines,
+} from "./incomeos-display.mjs";
+import {
   connectPersonalHub,
   consumeHubCredentials,
   hasPersonalHubToken,
@@ -200,18 +211,7 @@ function setTab(id, updateHash = true) {
 }
 
 function snapshotState(data) {
-  if(!executionSnapshotAllowed(data)) return {level:"stale",label:"研究版 · PARTIAL · 不可执行",detail:`生成于 ${data.asOf}；参考交易日 ${data.tradingDate}。生成时间不是源时间。逐项未知/过期见数据室；本页不生成订单，历史操作单也不代表当前建议。`};
-  const now = new Date();
-  const ageHours = Math.max(0, (now - new Date(data.asOf)) / 3_600_000);
-  const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(now);
-  const clock = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  const minutes = Number(clock.hour) * 60 + Number(clock.minute);
-  if (ageHours > 72) {
-    const age = ageHours >= 48 ? `${Math.floor(ageHours / 24)} 天` : `${Math.round(ageHours)} 小时`;
-    return { level: "stale", label: "已过期 · 旧快照", detail: `已 ${age}未更新（超过 72 小时），只用于研究，不按合约执行。` };
-  }
-  if (clock.weekday === "Fri" && minutes >= 600 && minutes < 960 && ageHours <= 24) return { level: "review", label: "周五复核窗口", detail: "周五执行窗口；仍需在 IBKR 复核现金、持仓和限价。" };
-  return { level: "preview", label: "预览 · 最新可得快照", detail: "非周五 10:00 ET 执行窗口；本页先生成预案。" };
+  return snapshotNotice(data, { executionAllowed: executionSnapshotAllowed(data) });
 }
 
 function statusLabel(status) {
@@ -219,7 +219,7 @@ function statusLabel(status) {
 }
 
 function optionLabel(action) {
-  return ({ RESEARCH_ONLY: "仅研究·不可执行", REVIEW_CASH: "现金复核", REVIEW_100_SHARES: "100 股复核", WAIT_VALUATION: "估值等待", WAIT_EARNINGS: "跨财报暂停", WAIT_MARKET: "市场闸门未过" })[action] ?? action;
+  return ({ RESEARCH_ONLY: "仅研究 · 不可执行", REVIEW_CASH: "现金复核", REVIEW_100_SHARES: "100 股复核", WAIT_VALUATION: "估值等待", WAIT_EARNINGS: "跨财报暂停", WAIT_MARKET: "市场闸门未过" })[action] ?? action;
 }
 
 function assetReason(asset) {
@@ -239,33 +239,42 @@ function colorFor(index) {
 
 function renderStatus(data) {
   const snapshot = snapshotState(data);
+  // One notice says which edition this is and whether it can be acted on; the rest of the page refers to it.
   const status = $("#snapshotStatus");
-  status.className = `io-status ${snapshot.level}`;
-  status.innerHTML = `<b>${snapshot.label}</b><span>${snapshot.detail}</span>`;
+  status.className = "th-notice";
+  status.dataset.tone = snapshot.tone;
+  status.dataset.level = snapshot.level;
+  status.innerHTML = `<b>${escapeHtml(snapshot.label)}</b><span>${escapeHtml(snapshot.detail)}</span>`;
   // The top bar must never contradict the snapshot gate below it.
-  const topbarLabel = !executionSnapshotAllowed(data) ? "研究版·来源时间未核实·不可执行" : snapshot.level === "stale" ? "快照已过期" : data.mode === "live" ? "数据完整" : "部分数据";
-  $("#topbarStatus").textContent = `${data.tradingDate} · ${topbarLabel}`;
-  $("#topbarStatus").closest(".io-topbar-status")?.setAttribute("data-level", snapshot.level);
+  $("#topbarStatus").textContent = `${data.tradingDate} · ${snapshot.short}`;
+  $("#topbarStatus").closest(".io-topbar-status")?.setAttribute("data-level", snapshot.level === "research" || snapshot.level === "partial" ? "watch" : snapshot.level);
   $("#candidateCount").textContent = data.universe.candidateCount;
   $("#top50Count").textContent = data.universe.top50Count;
   $("#optionScanCount").textContent = `${data.optionDataQuality.usable}/${data.optionDataQuality.scanned}`;
   const model = data.portfolio.comparisons.find((item) => item.label.includes("IncomeOS"));
   $("#modelCagr").textContent = pct(model?.cagr);
-  $("#snapshotDate").textContent = `${data.tradingDate} · ${new Intl.DateTimeFormat("zh-CN", { timeZone: "America/New_York", hour: "2-digit", minute: "2-digit", timeZoneName: "short" }).format(new Date(data.asOf))}`;
-  // Say it next to the plan as well: the section title reads like "this week" even when the data is old.
+  // The session the data refers to and the moment it was computed are two different things: show both, labelled.
+  $("#snapshotDate").textContent = data.tradingDate;
   const meta = $("#snapshotDate").closest(".io-meta");
-  meta?.classList.toggle("is-stale", snapshot.level === "stale");
-  let note = meta?.querySelector(".io-meta-stale");
-  if (snapshot.level === "stale" && meta) {
+  if (!meta) return;
+  let generated = meta.querySelector(".io-meta-note");
+  if (!generated) { generated = document.createElement("small"); generated.className = "io-meta-note"; meta.appendChild(generated); }
+  generated.textContent = `${marketStamp(data.asOf) ?? "时间未知"} 生成`;
+  // Say it next to the plan as well: the section title reads like "this week" even when the data is not actionable.
+  meta.classList.toggle("is-stale", snapshot.level === "stale");
+  meta.classList.toggle("is-research", snapshot.level === "research");
+  const reading = { stale: "数据已过期：下面是那一天的方案，不是本周的", research: "研究版：下面是模型配置，不是订单", partial: "部分数据：下面不生成订单" }[snapshot.level];
+  let note = meta.querySelector(".io-meta-stale");
+  if (reading) {
     if (!note) { note = document.createElement("small"); note.className = "io-meta-stale"; meta.appendChild(note); }
-    note.textContent = "数据已过期：下面是那一天的方案，不是本周的";
+    note.textContent = reading;
   } else note?.remove();
 }
 
 // Longbridge returns an English market-temperature phrase; show it in Chinese.
 const MARKET_TEMP_WORDS = [
   [/temp(erature)?\s*/gi, ""], [/extremely\s+hot/gi, "过热"], [/overheat(ed|ing)?/gi, "过热"],
-  [/comfortable/gi, "温度适中"], [/cold/gi, "偏冷"], [/cool/gi, "偏凉"], [/warm/gi, "偏暖"], [/hot/gi, "偏热"],
+  [/comfortable/gi, "温度适中"], [/neutral/gi, "中性"], [/cold/gi, "偏冷"], [/cool/gi, "偏凉"], [/warm/gi, "偏暖"], [/hot/gi, "偏热"],
   [/gradually\s+rising/gi, "缓慢升温"], [/gradually\s+falling/gi, "缓慢降温"], [/rapidly\s+rising/gi, "快速升温"],
   [/rapidly\s+falling/gi, "快速降温"], [/rising/gi, "升温"], [/falling/gi, "降温"], [/stable/gi, "平稳"], [/\s*&\s*/g, "，"],
 ];
@@ -440,8 +449,11 @@ function renderOperationHistory(historyData) {
 }
 
 function renderOverview(data) {
+  const executable = executionSnapshotAllowed(data);
   const modules = [
-    [WHOLE_SHARE_MODE ? "整数股操作单" : "周五操作单", WHOLE_SHARE_MODE ? "把本周入金转成完整股数与现金余款" : "把本周入金转成今天的美元订单"], ["Top 50", "71 个候选每周竞争 50 个席位"], ["组合引擎", "把高分变成受行业与仓位约束的组合"],
+    executable
+      ? [WHOLE_SHARE_MODE ? "整数股操作单" : "周五操作单", WHOLE_SHARE_MODE ? "把本周入金转成完整股数与现金余款" : "把本周入金转成今天的美元订单"]
+      : ["模型配置", "本周入金按模型怎么分；这份快照不生成订单"], ["Top 50", "71 个候选每周竞争 50 个席位"], ["组合引擎", "把高分变成受行业与仓位约束的组合"],
     ["备兑 Call", "100 股、Delta、IV 与事件闸门"], ["现金担保 Put", "底层、期权和账户容量三层闸门"], ["风险引擎", "账户阶段、集中度和现金约束"],
     ["回测 / 基准", "与 SPY、QQQI、JEPI、JEPQ、SPYI 比较"], ["数据室", "数据覆盖、缺口与外部源"], ["券商边界", "本机只读同步，下单仍由你确认"],
   ];
@@ -484,7 +496,10 @@ function renderRankingDetail(asset) {
 
 function renderRanking(data) {
   const rows = filteredAssets(data);
-  $("#rankingRows").innerHTML = rows.map((asset) => `<tr data-ticker="${escapeHtml(asset.ticker)}" class="${asset.ticker === state.detailTicker ? "focus" : ""}"><td><strong>${asset.rank ?? "B"} · ${asset.ticker}</strong><small>${escapeHtml(asset.name)} · ${asset.pool === "challenger" ? "挑战者" : asset.kind}</small></td><td><b>${asset.scores.total}</b></td><td>${asset.scores.compound}</td><td>${asset.scores.forward}</td><td>${asset.scores.quality}</td><td>${asset.scores.valuation}</td><td>${asset.scores.safety}</td><td>${pct(asset.dividendYield)}</td><td>${pct(asset.history?.cagr5)}</td><td>${asset.valuation ? pct(asset.valuation.historicalPercentile, 0) : "—"}</td><td><span class="io-state ${asset.status === "VALUATION_WAIT" ? "wait" : asset.status === "BENCHMARK" ? "neutral" : "pass"}">${statusLabel(asset.status)}</span><small>报价源时间：${escapeHtml(asset.sourceTimestamp ?? "未知")}</small></td></tr>`).join("");
+  const quoteNote = quoteTimeNote(rows);
+  const rankingNote = $("#rankingSourceNote");
+  if (rankingNote) { rankingNote.textContent = quoteNote.text; rankingNote.hidden = !quoteNote.text; }
+  $("#rankingRows").innerHTML = rows.map((asset) => `<tr data-ticker="${escapeHtml(asset.ticker)}" class="${asset.ticker === state.detailTicker ? "focus" : ""}"><td><strong>${asset.rank ?? "B"} · ${asset.ticker}</strong><small>${escapeHtml(asset.name)} · ${asset.pool === "challenger" ? "挑战者" : asset.kind}</small></td><td><b>${asset.scores.total}</b></td><td>${asset.scores.compound}</td><td>${asset.scores.forward}</td><td>${asset.scores.quality}</td><td>${asset.scores.valuation}</td><td>${asset.scores.safety}</td><td>${pct(asset.dividendYield)}</td><td>${pct(asset.history?.cagr5)}</td><td>${asset.valuation ? pct(asset.valuation.historicalPercentile, 0) : "—"}</td><td><span class="io-state ${asset.status === "VALUATION_WAIT" ? "wait" : asset.status === "BENCHMARK" ? "neutral" : "pass"}">${statusLabel(asset.status)}</span>${quoteNote.perRow ? `<small>${asset.sourceTimestamp ? `报价 ${escapeHtml(marketStamp(asset.sourceTimestamp))}` : "报价时间未知"}</small>` : ""}</td></tr>`).join("");
   const detail = data.assets.find((asset) => asset.ticker === state.detailTicker) ?? rows[0];
   renderRankingDetail(detail);
 }
@@ -506,13 +521,30 @@ function gateText(option) {
   return option.gates?.length ? option.gates.join("；") : option.action.startsWith("REVIEW") ? "结构通过，等待账户复核" : "等待复核";
 }
 
+// What the model concluded before the research edition replaced every action with "research only".
+function researchJudgement(option) {
+  const reasons = (option.gates ?? []).filter((item) => !/^仅供模型研究/.test(item));
+  const verdict = option.researchAction ? optionLabel(option.researchAction) : "未给出";
+  return `模型判断：${verdict}${reasons.length ? `（${reasons.slice(0, 2).join("；")}）` : ""}`;
+}
+
+function setTableNote(selector, text) {
+  const note = $(selector);
+  if (note) { note.textContent = text; note.hidden = !text; }
+}
+
 function renderCalls(data) {
+  const research = !executionSnapshotAllowed(data);
+  const callTimes = optionTimeNote(data.options.map((row) => row.call).filter(Boolean));
+  setTableNote("#callSourceNote", callTimes.text);
   $("#callRows").innerHTML = data.options.map((row) => {
     const call = row.call;
     const position = state.ibkrAccount?.positions.find((item) => String(item.symbol).replace(/\s.+$/, "") === row.ticker && item.asset_class === "STK");
     const shares = Math.max(0, Number(position?.quantity) || 0), covered = Math.floor(shares / 100);
-    const coverage = !executionSnapshotAllowed(data) ? "仅研究；持仓数量不代表此盘口可执行" : state.ibkrAccount ? `${state.accountProvider || "券商"} ${number(shares, 2)} 股 · ${covered} 手可覆盖` : gateText(call);
-    return `<tr><td><strong>#${row.rank ?? "—"} · ${row.ticker}</strong><small>${escapeHtml(call.contract)}</small><small>报价源：${escapeHtml(call.quoteTimestamp ?? "未知")}；盘口源：${escapeHtml(call.depthTimestamp ?? "未知")}</small></td><td>${call.dte}</td><td>${call.delta?.toFixed(3) ?? "—"}<small>目标 ${call.targetDelta?.toFixed(2) ?? "—"}</small></td><td>${call.ivHv?.toFixed(2) ?? "—"}</td><td>${number(call.oi)}</td><td>${call.bid !== null ? `${call.bid.toFixed(2)} / ${call.ask.toFixed(2)}` : "—"}</td><td>${pct(call.spreadPct)}</td><td>${pct(call.annualizedPremium)}</td><td><span class="io-state ${call.action.startsWith("REVIEW") && (!state.ibkrAccount || covered > 0) ? "pass" : "wait"}">${state.ibkrAccount && covered === 0 ? "持仓不足" : optionLabel(call.action)}</span><small>${escapeHtml(coverage)}</small></td></tr>`;
+    const coverage = research ? researchJudgement(call) : state.ibkrAccount ? `${state.accountProvider || "券商"} ${number(shares, 2)} 股 · ${covered} 手可覆盖` : gateText(call);
+    const stateClass = research ? "research" : call.action.startsWith("REVIEW") && (!state.ibkrAccount || covered > 0) ? "pass" : "wait";
+    const stateText = research ? optionLabel("RESEARCH_ONLY") : state.ibkrAccount && covered === 0 ? "持仓不足" : optionLabel(call.action);
+    return `<tr><td><strong>#${row.rank ?? "—"} · ${row.ticker}</strong><small>${escapeHtml(call.contract)}</small><small>${escapeHtml(optionRowTimes(call, callTimes))}</small></td><td>${call.dte}</td><td>${call.delta?.toFixed(3) ?? "—"}<small>目标 ${call.targetDelta?.toFixed(2) ?? "—"}</small></td><td>${call.ivHv?.toFixed(2) ?? "—"}</td><td>${number(call.oi)}</td><td>${call.bid !== null ? `${call.bid.toFixed(2)} / ${call.ask.toFixed(2)}` : "—"}</td><td>${pct(call.spreadPct)}</td><td>${pct(call.annualizedPremium)}</td><td><span class="io-state ${stateClass}">${escapeHtml(stateText)}</span><small>${escapeHtml(coverage)}</small></td></tr>`;
   }).join("");
 }
 
@@ -530,12 +562,20 @@ function renderPuts(data, plan) {
     $("#putVerdict").textContent = "本周没有 Put 通过结构闸门";
     $("#putVerdictDetail").textContent = "继续定投和停泊现金，不为制造现金流强行卖波动。";
   }
+  const research = !executionSnapshotAllowed(data);
+  // Without an account value the share-of-account figure is the assignment divided by one week's
+  // deposit ("13000%"): arithmetic, not information. Ask for the missing input instead.
+  const accountMissing = !(Number($("#accountValue")?.value) > 0) && !state.ibkrAccount;
+  const putTimes = optionTimeNote(plan.optionReviews.map((row) => row.put).filter(Boolean));
+  setTableNote("#putSourceNote", putTimes.text);
   const sorted = [...plan.optionReviews].sort((left, right) => Number(right.accountEvaluation.eligible) - Number(left.accountEvaluation.eligible) || Number(String(right.put.action).startsWith("REVIEW")) - Number(String(left.put.action).startsWith("REVIEW")) || (left.rank ?? 999) - (right.rank ?? 999));
   $("#putRows").innerHTML = sorted.map((row) => {
     const put = row.put;
     const evaluation = row.accountEvaluation;
-    const conclusion = evaluation.eligible ? "账户可复核" : evaluation.reasons[0] ?? optionLabel(put.action);
-    return `<tr><td><strong>#${row.rank ?? "—"} · ${row.ticker}</strong><small>${escapeHtml(put.contract)}</small><small>报价源：${escapeHtml(put.quoteTimestamp ?? "未知")}；盘口源：${escapeHtml(put.depthTimestamp ?? "未知")}</small></td><td>${put.delta?.toFixed(3) ?? "—"}</td><td>${formatMoney(put.cashRequired)}</td><td>${evaluation.concentration === null ? "∞" : pct(evaluation.concentration)}<small>上限 ${pct(evaluation.maxConcentration, 0)}</small></td><td>${put.bid !== null ? `${put.bid.toFixed(2)} / ${put.ask.toFixed(2)}` : "—"}</td><td>${put.ivHv?.toFixed(2) ?? "—"}</td><td>${number(put.oi)}</td><td>${pct(put.annualizedPremium)}</td><td>${pct(put.breakevenDiscount)}</td><td><span class="io-state ${evaluation.eligible ? "pass" : "wait"}">${evaluation.eligible ? "复核" : optionLabel(put.action)}</span><small>${escapeHtml(conclusion)}</small></td></tr>`;
+    const conclusion = research ? researchJudgement(put) : evaluation.eligible ? "账户可复核" : evaluation.reasons[0] ?? optionLabel(put.action);
+    const putClass = research ? "research" : evaluation.eligible ? "pass" : "wait";
+    const putText = research ? optionLabel("RESEARCH_ONLY") : evaluation.eligible ? "复核" : optionLabel(put.action);
+    return `<tr><td><strong>#${row.rank ?? "—"} · ${row.ticker}</strong><small>${escapeHtml(put.contract)}</small><small>${escapeHtml(optionRowTimes(put, putTimes))}</small></td><td>${put.delta?.toFixed(3) ?? "—"}</td><td>${formatMoney(put.cashRequired)}</td><td>${accountMissing ? "—" : evaluation.concentration === null ? "∞" : pct(evaluation.concentration)}<small>${accountMissing ? "先填券商净值" : `上限 ${pct(evaluation.maxConcentration, 0)}`}</small></td><td>${put.bid !== null ? `${put.bid.toFixed(2)} / ${put.ask.toFixed(2)}` : "—"}</td><td>${put.ivHv?.toFixed(2) ?? "—"}</td><td>${number(put.oi)}</td><td>${pct(put.annualizedPremium)}</td><td>${pct(put.breakevenDiscount)}</td><td><span class="io-state ${putClass}">${escapeHtml(putText)}</span><small>${escapeHtml(conclusion)}</small></td></tr>`;
   }).join("");
 }
 
@@ -571,17 +611,46 @@ function renderBacktest(data) {
 }
 
 function renderDataRoom(data) {
+  const quotesWithoutTime = data.assets.filter((asset) => !asset.sourceTimestamp).length;
   const cards = [
-    ["候选现价", `${data.dataQuality.priced}/${data.universe.candidateCount}`, "Longbridge 当前快照"],
+    ["候选现价", `${data.dataQuality.priced}/${data.universe.candidateCount}`, quotesWithoutTime ? `Longbridge 快照；其中 ${quotesWithoutTime} 只没有来源时间` : "Longbridge 当前快照"],
     ["历史 ≥ 36 月", `${data.dataQuality.historical}/${data.universe.candidateCount}`, "2016 至今前复权月线"],
     ["财报 / 预期", `${data.dataQuality.fundamentals}/${data.universe.candidateCount}`, "ETF 按不适用计为已覆盖"],
     ["双边期权", `${data.optionDataQuality.usable}/${data.optionDataQuality.scanned}`, `${data.optionDataQuality.callsWithMarket} Call + ${data.optionDataQuality.putsWithMarket} Put 有盘口`],
     ["券商账户", state.ibkrAccount ? `${state.accountProvider} · ${state.ibkrAccount.positions.length} 持仓` : "未同步", state.ibkrAccount ? `只读净值 ${formatMoney(state.ibkrAccount.netLiquidation)}` : "需本机只读数据会话"],
   ];
   $("#dataQuality").innerHTML = cards.map(([label, value, detail]) => `<article><span>${label}</span><strong>${value}</strong><p>${detail}</p></article>`).join("");
-  const limitations = [...data.limitations, ...data.dataQuality.errors, ...(data.dataQuality.publicationErrors??[]), ...data.optionDataQuality.errors, ...data.assets.map(a=>`${a.ticker}：报价源时间 ${a.sourceTimestamp??"未知"}；历史数据截至 ${a.historyDataThrough??a.history?.to??"未知"}；状态 ${a.researchSourceTime?.status??"未核实"}`)]
+  const limitations = [...data.limitations]
     .filter((item) => !(state.ibkrAccount && /(IBKR|券商).*(未|尚未|手工)/i.test(item)));
   $("#dataLimitations").innerHTML = limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  renderDataGaps(data);
+}
+
+// The checks report one line per symbol (several hundred when a source gives no timestamps).
+// Every line is still accounted for here: grouped by problem, with the symbols listed under it.
+function renderDataGaps(data) {
+  const optionErrors = Array.isArray(data.optionDataQuality.errors) ? data.optionDataQuality.errors : [];
+  const groups = groupIssues([...data.dataQuality.errors, ...(data.dataQuality.publicationErrors ?? []), ...optionErrors]);
+  const lead = $("#dataGapsLead"), list = $("#dataGaps");
+  if (lead) lead.textContent = groups.length ? "按问题归类；同一个问题只列一次，后面是涉及的标的。" : "这次检查没有报告缺失或失败。";
+  if (list) list.innerHTML = groups.map((group) => {
+    const shown = group.subjects.slice(0, 12).join("、");
+    const rest = group.subjects.length > 12 ? `<details><summary>全部 ${group.subjects.length} 项</summary>${escapeHtml(group.subjects.join("、"))}</details>` : "";
+    const count = group.subjects.length ? `<i class="io-gaps-count">${group.subjects.length} 项</i>` : "";
+    return `<li>${count}<b>${escapeHtml(group.title)}</b>${group.subjects.length ? `<span>${escapeHtml(shown)}${group.subjects.length > 12 ? " 等" : ""}</span>${rest}` : ""}</li>`;
+  }).join("");
+
+  const times = $("#dataSourceTimes"), rows = $("#dataSourceRows");
+  if (times && rows) {
+    times.hidden = !data.assets.length;
+    times.querySelector("summary").textContent = `逐个标的的来源时间（${data.assets.length} 只）`;
+    rows.innerHTML = data.assets.map((asset) => `<tr><td><strong>${escapeHtml(asset.ticker)}</strong></td><td>${escapeHtml(marketStamp(asset.sourceTimestamp) ?? "未知")}</td><td>${escapeHtml(asset.historyDataThrough ?? asset.history?.to ?? "未知")}</td><td>${escapeHtml(sourceStatusLabel(asset.researchSourceTime?.status))}</td></tr>`).join("");
+  }
+  const policy = timePolicyLines(data.sourceTimePolicy), block = $("#dataTimePolicyBlock");
+  if (block) {
+    block.hidden = !policy.length;
+    $("#dataTimePolicy").innerHTML = policy.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
+  }
 }
 
 function renderAll() {
@@ -601,17 +670,32 @@ function renderAll() {
   renderRisk(data, state.plan);
   renderBacktest(data);
   renderDataRoom(data);
-  if(!executionSnapshotAllowed(data)) {
-    $("#allocationHeadline").textContent="模型配置研究 · 非订单";
-    $("#orders").innerHTML='<p>研究展示：不生成买卖订单。模型权重仅供讨论。</p>';
-    $("#portfolioOrders").innerHTML='<tr><td colspan="6">研究快照不可执行，不提供金额/股数订单。</td></tr>';
-    $("#putHeadline").textContent='研究版不生成 Put 交易指示';
-    $("#putExplanation").textContent='模型条件仅供反馈；来源时间未知/未核实，不应用本页盘口执行。';
-    $("#putVerdict").textContent='仅展示研究条件，不可执行';
-    $("#putVerdictDetail").textContent='原模型判断保留在研究数据中，未通过来源时间门禁，不能转成订单。';
-    $("#finalChecks").innerHTML='<li>禁止按此研究快照执行；需要独立核实实时来源、账户与风险。</li>';
-    if($("#wholeShareSummary")) $("#wholeShareSummary").textContent='研究模式不计算可执行股数或现金使用。';
-  }
+  renderExecutionFraming(data);
+}
+
+// Headings and empty states follow the snapshot: a page that cannot produce orders must not be
+// titled like an order sheet, and one that can must not be titled like a study.
+function renderExecutionFraming(data) {
+  const executable = executionSnapshotAllowed(data);
+  const text = (selector, value) => { const node = $(selector); if (node) node.textContent = value; };
+  text("#reportTab", executable ? (WHOLE_SHARE_MODE ? "整数股操作单" : "周五操作单") : "模型配置");
+  text("#reportEyebrow", executable ? "周五操作单 · 美东 10:00" : isResearch(data) ? "模型配置 · 研究版" : "模型配置 · 不可执行");
+  text("#reportTitle", executable ? "本周入金怎么买" : "本周入金按模型怎么分");
+  text("#ordersEyebrow", executable ? "今天在 IBKR 执行" : "研究配置 · 非交易指示");
+  text("#ordersTitle", executable ? (WHOLE_SHARE_MODE ? "按整数股下单" : "按美元下单") : "模型配置（非订单）");
+  text("#orderCountNote", executable ? "支持 IBKR 碎股 / 按美元买入" : "这份快照不生成订单");
+  text("#optionOrdersNote", executable ? "通过全部闸门才出现；默认不强行交易" : "这份快照不进入期权复核");
+  text("#finalChecksTitle", executable ? "执行前最后复核" : "不能照此执行");
+  if (executable) return;
+  text("#allocationHeadline", "模型配置研究 · 非订单");
+  $("#orders").innerHTML = '<p class="io-orders-empty">研究展示：不生成买卖订单。上面的配比是模型权重，仅供讨论。</p>';
+  $("#portfolioOrders").innerHTML = '<tr><td colspan="6">研究快照不可执行，不提供金额/股数订单。</td></tr>';
+  text("#putHeadline", "研究版不生成 Put 交易指示");
+  text("#putExplanation", "模型条件仅供反馈；来源时间未知/未核实，不应用本页盘口执行。");
+  text("#putVerdict", "仅展示研究条件，不可执行");
+  text("#putVerdictDetail", "原模型判断保留在下表“模型判断”里；没有通过来源时间检查，不能转成订单。");
+  $("#finalChecks").innerHTML = "<li>禁止按此研究快照执行；需要独立核实实时来源、账户与风险。</li>";
+  text("#wholeShareSummary", "研究模式不计算可执行股数或现金使用。");
 }
 
 function bindEvents() {

@@ -342,3 +342,60 @@ html[data-th-stage="otc"] .plan .panelhead span { color: var(--th-muted); font-s
 @media (max-width: 760px) {
   html[data-th-stage="incomeos"] .io-hero-proof { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ============================================================
+   Editions and notices (2026-11-10)
+   A page can be up to date and still not be "the signal of the day": a research edition that
+   produces no orders, or a same-day recalculation under a newer engine. One notice says so.
+   ============================================================ */
+.th-notice {
+  box-sizing: border-box;
+  display: grid;
+  gap: 4px;
+  max-width: 100%;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--th-line);
+  border-left: 3px solid var(--th-info);
+  border-radius: var(--th-r-md);
+  background: var(--th-info-bg);
+  color: var(--th-text-2);
+  font: 400 var(--th-fs-sm)/1.65 var(--th-font);
+  letter-spacing: 0;
+  text-align: left;
+}
+.th-notice > b { color: var(--th-text); font: 650 var(--th-fs-md)/1.4 var(--th-font); letter-spacing: 0; }
+.th-notice > span { color: var(--th-text-2); font-size: var(--th-fs-sm); }
+.th-notice[data-tone="warn"] { border-left-color: var(--th-warn); background: var(--th-warn-bg); }
+.th-notice[data-tone="stop"] { border-left-color: var(--th-down); background: var(--th-down-bg); }
+.th-notice[data-tone="ok"] { border-left-color: var(--th-up); background: var(--th-up-bg); }
+.th-notice[data-tone="quiet"] { border-left-color: var(--th-line-strong); background: var(--th-surface-2); }
+
+/* IncomeOS: the snapshot notice sits between the lead and the numbers; research tags share its colour. */
+html[data-th-stage="incomeos"] .io-hero-copy > .th-notice { margin: 18px 0 0; max-width: 760px; }
+html[data-th-stage="incomeos"] .io-hero-proof { margin: 18px 0 0; }
+html[data-th-stage="incomeos"] .io-state.research { color: var(--th-info); border-color: rgba(122, 174, 255, .38); background: var(--th-info-bg); }
+html[data-th-stage="incomeos"] .io-meta.is-research b { color: var(--th-info); }
+html[data-th-stage="incomeos"] .io-meta.is-research .io-meta-stale { color: var(--th-info); }
+html[data-th-stage="incomeos"] .io-meta-note { display: block; margin-top: 2px; color: var(--th-muted); font-size: var(--th-fs-xs); }
+html[data-th-stage="incomeos"] .io-orders > p.io-orders-empty { margin: 0; color: var(--th-muted); font-size: var(--th-fs-sm); line-height: 1.6; }
+html[data-th-stage="incomeos"] .io-table-note { margin: 0 0 10px; color: var(--th-muted); font-size: var(--th-fs-xs); line-height: 1.6; }
+/* Data room: a few grouped facts instead of one line per symbol. */
+html[data-th-stage="incomeos"] .io-gaps { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+html[data-th-stage="incomeos"] .io-gaps > li { padding: 12px 14px; border: 1px solid var(--th-line); border-radius: var(--th-r-md); background: var(--th-surface-2); }
+html[data-th-stage="incomeos"] .io-gaps b { display: block; color: var(--th-text); font-size: var(--th-fs-md); font-weight: 600; }
+html[data-th-stage="incomeos"] .io-gaps span { display: block; margin-top: 2px; color: var(--th-muted); font-size: var(--th-fs-xs); line-height: 1.6; overflow-wrap: anywhere; }
+html[data-th-stage="incomeos"] .io-gaps-count { float: right; margin-left: 12px; color: var(--th-text-2); font: 600 var(--th-fs-sm) var(--th-font-mono); }
+html[data-th-stage="incomeos"] .io-data-block { margin-top: 20px; }
+html[data-th-stage="incomeos"] .io-data-block > h3 { margin: 0 0 4px; color: var(--th-text); font-size: var(--th-fs-lg); }
+html[data-th-stage="incomeos"] .io-data-block > p { margin: 0 0 12px; color: var(--th-muted); font-size: var(--th-fs-sm); line-height: 1.6; }
+html[data-th-stage="incomeos"] .io-data-block ul.io-plain { margin: 0; padding-left: 18px; color: var(--th-text-2); font-size: var(--th-fs-sm); line-height: 1.7; }
+html[data-th-stage="incomeos"] .io-data-block details { margin-top: 12px; color: var(--th-muted); font-size: var(--th-fs-sm); }
+html[data-th-stage="incomeos"] .io-data-block summary { cursor: pointer; color: var(--th-text-2); }
+html[data-th-stage="incomeos"] .io-data-block details .io-table-wrap { margin-top: 10px; max-height: 420px; overflow: auto; }
+
+/* TailTrend: a recalculated edition is announced above the table, in the same notice. */
+html[data-th-stage="tailtrend"] #ttRevisionNote { margin: 0 0 16px; }
+
+/* Home: a status line that wraps should not leave two characters on the second line. */
+html[data-th-stage="home"] .th-sys footer small { text-wrap: balance; }

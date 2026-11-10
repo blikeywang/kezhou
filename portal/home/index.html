@@ -69,7 +69,7 @@
         <article class="th-sys" data-key="incomeos" style="--sys: var(--th-accent-incomeos)">
           <header><span class="th-sys__tag">长期资金 · 每周</span><span class="th-fresh" data-status-for="incomeos" data-state="unknown">读取中</span></header>
           <h3>IncomeOS<small>长期资金</small></h3>
-          <p>每周给候选股票和 ETF 打分并配成组合；填入本周入金，得到按美元下单的清单。期权另过闸门。</p>
+          <p>每周给候选股票和 ETF 打分并配成组合；填入本周入金，看这笔钱按模型怎么分。期权另过闸门。</p>
           <ul><li>账户输入只保存在当前浏览器</li><li>现金担保 put 受集中度硬闸门约束</li></ul>
           <footer><small data-status-time="incomeos">—</small><a class="th-sys__go" href="/incomeos/">打开 IncomeOS →</a></footer>
         </article>
@@ -116,7 +116,7 @@
             <tr style="--sys: var(--th-accent-history)"><th scope="row"><i></i>历史证据</th><td>已收盘历史K线与当前形态窗口</td><td>概率、Edge、区间、稳健性与相似案例</td><td>数据过期、样本不足或方法明显冲突</td></tr>
             <tr style="--sys: var(--th-accent-review)"><th scope="row"><i></i>交易复盘</th><td>浏览器本地成交、计划字段与可选历史K线</td><td>真实表现、成本行为、单笔重演、唯一处方与成长变化</td><td>缺K线不讲结构，缺计划不猜意图，样本不足不下确定诊断</td></tr>
             <tr class="th-contracts__sep"><td colspan="4">独立研究系统</td></tr>
-            <tr style="--sys: var(--th-accent-incomeos)"><th scope="row"><i></i>IncomeOS</th><td>本周净入金、券商净值、准备金与只读市场快照</td><td>按美元下单的清单、候选排名与期权闸门结论</td><td>数据过期或来源时间缺失、盘口缺失、估值或账户集中度不过线</td></tr>
+            <tr style="--sys: var(--th-accent-incomeos)"><th scope="row"><i></i>IncomeOS</th><td>本周净入金、券商净值、准备金与只读市场快照</td><td>组合配比、候选排名与期权闸门结论；研究版不生成订单</td><td>数据过期或来源时间缺失、盘口缺失、估值或账户集中度不过线</td></tr>
             <tr style="--sys: var(--th-accent-tailtrend)"><th scope="row"><i></i>TailTrend</th><td>Longbridge 已收盘日线、事件日历与浏览器内存风险参数</td><td>状态桶、尾部地图、管理区、阻断原因与压力股数</td><td>中部、未确认突破、事件跳空、旧数据或账户风险闸门失败</td></tr>
             <tr style="--sys: var(--th-accent-otc)"><th scope="row"><i></i>场外日线</th><td>用户提供的场外原页、授权参考归档与独立公开日线</td><td>周期质量复核与条件式研究计划</td><td>缺页、过期、映射未核实或执行条件未确认</td></tr>
             <tr style="--sys: var(--th-accent-market)"><th scope="row"><i></i>模拟盘</th><td>白名单公开模拟快照：行情、持仓、成交与复核</td><td>10 分钟执行检查、小时模型复核与多周期计划</td><td>行情过期或计划范围挂起</td></tr>
@@ -144,11 +144,13 @@
           if (m.localOnly) return;
           var f = m.freshness;
           if (!m.paused && counts[f.state] !== undefined) counts[f.state] += 1;
+          // The badge names the edition when the data is current but not meant to be acted on.
+          var chip = api.chip ? api.chip(m) : { state: f.state, label: f.label };
           var badge = document.querySelector('[data-status-for="' + m.key + '"]');
-          if (badge) { badge.setAttribute("data-state", f.state); badge.textContent = f.label; }
+          if (badge) { badge.setAttribute("data-state", chip.state); badge.textContent = chip.label; }
           var time = document.querySelector('[data-status-time="' + m.key + '"]');
           if (time) time.textContent = m.paused ? "来源任务暂停中 · 最新一期 " + api.shortDate(Date.parse(m.asOf)).slice(0, 5)
-            : m.asOf ? api.dataStamp(m) + (m.cadence ? " · " + m.cadence : "") : "暂无数据";
+            : m.asOf ? api.statusLine(m) : "暂无数据";
           // A stale system should not invite "generate this week's plan": say it is a look-back.
           var go = document.querySelector('.th-sys[data-key="' + m.key + '"] .th-sys__go');
           if (go && f.state === "stale") { go.textContent = "回看上次结果 →"; go.classList.add("is-stale"); }

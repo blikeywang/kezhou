@@ -35,6 +35,21 @@ Every route keeps its own stylesheet. The build injects three shared files into 
 5. **Page note** (`.th-pagenote`) — one short line about this page's data source or privacy. No disclaimer here.
 6. **Site footer** (`.th-sitefoot`) — injected by `build_site.py` into the static HTML of every page: disclaimer, 数据状态, 免责声明.
 
+## Editions and notices
+
+Data can be up to date and still not be "today's signal". Two such editions exist today; both are declared by the data, never by hand-written page text.
+
+| Edition | Declared by | Badge | Status line | In the page |
+|---|---|---|---|---|
+| Research (IncomeOS) | `publicationMode: "research_partial"` in `incomeos-full.json` | `研究版` (`data-state="research"`, info blue) instead of `已更新` | `… · 手动发布 · 不生成订单` | One notice in the page header: `研究版 · 不可执行`, the reason with counts, and where the details are |
+| Recalculated (TailTrend) | `revision` in `latest.json` | unchanged (`已更新`) | `… · 事后重算版` | One notice above the table: `事后新版研究重算，非当时信号` |
+
+- `_write_status()` copies the edition into `traderhome-status.json` as `edition` (badge label) and `note` (one phrase for the status line). `TraderHome.chip(m)` and `TraderHome.statusLine(m)` render them on the page bar, the status panel and the home board. A late or stale module keeps its freshness label: being old matters more than the edition.
+- **Notice** (`.th-notice`, in `traderhome-unify.css`): a bold title and one sentence. Tones via `data-tone`: default info (an edition), `warn` (partial), `stop` (stale or blocked), `ok`, `quiet`. One notice per page for one fact; the rest of the page refers to it instead of repeating it on every card.
+- A page that cannot produce orders must not be titled like an order sheet. Headings, tab names and empty states follow the snapshot (`renderExecutionFraming` in `incomeos-app.mjs`); they switch back by themselves when a verified snapshot is published.
+- The labels required by the publication rules stay on the page in every layout: `研究版`, `不可执行`, `仅研究 · 不可执行` on each option row, source times shown as known or `未知`, `事后新版研究重算，非当时信号`. Restyling may move or merge them, never drop them. `portal/test_site_display.mjs` and `portal/test_portal.py` check this.
+- The no-JavaScript text of a notice is the cautious reading (`研究展示，不是实时可执行行情`); the script replaces it with the edition actually published.
+
 ## Canonical names
 
 Use exactly these in navigation, page bar, `<title>`, home cards, the contracts table and cross-links.
@@ -58,4 +73,6 @@ Use exactly these in navigation, page bar, `<title>`, home cards, the contracts 
 - Never hide missing, stale or partial data to make a page look clean. Say what is old and how old: `比报告早 62 天`, `中间 61 个交易日没有运行`, `中断 48 天`.
 - A day that was not run is shown as missing, never as "0 changes" or filled from later data.
 - When data is stale, action wording changes: links read `回看上次结果`, action columns read `数据过期，暂不判断`.
+- Times carry their clock: market data on the exchange's (`11-09 16:00 美东`), "generated at" on the visitor's (`11-10 13:32`, labelled 你的本地时间 where it matters). No raw ISO strings (`2026-11-10T05:32:21.593Z`) in page text.
+- A fact that is the same for every row is said once above the table (`表中 50 只的报价都没有来源时间`); rows carry it only when they differ. Long per-symbol check lists are grouped by problem, with every symbol still listed under its group.
 - Comparisons name what they compare with (`与上一份快照（2026-08-12）相比`), not "昨日" or "上一个交易日", because runs can be skipped.
