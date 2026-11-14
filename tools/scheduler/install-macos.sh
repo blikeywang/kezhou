@@ -100,7 +100,7 @@ for entry in $JOBS; do
   launchctl bootout "gui/$UID/com.traderhome.refresh.$job" 2>/dev/null || true
   launchctl bootstrap "gui/$UID" "$plist"
 done
-say "已安装所选任务（名称:每小时分钟）：$JOBS；未选择的任务保持不变"
+say "已安装所选任务（名称:每小时分钟）：${JOBS}；未选择的任务保持不变"
 
 if [ "${1:-}" = "--run-now" ]; then
   for entry in $JOBS; do
