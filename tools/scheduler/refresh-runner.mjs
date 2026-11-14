@@ -268,7 +268,13 @@ async function main() {
     if (name.startsWith("incomeos")) {
       const research = readJson(join(CLONE, "portal/vendor/incomeos/data/incomeos-full.json"));
       const incomeQuality = await import(pathToFileURL(join(CLONE, "tools/incomeos/data-quality.mjs")).href);
-      if (incomeQuality.finalPublicationErrors(research, expectedSession()).length || research?.dataQuality?.publicationReady !== true || research?.mode !== "live") throw new Error("IncomeOS publication blocked: incomplete or unverified source data");
+      if (name === "incomeos-research") {
+        // Owner-authorized scheduled research publication is not live execution.
+        // Preserve every source-time/coverage disclosure; never archive a partial operation.
+        const publication = await import(pathToFileURL(join(CLONE, "tools/incomeos/research-publication.mjs")).href);
+        const prepared = publication.prepareResearchPublication(research, expectedSession(), new Date(), { scheduledResearch: true });
+        writeFileSync(join(CLONE, job.stampFile), `${JSON.stringify(prepared, null, 2)}\n`);
+      } else if (incomeQuality.finalPublicationErrors(research, expectedSession()).length || research?.dataQuality?.publicationReady !== true || research?.mode !== "live") throw new Error("IncomeOS publication blocked: incomplete or unverified source data");
     }
     for (const [cmd, args] of job.tests) await sh(cmd, args);
     await sh("python3", ["-m", "unittest", "portal.test_portal"], { timeout: 15 * 60_000 });
@@ -279,7 +285,7 @@ async function main() {
       writeStatus(name, { ok: true, startedAt, finishedAt: new Date().toISOString(), stamp: after, message: "数据无变化" });
       return;
     }
-    await sh("git", ["commit", "--quiet", "-m", `chore(data): ${name} refresh ${after ?? target} [scheduled]`]);
+    await sh("git", ["commit", "--quiet", "-m", `chore(data): ${name} refresh ${after ?? target} [${process.env.TRADERHOME_TRIGGER === "launchd" && !force ? "scheduled" : "manual"}]`]);
     await pushWithRetry();
     writeStatus(name, { ok: true, startedAt, finishedAt: new Date().toISOString(), stamp: after, message: `已推送 ${after}；部署及网页尚待核验` });
     log(`${name}: pushed ${after}; deployment and public readback not yet verified`);

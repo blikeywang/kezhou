@@ -31,3 +31,7 @@ bash tools/scheduler/install-macos.sh --uninstall
 - "… 文件只在 iCloud 上": in Finder, right-click the workflow folder → Keep Downloaded.
 - The 早晚报 page only updates when the reports themselves are new. If the workflow's own automations are paused or fail, the page shows how old the latest issue is.
 - Manual run: `node ~/.traderhome/scheduler/refresh-runner.mjs tailtrend --force`.
+
+### Install only selected products
+
+`TRADERHOME_REFRESH_JOBS=tailtrend,incomeos-research bash tools/scheduler/install-macos.sh` installs only those jobs; omitted jobs and simulation schedules remain untouched. Duplicate names are deduplicated and unknown names fail before installation. `--run-now` respects normal release windows and records manual (not scheduled) commits.

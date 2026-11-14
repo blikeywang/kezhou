@@ -59,3 +59,15 @@ test('weekly close waits for Friday/holiday final session, keeps other windows u
   assert.equal(weeklyCloseTarget(new Date('2026-07-02T20:30:00Z')), '2026-07-02');
   assert.throws(()=>weeklyCloseTarget(new Date('2028-01-07T22:00:00Z')),/calendar|日历|2028/i);
 });
+
+test('installer selection rejects unknown jobs and deduplicates only requested jobs', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { spawnSync } = await import('node:child_process');
+  const source = readFileSync(new URL('./install-macos.sh', import.meta.url), 'utf8');
+  const selection = source.slice(source.indexOf('SELECTED_JOBS='), source.indexOf('\nsay()'));
+  const check = value => spawnSync('/bin/bash', ['-c', `${selection}\nprintf '%s' "$JOBS"`], { env: { ...process.env, TRADERHOME_REFRESH_JOBS: value }, encoding: 'utf8' });
+  const valid = check('tailtrend,incomeos-research,tailtrend');
+  assert.equal(valid.status, 0);
+  assert.equal(valid.stdout.trim(), 'tailtrend:40 incomeos-research:50');
+  assert.equal(check('tailtrend,simulation').status, 64);
+});

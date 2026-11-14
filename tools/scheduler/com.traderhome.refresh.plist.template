@@ -12,6 +12,8 @@
   </array>
   <key>EnvironmentVariables</key>
   <dict>
+    <key>TRADERHOME_TRIGGER</key>
+    <string>launchd</string>
     <key>PATH</key>
     <string>__PATH__</string>
     <key>HOME</key>

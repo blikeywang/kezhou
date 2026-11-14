@@ -20,6 +20,21 @@ LOGS="$BASE/logs"
 AGENTS="${TRADERHOME_AGENTS_DIR:-$HOME/Library/LaunchAgents}"
 JOBS="tailtrend:40 incomeos-research:50 incomeos-friday:15 daily-trade:25"
 DAILY_SOURCE="${TRADERHOME_DAILY_SOURCE:-$HOME/Documents/猴认知分析}"
+# Explicit subset keeps unrelated production schedules untouched.
+SELECTED_JOBS="${TRADERHOME_REFRESH_JOBS:-tailtrend,incomeos-research,incomeos-friday,daily-trade}"
+FILTERED_JOBS=""
+for selected in ${SELECTED_JOBS//,/ }; do
+  case "$selected" in
+    tailtrend) entry="tailtrend:40";;
+    incomeos-research) entry="incomeos-research:50";;
+    incomeos-friday) entry="incomeos-friday:15";;
+    daily-trade) entry="daily-trade:25";;
+    *) echo "Unknown refresh job: $selected" >&2; exit 64;;
+  esac
+  case " $FILTERED_JOBS " in *" $entry "*) ;; *) FILTERED_JOBS="$FILTERED_JOBS $entry";; esac
+done
+[ -n "$FILTERED_JOBS" ] || { echo "No refresh jobs selected" >&2; exit 64; }
+JOBS="$FILTERED_JOBS"
 
 say() { printf '\033[36m›\033[0m %s\n' "$*"; }
 fail() { printf '\033[31m✗\033[0m %s\n' "$*" >&2; exit 1; }
@@ -85,15 +100,14 @@ for entry in $JOBS; do
   launchctl bootout "gui/$UID/com.traderhome.refresh.$job" 2>/dev/null || true
   launchctl bootstrap "gui/$UID" "$plist"
 done
-say "已安装：TailTrend 每小时 :40、IncomeOS 研究 :50、周五操作单 :15、早晚报 :25 检查一次（没有新数据会自动跳过）"
+say "已安装所选任务（名称:每小时分钟）：$JOBS；未选择的任务保持不变"
 
 if [ "${1:-}" = "--run-now" ]; then
-  say "立即刷新 TailTrend…"
-  "$NODE" "$BIN/refresh-runner.mjs" tailtrend --force || say "TailTrend 这次没有成功，原因见上一行；定时任务会在下一个整点重试"
-  say "立即刷新 IncomeOS 研究快照…"
-  "$NODE" "$BIN/refresh-runner.mjs" incomeos-research --force || say "IncomeOS 这次没有成功，原因见上一行；定时任务会在下一个整点重试"
-  say "立即同步早晚报…"
-  "$NODE" "$BIN/refresh-runner.mjs" daily-trade || say "早晚报这次没有成功，原因见上一行；定时任务会在下一个整点重试"
+  for entry in $JOBS; do
+    job="${entry%%:*}"
+    say "立即检查 $job（遵守原发布窗口）…"
+    "$NODE" "$BIN/refresh-runner.mjs" "$job" || say "$job 这次没有成功，原因见日志；后续定时会重试"
+  done
 fi
 
 say "运行状态：$LOGS/refresh-status.json，日志：$LOGS/refresh-*.log"

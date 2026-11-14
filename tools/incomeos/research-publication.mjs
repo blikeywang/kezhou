@@ -1,9 +1,16 @@
 import { sourceTime, timestampErrors, finalPublicationErrors, attachStructuredQuality } from './data-quality.mjs';
 export const RESEARCH_UNIVERSE = ["SPY.US", "QQQ.US", "IWM.US", "DIA.US", "SCHD.US", "VIG.US", "JEPI.US", "JEPQ.US", "QQQI.US", "SPYI.US", "DIVO.US", "DGRO.US", "VYM.US", "TLT.US", "SGOV.US", "KO.US", "PEP.US", "PG.US", "JNJ.US", "ABBV.US", "MRK.US", "PFE.US", "XOM.US", "CVX.US", "O.US", "VZ.US", "T.US", "MO.US", "PM.US", "HD.US", "LOW.US", "JPM.US", "BAC.US", "MCD.US", "NEE.US", "AAPL.US", "MSFT.US", "NVDA.US", "GOOGL.US", "META.US", "AMZN.US", "AVGO.US", "AMD.US", "TSLA.US", "NFLX.US", "COST.US", "ORCL.US", "CRM.US", "MU.US", "COIN.US", "GS.US", "BRK.B.US", "V.US", "MA.US", "BLK.US", "CME.US", "MS.US", "WFC.US", "LLY.US", "UNH.US", "AMGN.US", "WMT.US", "LIN.US", "CAT.US", "ETN.US", "ADP.US", "TXN.US", "QCOM.US", "ACN.US", "COP.US", "PGR.US"];
 export const RESEARCH_NOTICE = '仅供模型研究与反馈；来源时间未知或未核实，不能作为实时可执行行情，不生成买卖订单。';
-export function researchPublicationErrors(data, expectedDate, now = new Date(), { manual = false } = {}) {
+export function researchPublicationErrors(data, expectedDate, now = new Date(), { manual = false, scheduledResearch = false } = {}) {
  const errors=[];
- if(!manual) errors.push('explicit manual research publication required');
+ if(!manual && !scheduledResearch) errors.push('explicit research publication intent required');
+ if(scheduledResearch) {
+  for(const phase of ['research','execution','options']) {
+   const evidence=data?.retrieval?.phases?.[phase];
+   const start=Date.parse(evidence?.startedAt),end=Date.parse(evidence?.finishedAt);
+   if(!Number.isFinite(start)||!Number.isFinite(end)||end<start||now.getTime()-start>86400000||end>now.getTime()+300000||!evidence?.requests?.length||!evidence.requests.some(r=>r.status==='succeeded')) errors.push(`fresh retrieval evidence missing: ${phase}`);
+  }
+ }
  if(!expectedDate || data?.tradingDate!==expectedDate) errors.push('reference session must match latest completed session');
  const generated=Date.parse(data?.asOf),age=now.getTime()-generated;
  if(!Number.isFinite(generated)||age< -300000||age>86400000) errors.push('generation time invalid or older than 24 hours');
