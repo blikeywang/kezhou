@@ -1,8 +1,211 @@
 {
   "schema": "traderhome_tailtrend_run_history_v3",
   "version": 3,
-  "frameworkVersion": "0.3.0",
+  "frameworkVersion": "0.3.1",
   "records": [
+    {
+      "asOf": "2026-11-14T11:06:07.691Z",
+      "tradingDate": "2026-11-13",
+      "mode": "complete",
+      "summary": {
+        "records": 30,
+        "actionable": 1,
+        "blocked": 6,
+        "bucketCounts": {
+          "TAIL_RECLAIM_WATCH": 1,
+          "TREND_ACCEPTED_WATCH": 5,
+          "BREAKOUT_FAILURE_WATCH": 1,
+          "EDGE_OBSERVE": 8,
+          "NO_TRADE_MIDDLE": 15
+        },
+        "stateCounts": {
+          "LOWER_TAIL_RECLAIMED": 1,
+          "TREND_ACCEPTED": 5,
+          "UPPER_TAIL_REJECTED": 1,
+          "UPPER_TAIL_DECISION": 3,
+          "LOWER_TAIL_FALLING": 5,
+          "RANGE_MIDDLE": 15
+        }
+      },
+      "dataQuality": {
+        "fresh": 30,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [
+        {
+          "symbol": "SPXC.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-13",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 154.488；结构低点已稳定 7 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "TSLA.US",
+          "from": "RANGE_MIDDLE",
+          "to": "UPPER_TAIL_REJECTED",
+          "at": "2026-11-13",
+          "reason": "盘中触及上尾后，收盘退回 399.014 下方"
+        },
+        {
+          "symbol": "AMZN.US",
+          "from": "LOWER_TAIL_RECLAIMED",
+          "to": "UPPER_TAIL_DECISION",
+          "at": "2026-11-13",
+          "reason": "收盘位于上尾决策区 266.145–275.34"
+        },
+        {
+          "symbol": "BAC.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-13",
+          "reason": "冻结下沿 52.382；结构稳定 8/5 日"
+        },
+        {
+          "symbol": "NFLX.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-13",
+          "reason": "冻结下沿 67.011；结构稳定 11/5 日"
+        },
+        {
+          "symbol": "NVDA.US",
+          "from": "EVENT_QUARANTINE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-13",
+          "reason": "冻结下沿 181.386；结构稳定 1/5 日"
+        },
+        {
+          "symbol": "ORCL.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-13",
+          "reason": "冻结下沿 123.342；结构稳定 5/5 日"
+        },
+        {
+          "symbol": "AMD.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 453.384 与上尾下界 607.236 之间"
+        },
+        {
+          "symbol": "GOOGL.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 294.37 与上尾下界 346.72 之间"
+        },
+        {
+          "symbol": "GS.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 895.222 与上尾下界 1017.537 之间"
+        },
+        {
+          "symbol": "IWM.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 275.822 与上尾下界 293.662 之间"
+        },
+        {
+          "symbol": "MSFT.US",
+          "from": "UPPER_TAIL_DECISION",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 494.654 与上尾下界 543.026 之间"
+        },
+        {
+          "symbol": "MU.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 741.7 与上尾下界 1016.798 之间"
+        },
+        {
+          "symbol": "QQQ.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 670.212 与上尾下界 739.698 之间"
+        },
+        {
+          "symbol": "SPY.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-13",
+          "reason": "收盘位于下尾上界 742.492 与上尾下界 771.838 之间"
+        }
+      ]
+    },
+    {
+      "asOf": "2026-11-14T11:06:07.691Z",
+      "tradingDate": "2026-11-12",
+      "mode": "not_scheduled",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "dataQuality": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": []
+    },
+    {
+      "asOf": "2026-11-14T11:06:07.691Z",
+      "tradingDate": "2026-11-11",
+      "mode": "not_scheduled",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "dataQuality": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": []
+    },
+    {
+      "asOf": "2026-11-14T11:06:07.691Z",
+      "tradingDate": "2026-11-10",
+      "mode": "not_scheduled",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "dataQuality": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": []
+    },
     {
       "asOf": "2026-11-10T03:15:09.840Z",
       "tradingDate": "2026-11-09",
