@@ -5,11 +5,18 @@ import {
   calculateRiskPlan,
   normalizeBars,
 } from "/tailtrend/tailtrend-engine.mjs";
+import {
+  auditBlocks,
+  auditSampleWording,
+  comparisonNote,
+  gapBetween,
+  gapFromContext,
+  newestScheduled,
+} from "/tailtrend/tailtrend-display.mjs";
 
 const $ = (selector) => document.querySelector(selector);
 const state = {
   snapshot: null,
-  history: null,
   index: null,
   audit: null,
   selected: null,
@@ -71,8 +78,6 @@ async function loadCadence() {
   } catch { /* keep the daily default */ }
 }
 const isWeekly = () => cadence.days >= 5;
-// On a weekly rhythm the trading days between two runs are not run by design (at most four).
-const scheduledGap = (missingDays) => isWeekly() && missingDays > 0 && missingDays <= 4;
 // Old, but the next weekly run is not overdue yet (up to one day after the following close):
 // waiting, not broken. Same boundary as the status file's lateHours for TailTrend.
 const waitingForNextRun = (snapshot) => isWeekly() && snapshot.expired && snapshot.ageDays <= cadence.days;
@@ -106,9 +111,10 @@ function dataClass(value) {
 function dataLabel(value) {
   return ({ FRESH: "最新", CACHED: "缓存", STALE: "过期", MISSING: "缺失", ERROR: "失败", INSUFFICIENT: "数据不足", LOCAL: "本地导入" })[value] ?? value ?? "—";
 }
-// How many scheduled runs are missing between two data days (index entries are newest first).
-function missingBetween(fromDate, toDate) {
-  return (state.index?.entries ?? []).filter((entry) => entry.status === "MISSING" && entry.dataAsOf > fromDate && entry.dataAsOf < toDate).length;
+// Trading days between two data days: how many runs were missed and how many days are off the
+// weekly schedule. The index marks each day (MISSING / NOT_SCHEDULED); see tailtrend-display.mjs.
+function gapFor(fromDate, toDate) {
+  return gapBetween(state.index?.entries, fromDate, toDate);
 }
 // "11-10 13:27" on the visitor's clock.
 function localStamp(value) {
@@ -138,20 +144,13 @@ function renderRevisionNote(snapshot) {
   const original = localStamp(snapshot.revision.originalRunAt);
   note.innerHTML = `<b>事后新版研究重算，非当时信号</b><span>下表是用新版规则（${escapeHtml(snapshot.frameworkVersion ?? "新版")}）对 ${escapeHtml(snapshot.tradingDate)} 收盘数据重新计算的结果${revised ? `，重算于 ${revised}` : ""}${original ? `；当天原始快照发布于 ${original}` : ""}${revised || original ? "（你的本地时间）" : ""}。原始快照及历史审计账本未改写，不能据此计算当时收益。</span>`;
 }
-function comparisonNote(fromDate, toDate) {
-  if (!fromDate) return "这是第一份快照，没有可比的上一份";
-  const gap = missingBetween(fromDate, toDate);
-  if (scheduledGap(gap)) return `与上一份快照（${fromDate}）相比；每周一份`;
-  return gap ? `与上一份快照（${fromDate}）相比；中间 ${gap} 个交易日没有运行` : `与上一份快照（${fromDate}）相比`;
-}
-
 function renderHeader() {
   const snapshot = state.snapshot;
   const quality = snapshot.dataQuality;
   renderRevisionNote(snapshot);
   const version = document.getElementById("ttVersion");
   if (version && snapshot.frameworkVersion) version.textContent = `v${snapshot.frameworkVersion}`;
-  const newest = state.index?.entries?.[0];
+  const newest = newestScheduled(state.index?.entries);
   $("#snapshotMode").textContent = snapshot.expired
     ? (waitingForNextRun(snapshot) ? `快照已过 ${snapshot.ageDays} 天 · 等周五更新` : `快照已过期 · ${snapshot.ageDays} 天未更新`)
     : newest?.status === "MISSING"
@@ -202,7 +201,9 @@ function renderHeader() {
   }
   $("#metricTransitions").textContent = snapshot.transitions.length;
   const compared = snapshot.records.map((record) => record.change?.comparisonDate).filter(Boolean).sort().at(-1) ?? null;
-  if (note) note.textContent = comparisonNote(compared, snapshot.tradingDate);
+  if (note) note.textContent = comparisonNote(compared, compared
+    ? gapFromContext(snapshot.observationContext, compared) ?? gapFor(compared, snapshot.tradingDate)
+    : null);
 }
 
 function renderFilters() {
@@ -283,8 +284,8 @@ function changeMarkup(record) {
       ? `${priorLabel} → ${record.label}`
       : "状态没有变化";
   const reasons = record.stateReason?.length ? record.stateReason : [change?.reason ?? record.action];
-  const gap = comparison ? missingBetween(comparison, record.tradingDate) : 0;
-  const label = !comparison ? "状态变化" : gap && !scheduledGap(gap) ? `较上一份快照（${comparison}，中间缺 ${gap} 个交易日）` : `较上一份快照（${comparison}）`;
+  const missed = comparison ? gapFor(comparison, record.tradingDate).missing : 0;
+  const label = !comparison ? "状态变化" : missed ? `较上一份快照（${comparison}，中间缺 ${missed} 个交易日）` : `较上一份快照（${comparison}）`;
   return `<div class="tt-explain"><div><span>${escapeHtml(label)}</span><strong>${escapeHtml(headline)}</strong></div><ul>${reasons.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`;
 }
 
@@ -474,43 +475,36 @@ function renderAudit() {
   const completedFive = entries.filter((entry) => entry.forward?.horizons?.["5"]).length;
   const skippedLargeMoves = entries.filter((entry) => entry.direction === "OBSERVE"
     && Math.max(Math.abs(entry.forward?.running?.maxUpPct ?? 0), Math.abs(entry.forward?.running?.maxDownPct ?? 0)) >= 5).length;
-  $("#auditProgress").textContent = `${Math.min(days, 10)}/10 个交易日`;
+  // The ledger says what one sample is: a trading day, or (weekly rhythm) one published observation.
+  const sample = auditSampleWording(ledger);
+  $("#auditProgress").textContent = sample.progress(days);
   $("#auditSummary").innerHTML = [
-    ["已运行的交易日", days, "先积累 5–10 天再看结果"],
+    [sample.label, days, sample.note],
     ["方向性观察", trackedSignals, "含被硬闸门阻断的影子候选"],
     ["次日参考", nextReferences, "用于计算提醒到下一可交易日偏差"],
     ["5日结果", completedFive, "派生 MFE / MAE 已完成"],
     ["主动放弃后大幅运行", skippedLargeMoves, "中部/观察状态后绝对波动 ≥5%"],
   ].map(([label, value, note]) => `<article><span>${escapeHtml(label)}</span><strong>${value}</strong><small>${escapeHtml(note)}</small></article>`).join("");
 
-  // Newest first. Days that were never run are shown as one "missing" block, not as "0 changes".
-  const runs = state.history?.records ?? [];
+  // Newest first. Days without a snapshot are one block per stretch, never "0 changes": the index
+  // says whether a day was off the weekly schedule (NOT_SCHEDULED) or a run was missed (MISSING).
   const item = (t) => `<li><b>${escapeHtml(t.symbol)}</b> ${escapeHtml(STATE_META[t.from]?.label ?? t.from)} → ${escapeHtml(STATE_META[t.to]?.label ?? t.to)}<small>${escapeHtml(t.reason ?? "等待原因记录")}</small></li>`;
-  const blocks = [];
-  for (let i = 0; i < runs.length && blocks.length < 6; i += 1) {
-    const run = runs[i];
-    if (run.mode === "missing") {
-      let j = i;
-      while (j + 1 < runs.length && runs[j + 1].mode === "missing") j += 1;
-      const count = j - i + 1;
-      // Between two weekly runs the gap is the schedule, not a failure; anything longer is a real miss.
-      const planned = scheduledGap(count) && i > 0 && runs[i - 1].mode !== "missing";
-      blocks.push(planned
-        ? `<article class="tt-audit-missing is-planned"><div><span>${escapeHtml(count > 1 ? `${runs[j].tradingDate} 至 ${run.tradingDate}` : run.tradingDate)}</span><b>${count} 个交易日按计划不运行</b></div><p>现在每周五收盘后更新一次，这几天没有快照。不会用后来的数据补造当时的状态或收益。</p></article>`
-        : `<article class="tt-audit-missing"><div><span>${escapeHtml(count > 1 ? `${runs[j].tradingDate} 至 ${run.tradingDate}` : run.tradingDate)}</span><b>${count} 个交易日没有运行</b></div><p>这些天没有生成快照，记为缺失。不会用后来的数据补造当时的状态或收益。</p></article>`);
-      i = j;
-      continue;
+  const SHOWN = 8;
+  const blocks = auditBlocks(state.index?.entries).map((block) => {
+    if (block.kind !== "run") {
+      const span = escapeHtml(block.count > 1 ? `${block.from} 至 ${block.to}` : block.to);
+      return block.kind === "planned"
+        ? `<article class="tt-audit-missing is-planned"><div><span>${span}</span><b>${block.count} 个交易日按计划不运行</b></div><p>现在${escapeHtml(cadence.label ?? "每周")}更新一次，${block.count > 1 ? "这几天" : "这一天"}没有快照。不会用后来的数据补造当时的状态或收益。</p></article>`
+        : `<article class="tt-audit-missing"><div><span>${span}</span><b>${block.count} 个交易日没有运行</b></div><p>${block.count > 1 ? "这些天" : "这一天"}没有生成快照，记为缺失。不会用后来的数据补造当时的状态或收益。</p></article>`;
     }
-    const previous = runs.slice(i + 1).find((entry) => entry.mode !== "missing");
-    const transitions = run.transitions ?? [];
-    const SHOWN = 8;
+    const transitions = block.transitions;
     const body = transitions.length
       ? `<ul>${transitions.slice(0, SHOWN).map(item).join("")}</ul>${transitions.length > SHOWN ? `<details><summary>展开其余 ${transitions.length - SHOWN} 个</summary><ul>${transitions.slice(SHOWN).map(item).join("")}</ul></details>` : ""}`
-      : `<p>${previous ? "相对上一份快照没有状态变化。" : "这是第一份快照，作为之后比较的基线。"}</p>`;
-    const recalculated = state.snapshot?.revision && run.tradingDate === state.snapshot.tradingDate ? "这是当天的原始快照；页面上方的表是之后的重算版。" : "";
-    const versus = previous || recalculated ? `<small class="tt-audit-versus">${escapeHtml([recalculated, previous ? comparisonNote(previous.tradingDate, run.tradingDate) : ""].filter(Boolean).join(""))}</small>` : "";
-    blocks.push(`<article><div><span>${escapeHtml(run.tradingDate)}</span><b>${transitions.length} 个状态变化</b></div>${versus}${body}</article>`);
-  }
+      : `<p>${block.previous ? "相对上一份快照没有状态变化。" : "这是第一份快照，作为之后比较的基线。"}</p>`;
+    const recalculated = state.snapshot?.revision && block.date === state.snapshot.tradingDate ? "这是当天的原始快照；页面上方的表是之后的重算版。" : "";
+    const versus = block.previous || recalculated ? `<small class="tt-audit-versus">${escapeHtml([recalculated, block.previous ? comparisonNote(block.previous, block.gap) : ""].filter(Boolean).join(""))}</small>` : "";
+    return `<article><div><span>${escapeHtml(block.date)}</span><b>${transitions.length} 个状态变化</b></div>${versus}${body}</article>`;
+  });
   $("#auditChanges").innerHTML = blocks.join("") || '<div class="tt-empty">还没有运行记录。</div>';
 }
 
@@ -559,14 +553,6 @@ async function load() {
     if (!snapshotResponse.ok) throw new Error(`snapshot HTTP ${snapshotResponse.status}`);
     state.snapshot = await snapshotResponse.json();
     state.index = indexResponse.ok ? await indexResponse.json() : { entries: [] };
-    state.history = { records: (state.index.entries ?? []).map((entry) => ({
-      asOf: entry.runAt,
-      tradingDate: entry.dataAsOf,
-      mode: entry.status?.toLowerCase(),
-      summary: entry.summary,
-      dataQuality: entry.health,
-      transitions: entry.transitions ?? [],
-    })) };
     state.audit = auditResponse.ok ? await auditResponse.json() : { entries: [], daysCollected: 0 };
     if (state.snapshot.schema !== "traderhome_tailtrend_snapshot_v1") throw new Error("unknown TailTrend snapshot schema");
     applySnapshotAge(state.snapshot);
