@@ -1,6 +1,6 @@
 # Historical Data Coverage Audit
 
-Generated: 2026-11-15T03:49:40.740531+00:00
+Generated: 2026-11-15T03:59:20Z
 
 Fresh data is not proof of complete lifetime history. No series is certified as fully verified.
 Network genesis is not a market-price start. Provider firstTradeDate is not independent IPO evidence.
@@ -12,35 +12,35 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 
 | Symbol | Series | Actual first | Actual last | Bars | Verified lifecycle reference | Start status | Suspected gaps | OHLC-invalid bars |
 |---|---|---|---|---:|---|---|---:|---:|
-| BTC | base: Binance 4h | 2017-08-17 | 2026-11-14 | 20242 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
-| BTC | primary: Binance 1d | 2017-08-17 | 2026-11-13 | 3376 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | 0 |
+| BTC | base: Binance 4h | 2017-08-17 | 2026-11-14 | 20245 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
+| BTC | primary: Binance 1d | 2017-08-17 | 2026-11-14 | 3377 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | 0 |
 | BTC | usd: Coin Metrics 1d | 2010-07-18 | 2026-11-14 | 5964 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | n/a (close-only) |
-| ETH | base: Binance 4h | 2017-08-17 | 2026-11-14 | 20242 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
-| ETH | primary: Binance 1d | 2017-08-17 | 2026-11-13 | 3376 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | 0 |
+| ETH | base: Binance 4h | 2017-08-17 | 2026-11-14 | 20245 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
+| ETH | primary: Binance 1d | 2017-08-17 | 2026-11-14 | 3377 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | 0 |
 | ETH | usd: Coin Metrics 1d | 2015-08-08 | 2026-11-14 | 4117 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | n/a (close-only) |
-| SOL | base: Binance 4h | 2020-08-11 | 2026-11-14 | 13718 | unverified | unverified | 0 | 0 |
-| SOL | primary: Binance 1d | 2020-08-11 | 2026-11-13 | 2286 | unverified | unverified | 0 | 0 |
+| SOL | base: Binance 4h | 2020-08-11 | 2026-11-14 | 13721 | unverified | unverified | 0 | 0 |
+| SOL | primary: Binance 1d | 2020-08-11 | 2026-11-14 | 2287 | unverified | unverified | 0 | 0 |
 | SOL | usd: Coin Metrics 1d | 2020-04-10 | 2026-11-14 | 2410 | unverified | unverified | 0 | n/a (close-only) |
-| BNB | base: Binance 4h | 2017-11-06 | 2026-11-14 | 19757 | unverified | unverified | 16 | 0 |
-| BNB | primary: Binance 1d | 2017-11-06 | 2026-11-13 | 3295 | unverified | unverified | 0 | 0 |
+| BNB | base: Binance 4h | 2017-11-06 | 2026-11-14 | 19760 | unverified | unverified | 16 | 0 |
+| BNB | primary: Binance 1d | 2017-11-06 | 2026-11-14 | 3296 | unverified | unverified | 0 | 0 |
 | BNB | usd: Coin Metrics 1d | 2017-07-15 | 2026-11-14 | 3410 | unverified | unverified | 0 | n/a (close-only) |
-| XRP | base: Binance 4h | 2018-05-04 | 2026-11-14 | 18688 | unverified | unverified | 9 | 0 |
-| XRP | primary: Binance 1d | 2018-05-04 | 2026-11-13 | 3116 | unverified | unverified | 0 | 0 |
+| XRP | base: Binance 4h | 2018-05-04 | 2026-11-14 | 18691 | unverified | unverified | 9 | 0 |
+| XRP | primary: Binance 1d | 2018-05-04 | 2026-11-14 | 3117 | unverified | unverified | 0 | 0 |
 | XRP | usd: Coin Metrics 1d | 2014-08-15 | 2026-11-14 | 4475 | unverified | unverified | 0 | n/a (close-only) |
-| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-14 | 16132 | unverified | unverified | 2 | 0 |
-| DOGE | primary: Binance 1d | 2019-07-05 | 2026-11-13 | 2689 | unverified | unverified | 0 | 0 |
+| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-14 | 16135 | unverified | unverified | 2 | 0 |
+| DOGE | primary: Binance 1d | 2019-07-05 | 2026-11-14 | 2690 | unverified | unverified | 0 | 0 |
 | DOGE | usd: Coin Metrics 1d | 2014-01-23 | 2026-11-14 | 4679 | unverified | unverified | 0 | n/a (close-only) |
-| ADA | base: Binance 4h | 2018-04-17 | 2026-11-14 | 18791 | unverified | unverified | 9 | 0 |
-| ADA | primary: Binance 1d | 2018-04-17 | 2026-11-13 | 3133 | unverified | unverified | 0 | 0 |
+| ADA | base: Binance 4h | 2018-04-17 | 2026-11-14 | 18794 | unverified | unverified | 9 | 0 |
+| ADA | primary: Binance 1d | 2018-04-17 | 2026-11-14 | 3134 | unverified | unverified | 0 | 0 |
 | ADA | usd: Coin Metrics 1d | 2017-12-01 | 2026-11-14 | 3271 | unverified | unverified | 0 | n/a (close-only) |
-| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-14 | 13466 | unverified | unverified | 0 | 0 |
-| AVAX | primary: Binance 1d | 2020-09-22 | 2026-11-13 | 2244 | unverified | unverified | 0 | 0 |
+| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-14 | 13469 | unverified | unverified | 0 | 0 |
+| AVAX | primary: Binance 1d | 2020-09-22 | 2026-11-14 | 2245 | unverified | unverified | 0 | 0 |
 | AVAX | usd: Coin Metrics 1d | 2020-09-23 | 2026-11-14 | 2244 | unverified | unverified | 0 | n/a (close-only) |
-| LINK | base: Binance 4h | 2019-01-16 | 2026-11-14 | 17150 | unverified | unverified | 5 | 0 |
-| LINK | primary: Binance 1d | 2019-01-16 | 2026-11-13 | 2859 | unverified | unverified | 0 | 0 |
+| LINK | base: Binance 4h | 2019-01-16 | 2026-11-15 | 17154 | unverified | unverified | 5 | 0 |
+| LINK | primary: Binance 1d | 2019-01-16 | 2026-11-14 | 2860 | unverified | unverified | 0 | 0 |
 | LINK | usd: Coin Metrics 1d | 2017-09-29 | 2026-11-14 | 3334 | unverified | unverified | 0 | n/a (close-only) |
-| LTC | base: Binance 4h | 2017-12-13 | 2026-11-14 | 19535 | unverified | unverified | 16 | 0 |
-| LTC | primary: Binance 1d | 2017-12-13 | 2026-11-13 | 3258 | unverified | unverified | 0 | 0 |
+| LTC | base: Binance 4h | 2017-12-13 | 2026-11-15 | 19539 | unverified | unverified | 16 | 0 |
+| LTC | primary: Binance 1d | 2017-12-13 | 2026-11-14 | 3259 | unverified | unverified | 0 | 0 |
 | LTC | usd: Coin Metrics 1d | 2013-04-01 | 2026-11-14 | 4976 | unverified | unverified | 0 | n/a (close-only) |
 | AAPL | base: Yahoo Finance 1d | 1980-12-12 | 2026-11-13 | 11574 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
 | AAPL | primary: Yahoo Finance 1d | 1980-12-12 | 2026-11-13 | 11574 | [1980-12-12 (ipo)](https://investor.apple.com/faq./default.aspx) | start-reached | 0 | 0 |
@@ -189,12 +189,6 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 - ADA/base: 2018-06-26T04:00:00+00:00, 2018-06-26T08:00:00+00:00, 2018-07-04T04:00:00+00:00, 2018-11-14T04:00:00+00:00, 2019-03-12T04:00:00+00:00, 2019-05-15T04:00:00+00:00, 2019-05-15T08:00:00+00:00, 2019-08-15T04:00:00+00:00, 2020-02-19T12:00:00+00:00 (up to 12 examples)
 - LINK/base: 2019-03-12T04:00:00+00:00, 2019-05-15T04:00:00+00:00, 2019-05-15T08:00:00+00:00, 2019-08-15T04:00:00+00:00, 2020-02-19T12:00:00+00:00 (up to 12 examples)
 - LTC/base: 2018-02-08T04:00:00+00:00, 2018-02-08T08:00:00+00:00, 2018-02-08T12:00:00+00:00, 2018-02-08T16:00:00+00:00, 2018-02-08T20:00:00+00:00, 2018-02-09T00:00:00+00:00, 2018-02-09T04:00:00+00:00, 2018-06-26T04:00:00+00:00, 2018-06-26T08:00:00+00:00, 2018-07-04T04:00:00+00:00, 2018-11-14T04:00:00+00:00, 2019-03-12T04:00:00+00:00 (up to 12 examples)
-- NQ/base: cached audit from 2026-11-14T11:15:52.603400+00:00; no successful source refresh this run.
-- NQ/primary: cached audit from 2026-11-14T11:15:52.603400+00:00; no successful source refresh this run.
-- GC/base: cached audit from 2026-11-14T11:15:53.815413+00:00; no successful source refresh this run.
-- GC/primary: cached audit from 2026-11-14T11:15:53.815413+00:00; no successful source refresh this run.
-- SI/base: cached audit from 2026-11-14T11:15:54.143928+00:00; no successful source refresh this run.
-- SI/primary: cached audit from 2026-11-14T11:15:54.143928+00:00; no successful source refresh this run.
 
 ## Sources
 
