@@ -17,7 +17,7 @@ test('all daily and weekly profiles validate their own source scope and complete
   let count = 0;
   for (const [symbol,a] of Object.entries(data.assets)) {
     const keys = ['1d-6m','1d-1y','1w-6m','1w-1y'];
-    assert.deepEqual(Object.keys(a.profiles), ['BTC','ETH'].includes(symbol) ? [...keys,...keys.map(k=>'usd-'+k)] : keys);
+    assert.deepEqual(Object.keys(a.profiles), a.grp==='crypto' ? [...keys,...keys.map(k=>'usd-'+k)] : keys);
     for (const key of Object.keys(a.profiles)) {
       const {descriptor:d,snapshot:p} = profile(symbol,key);
       assert.equal(M.validate(p,symbol,d.asof,d),p);
@@ -34,7 +34,7 @@ test('all daily and weekly profiles validate their own source scope and complete
       count++;
     }
   }
-  assert.equal(count,320);
+  assert.equal(count,352);
 });
 
 test('BTC and ETH long windows compare endpoint years with unequal coverage disclosed', () => {
@@ -286,4 +286,29 @@ test('early USD reference profiles do not invent or splice exchange candles', ()
       assert.throws(()=>M.validate(fake,symbol,d.asof,d),/fabricated/);
     }
   }
+});
+
+
+test('supplemental scores allow variable windows but never leak future or alter legacy windows', () => {
+  const {snapshot:p} = profile('BTC','1d-1y');
+  const candidate = structuredClone(p.cases.corr[0]);
+  candidate.start += 1;
+  candidate.startTime = candidate.bars[candidate.start][0];
+  Object.assign(candidate,{window:p.window-1,scale:(p.window-1)/p.window,score:80,scores:{elastic:80,returns:70,pivots:null},pivots:[]});
+  p.shapeMatches={version:1,referenceWindow:p.window,methods:['elastic','returns','pivots'],cases:{elastic:[candidate],returns:[],pivots:[]},currentPivots:[]};
+  assert.equal(M.validate(p,'BTC',p.asof),p);
+  assert.equal(M.caseList(p,'elastic')[0],candidate);
+  assert.equal(M.seriesData(candidate,0,false).price.at(-1).time,candidate.endTime);
+  const invalid=structuredClone(p);
+  invalid.shapeMatches.cases.elastic[0].scores.returns=101;
+  assert.throws(()=>M.validate(invalid,'BTC',p.asof),/supplemental score/);
+  const future=structuredClone(p);
+  future.shapeMatches.cases.elastic[0].bars.at(-1)[0]=p.current.startTime;
+  assert.throws(()=>M.validate(future,'BTC',p.asof),/overlaps/);
+  const legacy=structuredClone(p);
+  legacy.cases.corr[0]=candidate;
+  assert.throws(()=>M.validate(legacy,'BTC',p.asof),/matching window/);
+  const pivot=structuredClone(p);
+  pivot.shapeMatches.currentPivots=[{index:1,price:100,type:'high',confirmedAt:p.window}];
+  assert.throws(()=>M.validate(pivot,'BTC',p.asof),/confirmed pivots/);
 });

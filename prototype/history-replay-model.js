@@ -25,10 +25,10 @@
     }
     if (data.dataKind === 'close-only' && data.priceBasis !== 'usd-reference-close') throw new Error('Invalid reference-price basis');
     new Intl.DateTimeFormat('en', {timeZone: data.timeZone}).format();
-    function segment(s) {
+    function segment(s, window = data.window) {
       if (!s || !Array.isArray(s.bars) || !s.bars.length ||
           !Number.isInteger(s.start) || !Number.isInteger(s.end) || s.start < 0 ||
-          s.end >= s.bars.length || s.end - s.start + 1 !== data.window) {
+          s.end >= s.bars.length || s.end - s.start + 1 !== window) {
         throw new Error('Invalid matching window');
       }
       let previous = -Infinity;
@@ -95,6 +95,38 @@
         throw new Error('Forward statistics overlap current window');
       }
     }
+    if (data.shapeMatches) {
+      const shape = data.shapeMatches;
+      const allowed = ['elastic','returns','pivots'];
+      const score = v => Number.isFinite(v) && v >= 0 && v <= 100;
+      if (shape.version !== 1 || shape.referenceWindow !== data.window || !Array.isArray(shape.methods) ||
+          !shape.methods.length || new Set(shape.methods).size !== shape.methods.length || shape.methods.some(m => !allowed.includes(m))) {
+        throw new Error('Invalid supplemental methods');
+      }
+      const pivotsValid = (pivots, window) => Array.isArray(pivots) && pivots.every(p =>
+        Number.isInteger(p.index) && p.index >= 0 && p.index < window && positive(p.price) &&
+        ['high','low'].includes(p.type) && Number.isInteger(p.confirmedAt) && p.confirmedAt > p.index && p.confirmedAt < window);
+      if (!pivotsValid(shape.currentPivots, data.window)) throw new Error('Invalid confirmed pivots');
+      for (const method of shape.methods) {
+        const cases = shape.cases?.[method];
+        if (!Array.isArray(cases) || cases.length > 6) throw new Error('Invalid supplemental cases');
+        const ids = new Set();
+        for (const candidate of cases) {
+          if (!Number.isInteger(candidate.window) || candidate.window < 2) throw new Error('Invalid supplemental window');
+          segment(candidate, candidate.window);
+          if (!pivotsValid(candidate.pivots, candidate.window)) throw new Error('Invalid confirmed pivots');
+          if (!score(candidate.score) || ids.has(candidate.id) || !candidate.scores ||
+              allowed.some(m => candidate.scores[m] !== null && !score(candidate.scores[m])) ||
+              !Number.isFinite(candidate.scale) || Math.abs(candidate.scale - candidate.window/data.window) > .001) {
+            throw new Error('Invalid supplemental score');
+          }
+          ids.add(candidate.id);
+          const horizon = Math.max(...data.horizons);
+          if (!Number.isInteger(horizon) || horizon < 1 || !candidate.bars[candidate.end+horizon] ||
+              candidate.bars.at(-1)[0] >= data.current.startTime) throw new Error('Supplemental continuation overlaps current window');
+        }
+      }
+    }
     return data;
   }
   function profileStatus(descriptor, now=Date.now()/1000) {
@@ -104,7 +136,7 @@
     return descriptor.status || 'fresh';
   }
   function caseList(data, method, year) {
-    return method === 'year' ? (data.annualCases?.[year] || []) : (data.cases?.[method] || []);
+    return method === 'year' ? (data.annualCases?.[year] || []) : (data.cases?.[method] || data.shapeMatches?.cases?.[method] || []);
   }
   const futureCount = s => s.bars.length - s.end - 1;
   const clampReveal = (s, n) => Math.min(futureCount(s), Math.max(0, Math.trunc(Number(n) || 0)));

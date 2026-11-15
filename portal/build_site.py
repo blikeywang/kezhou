@@ -7,6 +7,7 @@ import base64
 import hashlib
 import html as html_module
 import json
+import math
 import re
 import shutil
 from pathlib import Path
@@ -59,6 +60,45 @@ def _copy_file(source: Path, target: Path) -> None:
     shutil.copy2(source, target)
 
 
+def _validate_source_history(symbol, group, series, descriptor, source):
+    """Validate public source archives without conflating reference closes and OHLCV."""
+    coverage = source.get("coverage", {})
+    bars = source.get("bars", [])
+    expected_source = "Coin Metrics" if series == "usd" else ("Binance" if group == "crypto" else "Yahoo Finance")
+    expected_kind = "close-only" if series == "usd" else "ohlcv"
+    if (series not in {"primary", "usd"} or (series == "usd" and group != "crypto")
+            or source.get("symbol") != symbol or source.get("interval") != "1d"
+            or source.get("source") != expected_source or source.get("dataKind") != expected_kind
+            or any(source.get(k) != descriptor.get(k) for k in ("source", "dataKind", "generatedAt"))
+            or any(coverage.get(k) != descriptor.get(k) for k in ("first", "last", "bars"))
+            or not bars or len(bars) != descriptor.get("bars")):
+        raise ValueError(f"Invalid source-history data: {symbol}/{series}")
+    if series == "usd" and source.get("ticker") != symbol + " / USD":
+        raise ValueError(f"Invalid source-history ticker: {symbol}")
+    previous = None
+    invalid_candles = 0
+    for row in bars:
+        if not isinstance(row, list) or len(row) != 6:
+            raise ValueError(f"Invalid source-history bar: {symbol}")
+        t, o, h, l, c, v = row
+        numeric = lambda x: isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x)
+        if not numeric(t) or (previous is not None and t <= previous) or not numeric(c):
+            raise ValueError(f"Invalid source-history time/close: {symbol}")
+        if series == "usd":
+            if c <= 0 or row[1:4] != [None] * 3 or v is not None:
+                raise ValueError(f"Reference history must remain close-only: {symbol}")
+        else:
+            if not all(numeric(x) for x in (o, h, l)) or (v is not None and (not numeric(v) or v < 0)):
+                raise ValueError(f"Invalid source-history numeric fields: {symbol}")
+            # Preserve the provider's raw rows, but require exact disclosed quality counts.
+            invalid_candles += int(not (all(x > 0 for x in (o, h, l, c)) and l <= min(o, c) <= max(o, c) <= h))
+        previous = t
+    if invalid_candles and not (expected_source == "Yahoo Finance" and str(source.get("ticker", "")).endswith("=F")):
+        raise ValueError(f"Undocumented non-futures candle anomalies: {symbol}")
+    if series == "primary" and invalid_candles != coverage.get("invalidCandles", 0):
+        raise ValueError(f"Source-history invalid-candle count mismatch: {symbol}")
+
+
 def _prepare_history(path: Path) -> None:
     """Split generated market snapshots into content-addressed, on-demand assets."""
     html = path.read_text(encoding="utf-8")
@@ -102,7 +142,7 @@ def _prepare_history(path: Path) -> None:
                 continue
             expected = f"./history-profiles/{symbol}-{key}.json"
             allowed = {"1d-6m", "1d-1y", "1w-6m", "1w-1y"}
-            if symbol in {"BTC", "ETH"}:
+            if asset.get("grp") == "crypto":
                 allowed |= {"usd-" + k for k in allowed}
             if key not in allowed or descriptor["url"] != expected:
                 raise ValueError(f"Invalid profile path: {symbol}/{key}")
@@ -121,6 +161,21 @@ def _prepare_history(path: Path) -> None:
             name = f"{symbol}-{key}-{digest}.json"
             (target / name).write_bytes(payload)
             descriptor["url"] = "./history-profiles/" + name
+        for series, descriptor in asset.get("sourceHistory", {}).items():
+            if series not in {"primary", "usd"}:
+                raise ValueError(f"Invalid source-history series: {symbol}/{series}")
+            expected = f"./history-profiles/{symbol}-{series}-source-history.json"
+            if descriptor.get("url") != expected:
+                raise ValueError(f"Invalid source-history path: {symbol}")
+            payload = (ROOT / "prototype" / "history-profiles" / f"{symbol}-{series}-source-history.json").read_bytes()
+            source = json.loads(payload)
+            _validate_source_history(symbol, asset.get("grp"), series, descriptor, source)
+            target = path.parent / "history-profiles"
+            target.mkdir(exist_ok=True)
+            digest = hashlib.sha256(payload).hexdigest()[:12]
+            name = f"{symbol}-{series}-source-history-{digest}.json"
+            (target / name).write_bytes(payload)
+            descriptor["url"] = "./history-profiles/"+name
     body = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     html = html[:match.start(2)] + body + html[match.end(2):]
     path.write_text(html, encoding="utf-8")

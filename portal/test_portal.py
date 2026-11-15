@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from portal.build_site import build
+from portal.build_site import build, _validate_source_history
 
 
 class PortalBuildTests(unittest.TestCase):
@@ -143,7 +143,7 @@ class PortalBuildTests(unittest.TestCase):
             self.assertEqual(snapshot["asof"], asset["health"]["asofTimestamp"])
             self.assertIn(hashlib.sha256(payload).hexdigest()[:12], descriptor["url"])
             self.assertEqual(snapshot["current"]["end"], len(snapshot["current"]["bars"])-1)
-            self.assertEqual(len(asset["profiles"]), 8 if symbol in {"BTC", "ETH"} else 4)
+            self.assertEqual(len(asset["profiles"]), 8 if asset.get("grp") == "crypto" else 4)
             for key, profile in asset["profiles"].items():
                 self.assertNotIn("cases", profile)
                 payload = (page.parent / profile["url"]).read_bytes()
@@ -151,6 +151,11 @@ class PortalBuildTests(unittest.TestCase):
                 self.assertIn(hashlib.sha256(payload).hexdigest()[:12], profile["url"])
                 self.assertEqual((long["symbol"], long["profileKey"], long["asof"], long["window"]),
                                  (symbol, key, profile["asof"], profile["window"]))
+            for series, archive in asset.get("sourceHistory", {}).items():
+                payload = (page.parent / archive["url"]).read_bytes()
+                self.assertIn(hashlib.sha256(payload).hexdigest()[:12], archive["url"])
+                self.assertIn(f"{symbol}-{series}-source-history-", archive["url"])
+                _validate_source_history(symbol, asset.get("grp"), series, archive, json.loads(payload))
         for name in ("history-replay.js", "history-replay-model.js", "history-replay.css",
                      "vendor/lightweight-charts/lightweight-charts.standalone.production.js",
                      "vendor/lightweight-charts/LICENSE", "vendor/lightweight-charts/NOTICE"):
@@ -468,6 +473,69 @@ class PortalBuildTests(unittest.TestCase):
             path.read_text(encoding="utf-8")
             for path in (self.site / "flow" / "assets").glob("*.js")
         )
+
+
+
+
+class SourceHistoryValidationTests(unittest.TestCase):
+    def fixture(self, series="primary", group="crypto"):
+        source = {"symbol": "BTC", "interval": "1d", "source": "Coin Metrics" if series == "usd" else ("Binance" if group == "crypto" else "Yahoo Finance"),
+                  "dataKind": "close-only" if series == "usd" else "ohlcv", "ticker": "BTC / USD", "generatedAt": "2026-11-15T00:00:00Z",
+                  "coverage": {"first": "2020-01-01", "last": "2020-01-02", "bars": 2},
+                  "bars": [[1577836800, 10, 12, 9, 11, 100], [1577923200, 11, 13, 10, 12, 90]]}
+        if series == "usd":
+            source["bars"] = [[r[0], None, None, None, r[4], None] for r in source["bars"]]
+        descriptor = {**{k: source[k] for k in ("source", "dataKind", "generatedAt")}, **source["coverage"]}
+        return source, descriptor
+
+    def test_valid_primary_and_reference_archives(self):
+        for series, group in (("primary", "crypto"), ("primary", "equity"), ("usd", "crypto")):
+            source, descriptor = self.fixture(series, group)
+            _validate_source_history("BTC", group, series, descriptor, source)
+
+    def test_rejects_mismatched_descriptor_and_invented_reference_candles(self):
+        for field in ("source", "dataKind", "generatedAt", "first", "last", "bars"):
+            source, descriptor = self.fixture()
+            descriptor[field] = "wrong"
+            with self.assertRaises(ValueError):
+                _validate_source_history("BTC", "crypto", "primary", descriptor, source)
+        source, descriptor = self.fixture("usd")
+        source["bars"][0][1] = 10
+        with self.assertRaises(ValueError):
+            _validate_source_history("BTC", "crypto", "usd", descriptor, source)
+
+    def test_rejects_nonpositive_reference_closes(self):
+        for close in (0, -1):
+            source, descriptor = self.fixture("usd")
+            source["bars"][0][4] = close
+            with self.assertRaises(ValueError):
+                _validate_source_history("BTC", "crypto", "usd", descriptor, source)
+
+    def test_rejects_invalid_primary_rows(self):
+        for alter in (lambda r: r.__setitem__(1, None), lambda r: r.__setitem__(2, 1),
+                      lambda r: r.__setitem__(4, float("nan")), lambda r: r.__setitem__(5, -1)):
+            source, descriptor = self.fixture()
+            alter(source["bars"][0])
+            with self.assertRaises(ValueError):
+                _validate_source_history("BTC", "crypto", "primary", descriptor, source)
+        source, descriptor = self.fixture()
+        source["bars"][1][0] = source["bars"][0][0]
+        with self.assertRaises(ValueError):
+            _validate_source_history("BTC", "crypto", "primary", descriptor, source)
+
+    def test_raw_anomalies_require_exact_disclosed_count(self):
+        source, descriptor = self.fixture(group="futures")
+        source["ticker"] = "NQ=F"
+        source["bars"][0][2] = 1
+        source["coverage"]["invalidCandles"] = 1
+        _validate_source_history("BTC", "futures", "primary", descriptor, source)
+        source["coverage"]["invalidCandles"] = 2
+        with self.assertRaises(ValueError):
+            _validate_source_history("BTC", "futures", "primary", descriptor, source)
+        source["coverage"]["invalidCandles"] = 1
+        source["ticker"] = "AAPL"
+        with self.assertRaises(ValueError):
+            _validate_source_history("BTC", "futures", "primary", descriptor, source)
 
 
 if __name__ == "__main__":

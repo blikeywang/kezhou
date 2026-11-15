@@ -158,7 +158,7 @@ def build_profile(symbol, meta, history, key, config, now):
 
 
 def refresh_profiles(symbol, meta, history, previous, now, output_dir=PROFILE_DIR, series="primary"):
-    if series not in {"primary", "usd"} or (series == "usd" and symbol not in {"BTC", "ETH"}):
+    if series not in {"primary", "usd"} or (series == "usd" and meta["grp"] != "crypto"):
         raise ValueError("Unknown historical series")
     profiles = {}
     for base_key, config in configurations(meta["grp"]).items():

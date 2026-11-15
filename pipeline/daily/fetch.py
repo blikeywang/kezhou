@@ -31,6 +31,7 @@ LAST_HISTORY = {}
 YAHOO_BASES = ("https://query1.finance.yahoo.com", "https://query2.finance.yahoo.com")
 DAILY_HISTORY_START = "1900-01-01"
 CRYPTO_HISTORY_START = "2017-01-01"
+REFERENCE_ASSETS = frozenset(s.lower() for s in CRYPTO)
 COINMETRICS_ENDPOINT = "https://community-api.coinmetrics.io/v4/timeseries/asset-metrics"
 
 
@@ -216,10 +217,10 @@ def fetch_yahoo(symbol, rng=None, interval="1d", start=DAILY_HISTORY_START):
 
 def fetch_coinmetrics(asset, now=None):
     """Independent USD close history, never spliced into exchange OHLCV."""
-    if asset not in {"btc", "eth"}:
+    if asset not in REFERENCE_ASSETS:
         raise ValueError("Unsupported reference asset")
     now = time.time() if now is None else now
-    start = "2009-01-03" if asset == "btc" else "2015-07-30"
+    start = "2009-01-03"  # request source history, not a claimed trading inception
     params = dict(assets=asset, metrics="PriceUSD", frequency="1d", start_time=start, page_size=10000)
     url = COINMETRICS_ENDPOINT + "?" + urlencode(params)
     seen, rows, missing, previous = set(), [], 0, None

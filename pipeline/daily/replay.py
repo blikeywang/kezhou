@@ -5,6 +5,7 @@ import math
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 from build import CFG
+from shape_match import build_shape_matches
 
 
 def candle_valid(row):
@@ -72,5 +73,7 @@ def build_replay(symbol, group, prim, ts, close, history, source, ticker, config
         "source": source, "ticker": ticker, "asof": ts[-1], "window": window,
         "horizons": cfg["H"], "current": segment(n - 1, "current"), "cases": cases,
         "annualCases": annual_cases,
+        "shapeMatches": build_shape_matches(rows, window, horizon, history["timeZone"],
+            interval or ("4h" if group == "crypto" else "1d"), group, history.get("sessionEnds")),
         "methods": list(cases), "annualYearBasis": annual_year_basis,
     }

@@ -81,3 +81,6 @@
 @media(min-width:1600px){.hr-chart-wrap{height:380px}}
 @media(max-width:1100px){.history-replay{scroll-margin-top:180px}.hr-chart-grid{grid-template-columns:minmax(0,1fr)}.hr-pane+.hr-pane{border-left:0;border-top:1px solid var(--line2)}.hr-chart-wrap{height:290px}}
 @media(max-width:600px){.hr-chart-wrap{height:260px}.hr-heading{align-items:flex-start}.hr-heading small{flex-basis:100%}.hr-tools{gap:6px}.hr-select{font-size:12px}.hr-case-label{flex-basis:100%}.hr-ohlc{min-height:36px;font-size:12px}.hr-footer{line-height:1.7}.hr-progress{min-width:78px}.hr-playback{gap:5px}.hr-playback .hr-icon{width:30px;height:32px;flex-basis:30px}.hr-status{align-items:flex-start}}
+
+.hr-shape-info{font-size:12px;line-height:1.7;color:var(--ink2);padding:6px 0;overflow-wrap:anywhere}
+.hr-shape-info:empty{display:none}

@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
-import build, inject, replay, cycles, history_coverage  # noqa: E402
+import build, inject, replay, cycles, history_coverage, fetch  # noqa: E402
 
 UI_PATCH = os.path.join(os.path.dirname(__file__), "ui-explanations.patch")
 UI_MARKER = 'data-methods-version="2026-07-10"'
@@ -100,7 +100,7 @@ def get_ohlc(sym, grp, self_test):
             details["profileError"] = str(error).splitlines()[0][:160]
     else:
         details["dailyHistory"] = details["history"]
-    if sym in {"BTC", "ETH"}:
+    if sym in fetch.CRYPTO:
         try:
             details["referenceHistory"] = fetch.fetch_coinmetrics(sym.lower())
         except Exception as error:
@@ -152,6 +152,10 @@ def main(self_test=False):
                 "requestedStart": (fetch_meta.get("history") or {}).get("requestedStart"),
             }
             asset["coverage"] = (fetch_meta.get("history") or {}).get("coverage")
+            # Complete source archives are dated evidence, not live bars. Preserve
+            # their source timestamps until an explicit archive refresh replaces them.
+            if (old_assets.get(sym) or {}).get("sourceHistory"):
+                asset["sourceHistory"] = (old_assets[sym])["sourceHistory"]
             build.attach_previous(asset, old_assets.get(sym))
             assets[sym] = asset
             prims[sym] = P; seasons[sym] = S; grp_by[sym] = grp
@@ -186,7 +190,7 @@ def main(self_test=False):
         for sym, asset in assets.items():
             asset["profiles"] = cycles.refresh_profiles(sym, names[sym], daily_history.get(sym),
                 (old_assets.get(sym) or {}).get("profiles"), now)
-            if sym in {"BTC", "ETH"}:
+            if sym in fetch.CRYPTO:
                 asset["profiles"].update(cycles.refresh_profiles(sym, names[sym], reference_history.get(sym),
                     (old_assets.get(sym) or {}).get("profiles"), now, series="usd"))
             asset["dailyCoverage"] = {}

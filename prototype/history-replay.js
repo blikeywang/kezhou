@@ -101,7 +101,7 @@
         const years = Object.keys(this.data.annualCases || {});
         if (!years.includes(this.state.year)) this.state.year = String(this.data.verdict?.leader || (years.includes('2018') ? '2018' : years.at(-1) || ''));
         if (this.state.method === 'year' && !years.length) this.state.method = 'corr';
-        if (this.state.method !== 'year' && !this.data.cases[this.state.method]) this.state.method = 'corr';
+        if (this.state.method !== 'year' && !M.caseList(this.data, this.state.method, this.state.year).length) this.state.method = 'corr';
         this.state.index = Math.min(this.state.index, this.cases.length - 1);
         this.state.reveal = M.clampReveal(this.selected, this.state.reveal);
         this.render();
@@ -209,6 +209,9 @@
           t('各年份内的形状相似案例', 'Correlation cases within each year') + '">' + t('按年核对', 'By year') + '</button>' : '') + '</div>' +
         (Object.keys(this.data.annualCases || {}).length ? '<select class="hr-select" data-control="year" aria-label="' + t('历史年份', 'Historical year') + '" hidden>' +
           Object.keys(this.data.annualCases).sort().reverse().map(year => '<option value="' + year + '">' + year + '</option>').join('') + '</select>' : '') +
+        (this.data.shapeMatches ? '<div class="hr-segment" role="group" aria-label="' + t('补充算法','Supplemental methods') + '">' +
+          this.data.shapeMatches.methods.filter(m => M.caseList(this.data,m).length).map(m => '<button type="button" data-method="' + m + '">' +
+            escape(({elastic:t('弹性形态','Elastic shape'),returns:t('涨跌节奏','Returns'),pivots:t('拐点结构','Pivots')})[m]) + '</button>').join('') + '</div>' : '') +
         '<label class="hr-case-label"><select class="hr-select" data-control="case" aria-label="' + t('相似历史案例', 'Historical case') + '"></select></label>' +
         this.icon('previous', 'chevron-left', t('上一个案例', 'Previous case')) +
         this.icon('next', 'chevron-right', t('下一个案例', 'Next case')) + '</div>' +
@@ -220,7 +223,7 @@
         this.icon('volume', 'chart-bar', t('成交量', 'Volume')) +
         this.icon('reset', 'focus-centered', t('重置视野', 'Reset view')) +
         this.icon('fullscreen', 'arrows-maximize', t('全屏', 'Fullscreen')) + '</div>' +
-        '<div class="hr-scope" role="status"></div>' +
+        '<div class="hr-scope" role="status"></div><div class="hr-shape-info" role="status"></div>' +
         '<div class="hr-chart-grid">' + pane('current', t('当前窗口', 'Current window')) + pane('history', t('历史案例', 'Historical case')) + '</div>' +
         '<div class="hr-playback"><span class="hr-playback-label">' + t('历史后续走势', 'Historical continuation') + '</span>' +
         this.icon('rewind', 'player-skip-back', t('回到匹配终点', 'Back to match end')) +
@@ -283,7 +286,7 @@
       this.updateControls();
     }
     selectCase(method, index) {
-      if (!['corr','dtw','year'].includes(method)) return;
+      if (!['corr','dtw','year','elastic','returns','pivots'].includes(method)) return;
       if (this.data && !M.caseList(this.data, method, this.state.year).length) return;
       this.stop();
       this.state.method = method;
@@ -298,6 +301,7 @@
       const color = key => styles.getPropertyValue(key).trim();
       this.charts = [this.data.current, this.selected].map((segment, index) => {
         const pane = this.root.querySelectorAll('.hr-pane')[index];
+        pane.querySelector('.hr-badge').textContent = this.t('匹配区间','Matched window') + ' · ' + (segment.end-segment.start+1) + this.t(' 根',' bars');
         pane.querySelector('.hr-dates').textContent = this.date(segment.startTime) + ' → ' +
           (this.data.interval === '1w' ? segment.endDate : this.date(segment.endTime));
         const seriesData = M.seriesData(segment, index ? this.state.reveal : 0, this.state.indexed);
@@ -337,7 +341,7 @@
           this.shade(item);
           if (!range || !this.state.linked || this.syncing) return;
           const other = this.charts[1 - index];
-          if (!other) return;
+          if (!other || segment.end-segment.start !== other.segment.end-other.segment.start) return;
           const target = M.linkedRange(range, segment, other.segment);
           const existing = other.chart.timeScale().getVisibleLogicalRange();
           if (existing && Math.abs(target.from-existing.from)<.001 && Math.abs(target.to-existing.to)<.001) return;
@@ -348,7 +352,7 @@
           this.legend(item, rowIndex < 0 ? segment.end + (index ? this.state.reveal : 0) : rowIndex);
           if (!this.state.linked || this.crossSync) return;
           const other = this.charts[1 - index];
-          if (!other) return;
+          if (!other || segment.end-segment.start !== other.segment.end-other.segment.start) return;
           this.crossSync = true;
           const target = rowIndex - segment.start + other.segment.start;
           const last = other.segment.end + (other.index ? this.state.reveal : 0);
@@ -374,7 +378,7 @@
       const factor = this.state.indexed ? 100 / item.segment.bars[item.segment.start][4] : 1;
       item.pane.querySelector('.hr-ohlc').textContent = this.date(row[0]) + '  ' +
         (this.data.dataKind === 'close-only' ? (this.state.indexed ? 'Index C ' : 'USD C ') + this.fmt(row[4]*factor) :
-          ['O','H','L','C'].map((key, i) => key + ' ' + this.fmt(row[i+1] == null ? null : row[i+1]*factor)).join('  ')) +
+          (this.state.indexed ? this.t('指数 ','Index ') : '') + ['O','H','L','C'].map((key, i) => key + ' ' + this.fmt(row[i+1] == null ? null : row[i+1]*factor)).join('  ')) +
         (row[5] == null ? '' : '  V ' + this.fmt(row[5]));
     }
     shade(item) {
@@ -429,7 +433,7 @@
       if (select.dataset.method !== caseKey) {
         select.innerHTML = this.cases.map((s, i) =>
           '<option value="' + i + '">#' + (i+1) + ' · ' +
-          escape(this.data.interval === '1w' ? s.endDate : this.date(s.endTime)) + ' · ' + (this.state.method !== 'dtw' ? 'corr ' + s.score.toFixed(3) : 'DTW ' + s.score.toFixed(2)) + '</option>').join('');
+          escape(this.data.interval === '1w' ? s.endDate : this.date(s.endTime)) + ' · ' + (s.scores ? this.t('相似度 ','Similarity ') + s.score.toFixed(1) + '/100 · ' + s.window + this.t(' 根',' bars') : this.state.method !== 'dtw' ? 'corr ' + s.score.toFixed(3) : 'DTW ' + s.score.toFixed(2)) + '</option>').join('');
         select.dataset.method = caseKey;
       }
       select.value = String(this.state.index);
@@ -457,10 +461,21 @@
         this.t('距匹配终点 ','Since match end ') + (ret>=0?'+':'') + (ret*100).toFixed(2) + '% · ' +
         this.date(this.selected.bars[this.selected.end+this.state.reveal][0]);
       query('.hr-result').className = 'hr-result' + (ret == null ? '' : ret >= 0 ? ' up' : ' dn');
+      const supplemental = !!this.selected.scores;
+      query('.hr-shape-info').textContent = supplemental ?
+        ['elastic','returns','pivots'].map(m => ({elastic:this.t('弹性形态','Elastic shape'),returns:this.t('涨跌节奏','Returns'),pivots:this.t('拐点结构','Pivots')})[m] + ': ' +
+          (this.selected.scores[m] == null ? this.t('不可用','Unavailable') : this.selected.scores[m].toFixed(1) + '/100')).join(' · ') +
+        this.t('。各分数独立，不是概率；不取最高分当胜率。候选长度可不同，后续不参与排名；不提供综合胜率。仅比较收盘路径，有限预筛选并非全历史穷举；拐点比较不是双顶等命名形态识别。页面其他统计仍属原 corr／DTW，不是本组算法结果。',' Independent scores, not probabilities. No maximum-score win rate. Candidate lengths vary; continuation does not affect ranking; no combined win rate. Close-path only, bounded prefilters, not exhaustive history search or a named double-top classifier. Other page statistics remain legacy corr/DTW, not these algorithms.') : (!this.data.shapeMatches ? this.t('补充算法待同批行情重建／未生成；当前仍显示已核验的原算法证据。','Supplemental algorithms await a same-snapshot rebuild / have not been generated. Verified legacy evidence remains available.') : '');
+      const stats = query('.hr-statistics');
+      if (stats) stats.hidden = supplemental;
+      const unequal = this.selected.end-this.selected.start !== this.data.current.end-this.data.current.start;
+      query('[data-action=link]').disabled = unequal;
       const warnings = [];
+      if (unequal) warnings.push(this.t('不同长度片段按各自真实时间显示，暂停两图位置联动；不是逐点时间扭曲映射。','Unequal windows retain real timestamps. Position linking is disabled; charts are not pointwise warped.'));
+
       if (this.data.interval === '4h') warnings.push(this.t(
-        '匹配窗口：60 根四小时 K 线，约 10 天；局部形态相似不代表整轮牛熊周期相同。',
-        'Matching window: 60 four-hour bars, about 10 days. Local similarity does not establish an equivalent market cycle.'));
+        '当前参考窗口：60 根四小时 K 线，约 10 天；局部形态相似不代表整轮牛熊周期相同。',
+        'Current reference window: 60 four-hour bars, about 10 days. Local similarity does not establish an equivalent market cycle.'));
       if (this.data.dataKind === 'close-only') warnings.push(this.t(
         'USD 参考收盘线，无开高低和成交量；日期标注当日区间，收盘值在次日 UTC 00:00 确定，不是交易所 K 线。',
         'USD reference closes without O/H/L or volume. Dates label the day; its close is fixed at the following UTC midnight. Not exchange candles.'));
