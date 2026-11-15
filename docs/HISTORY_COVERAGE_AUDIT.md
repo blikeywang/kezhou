@@ -1,6 +1,6 @@
 # Historical Data Coverage Audit
 
-Generated: 2026-11-15T03:59:20Z
+Generated: 2026-11-15T07:11:11Z
 
 Fresh data is not proof of complete lifetime history. No series is certified as fully verified.
 Network genesis is not a market-price start. Provider firstTradeDate is not independent IPO evidence.
@@ -12,28 +12,28 @@ US ADRs, SPAC predecessors, when-issued trades and corporate reorganizations may
 
 | Symbol | Series | Actual first | Actual last | Bars | Verified lifecycle reference | Start status | Suspected gaps | OHLC-invalid bars |
 |---|---|---|---|---:|---|---|---:|---:|
-| BTC | base: Binance 4h | 2017-08-17 | 2026-11-14 | 20245 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
+| BTC | base: Binance 4h | 2017-08-17 | 2026-11-15 | 20246 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 16 | 0 |
 | BTC | primary: Binance 1d | 2017-08-17 | 2026-11-14 | 3377 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | 0 |
 | BTC | usd: Coin Metrics 1d | 2010-07-18 | 2026-11-14 | 5964 | [2009-01-03 (network)](https://github.com/bitcoin/bips/blob/master/bip-0085.mediawiki) | network-not-price | 0 | n/a (close-only) |
-| ETH | base: Binance 4h | 2017-08-17 | 2026-11-14 | 20245 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
+| ETH | base: Binance 4h | 2017-08-17 | 2026-11-15 | 20246 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 16 | 0 |
 | ETH | primary: Binance 1d | 2017-08-17 | 2026-11-14 | 3377 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | 0 |
 | ETH | usd: Coin Metrics 1d | 2015-08-08 | 2026-11-14 | 4117 | [2015-07-30 (network)](https://blog.ethereum.org/2015/07/30/ethereum-launches) | network-not-price | 0 | n/a (close-only) |
-| SOL | base: Binance 4h | 2020-08-11 | 2026-11-14 | 13721 | unverified | unverified | 0 | 0 |
+| SOL | base: Binance 4h | 2020-08-11 | 2026-11-15 | 13722 | unverified | unverified | 0 | 0 |
 | SOL | primary: Binance 1d | 2020-08-11 | 2026-11-14 | 2287 | unverified | unverified | 0 | 0 |
 | SOL | usd: Coin Metrics 1d | 2020-04-10 | 2026-11-14 | 2410 | unverified | unverified | 0 | n/a (close-only) |
-| BNB | base: Binance 4h | 2017-11-06 | 2026-11-14 | 19760 | unverified | unverified | 16 | 0 |
+| BNB | base: Binance 4h | 2017-11-06 | 2026-11-15 | 19761 | unverified | unverified | 16 | 0 |
 | BNB | primary: Binance 1d | 2017-11-06 | 2026-11-14 | 3296 | unverified | unverified | 0 | 0 |
 | BNB | usd: Coin Metrics 1d | 2017-07-15 | 2026-11-14 | 3410 | unverified | unverified | 0 | n/a (close-only) |
-| XRP | base: Binance 4h | 2018-05-04 | 2026-11-14 | 18691 | unverified | unverified | 9 | 0 |
+| XRP | base: Binance 4h | 2018-05-04 | 2026-11-15 | 18692 | unverified | unverified | 9 | 0 |
 | XRP | primary: Binance 1d | 2018-05-04 | 2026-11-14 | 3117 | unverified | unverified | 0 | 0 |
 | XRP | usd: Coin Metrics 1d | 2014-08-15 | 2026-11-14 | 4475 | unverified | unverified | 0 | n/a (close-only) |
-| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-14 | 16135 | unverified | unverified | 2 | 0 |
+| DOGE | base: Binance 4h | 2019-07-05 | 2026-11-15 | 16136 | unverified | unverified | 2 | 0 |
 | DOGE | primary: Binance 1d | 2019-07-05 | 2026-11-14 | 2690 | unverified | unverified | 0 | 0 |
 | DOGE | usd: Coin Metrics 1d | 2014-01-23 | 2026-11-14 | 4679 | unverified | unverified | 0 | n/a (close-only) |
-| ADA | base: Binance 4h | 2018-04-17 | 2026-11-14 | 18794 | unverified | unverified | 9 | 0 |
+| ADA | base: Binance 4h | 2018-04-17 | 2026-11-15 | 18795 | unverified | unverified | 9 | 0 |
 | ADA | primary: Binance 1d | 2018-04-17 | 2026-11-14 | 3134 | unverified | unverified | 0 | 0 |
 | ADA | usd: Coin Metrics 1d | 2017-12-01 | 2026-11-14 | 3271 | unverified | unverified | 0 | n/a (close-only) |
-| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-14 | 13469 | unverified | unverified | 0 | 0 |
+| AVAX | base: Binance 4h | 2020-09-22 | 2026-11-15 | 13470 | unverified | unverified | 0 | 0 |
 | AVAX | primary: Binance 1d | 2020-09-22 | 2026-11-14 | 2245 | unverified | unverified | 0 | 0 |
 | AVAX | usd: Coin Metrics 1d | 2020-09-23 | 2026-11-14 | 2244 | unverified | unverified | 0 | n/a (close-only) |
 | LINK | base: Binance 4h | 2019-01-16 | 2026-11-15 | 17154 | unverified | unverified | 5 | 0 |
