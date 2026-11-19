@@ -85,7 +85,7 @@ Use exactly these in navigation, page bar, `<title>`, home cards, the contracts 
 - Interface text is Chinese. Engine codes stay in the data (`FRESH`, `STALE`, `MISSING`, `LOWER_TAIL_RECLAIMED`…) and are translated at render time (最新 / 过期 / 缺失…). Product names, tickers and standard terms (ATR, IV, Delta, P/C) stay as they are.
 - A daily product is dated by its **data day** (`数据日 11-09`), from `dataDate` in the status file — not by a clock time converted to the visitor's zone.
 - Never hide missing, stale or partial data to make a page look clean. Say what is old and how old: `比报告早 62 天`, `中间 61 个交易日没有运行`, `中断 48 天`.
-- A day that was not run is shown as missing, never as "0 changes" or filled from later data.
+- A day that was not run is shown as missing, never as "0 changes" or filled from later data. Whether a day without a snapshot was off the schedule or missed is read from the data (TailTrend index status: `NOT_SCHEDULED` → `按计划不运行`, `MISSING` → `没有运行`; `tailtrend-display.mjs`), not inferred from how long the gap is.
 - When data is stale, action wording changes: links read `回看上次结果`, action columns read `数据过期，暂不判断`.
 - Times carry their clock: market data on the exchange's (`11-09 16:00 美东`), "generated at" on the visitor's (`11-10 13:32`, labelled 你的本地时间 where it matters). No raw ISO strings (`2026-11-10T05:32:21.593Z`) in page text.
 - A fact that is the same for every row is said once above the table (`表中 50 只的报价都没有来源时间`); rows carry it only when they differ. Long per-symbol check lists are grouped by problem, with every symbol still listed under its group.

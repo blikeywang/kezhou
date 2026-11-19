@@ -18,8 +18,18 @@ import {
   sourceStatusLabel,
   timePolicyLines,
 } from "./vendor/incomeos/incomeos-display.mjs";
+import {
+  auditBlocks,
+  auditSampleWording,
+  comparisonNote,
+  dayKind,
+  gapBetween,
+  gapFromContext,
+  newestScheduled,
+} from "./vendor/tailtrend/tailtrend-display.mjs";
 
 const published = JSON.parse(readFileSync(new URL("./vendor/incomeos/data/incomeos-full.json", import.meta.url), "utf8"));
+const readTailTrend = (name) => JSON.parse(readFileSync(new URL(`./vendor/tailtrend/data/${name}`, import.meta.url), "utf8"));
 
 function researchSnapshot(overrides = {}) {
   return {
@@ -141,4 +151,102 @@ test("status and policy labels are Chinese and total", () => {
   assert.equal(timePolicyLines(undefined).length, 0);
   assert.equal(timePolicyLines({ generation: "x", reference: "y", unknownKey: "z" }).length, 2);
   for (const line of timePolicyLines(published.sourceTimePolicy)) assert.match(line, /[一-鿿]/);
+});
+
+// ---- TailTrend: the run calendar (which days have a snapshot, which are off the schedule) ----
+
+// Newest first, as in index.json: a weekly run, three days off the schedule, the run before it,
+// two missed runs, and the first snapshot.
+const weeklyIndex = [
+  { dataAsOf: "2026-11-13", status: "COMPLETE", transitions: [{ symbol: "SPY", from: "A", to: "B" }] },
+  { dataAsOf: "2026-11-12", status: "NOT_SCHEDULED", transitions: [] },
+  { dataAsOf: "2026-11-11", status: "NOT_SCHEDULED", transitions: [] },
+  { dataAsOf: "2026-11-10", status: "NOT_SCHEDULED", transitions: [] },
+  { dataAsOf: "2026-11-09", status: "COMPLETE", transitions: [] },
+  { dataAsOf: "2026-11-06", status: "MISSING", transitions: [] },
+  { dataAsOf: "2026-11-05", status: "MISSING", transitions: [] },
+  { dataAsOf: "2026-11-04", status: "COMPLETE", transitions: [] },
+];
+
+test("days off the weekly schedule are one planned block, never a run with 0 changes", () => {
+  const blocks = auditBlocks(weeklyIndex);
+  assert.deepEqual(blocks.map((block) => block.kind), ["run", "planned", "run", "missing", "run"]);
+  assert.deepEqual(blocks[1], { kind: "planned", from: "2026-11-10", to: "2026-11-12", count: 3 });
+  assert.deepEqual(blocks[3], { kind: "missing", from: "2026-11-05", to: "2026-11-06", count: 2 });
+  for (const block of blocks.filter((item) => item.kind === "run")) {
+    assert.equal(dayKind(weeklyIndex.find((entry) => entry.dataAsOf === block.date)), "run");
+  }
+});
+
+test("a run is compared with the previous published snapshot, not with a day that has none", () => {
+  const [latest, , earlier, , first] = auditBlocks(weeklyIndex);
+  assert.equal(latest.previous, "2026-11-09");
+  assert.equal(comparisonNote(latest.previous, latest.gap), "与上一份快照（2026-11-09）相比；每周一份");
+  assert.equal(earlier.previous, "2026-11-04");
+  assert.equal(comparisonNote(earlier.previous, earlier.gap), "与上一份快照（2026-11-04）相比；中间 2 个交易日没有运行");
+  assert.equal(first.previous, null);
+  assert.equal(comparisonNote(first.previous, first.gap), "这是第一份快照，没有可比的上一份");
+  assert.equal(comparisonNote("2026-11-12", { missing: 0, planned: 0 }), "与上一份快照（2026-11-12）相比");
+});
+
+test("a missed weekly run is said as missed even when the days around it are off the schedule", () => {
+  const index = [
+    { dataAsOf: "2026-11-27", status: "COMPLETE" },
+    { dataAsOf: "2026-11-25", status: "NOT_SCHEDULED" },
+    { dataAsOf: "2026-11-24", status: "NOT_SCHEDULED" },
+    { dataAsOf: "2026-11-23", status: "NOT_SCHEDULED" },
+    { dataAsOf: "2026-11-20", status: "MISSING" },
+    { dataAsOf: "2026-11-19", status: "NOT_SCHEDULED" },
+    { dataAsOf: "2026-11-13", status: "COMPLETE" },
+  ];
+  assert.deepEqual(gapBetween(index, "2026-11-13", "2026-11-27"), { missing: 1, planned: 4 });
+  const blocks = auditBlocks(index);
+  assert.deepEqual(blocks.map((block) => `${block.kind}:${block.count ?? ""}`), ["run:", "planned:3", "missing:1", "planned:1", "run:"]);
+  assert.match(comparisonNote(blocks[0].previous, blocks[0].gap), /中间有 1 个应运行的交易日没有运行/);
+  // A missed day on top of the index is the newest scheduled day; a day off the schedule is not.
+  assert.equal(newestScheduled([{ dataAsOf: "2026-12-01", status: "NOT_SCHEDULED" }, ...index]).dataAsOf, "2026-11-27");
+  assert.equal(newestScheduled([{ dataAsOf: "2026-12-04", status: "MISSING" }, ...index]).status, "MISSING");
+});
+
+test("the snapshot's own gap statement is used only for the comparison it describes", () => {
+  const context = { previousObservationDate: "2026-11-09", plannedNonRunSessions: 3, missingScheduledSessions: 0 };
+  assert.deepEqual(gapFromContext(context, "2026-11-09"), { missing: 0, planned: 3 });
+  assert.equal(gapFromContext(context, "2026-11-06"), null);
+  assert.equal(gapFromContext(undefined, "2026-11-09"), null);
+  assert.equal(gapFromContext({ previousObservationDate: "2026-11-09" }, "2026-11-09"), null);
+});
+
+test("the audit counts observations on the weekly rhythm and trading days otherwise", () => {
+  const weekly = auditSampleWording({ sampleUnit: "signal_observation" });
+  assert.equal(weekly.progress(1), "1/10 期观察");
+  assert.equal(weekly.progress(14), "10/10 期观察");
+  assert.equal(weekly.note, "先积累 5–10 期同版本观察，再看结果");
+  assert.doesNotMatch(weekly.label + weekly.note, /交易日|天/);
+  assert.equal(auditSampleWording({ schedule: { sampleUnit: "signal_observation" } }).label, weekly.label);
+  const daily = auditSampleWording({ daysCollected: 2 });
+  assert.equal(daily.progress(2), "2/10 个交易日");
+  assert.match(daily.note, /5–10 天/);
+});
+
+// Runs against whatever index is currently published. It only checks that the list loses no day
+// and never presents a day without a snapshot as a run — no assumption about which days exist,
+// so a new refresh can never block a publish from here.
+test("the published TailTrend index: every day is in exactly one block, and only runs read as runs", () => {
+  const entries = readTailTrend("index.json").entries ?? [];
+  const blocks = auditBlocks(entries, { limit: Infinity });
+  const covered = blocks.reduce((sum, block) => sum + (block.kind === "run" ? 1 : block.count), 0);
+  assert.equal(covered, entries.length);
+  const runDates = new Set(entries.filter((entry) => dayKind(entry) === "run").map((entry) => entry.dataAsOf));
+  for (const block of blocks) {
+    if (block.kind !== "run") { assert.ok(block.from <= block.to); continue; }
+    assert.ok(runDates.has(block.date), `${block.date} has no snapshot`);
+    if (block.previous) {
+      assert.ok(runDates.has(block.previous), `${block.date} is compared with ${block.previous}, which has no snapshot`);
+      assert.match(comparisonNote(block.previous, block.gap), new RegExp(`^与上一份快照（${block.previous}）相比`));
+    }
+  }
+  const newest = newestScheduled(entries);
+  if (entries.length) assert.notEqual(dayKind(newest ?? entries[0]), "planned", "a day off the schedule is never the newest result");
+  const sample = auditSampleWording(readTailTrend("tailtrend-audit.json"));
+  for (const text of [sample.label, sample.note, sample.progress(1)]) assert.match(text, /[一-鿿]/);
 });
