@@ -1,0 +1,294 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-11-12",
+ "evening": {
+  "date": "2026-11-12",
+  "collected": "2026-11-11 08:16",
+  "offline": true,
+  "classes": [
+   {
+    "name": "美股",
+    "date": "2026-11-09",
+    "temp": "平",
+    "phase": "立春",
+    "change": "不变"
+   },
+   {
+    "name": "加密币",
+    "date": "2026-11-09",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "美国ETF",
+    "date": "2026-11-09",
+    "temp": "平",
+    "phase": "立春",
+    "change": "不变"
+   },
+   {
+    "name": "A股",
+    "date": "2026-11-10",
+    "temp": "凉",
+    "phase": "冬至",
+    "change": "不变"
+   },
+   {
+    "name": "ETF基金",
+    "date": "2026-11-10",
+    "temp": "凉",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "商品期货",
+    "date": "2026-11-10",
+    "temp": "寒",
+    "phase": "立冬",
+    "change": "不变"
+   }
+  ],
+  "warmToHot": [
+   {
+    "group": "ETF基金",
+    "items": []
+   },
+   {
+    "group": "美股",
+    "items": [
+     {
+      "name": "苹果",
+      "symbol": "AAPL",
+      "temp": "热"
+     },
+     {
+      "name": "可口可乐",
+      "symbol": "KO",
+      "temp": "热"
+     },
+     {
+      "name": "Moderna Inc",
+      "symbol": "MRNA",
+      "temp": "热"
+     },
+     {
+      "name": "强生",
+      "symbol": "JNJ",
+      "temp": "热"
+     },
+     {
+      "name": "麦当劳",
+      "symbol": "MCD",
+      "temp": "热"
+     },
+     {
+      "name": "开市客",
+      "symbol": "COST",
+      "temp": "热"
+     },
+     {
+      "name": "赛默飞世尔科技",
+      "symbol": "TMO",
+      "temp": "热"
+     },
+     {
+      "name": "PTC Inc",
+      "symbol": "PTC",
+      "temp": "热"
+     },
+     {
+      "name": "宝洁",
+      "symbol": "PG",
+      "temp": "热"
+     },
+     {
+      "name": "迪士尼",
+      "symbol": "DIS",
+      "temp": "热"
+     },
+     {
+      "name": "摩托罗拉解决方案",
+      "symbol": "MSI",
+      "temp": "热"
+     },
+     {
+      "name": "百思买",
+      "symbol": "BBY",
+      "temp": "热"
+     },
+     {
+      "name": "皇家加勒比邮轮",
+      "symbol": "RCL",
+      "temp": "热"
+     },
+     {
+      "name": "星座品牌-A",
+      "symbol": "STZ",
+      "temp": "热"
+     },
+     {
+      "name": "劳氏",
+      "symbol": "LOW",
+      "temp": "热"
+     },
+     {
+      "name": "Block Inc-A",
+      "symbol": "XYZ",
+      "temp": "热"
+     },
+     {
+      "name": "雅诗兰黛",
+      "symbol": "EL",
+      "temp": "热"
+     },
+     {
+      "name": "Royalty Pharma plc-A",
+      "symbol": "RPRX",
+      "temp": "热"
+     },
+     {
+      "name": "梅特勒-托利多",
+      "symbol": "MTD",
+      "temp": "热"
+     },
+     {
+      "name": "奎斯特诊疗",
+      "symbol": "DGX",
+      "temp": "热"
+     },
+     {
+      "name": "徕博科",
+      "symbol": "LH",
+      "temp": "热"
+     },
+     {
+      "name": "JFrog Ltd",
+      "symbol": "FROG",
+      "temp": "热"
+     },
+     {
+      "name": "Liberty Media Corp Liberty Formula One-C",
+      "symbol": "FWONK",
+      "temp": "热"
+     },
+     {
+      "name": "生化基因",
+      "symbol": "BIIB",
+      "temp": "热"
+     },
+     {
+      "name": "IDEXX实验室",
+      "symbol": "IDXX",
+      "temp": "热"
+     },
+     {
+      "name": "阿斯利康",
+      "symbol": "AZN",
+      "temp": "热"
+     },
+     {
+      "name": "ADT Inc",
+      "symbol": "ADT",
+      "temp": "热"
+     },
+     {
+      "name": "快扣",
+      "symbol": "FAST",
+      "temp": "热"
+     },
+     {
+      "name": "ULTA美妆",
+      "symbol": "ULTA",
+      "temp": "热"
+     },
+     {
+      "name": "Procore Technologies Inc",
+      "symbol": "PCOR",
+      "temp": "热"
+     },
+     {
+      "name": "Hinge Health Inc-A",
+      "symbol": "HNGE",
+      "temp": "热"
+     },
+     {
+      "name": "赛诺菲",
+      "symbol": "SNY",
+      "temp": "热"
+     },
+     {
+      "name": "莫霍克工业",
+      "symbol": "MHK",
+      "temp": "热"
+     },
+     {
+      "name": "Wingstop Inc",
+      "symbol": "WING",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "商品期货",
+    "items": []
+   }
+  ],
+  "s1": [
+   {
+    "symbol": "ALAB",
+    "temp": "平",
+    "phase": "立春",
+    "market": "美股"
+   },
+   {
+    "symbol": "AMZN",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "APH",
+    "temp": "平",
+    "phase": "立春",
+    "market": "美股"
+   },
+   {
+    "symbol": "BTDR",
+    "temp": "平",
+    "phase": "立春",
+    "market": "美股"
+   },
+   {
+    "symbol": "CRM",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "MSTR",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "PDD",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "SHOP",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "NIO",
+    "temp": "凉",
+    "phase": "大寒",
+    "market": "美股"
+   }
+  ]
+ }
+}

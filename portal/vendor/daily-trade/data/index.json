@@ -1,9 +1,169 @@
 {
  "schema": "traderhome_daily_index_v1",
- "exportedAt": "2026-11-10T01:01:42.846Z",
- "sourceStamp": "2026-11-10:bd5b1ec98ab3be3c",
- "latest": "2026-11-10",
+ "exportedAt": "2026-11-19T09:31:11.255Z",
+ "sourceStamp": "2026-11-19:1d7656d1714b0103",
+ "latest": "2026-11-19",
  "days": [
+  {
+   "date": "2026-11-19",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 3,
+    "unconfirmed": 6,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-18",
+   "stance": null,
+   "riskCap": null,
+   "headline": null,
+   "counts": null,
+   "freshness": null,
+   "hasMorning": false,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-17",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 9,
+    "unconfirmed": 0,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-16",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 9,
+    "unconfirmed": 0,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-15",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 9,
+    "unconfirmed": 0,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 0,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-14",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 9,
+    "unconfirmed": 0,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 0,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-13",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 9,
+    "unconfirmed": 0,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 2,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-12",
+   "stance": null,
+   "riskCap": null,
+   "headline": null,
+   "counts": null,
+   "freshness": null,
+   "hasMorning": false,
+   "hasEvening": true
+  },
+  {
+   "date": "2026-11-11",
+   "stance": "防御等待",
+   "riskCap": 0.25,
+   "headline": "市场风险开关要求将标准风险倍率上限降至 0.25；冲浪形成中 AMZN.US，尚未通过下一份S1快照与守位确认，不按原始B开仓；趋势侧偏暖大类为 无，趋势侧偏冷大类为 商品期货、…",
+   "counts": {
+    "buy": 0,
+    "sell": 0,
+    "divergence": 9,
+    "unconfirmed": 0,
+    "buyPoints": 9,
+    "surfConfirmed": 0
+   },
+   "freshness": {
+    "fresh": 3,
+    "total": 10
+   },
+   "hasMorning": true,
+   "hasEvening": true
+  },
   {
    "date": "2026-11-10",
    "stance": "防御等待",
@@ -1194,5 +1354,30 @@
    "hasMorning": true,
    "hasEvening": true
   }
- ]
+ ],
+ "archiveImport": {
+  "mode": "existing_reports_only",
+  "dates": [
+   "2026-11-11",
+   "2026-11-12",
+   "2026-11-13",
+   "2026-11-14",
+   "2026-11-15",
+   "2026-11-16",
+   "2026-11-17",
+   "2026-11-18",
+   "2026-11-19"
+  ],
+  "preservedExistingDays": 60,
+  "preserved": [
+   "latest-extras.json",
+   "trend-heatmap.json"
+  ],
+  "sanitizedDiagnostic": {
+   "date": "2026-11-13",
+   "field": "morning.gaps[10]",
+   "reason": "local runtime path removed; scan-failure warning retained"
+  },
+  "stampBasis": "archive-only sanitized day payloads, not a refresh of source datasets"
+ }
 }

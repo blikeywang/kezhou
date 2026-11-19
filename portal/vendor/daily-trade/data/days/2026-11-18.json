@@ -1,0 +1,164 @@
+{
+ "schema": "traderhome_daily_report_v1",
+ "date": "2026-11-18",
+ "evening": {
+  "date": "2026-11-18",
+  "collected": "2026-11-13 08:13",
+  "offline": true,
+  "classes": [
+   {
+    "name": "美股",
+    "date": "2026-11-12",
+    "temp": "平",
+    "phase": null,
+    "change": "平/立春 → 平"
+   },
+   {
+    "name": "加密币",
+    "date": "2026-11-11",
+    "temp": "平",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "美国ETF",
+    "date": "2026-11-12",
+    "temp": "平",
+    "phase": null,
+    "change": "平/立春 → 平"
+   },
+   {
+    "name": "A股",
+    "date": "2026-11-12",
+    "temp": "凉",
+    "phase": "冬至",
+    "change": "不变"
+   },
+   {
+    "name": "ETF基金",
+    "date": "2026-11-12",
+    "temp": "凉",
+    "phase": null,
+    "change": "不变"
+   },
+   {
+    "name": "商品期货",
+    "date": "2026-11-12",
+    "temp": "凉",
+    "phase": "立冬",
+    "change": "寒/立冬 → 凉/立冬"
+   }
+  ],
+  "warmToHot": [
+   {
+    "group": "ETF基金",
+    "items": []
+   },
+   {
+    "group": "美股",
+    "items": [
+     {
+      "name": "强生",
+      "symbol": "JNJ",
+      "temp": "热"
+     },
+     {
+      "name": "德州仪器",
+      "symbol": "TXN",
+      "temp": "热"
+     },
+     {
+      "name": "Talen Energy Corp",
+      "symbol": "TLN",
+      "temp": "热"
+     },
+     {
+      "name": "固安捷",
+      "symbol": "GWW",
+      "temp": "热"
+     },
+     {
+      "name": "碧迪医疗",
+      "symbol": "BDX",
+      "temp": "热"
+     },
+     {
+      "name": "美国废物管理",
+      "symbol": "WM",
+      "temp": "热"
+     },
+     {
+      "name": "前进保险",
+      "symbol": "PGR",
+      "temp": "热"
+     },
+     {
+      "name": "高乐氏",
+      "symbol": "CLX",
+      "temp": "热"
+     }
+    ]
+   },
+   {
+    "group": "商品期货",
+    "items": []
+   }
+  ],
+  "s1": [
+   {
+    "symbol": "ALAB",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "AMZN",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "APH",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "CRM",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "MSTR",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "SHOP",
+    "temp": "平",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "BTDR",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   },
+   {
+    "symbol": "NIO",
+    "temp": "寒",
+    "phase": "大寒",
+    "market": "美股"
+   },
+   {
+    "symbol": "PDD",
+    "temp": "凉",
+    "phase": null,
+    "market": "美股"
+   }
+  ]
+ }
+}
