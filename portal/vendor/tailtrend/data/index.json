@@ -1,10 +1,14 @@
 {
   "schema": "traderhome_tailtrend_snapshot_index_v1",
   "version": 1,
-  "updatedAt": "2026-11-14T11:06:07.691Z",
-  "latestDataAsOf": "2026-11-13",
-  "latestCompleteDataAsOf": "2026-11-13",
+  "updatedAt": "2026-11-20T22:40:13.648Z",
+  "latestDataAsOf": "2026-11-20",
+  "latestCompleteDataAsOf": "2026-11-20",
   "notScheduledDates": [
+    "2026-11-19",
+    "2026-11-18",
+    "2026-11-17",
+    "2026-11-16",
     "2026-11-12",
     "2026-11-11",
     "2026-11-10"
@@ -73,6 +77,337 @@
     "2026-08-13"
   ],
   "entries": [
+    {
+      "dataAsOf": "2026-11-20",
+      "status": "COMPLETE",
+      "file": "snapshots/2026-11-20.json",
+      "runAt": "2026-11-20T22:40:13.648Z",
+      "engineVersion": "2fdddc705aab30fca8577e1010815406e93c1412",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 30,
+        "actionable": 1,
+        "blocked": 5,
+        "bucketCounts": {
+          "TREND_ACCEPTED_WATCH": 3,
+          "BREAKOUT_FAILURE_WATCH": 2,
+          "BREAKDOWN_RISK": 1,
+          "EDGE_OBSERVE": 20,
+          "NO_TRADE_MIDDLE": 4
+        },
+        "stateCounts": {
+          "TREND_ACCEPTED": 3,
+          "UPPER_TAIL_REJECTED": 2,
+          "LOWER_TAIL_BREAKDOWN": 1,
+          "LOWER_TAIL_FALLING": 19,
+          "DOWNTREND_COVER_ZONE": 1,
+          "RANGE_MIDDLE": 4
+        }
+      },
+      "health": {
+        "fresh": 30,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [
+        {
+          "symbol": "AAPL.US",
+          "from": "UPPER_TAIL_DECISION",
+          "to": "UPPER_TAIL_REJECTED",
+          "at": "2026-11-20",
+          "reason": "盘中触及上尾后，收盘退回 350.494 下方"
+        },
+        {
+          "symbol": "HD.US",
+          "from": "UPPER_TAIL_DECISION",
+          "to": "UPPER_TAIL_REJECTED",
+          "at": "2026-11-20",
+          "reason": "盘中触及上尾后，收盘退回 345.382 下方"
+        },
+        {
+          "symbol": "MU.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_BREAKDOWN",
+          "at": "2026-11-20",
+          "reason": "收盘低于下沿破位线 635.108"
+        },
+        {
+          "symbol": "CRM.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 199.565；结构稳定 0/5 日"
+        },
+        {
+          "symbol": "META.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 600.488；结构稳定 2/5 日"
+        },
+        {
+          "symbol": "MSFT.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 499.679；结构稳定 0/5 日"
+        },
+        {
+          "symbol": "XOM.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 160.935；结构稳定 3/5 日"
+        },
+        {
+          "symbol": "AMD.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 453.384；结构稳定 1/5 日"
+        },
+        {
+          "symbol": "DIA.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "GOOGL.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "GS.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "IWM.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "JPM.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "QQQ.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "SPXC.US",
+          "from": "LOWER_TAIL_RECLAIMED",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 152.594；结构稳定 0/5 日"
+        },
+        {
+          "symbol": "SPY.US",
+          "from": "RANGE_MIDDLE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+        },
+        {
+          "symbol": "TSLA.US",
+          "from": "UPPER_TAIL_REJECTED",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-20",
+          "reason": "冻结下沿 353.366；结构稳定 1/5 日"
+        },
+        {
+          "symbol": "UNH.US",
+          "from": "RANGE_MIDDLE",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-20",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "AMZN.US",
+          "from": "UPPER_TAIL_DECISION",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-20",
+          "reason": "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+        },
+        {
+          "symbol": "MA.US",
+          "from": "TREND_ACCEPTED",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-20",
+          "reason": "收盘位于下尾上界 572.068 与上尾下界 654.509 之间"
+        },
+        {
+          "symbol": "V.US",
+          "from": "TREND_ACCEPTED",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-20",
+          "reason": "收盘位于下尾上界 373.172 与上尾下界 424.365 之间"
+        }
+      ],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-19",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-19.json",
+      "runAt": "2026-11-20T22:40:13.648Z",
+      "engineVersion": "2fdddc705aab30fca8577e1010815406e93c1412",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-18",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-18.json",
+      "runAt": "2026-11-20T22:40:13.648Z",
+      "engineVersion": "2fdddc705aab30fca8577e1010815406e93c1412",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-17",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-17.json",
+      "runAt": "2026-11-20T22:40:13.648Z",
+      "engineVersion": "2fdddc705aab30fca8577e1010815406e93c1412",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-16",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-16.json",
+      "runAt": "2026-11-20T22:40:13.648Z",
+      "engineVersion": "2fdddc705aab30fca8577e1010815406e93c1412",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
     {
       "dataAsOf": "2026-11-13",
       "status": "COMPLETE",

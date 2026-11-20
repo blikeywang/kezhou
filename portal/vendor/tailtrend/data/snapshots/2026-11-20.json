@@ -1,0 +1,4998 @@
+{
+  "schema": "traderhome_tailtrend_snapshot_v1",
+  "version": 3,
+  "frameworkVersion": "0.3.1",
+  "dataAsOf": "2026-11-20",
+  "tradingDate": "2026-11-20",
+  "runAt": "2026-11-20T22:40:13.648Z",
+  "asOf": "2026-11-20T22:40:13.648Z",
+  "engineVersion": "2fdddc705aab30fca8577e1010815406e93c1412",
+  "engineDirty": false,
+  "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+  "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+  "mode": "complete",
+  "source": "Longbridge Securities",
+  "sourceMethod": "daily OHLCV · forward adjusted · regular session · 360 bars",
+  "signalTimeframe": "daily_close",
+  "universe": {
+    "version": "us-liquid-research-v1",
+    "description": "TailTrend Lab 初始影子观察池；指数 ETF 仅用于市场背景，其余为高流动性美股与 SPXC 个案。",
+    "requested": 30,
+    "published": 30,
+    "symbols": [
+      "SPY.US",
+      "QQQ.US",
+      "IWM.US",
+      "DIA.US",
+      "AAPL.US",
+      "MSFT.US",
+      "NVDA.US",
+      "AVGO.US",
+      "AMD.US",
+      "MU.US",
+      "GOOGL.US",
+      "META.US",
+      "AMZN.US",
+      "NFLX.US",
+      "TSLA.US",
+      "CRM.US",
+      "ORCL.US",
+      "JPM.US",
+      "BAC.US",
+      "GS.US",
+      "V.US",
+      "MA.US",
+      "LLY.US",
+      "UNH.US",
+      "WMT.US",
+      "COST.US",
+      "HD.US",
+      "XOM.US",
+      "CVX.US",
+      "SPXC.US"
+    ]
+  },
+  "summary": {
+    "records": 30,
+    "actionable": 1,
+    "blocked": 5,
+    "bucketCounts": {
+      "TREND_ACCEPTED_WATCH": 3,
+      "BREAKOUT_FAILURE_WATCH": 2,
+      "BREAKDOWN_RISK": 1,
+      "EDGE_OBSERVE": 20,
+      "NO_TRADE_MIDDLE": 4
+    },
+    "stateCounts": {
+      "TREND_ACCEPTED": 3,
+      "UPPER_TAIL_REJECTED": 2,
+      "LOWER_TAIL_BREAKDOWN": 1,
+      "LOWER_TAIL_FALLING": 19,
+      "DOWNTREND_COVER_ZONE": 1,
+      "RANGE_MIDDLE": 4
+    }
+  },
+  "transitions": [
+    {
+      "symbol": "AAPL.US",
+      "from": "UPPER_TAIL_DECISION",
+      "to": "UPPER_TAIL_REJECTED",
+      "at": "2026-11-20",
+      "reason": "盘中触及上尾后，收盘退回 350.494 下方"
+    },
+    {
+      "symbol": "HD.US",
+      "from": "UPPER_TAIL_DECISION",
+      "to": "UPPER_TAIL_REJECTED",
+      "at": "2026-11-20",
+      "reason": "盘中触及上尾后，收盘退回 345.382 下方"
+    },
+    {
+      "symbol": "MU.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_BREAKDOWN",
+      "at": "2026-11-20",
+      "reason": "收盘低于下沿破位线 635.108"
+    },
+    {
+      "symbol": "CRM.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 199.565；结构稳定 0/5 日"
+    },
+    {
+      "symbol": "META.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 600.488；结构稳定 2/5 日"
+    },
+    {
+      "symbol": "MSFT.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 499.679；结构稳定 0/5 日"
+    },
+    {
+      "symbol": "XOM.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 160.935；结构稳定 3/5 日"
+    },
+    {
+      "symbol": "AMD.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 453.384；结构稳定 1/5 日"
+    },
+    {
+      "symbol": "DIA.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "GOOGL.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "GS.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "IWM.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "JPM.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "QQQ.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "SPXC.US",
+      "from": "LOWER_TAIL_RECLAIMED",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 152.594；结构稳定 0/5 日"
+    },
+    {
+      "symbol": "SPY.US",
+      "from": "RANGE_MIDDLE",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+    },
+    {
+      "symbol": "TSLA.US",
+      "from": "UPPER_TAIL_REJECTED",
+      "to": "LOWER_TAIL_FALLING",
+      "at": "2026-11-20",
+      "reason": "冻结下沿 353.366；结构稳定 1/5 日"
+    },
+    {
+      "symbol": "UNH.US",
+      "from": "RANGE_MIDDLE",
+      "to": "DOWNTREND_COVER_ZONE",
+      "at": "2026-11-20",
+      "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+    },
+    {
+      "symbol": "AMZN.US",
+      "from": "UPPER_TAIL_DECISION",
+      "to": "RANGE_MIDDLE",
+      "at": "2026-11-20",
+      "reason": "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+    },
+    {
+      "symbol": "MA.US",
+      "from": "TREND_ACCEPTED",
+      "to": "RANGE_MIDDLE",
+      "at": "2026-11-20",
+      "reason": "收盘位于下尾上界 572.068 与上尾下界 654.509 之间"
+    },
+    {
+      "symbol": "V.US",
+      "from": "TREND_ACCEPTED",
+      "to": "RANGE_MIDDLE",
+      "at": "2026-11-20",
+      "reason": "收盘位于下尾上界 373.172 与上尾下界 424.365 之间"
+    }
+  ],
+  "health": {
+    "fresh": 30,
+    "cached": 0,
+    "stale": 0,
+    "error": 0,
+    "missing": [],
+    "errors": []
+  },
+  "dataQuality": {
+    "fresh": 30,
+    "cached": 0,
+    "stale": 0,
+    "missing": 0,
+    "errors": []
+  },
+  "privacy": {
+    "rawBarsPublished": false,
+    "accountDataPublished": false,
+    "brokerCredentialsPublished": false,
+    "automaticOrders": false
+  },
+  "researchStatus": "shadow_test_not_validated",
+  "records": [
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "LLY.US",
+      "ticker": "LLY",
+      "name": "Eli Lilly",
+      "sector": "Healthcare",
+      "cluster": "Large-cap Healthcare",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "TREND_ACCEPTED",
+      "bucket": "TREND_ACCEPTED_WATCH",
+      "label": "趋势已接受",
+      "action": "纯趋势仓候选；过度伸展则等待",
+      "newPositionAllowed": true,
+      "entryEligibility": {
+        "structuralState": "TREND_ACCEPTED",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": "pure_trend",
+      "riskModule": "pure_trend",
+      "shortQualified": null,
+      "priority": 90,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 62,
+          "reason": "突破已满足收盘接受规则"
+        },
+        {
+          "label": "周线环境",
+          "points": 18,
+          "reason": "周线与趋势同向"
+        },
+        {
+          "label": "收盘保持",
+          "points": 10,
+          "reason": "2 个确认收盘"
+        }
+      ],
+      "stateReason": [
+        "2/2 个确认收盘留在冻结缓冲线 1329.688 外"
+      ],
+      "nextCondition": {
+        "targetState": "TRAILING_EXIT",
+        "label": "趋势退出线",
+        "condition": "日线收盘跌破 10 日低点 1331.62",
+        "distanceAtr": 0.37
+      },
+      "signalDirection": "LONG",
+      "comparisonStates": {
+        "pct": "TREND_ACCEPTED",
+        "atr": "TREND_ACCEPTED"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 1347.11,
+      "atr": 41.879,
+      "atrPct": 3.11,
+      "hv20": 36.5,
+      "hvPercentile": 73,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 64.7,
+      "distanceToLowerTailAtr": 3.88,
+      "distanceToUpperTailAtr": 1.32,
+      "gapAtr": 0.27,
+      "volumeRatio": 1.12,
+      "averageTurnover20": 4418831104,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": {
+          "boundary": 1319.625,
+          "threshold": 1329.6878933032556,
+          "atrAtLock": 40.2515732130221,
+          "lockedAt": "2026-10-29",
+          "lockedBy": "TREND_ACCEPTED",
+          "ageSessions": 16,
+          "holdCloses": 2,
+          "acceptedAt": "2026-10-30"
+        }
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "UPPER",
+        "boundary": 1319.625,
+        "threshold": 1329.688,
+        "atrAtLock": 40.252,
+        "lockedAt": "2026-10-29",
+        "reasonCode": "TREND_PERSISTS"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 1111.956,
+        "lowerTailTop": 1184.615,
+        "midpoint": 1293.603,
+        "upperTailBottom": 1402.591,
+        "rangeHigh": 1475.25
+      },
+      "atrTailMap": {
+        "state": "TREND_ACCEPTED",
+        "bucket": "TREND_ACCEPTED_WATCH",
+        "k": 1.5,
+        "lowerTailTop": 1174.775,
+        "upperTailBottom": 1412.431,
+        "shadowOnly": true
+      },
+      "breakout": {
+        "boundary": 1319.625,
+        "threshold": 1329.688,
+        "atrAtLock": 40.252,
+        "lockedAt": "2026-10-29",
+        "holdCloses": 2,
+        "extensionAtr": 0.68,
+        "overextended": false
+      },
+      "management": {
+        "entryReference": 1347.11,
+        "hardStop": 1309.155,
+        "firstZone": null,
+        "secondZone": null,
+        "trailingExit": 1331.62,
+        "exitMethod": "日线收盘跌破10日低点退出；下一高周期尾部仅减仓1/3"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "2/2 个确认收盘留在冻结缓冲线 1329.688 外"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "TREND_ACCEPTED",
+        "to": "TREND_ACCEPTED",
+        "changed": false,
+        "reason": "2/2 个确认收盘留在冻结缓冲线 1329.688 外"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "COST.US",
+      "ticker": "COST",
+      "name": "Costco Wholesale",
+      "sector": "Consumer Staples",
+      "cluster": "Defensive Consumer",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "TREND_ACCEPTED",
+      "bucket": "TREND_ACCEPTED_WATCH",
+      "label": "趋势已接受",
+      "action": "纯趋势仓候选；过度伸展则等待",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "TREND_ACCEPTED",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": "pure_trend",
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 68,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 62,
+          "reason": "突破已满足收盘接受规则"
+        },
+        {
+          "label": "周线环境",
+          "points": 18,
+          "reason": "周线与趋势同向"
+        },
+        {
+          "label": "收盘保持",
+          "points": 10,
+          "reason": "2 个确认收盘"
+        },
+        {
+          "label": "过度伸展",
+          "points": -22,
+          "reason": "距旧边界超过 1 ATR"
+        }
+      ],
+      "stateReason": [
+        "2/2 个确认收盘留在冻结缓冲线 1025.566 外"
+      ],
+      "nextCondition": {
+        "targetState": "TRAILING_EXIT",
+        "label": "趋势退出线",
+        "condition": "日线收盘跌破 10 日低点 1043",
+        "distanceAtr": 3.17
+      },
+      "signalDirection": "LONG",
+      "comparisonStates": {
+        "pct": "TREND_ACCEPTED",
+        "atr": "TREND_ACCEPTED"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 1102.15,
+      "atr": 18.674,
+      "atrPct": 1.69,
+      "hv20": 21.9,
+      "hvPercentile": 72,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 91.1,
+      "distanceToLowerTailAtr": 9.21,
+      "distanceToUpperTailAtr": -1.44,
+      "gapAtr": 0.44,
+      "volumeRatio": 1.62,
+      "averageTurnover20": 2713130177,
+      "liquidityBand": "HIGH",
+      "eventDate": "2026-12-10",
+      "daysToEvent": 20,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": {
+          "boundary": 1021.31,
+          "threshold": 1025.566268086383,
+          "atrAtLock": 17.025072345532273,
+          "lockedAt": "2026-11-02",
+          "lockedBy": "TREND_ACCEPTED",
+          "ageSessions": 14,
+          "holdCloses": 2,
+          "acceptedAt": "2026-11-04"
+        }
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "UPPER",
+        "boundary": 1021.31,
+        "threshold": 1025.566,
+        "atrAtLock": 17.025,
+        "lockedAt": "2026-11-02",
+        "reasonCode": "TREND_PERSISTS"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 881.775,
+        "lowerTailTop": 930.154,
+        "midpoint": 1002.723,
+        "upperTailBottom": 1075.291,
+        "rangeHigh": 1123.67
+      },
+      "atrTailMap": {
+        "state": "TREND_ACCEPTED",
+        "bucket": "TREND_ACCEPTED_WATCH",
+        "k": 1.5,
+        "lowerTailTop": 909.786,
+        "upperTailBottom": 1095.659,
+        "shadowOnly": true
+      },
+      "breakout": {
+        "boundary": 1021.31,
+        "threshold": 1025.566,
+        "atrAtLock": 17.025,
+        "lockedAt": "2026-11-02",
+        "holdCloses": 2,
+        "extensionAtr": 4.75,
+        "overextended": true
+      },
+      "management": {
+        "entryReference": 1102.15,
+        "hardStop": 1016.641,
+        "firstZone": null,
+        "secondZone": null,
+        "trailingExit": 1043,
+        "exitMethod": "日线收盘跌破10日低点退出；下一高周期尾部仅减仓1/3"
+      },
+      "blockers": [
+        "距旧边界超过 1 ATR，等待回踩或新平衡"
+      ],
+      "role": "research",
+      "event": {
+        "date": "2026-12-10",
+        "timing": "after",
+        "label": "2027 财年第 1 季度业绩披露"
+      },
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "2/2 个确认收盘留在冻结缓冲线 1025.566 外"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "TREND_ACCEPTED",
+        "to": "TREND_ACCEPTED",
+        "changed": false,
+        "reason": "2/2 个确认收盘留在冻结缓冲线 1025.566 外"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "WMT.US",
+      "ticker": "WMT",
+      "name": "Walmart",
+      "sector": "Consumer Staples",
+      "cluster": "Defensive Consumer",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "TREND_ACCEPTED",
+      "bucket": "TREND_ACCEPTED_WATCH",
+      "label": "趋势已接受",
+      "action": "纯趋势仓候选；过度伸展则等待",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "TREND_ACCEPTED",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": "pure_trend",
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 68,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 62,
+          "reason": "突破已满足收盘接受规则"
+        },
+        {
+          "label": "周线环境",
+          "points": 18,
+          "reason": "周线与趋势同向"
+        },
+        {
+          "label": "收盘保持",
+          "points": 10,
+          "reason": "2 个确认收盘"
+        },
+        {
+          "label": "过度伸展",
+          "points": -22,
+          "reason": "距旧边界超过 1 ATR"
+        }
+      ],
+      "stateReason": [
+        "2/2 个确认收盘留在冻结缓冲线 117.204 外"
+      ],
+      "nextCondition": {
+        "targetState": "TRAILING_EXIT",
+        "label": "趋势退出线",
+        "condition": "日线收盘跌破 10 日低点 123.03",
+        "distanceAtr": 1.75
+      },
+      "signalDirection": "LONG",
+      "comparisonStates": {
+        "pct": "TREND_ACCEPTED",
+        "atr": "TREND_ACCEPTED"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 127.95,
+      "atr": 2.804,
+      "atrPct": 2.19,
+      "hv20": 24.4,
+      "hvPercentile": 44,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 86.9,
+      "distanceToLowerTailAtr": 7.05,
+      "distanceToUpperTailAtr": -0.73,
+      "gapAtr": 0.44,
+      "volumeRatio": 1.8,
+      "averageTurnover20": 2983578243,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": {
+          "boundary": 116.59,
+          "threshold": 117.20427564806617,
+          "atrAtLock": 2.4571025922647003,
+          "lockedAt": "2026-10-15",
+          "lockedBy": "TREND_ACCEPTED",
+          "ageSessions": 26,
+          "holdCloses": 2,
+          "acceptedAt": "2026-10-16"
+        }
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "UPPER",
+        "boundary": 116.59,
+        "threshold": 117.204,
+        "atrAtLock": 2.457,
+        "lockedAt": "2026-10-15",
+        "reasonCode": "TREND_PERSISTS"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 102.27,
+        "lowerTailTop": 108.18,
+        "midpoint": 117.045,
+        "upperTailBottom": 125.91,
+        "rangeHigh": 131.82
+      },
+      "atrTailMap": {
+        "state": "TREND_ACCEPTED",
+        "bucket": "TREND_ACCEPTED_WATCH",
+        "k": 1.5,
+        "lowerTailTop": 106.477,
+        "upperTailBottom": 127.613,
+        "shadowOnly": true
+      },
+      "breakout": {
+        "boundary": 116.59,
+        "threshold": 117.204,
+        "atrAtLock": 2.457,
+        "lockedAt": "2026-10-15",
+        "holdCloses": 2,
+        "extensionAtr": 4.62,
+        "overextended": true
+      },
+      "management": {
+        "entryReference": 127.95,
+        "hardStop": 115.889,
+        "firstZone": null,
+        "secondZone": null,
+        "trailingExit": 123.03,
+        "exitMethod": "日线收盘跌破10日低点退出；下一高周期尾部仅减仓1/3"
+      },
+      "blockers": [
+        "距旧边界超过 1 ATR，等待回踩或新平衡"
+      ],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "2/2 个确认收盘留在冻结缓冲线 117.204 外"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "TREND_ACCEPTED",
+        "to": "TREND_ACCEPTED",
+        "changed": false,
+        "reason": "2/2 个确认收盘留在冻结缓冲线 117.204 外"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "AAPL.US",
+      "ticker": "AAPL",
+      "name": "Apple",
+      "sector": "Technology",
+      "cluster": "Mega-cap Technology",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "UPPER_TAIL_REJECTED",
+      "bucket": "BREAKOUT_FAILURE_WATCH",
+      "label": "上沿拒绝",
+      "action": "仅美股进入独立小风险做空复核",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "UPPER_TAIL_REJECTED",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": "us_short",
+      "riskModule": null,
+      "shortQualified": false,
+      "priority": 55,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 55,
+          "reason": "上尾触及后收盘拒绝"
+        }
+      ],
+      "stateReason": [
+        "盘中触及上尾后，收盘退回 350.494 下方"
+      ],
+      "nextCondition": {
+        "targetState": "RANGE_MIDDLE",
+        "label": "均值回归管理",
+        "condition": "先观察中轴 334.991；做空仍需独立资格核验",
+        "distanceAtr": 0.95
+      },
+      "signalDirection": "SHORT",
+      "comparisonStates": {
+        "pct": "UPPER_TAIL_REJECTED",
+        "atr": "UPPER_TAIL_REJECTED"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 342.56,
+      "atr": 7.985,
+      "atrPct": 2.33,
+      "hv20": 28,
+      "hvPercentile": 74,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 64.6,
+      "distanceToLowerTailAtr": 2.89,
+      "distanceToUpperTailAtr": 0.99,
+      "gapAtr": 0.46,
+      "volumeRatio": 1.62,
+      "averageTurnover20": 17267983739,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 309.152,
+        "lowerTailTop": 319.488,
+        "midpoint": 334.991,
+        "upperTailBottom": 350.494,
+        "rangeHigh": 360.83
+      },
+      "atrTailMap": {
+        "state": "UPPER_TAIL_REJECTED",
+        "bucket": "BREAKOUT_FAILURE_WATCH",
+        "k": 1.5,
+        "lowerTailTop": 321.13,
+        "upperTailBottom": 348.852,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 342.56,
+        "hardStop": 362.826,
+        "firstZone": 334.991,
+        "secondZone": 319.488,
+        "exitMethod": "仅美股且借券、事件与账户权限全部复核后才可研究"
+      },
+      "blockers": [
+        "借券、成本与账户做空权限尚未核验"
+      ],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "UPPER_TAIL_DECISION",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "盘中触及上尾后，收盘退回 350.494 下方"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "UPPER_TAIL_DECISION",
+        "to": "UPPER_TAIL_REJECTED",
+        "changed": true,
+        "reason": "盘中触及上尾后，收盘退回 350.494 下方"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "HD.US",
+      "ticker": "HD",
+      "name": "Home Depot",
+      "sector": "Consumer Discretionary",
+      "cluster": "US Consumer",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "UPPER_TAIL_REJECTED",
+      "bucket": "BREAKOUT_FAILURE_WATCH",
+      "label": "上沿拒绝",
+      "action": "仅美股进入独立小风险做空复核",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "UPPER_TAIL_REJECTED",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": "us_short",
+      "riskModule": null,
+      "shortQualified": false,
+      "priority": 45,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 55,
+          "reason": "上尾触及后收盘拒绝"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p94"
+        }
+      ],
+      "stateReason": [
+        "盘中触及上尾后，收盘退回 345.382 下方"
+      ],
+      "nextCondition": {
+        "targetState": "RANGE_MIDDLE",
+        "label": "均值回归管理",
+        "condition": "先观察中轴 319.795；做空仍需独立资格核验",
+        "distanceAtr": 2.2
+      },
+      "signalDirection": "SHORT",
+      "comparisonStates": {
+        "pct": "UPPER_TAIL_REJECTED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 339.04,
+      "atr": 8.759,
+      "atrPct": 2.58,
+      "hv20": 34.7,
+      "hvPercentile": 94,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 72.6,
+      "distanceToLowerTailAtr": 5.12,
+      "distanceToUpperTailAtr": 0.72,
+      "gapAtr": 0.57,
+      "volumeRatio": 1.58,
+      "averageTurnover20": 1701518636,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 277.15,
+        "lowerTailTop": 294.208,
+        "midpoint": 319.795,
+        "upperTailBottom": 345.382,
+        "rangeHigh": 362.44
+      },
+      "atrTailMap": {
+        "state": "RANGE_MIDDLE",
+        "bucket": "NO_TRADE_MIDDLE",
+        "k": 1.5,
+        "lowerTailTop": 290.288,
+        "upperTailBottom": 349.302,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 339.04,
+        "hardStop": 364.63,
+        "firstZone": 319.795,
+        "secondZone": 294.208,
+        "exitMethod": "仅美股且借券、事件与账户权限全部复核后才可研究"
+      },
+      "blockers": [
+        "借券、成本与账户做空权限尚未核验"
+      ],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "UPPER_TAIL_DECISION",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "盘中触及上尾后，收盘退回 345.382 下方"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "UPPER_TAIL_DECISION",
+        "to": "UPPER_TAIL_REJECTED",
+        "changed": true,
+        "reason": "盘中触及上尾后，收盘退回 345.382 下方"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "MU.US",
+      "ticker": "MU",
+      "name": "Micron Tech",
+      "sector": "Semiconductors",
+      "cluster": "AI Semiconductors",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_BREAKDOWN",
+      "bucket": "BREAKDOWN_RISK",
+      "label": "下沿破位",
+      "action": "先处理多头；美股另评估趋势空头",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_BREAKDOWN",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": "us_short",
+      "riskModule": null,
+      "shortQualified": false,
+      "priority": 66,
+      "priorityBreakdown": [
+        {
+          "label": "状态基础",
+          "points": 58,
+          "reason": "收盘跌破下沿缓冲"
+        },
+        {
+          "label": "周线环境",
+          "points": 18,
+          "reason": "周线向下"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p91"
+        }
+      ],
+      "stateReason": [
+        "收盘低于下沿破位线 635.108"
+      ],
+      "nextCondition": {
+        "targetState": "DOWNTREND_COVER_ZONE",
+        "label": "空头回补观察",
+        "condition": "重新靠近或收复下尾上界 741.7",
+        "distanceAtr": 2.47
+      },
+      "signalDirection": "SHORT",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_BREAKDOWN",
+        "atr": "LOWER_TAIL_BREAKDOWN"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 594.51,
+      "atr": 59.57,
+      "atrPct": 10.02,
+      "hv20": 114.2,
+      "hvPercentile": 91,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -12.1,
+      "distanceToLowerTailAtr": -2.47,
+      "distanceToUpperTailAtr": 7.09,
+      "gapAtr": 0.42,
+      "volumeRatio": 1.75,
+      "averageTurnover20": 25957527356,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 741.6996,
+          "rangeLow": 650,
+          "rangeHigh": 1108.498,
+          "atrAtLock": 57.41661429616247,
+          "lockedAt": "2026-11-16",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 4,
+          "stableSessions": 0,
+          "trackedLow": 585.253
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 741.7,
+        "upperBoundary": null,
+        "atrAtLock": 57.417,
+        "lockedAt": "2026-11-16",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 0
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 741.7,
+        "structuralLow": 650,
+        "atrAtLock": 57.417,
+        "lockedAt": "2026-11-16",
+        "stableSessions": 0,
+        "reasonCode": "CURRENT_RANGE_BREAKDOWN"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 650,
+        "lowerTailTop": 741.7,
+        "midpoint": 879.249,
+        "upperTailBottom": 1016.798,
+        "rangeHigh": 1108.498
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_BREAKDOWN",
+        "bucket": "BREAKDOWN_RISK",
+        "k": 1.5,
+        "lowerTailTop": 739.355,
+        "upperTailBottom": 1019.143,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 594.51,
+        "hardStop": 664.892,
+        "firstZone": null,
+        "secondZone": null,
+        "exitMethod": "先处理原多头；趋势空头只限美股独立复核"
+      },
+      "blockers": [
+        "借券、成本与账户做空权限尚未核验"
+      ],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘低于下沿破位线 635.108"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_BREAKDOWN",
+        "changed": true,
+        "reason": "收盘低于下沿破位线 635.108"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "CRM.US",
+      "ticker": "CRM",
+      "name": "Salesforce",
+      "sector": "Technology",
+      "cluster": "Enterprise Software",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 199.565；结构稳定 0/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 199.565 并出现反转确认",
+        "distanceAtr": 2.09
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 180.62,
+      "atr": 9.044,
+      "atrPct": 5.01,
+      "hv20": 42.7,
+      "hvPercentile": 55,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -2.2,
+      "distanceToLowerTailAtr": -2.09,
+      "distanceToUpperTailAtr": 7.75,
+      "gapAtr": 0,
+      "volumeRatio": 1.19,
+      "averageTurnover20": 1571464690,
+      "liquidityBand": "HIGH",
+      "eventDate": "2026-12-02",
+      "daysToEvent": 12,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 199.56539999999998,
+          "rangeLow": 182.51,
+          "rangeHigh": 267.787,
+          "atrAtLock": 9.044011356679606,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 0,
+          "stableSessions": 0,
+          "trackedLow": 179.915
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 199.565,
+        "upperBoundary": null,
+        "atrAtLock": 9.044,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 0
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 199.565,
+        "structuralLow": 182.51,
+        "atrAtLock": 9.044,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 0,
+        "reasonCode": "LOWER_LOCKED"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 182.51,
+        "lowerTailTop": 199.565,
+        "midpoint": 225.148,
+        "upperTailBottom": 250.732,
+        "rangeHigh": 267.787
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 196.076,
+        "upperTailBottom": 254.221,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 180.62,
+        "hardStop": null,
+        "firstZone": 225.148,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": {
+        "date": "2026-12-02",
+        "timing": "after",
+        "label": "2027 财年第 3 季度业绩披露"
+      },
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 199.565；结构稳定 0/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 199.565；结构稳定 0/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "META.US",
+      "ticker": "META",
+      "name": "Meta Platforms",
+      "sector": "Communication",
+      "cluster": "Mega-cap Internet",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 600.488；结构稳定 2/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 600.488 并出现反转确认",
+        "distanceAtr": 1.7
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 560.84,
+      "atr": 23.345,
+      "atrPct": 4.16,
+      "hv20": 40.7,
+      "hvPercentile": 48,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": 2.3,
+      "distanceToLowerTailAtr": -1.7,
+      "distanceToUpperTailAtr": 7.46,
+      "gapAtr": 0.53,
+      "volumeRatio": 1.18,
+      "averageTurnover20": 13435875870,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 600.4878,
+          "rangeLow": 555.655,
+          "rangeHigh": 779.819,
+          "atrAtLock": 22.598148356359776,
+          "lockedAt": "2026-11-19",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 1,
+          "stableSessions": 2,
+          "trackedLow": 555.655
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 600.488,
+        "upperBoundary": null,
+        "atrAtLock": 22.598,
+        "lockedAt": "2026-11-19",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 2
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 600.488,
+        "structuralLow": 555.655,
+        "atrAtLock": 22.598,
+        "lockedAt": "2026-11-19",
+        "stableSessions": 2,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 555.655,
+        "lowerTailTop": 600.488,
+        "midpoint": 667.737,
+        "upperTailBottom": 734.986,
+        "rangeHigh": 779.819
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 590.673,
+        "upperTailBottom": 744.801,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 560.84,
+        "hardStop": null,
+        "firstZone": 667.737,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 600.488；结构稳定 2/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 600.488；结构稳定 2/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "MSFT.US",
+      "ticker": "MSFT",
+      "name": "Microsoft",
+      "sector": "Technology",
+      "cluster": "Mega-cap Technology",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 499.679；结构稳定 0/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 499.679 并出现反转确认",
+        "distanceAtr": 0.98
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 484.52,
+      "atr": 15.487,
+      "atrPct": 3.2,
+      "hv20": 38,
+      "hvPercentile": 78,
+      "weeklyRegime": "RANGE",
+      "rangePositionPct": -0.8,
+      "distanceToLowerTailAtr": -0.98,
+      "distanceToUpperTailAtr": 3.81,
+      "gapAtr": 0.29,
+      "volumeRatio": 1.57,
+      "averageTurnover20": 15735846684,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 499.6792,
+          "rangeLow": 485.077,
+          "rangeHigh": 558.088,
+          "atrAtLock": 15.103604808504196,
+          "lockedAt": "2026-11-19",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 1,
+          "stableSessions": 0,
+          "trackedLow": 481.03
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 499.679,
+        "upperBoundary": null,
+        "atrAtLock": 15.104,
+        "lockedAt": "2026-11-19",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 0
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 499.679,
+        "structuralLow": 485.077,
+        "atrAtLock": 15.104,
+        "lockedAt": "2026-11-19",
+        "stableSessions": 0,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 485.077,
+        "lowerTailTop": 499.679,
+        "midpoint": 521.582,
+        "upperTailBottom": 543.486,
+        "rangeHigh": 558.088
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 508.307,
+        "upperTailBottom": 534.858,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 484.52,
+        "hardStop": null,
+        "firstZone": 521.582,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 499.679；结构稳定 0/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 499.679；结构稳定 0/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "NFLX.US",
+      "ticker": "NFLX",
+      "name": "Netflix",
+      "sector": "Communication",
+      "cluster": "Mega-cap Internet",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 61.968 并出现反转确认",
+        "distanceAtr": 2.64
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 56.73,
+      "atr": 1.986,
+      "atrPct": 3.5,
+      "hv20": 32.2,
+      "hvPercentile": 41,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -5.7,
+      "distanceToLowerTailAtr": -3.29,
+      "distanceToUpperTailAtr": 10.97,
+      "gapAtr": 0.06,
+      "volumeRatio": 1.66,
+      "averageTurnover20": 2557266764,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 61.968,
+          "rangeLow": 56.56,
+          "rangeHigh": 83.6,
+          "atrAtLock": 1.9861006361328095,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 56.56
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 61.968,
+        "upperBoundary": null,
+        "atrAtLock": 1.986,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 61.968,
+        "structuralLow": 56.56,
+        "atrAtLock": 1.986,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 58.18,
+        "lowerTailTop": 63.264,
+        "midpoint": 70.89,
+        "upperTailBottom": 78.516,
+        "rangeHigh": 83.6
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 61.159,
+        "upperTailBottom": 80.621,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 56.73,
+        "hardStop": null,
+        "firstZone": 70.08,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "XOM.US",
+      "ticker": "XOM",
+      "name": "ExxonMobil",
+      "sector": "Energy",
+      "cluster": "Integrated Energy",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 35,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 160.935；结构稳定 3/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 160.935 并出现反转确认",
+        "distanceAtr": 0.23
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 159.99,
+      "atr": 4.147,
+      "atrPct": 2.59,
+      "hv20": 32.2,
+      "hvPercentile": 86,
+      "weeklyRegime": "RANGE",
+      "rangePositionPct": 17.1,
+      "distanceToLowerTailAtr": -0.23,
+      "distanceToUpperTailAtr": 5,
+      "gapAtr": 0.02,
+      "volumeRatio": 1.24,
+      "averageTurnover20": 2570362978,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 160.9352,
+          "rangeLow": 154.341,
+          "rangeHigh": 187.312,
+          "atrAtLock": 4.249841612946761,
+          "lockedAt": "2026-11-18",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 2,
+          "stableSessions": 3,
+          "trackedLow": 154.341
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 160.935,
+        "upperBoundary": null,
+        "atrAtLock": 4.25,
+        "lockedAt": "2026-11-18",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 3
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 160.935,
+        "structuralLow": 154.341,
+        "atrAtLock": 4.25,
+        "lockedAt": "2026-11-18",
+        "stableSessions": 3,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 154.341,
+        "lowerTailTop": 160.935,
+        "midpoint": 170.827,
+        "upperTailBottom": 180.718,
+        "rangeHigh": 187.312
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 160.561,
+        "upperTailBottom": 181.092,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 159.99,
+        "hardStop": null,
+        "firstZone": 170.827,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 160.935；结构稳定 3/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 160.935；结构稳定 3/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "AMD.US",
+      "ticker": "AMD",
+      "name": "AMD",
+      "sector": "Semiconductors",
+      "cluster": "AI Semiconductors",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 453.384；结构稳定 1/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 453.384 并出现反转确认",
+        "distanceAtr": 0.7
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 424.39,
+      "atr": 41.588,
+      "atrPct": 9.8,
+      "hv20": 134.1,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": 8.7,
+      "distanceToLowerTailAtr": -0.7,
+      "distanceToUpperTailAtr": 4.4,
+      "gapAtr": 0.42,
+      "volumeRatio": 1.65,
+      "averageTurnover20": 21167611515,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 453.384,
+          "rangeLow": 402.1,
+          "rangeHigh": 658.52,
+          "atrAtLock": 41.588490247202415,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 402.1
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 453.384,
+        "upperBoundary": null,
+        "atrAtLock": 41.588,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 453.384,
+        "structuralLow": 402.1,
+        "atrAtLock": 41.588,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCKED"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 402.1,
+        "lowerTailTop": 453.384,
+        "midpoint": 530.31,
+        "upperTailBottom": 607.236,
+        "rangeHigh": 658.52
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 464.483,
+        "upperTailBottom": 596.137,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 424.39,
+        "hardStop": null,
+        "firstZone": 530.31,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 453.384；结构稳定 1/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 453.384；结构稳定 1/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "AVGO.US",
+      "ticker": "AVGO",
+      "name": "Broadcom",
+      "sector": "Semiconductors",
+      "cluster": "AI Semiconductors",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 307.982；结构稳定 1/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 307.982 并出现反转确认",
+        "distanceAtr": 0.2
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 304.41,
+      "atr": 18.255,
+      "atrPct": 6,
+      "hv20": 86.2,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": 16.1,
+      "distanceToLowerTailAtr": -0.2,
+      "distanceToUpperTailAtr": 3.19,
+      "gapAtr": 0.2,
+      "volumeRatio": 1.96,
+      "averageTurnover20": 10046626115,
+      "liquidityBand": "HIGH",
+      "eventDate": "2026-12-09",
+      "daysToEvent": 19,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 307.9816,
+          "rangeLow": 289.767,
+          "rangeHigh": 380.84,
+          "atrAtLock": 18.255085482783212,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 289.767
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 307.982,
+        "upperBoundary": null,
+        "atrAtLock": 18.255,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 307.982,
+        "structuralLow": 289.767,
+        "atrAtLock": 18.255,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCKED"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 289.767,
+        "lowerTailTop": 307.982,
+        "midpoint": 335.303,
+        "upperTailBottom": 362.625,
+        "rangeHigh": 380.84
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 317.15,
+        "upperTailBottom": 353.457,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 304.41,
+        "hardStop": null,
+        "firstZone": 335.303,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": {
+        "date": "2026-12-09",
+        "timing": "after",
+        "label": "2026 财年第 4 季度业绩披露"
+      },
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 307.982；结构稳定 1/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "冻结下沿 307.982；结构稳定 1/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "BAC.US",
+      "ticker": "BAC",
+      "name": "Bank of America",
+      "sector": "Financials",
+      "cluster": "US Banks",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p90"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 50.27 并出现反转确认",
+        "distanceAtr": 2.69
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 47.04,
+      "atr": 1.202,
+      "atrPct": 2.55,
+      "hv20": 27.3,
+      "hvPercentile": 90,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -6.4,
+      "distanceToLowerTailAtr": -3.46,
+      "distanceToUpperTailAtr": 11.34,
+      "gapAtr": 0.1,
+      "volumeRatio": 1.41,
+      "averageTurnover20": 1767686308,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 50.27,
+          "rangeLow": 46.88,
+          "rangeHigh": 63.83,
+          "atrAtLock": 1.201857647658647,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 46.88
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 50.27,
+        "upperBoundary": null,
+        "atrAtLock": 1.202,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 50.27,
+        "structuralLow": 46.88,
+        "atrAtLock": 1.202,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 48.045,
+        "lowerTailTop": 51.202,
+        "midpoint": 55.938,
+        "upperTailBottom": 60.673,
+        "rangeHigh": 63.83
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 49.848,
+        "upperTailBottom": 62.027,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 47.04,
+        "hardStop": null,
+        "firstZone": 55.355,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "DIA.US",
+      "ticker": "DIA",
+      "name": "SPDR Djia",
+      "sector": "Broad Market",
+      "cluster": "US Index",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 490.722 并出现反转确认",
+        "distanceAtr": 1.27
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 481.08,
+      "atr": 7.566,
+      "atrPct": 1.57,
+      "hv20": 23.2,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -19.9,
+      "distanceToLowerTailAtr": -2.42,
+      "distanceToUpperTailAtr": 6.05,
+      "gapAtr": 0.02,
+      "volumeRatio": 1.42,
+      "averageTurnover20": 2084464418,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 490.722,
+          "rangeLow": 479.4,
+          "rangeHigh": 536.01,
+          "atrAtLock": 7.565670695795385,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 479.4
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 490.722,
+        "upperBoundary": null,
+        "atrAtLock": 7.566,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 490.722,
+        "structuralLow": 479.4,
+        "atrAtLock": 7.566,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 490.19,
+        "lowerTailTop": 499.354,
+        "midpoint": 513.1,
+        "upperTailBottom": 526.846,
+        "rangeHigh": 536.01
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 501.539,
+        "upperTailBottom": 524.661,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 481.08,
+        "hardStop": null,
+        "firstZone": 507.705,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "benchmark",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "GOOGL.US",
+      "ticker": "GOOGL",
+      "name": "Alphabet",
+      "sector": "Communication",
+      "cluster": "Mega-cap Internet",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 284.21 并出现反转确认",
+        "distanceAtr": 1.75
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 265.29,
+      "atr": 10.817,
+      "atrPct": 4.08,
+      "hv20": 56,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -7.7,
+      "distanceToLowerTailAtr": -2.35,
+      "distanceToUpperTailAtr": 7.44,
+      "gapAtr": 0.17,
+      "volumeRatio": 1.27,
+      "averageTurnover20": 13065348251,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 284.21000000000004,
+          "rangeLow": 264.22,
+          "rangeHigh": 364.17,
+          "atrAtLock": 10.816998372133472,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 264.22
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 284.21,
+        "upperBoundary": null,
+        "atrAtLock": 10.817,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 284.21,
+        "structuralLow": 264.22,
+        "atrAtLock": 10.817,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 272.36,
+        "lowerTailTop": 290.722,
+        "midpoint": 318.265,
+        "upperTailBottom": 345.808,
+        "rangeHigh": 364.17
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 288.585,
+        "upperTailBottom": 347.945,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 265.29,
+        "hardStop": null,
+        "firstZone": 314.195,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "GS.US",
+      "ticker": "GS",
+      "name": "Goldman Sachs",
+      "sector": "Financials",
+      "cluster": "US Banks",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p96"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 838.096 并出现反转确认",
+        "distanceAtr": 1.62
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 790.69,
+      "atr": 29.32,
+      "atrPct": 3.71,
+      "hv20": 47.2,
+      "hvPercentile": 96,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -25,
+      "distanceToLowerTailAtr": -3.2,
+      "distanceToUpperTailAtr": 7.37,
+      "gapAtr": 0.72,
+      "volumeRatio": 2.07,
+      "averageTurnover20": 2020563197,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 838.096,
+          "rangeLow": 786.66,
+          "rangeHigh": 1043.84,
+          "atrAtLock": 29.319916749752288,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 786.66
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 838.096,
+        "upperBoundary": null,
+        "atrAtLock": 29.32,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 838.096,
+        "structuralLow": 786.66,
+        "atrAtLock": 29.32,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 843.885,
+        "lowerTailTop": 884.587,
+        "midpoint": 945.639,
+        "upperTailBottom": 1006.691,
+        "rangeHigh": 1047.393
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 887.865,
+        "upperTailBottom": 1003.413,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 790.69,
+        "hardStop": null,
+        "firstZone": 915.25,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "IWM.US",
+      "ticker": "IWM",
+      "name": "iShares Russell 2000",
+      "sector": "Broad Market",
+      "cluster": "US Index",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 264.978 并出现反转确认",
+        "distanceAtr": 1.65
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 256.61,
+      "atr": 5.078,
+      "atrPct": 1.98,
+      "hv20": 28.4,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -19.9,
+      "distanceToLowerTailAtr": -2.82,
+      "distanceToUpperTailAtr": 7.05,
+      "gapAtr": 0.18,
+      "volumeRatio": 2.18,
+      "averageTurnover20": 7239046410,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 264.9778,
+          "rangeLow": 256.32,
+          "rangeHigh": 299.609,
+          "atrAtLock": 5.078340195229304,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 256.32
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 264.978,
+        "upperBoundary": null,
+        "atrAtLock": 5.078,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 264.978,
+        "structuralLow": 256.32,
+        "atrAtLock": 5.078,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 263.74,
+        "lowerTailTop": 270.914,
+        "midpoint": 281.674,
+        "upperTailBottom": 292.435,
+        "rangeHigh": 299.609
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 271.358,
+        "upperTailBottom": 291.991,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 256.61,
+        "hardStop": null,
+        "firstZone": 277.964,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "benchmark",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "JPM.US",
+      "ticker": "JPM",
+      "name": "JPMorgan Chase",
+      "sector": "Financials",
+      "cluster": "US Banks",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 319.553 并出现反转确认",
+        "distanceAtr": 1.19
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 310.53,
+      "atr": 7.605,
+      "atrPct": 2.45,
+      "hv20": 31.4,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -15.8,
+      "distanceToLowerTailAtr": -2.05,
+      "distanceToUpperTailAtr": 5.5,
+      "gapAtr": 0.04,
+      "volumeRatio": 1.78,
+      "averageTurnover20": 2359682288,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 319.5532,
+          "rangeLow": 309.18,
+          "rangeHigh": 361.046,
+          "atrAtLock": 7.604886038877545,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 309.18
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 319.553,
+        "upperBoundary": null,
+        "atrAtLock": 7.605,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 319.553,
+        "structuralLow": 309.18,
+        "atrAtLock": 7.605,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 317.43,
+        "lowerTailTop": 326.153,
+        "midpoint": 339.238,
+        "upperTailBottom": 352.323,
+        "rangeHigh": 361.046
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 328.837,
+        "upperTailBottom": 349.639,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 310.53,
+        "hardStop": null,
+        "firstZone": 335.113,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "NVDA.US",
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "sector": "Semiconductors",
+      "cluster": "AI Semiconductors",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 148.274 并出现反转确认",
+        "distanceAtr": 2.33
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 125.53,
+      "atr": 9.743,
+      "atrPct": 7.76,
+      "hv20": 69,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -20.7,
+      "distanceToLowerTailAtr": -4.08,
+      "distanceToUpperTailAtr": 10.09,
+      "gapAtr": 0.25,
+      "volumeRatio": 2.18,
+      "averageTurnover20": 48408201218,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 148.274,
+          "rangeLow": 124.5,
+          "rangeHigh": 243.37,
+          "atrAtLock": 9.743485838317035,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 124.5
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 148.274,
+        "upperBoundary": null,
+        "atrAtLock": 9.743,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 148.274,
+        "structuralLow": 124.5,
+        "atrAtLock": 9.743,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 145.71,
+        "lowerTailTop": 165.242,
+        "midpoint": 194.54,
+        "upperTailBottom": 223.838,
+        "rangeHigh": 243.37
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 160.325,
+        "upperTailBottom": 228.755,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 125.53,
+        "hardStop": null,
+        "firstZone": 183.935,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "ORCL.US",
+      "ticker": "ORCL",
+      "name": "Oracle",
+      "sector": "Technology",
+      "cluster": "Enterprise Software",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p98"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 114.214 并出现反转确认",
+        "distanceAtr": 1.66
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 101.19,
+      "atr": 7.825,
+      "atrPct": 7.73,
+      "hv20": 84.1,
+      "hvPercentile": 98,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -13.2,
+      "distanceToLowerTailAtr": -2.58,
+      "distanceToUpperTailAtr": 7.25,
+      "gapAtr": 0.27,
+      "volumeRatio": 1.12,
+      "averageTurnover20": 5216668496,
+      "liquidityBand": "HIGH",
+      "eventDate": "2026-12-07",
+      "daysToEvent": 17,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 114.21440000000001,
+          "rangeLow": 100.251,
+          "rangeHigh": 170.068,
+          "atrAtLock": 7.825473935433676,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 100.251
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 114.214,
+        "upperBoundary": null,
+        "atrAtLock": 7.825,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 114.214,
+        "structuralLow": 100.251,
+        "atrAtLock": 7.825,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 109.21,
+        "lowerTailTop": 121.382,
+        "midpoint": 139.639,
+        "upperTailBottom": 157.896,
+        "rangeHigh": 170.068
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 120.948,
+        "upperTailBottom": 158.33,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 101.19,
+        "hardStop": null,
+        "firstZone": 135.16,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": {
+        "date": "2026-12-07",
+        "timing": "after",
+        "label": "2027 财年第 2 季度业绩披露"
+      },
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "QQQ.US",
+      "ticker": "QQQ",
+      "name": "Invesco QQQ Trust",
+      "sector": "Broad Market",
+      "cluster": "US Index",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 637.555 并出现反转确认",
+        "distanceAtr": 1.7
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 608.45,
+      "atr": 17.123,
+      "atrPct": 2.81,
+      "hv20": 40.5,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -25,
+      "distanceToLowerTailAtr": -3.48,
+      "distanceToUpperTailAtr": 7.63,
+      "gapAtr": 0.36,
+      "volumeRatio": 2.35,
+      "averageTurnover20": 38381916526,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 637.5552,
+          "rangeLow": 606.229,
+          "rangeHigh": 762.86,
+          "atrAtLock": 17.123047502135353,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 606.229
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 637.555,
+        "upperBoundary": null,
+        "atrAtLock": 17.123,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 637.555,
+        "structuralLow": 606.229,
+        "atrAtLock": 17.123,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 644.34,
+        "lowerTailTop": 668.044,
+        "midpoint": 703.6,
+        "upperTailBottom": 739.156,
+        "rangeHigh": 762.86
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 670.025,
+        "upperTailBottom": 737.175,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 608.45,
+        "hardStop": null,
+        "firstZone": 684.544,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "benchmark",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "SPXC.US",
+      "ticker": "SPXC",
+      "name": "SPX Technologies",
+      "sector": "Industrials",
+      "cluster": "Industrial Technology",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p94"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 152.594；结构稳定 0/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 152.594 并出现反转确认",
+        "distanceAtr": 2.29
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 136.29,
+      "atr": 7.121,
+      "atrPct": 5.22,
+      "hv20": 60.9,
+      "hvPercentile": 94,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -2.2,
+      "distanceToLowerTailAtr": -2.2,
+      "distanceToUpperTailAtr": 8.15,
+      "gapAtr": 0.17,
+      "volumeRatio": 0.84,
+      "averageTurnover20": 113158576,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 152.59400000000002,
+          "rangeLow": 137.86,
+          "rangeHigh": 211.53,
+          "atrAtLock": 7.098768183030823,
+          "lockedAt": "2026-11-16",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 4,
+          "stableSessions": 0,
+          "trackedLow": 135.8
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 152.594,
+        "upperBoundary": null,
+        "atrAtLock": 7.099,
+        "lockedAt": "2026-11-16",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 0
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 152.594,
+        "structuralLow": 137.86,
+        "atrAtLock": 7.099,
+        "lockedAt": "2026-11-16",
+        "stableSessions": 0,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 137.86,
+        "lowerTailTop": 151.972,
+        "midpoint": 173.14,
+        "upperTailBottom": 194.308,
+        "rangeHigh": 208.42
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 148.541,
+        "upperTailBottom": 197.739,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 136.29,
+        "hardStop": null,
+        "firstZone": 174.695,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "case-study",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "LOWER_TAIL_RECLAIMED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 152.594；结构稳定 0/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "LOWER_TAIL_RECLAIMED",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 152.594；结构稳定 0/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "SPY.US",
+      "ticker": "SPY",
+      "name": "SPDR S&P 500",
+      "sector": "Broad Market",
+      "cluster": "US Index",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p100"
+        }
+      ],
+      "stateReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 705.724 并出现反转确认",
+        "distanceAtr": 1.31
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 689.81,
+      "atr": 12.18,
+      "atrPct": 1.77,
+      "hv20": 26.5,
+      "hvPercentile": 100,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": -25,
+      "distanceToLowerTailAtr": -3.2,
+      "distanceToUpperTailAtr": 6.45,
+      "gapAtr": 0.19,
+      "volumeRatio": 2.59,
+      "averageTurnover20": 43291623487,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 705.724,
+          "rangeLow": 686.75,
+          "rangeHigh": 781.62,
+          "atrAtLock": 12.180297451529603,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "STRUCTURE_RESET",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 686.75
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 705.724,
+        "upperBoundary": null,
+        "atrAtLock": 12.18,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 705.724,
+        "structuralLow": 686.75,
+        "atrAtLock": 12.18,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "STRUCTURE_RESET"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 715.65,
+        "lowerTailTop": 728.844,
+        "midpoint": 748.635,
+        "upperTailBottom": 768.426,
+        "rangeHigh": 781.62
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 733.92,
+        "upperTailBottom": 763.35,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 689.81,
+        "hardStop": null,
+        "firstZone": 734.185,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "benchmark",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "收盘跌破旧结构低点 1 ATR，已在新区间重新锁定"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "TSLA.US",
+      "ticker": "TSLA",
+      "name": "Tesla",
+      "sector": "Consumer Discretionary",
+      "cluster": "High-beta Growth",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "label": "下沿仍在下落",
+      "action": "只观察，不接飞刀",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "LOWER_TAIL_FALLING",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p95"
+        }
+      ],
+      "stateReason": [
+        "冻结下沿 353.366；结构稳定 1/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 353.366 并出现反转确认",
+        "distanceAtr": 0.46
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 345.82,
+      "atr": 16.352,
+      "atrPct": 4.73,
+      "hv20": 65.4,
+      "hvPercentile": 95,
+      "weeklyRegime": "RANGE",
+      "rangePositionPct": 10.1,
+      "distanceToLowerTailAtr": -0.46,
+      "distanceToUpperTailAtr": 3.25,
+      "gapAtr": 0.24,
+      "volumeRatio": 1.25,
+      "averageTurnover20": 14064432972,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 353.366,
+          "rangeLow": 338.15,
+          "rangeHigh": 414.23,
+          "atrAtLock": 16.351745278598052,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 338.15
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 353.366,
+        "upperBoundary": null,
+        "atrAtLock": 16.352,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 353.366,
+        "structuralLow": 338.15,
+        "atrAtLock": 16.352,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCKED"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 338.15,
+        "lowerTailTop": 353.366,
+        "midpoint": 376.19,
+        "upperTailBottom": 399.014,
+        "rangeHigh": 414.23
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 362.678,
+        "upperTailBottom": 389.702,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 345.82,
+        "hardStop": null,
+        "firstZone": 376.19,
+        "secondZone": null,
+        "exitMethod": "只观察，不接飞刀"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "UPPER_TAIL_REJECTED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "冻结下沿 353.366；结构稳定 1/5 日"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "UPPER_TAIL_REJECTED",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 353.366；结构稳定 1/5 日"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "UNH.US",
+      "ticker": "UNH",
+      "name": "Unitedhealth",
+      "sector": "Healthcare",
+      "cluster": "Large-cap Healthcare",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "label": "空头回补区",
+      "action": "空头减仓，等待下沿收复",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "DOWNTREND_COVER_ZONE",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 25,
+      "priorityBreakdown": [
+        {
+          "label": "边缘观察",
+          "points": 35,
+          "reason": "已靠近边缘，但尚无可执行确认"
+        },
+        {
+          "label": "高波动降级",
+          "points": -10,
+          "reason": "HV 历史百分位 p92"
+        }
+      ],
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 345.046 并出现反转确认",
+        "distanceAtr": 0.37
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 339.85,
+      "atr": 14.142,
+      "atrPct": 4.16,
+      "hv20": 50.8,
+      "hvPercentile": 92,
+      "weeklyRegime": "DOWN",
+      "rangePositionPct": 14.9,
+      "distanceToLowerTailAtr": -0.37,
+      "distanceToUpperTailAtr": 4.69,
+      "gapAtr": 0.67,
+      "volumeRatio": 1.88,
+      "averageTurnover20": 2591782831,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": {
+          "boundary": 345.046,
+          "rangeLow": 324.67,
+          "rangeHigh": 426.55,
+          "atrAtLock": 14.142009764021157,
+          "lockedAt": "2026-11-20",
+          "lockedBy": "LOWER_TAIL_FALLING",
+          "ageSessions": 0,
+          "stableSessions": 1,
+          "trackedLow": 324.67
+        },
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": 345.046,
+        "upperBoundary": null,
+        "atrAtLock": 14.142,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 345.046,
+        "structuralLow": 324.67,
+        "atrAtLock": 14.142,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCKED"
+      },
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 324.67,
+        "lowerTailTop": 345.046,
+        "midpoint": 375.61,
+        "upperTailBottom": 406.174,
+        "rangeHigh": 426.55
+      },
+      "atrTailMap": {
+        "state": "LOWER_TAIL_FALLING",
+        "bucket": "EDGE_OBSERVE",
+        "k": 1.5,
+        "lowerTailTop": 345.883,
+        "upperTailBottom": 405.337,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 339.85,
+        "hardStop": null,
+        "firstZone": 375.61,
+        "secondZone": null,
+        "exitMethod": "空头减仓，等待下沿收复"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "AMZN.US",
+      "ticker": "AMZN",
+      "name": "Amazon",
+      "sector": "Consumer Discretionary",
+      "cluster": "Mega-cap Internet",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "label": "区间中部",
+      "action": "不开新仓",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "RANGE_MIDDLE",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.89 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.89
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 246.82,
+      "atr": 9.309,
+      "atrPct": 3.77,
+      "hv20": 44,
+      "hvPercentile": 89,
+      "weeklyRegime": "RANGE",
+      "rangePositionPct": 38,
+      "distanceToLowerTailAtr": 0.89,
+      "distanceToUpperTailAtr": 2.08,
+      "gapAtr": 0.42,
+      "volumeRatio": 1.4,
+      "averageTurnover20": 13579232621,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 229.363,
+        "lowerTailTop": 238.558,
+        "midpoint": 252.351,
+        "upperTailBottom": 266.145,
+        "rangeHigh": 275.34
+      },
+      "atrTailMap": {
+        "state": "RANGE_MIDDLE",
+        "bucket": "NO_TRADE_MIDDLE",
+        "k": 1.5,
+        "lowerTailTop": 243.326,
+        "upperTailBottom": 261.377,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 246.82,
+        "hardStop": null,
+        "firstZone": 252.351,
+        "secondZone": null,
+        "exitMethod": "不开新仓"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "UPPER_TAIL_DECISION",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "UPPER_TAIL_DECISION",
+        "to": "RANGE_MIDDLE",
+        "changed": true,
+        "reason": "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "CVX.US",
+      "ticker": "CVX",
+      "name": "Chevron",
+      "sector": "Energy",
+      "cluster": "Integrated Energy",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "label": "区间中部",
+      "action": "不开新仓",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "RANGE_MIDDLE",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 203.867 与上尾下界 226.872 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 0.93 ATR；触及后仍需收盘收复",
+        "distanceAtr": 0.93
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 208.37,
+      "atr": 4.818,
+      "atrPct": 2.31,
+      "hv20": 27.5,
+      "hvPercentile": 74,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 31.7,
+      "distanceToLowerTailAtr": 0.93,
+      "distanceToUpperTailAtr": 3.84,
+      "gapAtr": 0.01,
+      "volumeRatio": 1.39,
+      "averageTurnover20": 1864659842,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 196.198,
+        "lowerTailTop": 203.867,
+        "midpoint": 215.37,
+        "upperTailBottom": 226.872,
+        "rangeHigh": 234.541
+      },
+      "atrTailMap": {
+        "state": "RANGE_MIDDLE",
+        "bucket": "NO_TRADE_MIDDLE",
+        "k": 1.5,
+        "lowerTailTop": 203.425,
+        "upperTailBottom": 227.314,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 208.37,
+        "hardStop": null,
+        "firstZone": 215.37,
+        "secondZone": null,
+        "exitMethod": "不开新仓"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘位于下尾上界 203.867 与上尾下界 226.872 之间"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "RANGE_MIDDLE",
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 203.867 与上尾下界 226.872 之间"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "MA.US",
+      "ticker": "MA",
+      "name": "Mastercard",
+      "sector": "Financials",
+      "cluster": "Payments",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "label": "区间中部",
+      "action": "不开新仓",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "RANGE_MIDDLE",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 572.068 与上尾下界 654.509 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 2.14 ATR",
+        "distanceAtr": 2.14
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 625.59,
+      "atr": 13.514,
+      "atrPct": 2.16,
+      "hv20": 30.6,
+      "hvPercentile": 97,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 59,
+      "distanceToLowerTailAtr": 3.96,
+      "distanceToUpperTailAtr": 2.14,
+      "gapAtr": 0.19,
+      "volumeRatio": 1.12,
+      "averageTurnover20": 2111561233,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 544.587,
+        "lowerTailTop": 572.068,
+        "midpoint": 613.288,
+        "upperTailBottom": 654.509,
+        "rangeHigh": 681.99
+      },
+      "atrTailMap": {
+        "state": "RANGE_MIDDLE",
+        "bucket": "NO_TRADE_MIDDLE",
+        "k": 1.5,
+        "lowerTailTop": 564.858,
+        "upperTailBottom": 661.719,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 625.59,
+        "hardStop": null,
+        "firstZone": 613.288,
+        "secondZone": null,
+        "exitMethod": "不开新仓"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘位于下尾上界 572.068 与上尾下界 654.509 之间"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "TREND_ACCEPTED",
+        "to": "RANGE_MIDDLE",
+        "changed": true,
+        "reason": "收盘位于下尾上界 572.068 与上尾下界 654.509 之间"
+      }
+    },
+    {
+      "schemaVersion": "0.3.1",
+      "symbol": "V.US",
+      "ticker": "V",
+      "name": "Visa",
+      "sector": "Financials",
+      "cluster": "Payments",
+      "market": "US",
+      "tradingDate": "2026-11-20",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "label": "区间中部",
+      "action": "不开新仓",
+      "newPositionAllowed": false,
+      "entryEligibility": {
+        "structuralState": "RANGE_MIDDLE",
+        "tailEntryLimit": null,
+        "tailEntryExpired": false,
+        "policy": "CURRENT_LOCATION_AND_NEAREST_FIRST_ZONE"
+      },
+      "candidateModule": null,
+      "riskModule": null,
+      "shortQualified": null,
+      "priority": 0,
+      "priorityBreakdown": [],
+      "stateReason": [
+        "收盘位于下尾上界 373.172 与上尾下界 424.365 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 2.62 ATR",
+        "distanceAtr": 2.62
+      },
+      "signalDirection": "OBSERVE",
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "dataStatus": "FRESH",
+      "bars": 360,
+      "close": 401.87,
+      "atr": 8.57,
+      "atrPct": 2.13,
+      "hv20": 28.5,
+      "hvPercentile": 89,
+      "weeklyRegime": "UP",
+      "rangePositionPct": 53.6,
+      "distanceToLowerTailAtr": 3.35,
+      "distanceToUpperTailAtr": 2.62,
+      "gapAtr": 0.15,
+      "volumeRatio": 1.15,
+      "averageTurnover20": 3055844447,
+      "liquidityBand": "HIGH",
+      "eventDate": null,
+      "daysToEvent": null,
+      "holdingRule": null,
+      "eventRiskPolicy": null,
+      "stateMemory": {
+        "version": 1,
+        "lower": null,
+        "upper": null,
+        "trend": null
+      },
+      "stateMemorySource": "COLD_REPLAY",
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "tailMap": {
+        "provider": "rolling_range",
+        "version": "2026-11-20:60:20",
+        "lookback": 60,
+        "fraction": 0.2,
+        "rangeLow": 356.108,
+        "lowerTailTop": 373.172,
+        "midpoint": 398.769,
+        "upperTailBottom": 424.365,
+        "rangeHigh": 441.429
+      },
+      "atrTailMap": {
+        "state": "RANGE_MIDDLE",
+        "bucket": "NO_TRADE_MIDDLE",
+        "k": 1.5,
+        "lowerTailTop": 368.962,
+        "upperTailBottom": 428.575,
+        "shadowOnly": true
+      },
+      "breakout": null,
+      "management": {
+        "entryReference": 401.87,
+        "hardStop": null,
+        "firstZone": 398.769,
+        "secondZone": null,
+        "exitMethod": "不开新仓"
+      },
+      "blockers": [],
+      "role": "research",
+      "event": null,
+      "refreshedAt": "2026-11-20T22:40:13.648Z",
+      "source": "Longbridge Securities",
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-13",
+      "transitionReason": [
+        "收盘位于下尾上界 373.172 与上尾下界 424.365 之间"
+      ],
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "change": {
+        "comparisonDate": "2026-11-13",
+        "from": "TREND_ACCEPTED",
+        "to": "RANGE_MIDDLE",
+        "changed": true,
+        "reason": "收盘位于下尾上界 373.172 与上尾下界 424.365 之间"
+      }
+    }
+  ],
+  "eventCalendar": {
+    "status": "VERIFIED",
+    "coveredSymbols": [
+      "SPY.US",
+      "QQQ.US",
+      "IWM.US",
+      "DIA.US",
+      "AAPL.US",
+      "MSFT.US",
+      "NVDA.US",
+      "AVGO.US",
+      "AMD.US",
+      "MU.US",
+      "GOOGL.US",
+      "META.US",
+      "AMZN.US",
+      "NFLX.US",
+      "TSLA.US",
+      "CRM.US",
+      "ORCL.US",
+      "JPM.US",
+      "BAC.US",
+      "GS.US",
+      "V.US",
+      "MA.US",
+      "LLY.US",
+      "UNH.US",
+      "WMT.US",
+      "COST.US",
+      "HD.US",
+      "XOM.US",
+      "CVX.US",
+      "SPXC.US"
+    ],
+    "errors": [],
+    "from": "2026-11-20",
+    "through": "2026-12-11"
+  },
+  "disclaimer": "研究影子运行，不是投资建议，不自动下单。状态与参数尚未完成样本外验证。",
+  "observationContext": {
+    "previousObservationDate": "2026-11-13",
+    "gapTradingSessions": 4,
+    "plannedNonRunSessions": 4,
+    "missingScheduledSessions": 0,
+    "countBasis": "available_calendar_dates_between_complete_observations"
+  },
+  "status": "COMPLETE",
+  "schedule": {
+    "version": "weekly-close-v1",
+    "effectiveFrom": "2026-11-10",
+    "frequency": "weekly",
+    "timezone": "America/New_York",
+    "sampleUnit": "signal_observation",
+    "forwardUnit": "trading_session"
+  }
+}
