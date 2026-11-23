@@ -363,6 +363,7 @@ class PortalBuildTests(unittest.TestCase):
             "tailtrend/index.html",
             "tailtrend/tailtrend.css",
             "tailtrend/tailtrend-app.mjs",
+            "tailtrend/tailtrend-display.mjs",
             "tailtrend/tailtrend-engine.mjs",
             "tailtrend/data/tailtrend-snapshot.json",
             "tailtrend/data/latest.json",
@@ -397,6 +398,13 @@ class PortalBuildTests(unittest.TestCase):
         self.assertIn('/tailtrend/data/index.json', app)
         self.assertIn("riskConfigFile", app)
         self.assertNotIn('/tailtrend/data/run-history.json', app)
+        # Which days ran, were missed or are off the weekly schedule is read from the index status
+        # in one pure module (portal/test_site_display.mjs), not guessed from the length of a gap.
+        display = (self.site / "tailtrend" / "tailtrend-display.mjs").read_text(encoding="utf-8")
+        self.assertIn('from "/tailtrend/tailtrend-display.mjs"', app)
+        self.assertIn("NOT_SCHEDULED", display)
+        self.assertIn("auditBlocks(state.index?.entries)", app)
+        self.assertNotIn("scheduledGap", app)
         engine = (self.site / "tailtrend" / "tailtrend-engine.mjs").read_text(encoding="utf-8")
         self.assertIn("LOWER_TAIL_RECLAIMED", engine)
         self.assertIn("TREND_ACCEPTED", engine)
