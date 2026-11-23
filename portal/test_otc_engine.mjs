@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './tests/test_otc_long_term.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {atDate,calendar,planFor,parseBars,tier,dayTime,DAY,thresholdState,cycleLabel} from './vendor/otc/engine.mjs';

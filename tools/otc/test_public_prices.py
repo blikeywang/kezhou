@@ -3,6 +3,11 @@ from datetime import datetime, timezone
 from update_public_prices import binance_bars, yahoo_bars, validate_bars, mapping
 
 class PriceTests(unittest.TestCase):
+    def test_tsm_uses_us_listing_not_taiwan_shares_or_index_proxies(self):
+        self.assertEqual(mapping('TSM'), ('yahoo', 'TSM'))
+        for name in ('2330.TW', '黄金Xau', '白银Xag', '美股纳指OTC'):
+            self.assertIsNone(mapping(name))
+
     def test_closed_crypto_only(self):
         self.assertEqual(len(binance_bars([[1735689600000,'2','3','1','2.5',0,1735775999999]],1735776001)),1)
         self.assertEqual(binance_bars([[1735689600000,'2','3','1','2.5',0,1735775999999]],1735690000),[])
