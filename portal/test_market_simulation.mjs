@@ -7,6 +7,20 @@ test('comparison distinguishes zero samples and escapes stored ICT rationale',()
  const html=renderComparison({started:1,updated:2,rules:'same fees',books:[{key:'ICT',label:'ICT',metrics:{open:0,closed:0,days:0,winRate:null,profitFactor:null,equity:100000,netPnl:0,maxDrawdown:0,meanR:null,assessment:'样本不足'},account:{initial:100000,trades:[],decisions:[]},reports:[{id:'x',symbol:'BTC',summary:'<img src=x onerror=alert(1)>',ict:{stage:'retest'},action:'wait'}]}]}, {E:escape,fmt:x=>x==null?'—':String(x),cash:String,dt:String,badge:x=>x,empty:x=>x,candles:()=>''});
  assert.match(html,/样本不足/);assert.match(html,/&lt;img/);assert.ok(!html.includes('<img'));assert.ok(!html.includes('NaN'));assert.ok(!html.includes('Infinity'));
 });
+test('ict2.json renders as a third book and its absence keeps two books',()=>{
+ const helpers={E:escape,fmt:x=>x==null?'—':String(x),cash:String,dt:String,badge:x=>x,empty:x=>x,candles:()=>''};
+ const metrics={open:0,closed:0,days:0,winRate:null,profitFactor:null,equity:100000,netPnl:0,maxDrawdown:0,meanR:null,assessment:'样本不足'};
+ const base={started:1,updated:2,rules:'same fees',books:[{key:'ICT',label:'ICT',metrics,account:{initial:100000,trades:[],decisions:[]},reports:[]}]};
+ const doc={schema:'traderhome-ict2-v1',label:'ICT-2',rules:'four gates',initial:100000,updated:3,metrics,decisions:[{time:3,symbol:'NQ',reason:'不在 Kill Zone：<b>x</b>'}],
+  trades:[{symbol:'NQ',side:1,entry:1,stop:0.5,target:2,opened:1,closed:2,exit:2,pnl:10,r:2,reason:'目标',snapshot:{reason:'满足'}}],
+  reports:[{symbol:'NQ',stage:'outside_kz',stageLabel:'不在 Kill Zone',reason:'确认柱不在允许的 Kill Zone',nextKillZone:'纽约上午 纽约 08:30–10:00',grade:'A',
+   bias:{d1:'bull',h4:'bull',side:'long',rangeHigh:2,rangeLow:1,eq:1.5},ob:{low:1.1,high:1.2,mean:1.15},zone:{low:1.1,high:1.15},flow:{status:'unavailable',verdict:'unavailable',reason:'该标的没有订单流数据'}}]};
+ const html=renderComparison(base,helpers,doc);
+ assert.match(html,/ICT-2 现在怎么看/);assert.match(html,/不在 Kill Zone/);assert.match(html,/无订单流数据/);assert.match(html,/做多/);assert.match(html,/four gates/);
+ assert.ok(!html.includes('<b>x</b>'));assert.ok(!html.includes('NaN'));
+ const plain=renderComparison(base,helpers,null);assert.ok(!plain.includes('ICT-2'));
+ assert.ok(!renderComparison(base,helpers,{reports:'bad'}).includes('ICT-2'));
+});
 test('fresh publication and heartbeat never conceal a stalled paper ledger',()=>{
  const now=10_000_000,data={publishedAt:now,account:{lastRun:1},cloud:{connected:true,lastScheduledSuccess:now},model:{published:1},review:{history:[{published:1}]}};
  assert.equal(pipelineHealth(data,now)[0].healthy,false);

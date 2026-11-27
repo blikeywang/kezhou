@@ -1,6 +1,6 @@
 import {renderReviewCards} from './reviews.mjs?v=1';
 import {renderPerformance} from './performance.mjs?v=2';
-import {renderComparison} from './comparison.mjs?v=1';
+import {renderComparison} from './comparison.mjs?v=2';
 import {pipelineHealth,pipelineNotice} from './health.mjs?v=1';
 import {renderFlow,updateFlowChoice} from './flow.mjs?v=2';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
@@ -16,7 +16,7 @@ const empty=text=>'<div class="ms-empty">'+E(text)+'</div>';
 const side=s=>s===1?'多':'空';
 const levels=items=>'<div class="ms-levels">'+items.map(([label,value,tone])=>'<div><small>'+E(label)+'</small><b class="'+(tone??'')+'">'+E(value)+'</b></div>').join('')+'</div>';
 const source=r=>'<div class="ms-source">'+E(r.source??'')+' · 数据截止 '+dt(r.dataThrough??r.through)+'（UTC+8）'+(r.caveat?'<br>'+E(r.caveat):'')+'</div>';
-let data=null,history=null,tab=location.hash==='#comparison'?'comparison':'plans',horizon='10M',tradeBook='all',tradeHorizon='all',journalSymbol='all',journalHorizon='all',journalPage=0,loading=false,historyError='',clockTimer;
+let data=null,history=null,tab=location.hash==='#comparison'?'comparison':'plans',horizon='10M',tradeBook='all',tradeHorizon='all',journalSymbol='all',journalHorizon='all',journalPage=0,loading=false,historyError='',clockTimer,ict2=null,ict2State='';
 const market=s=>data.markets.find(m=>m.symbol===s);
 const gate=(book,key,h='10M')=>currentGate(data.review?.gates,book,key,h);
 const review=(book,id)=>lastCheck(data.review?.history,book,id);
@@ -119,6 +119,15 @@ function renderClosed(){
   if(!trades.length)return html+empty('此筛选下暂无已平仓记录');
   return html+'<div class="ms-table-wrap"><table class="ms-table"><thead><tr><th>交易</th><th>入场时间 / 出场时间</th><th>入场 / 出场</th><th>原止损 / 止盈</th><th>净损益</th><th>出场原因 / 复核</th><th>记录</th></tr></thead><tbody>'+trades.map(t=>'<tr><td><b>'+E(t.book==='pair'?PAIRS[t.pair]??t.pair:t.symbol+' '+side(t.side))+'</b><small>'+E(tradeHorizonOf(t))+' · '+E(t.book==='pair'?'双腿组合':t.strategy)+'</small></td><td>'+dt(t.opened,true)+'<small>'+dt(t.closed,true)+'</small></td><td>'+fmt(t.entryRatio??t.entry)+'<small>'+(t.book==='pair'?'双腿出场见详情':fmt(t.exit))+'</small></td><td>'+fmt(t.stopRatio??t.stop)+'<small>'+fmt(t.targetRatio??t.target)+'</small></td><td class="'+color(t.pnl)+'"><b>'+cash(t.pnl)+'</b>'+(finite(t.r)?'<small>'+fmt(t.r,2)+'R</small>':'')+'</td><td>'+E(t.reason??'')+'<small>'+reviewMark(review(t.book,t.id))+'</small></td><td>'+action('trade',t.id,'查看逻辑 ↗')+'</td></tr>').join('')+'</tbody></table></div>';
 }
+// ICT-2 is a separate, optional file: missing before its first run, so a failed read just hides the third book.
+async function loadIct2(){
+  if(ict2State)return;ict2State='loading';
+  try{const response=await fetch(new URL('data/ict2.json?v='+data.publishedAt,import.meta.url),{cache:'no-store',credentials:'omit',redirect:'error'});if(!response.ok)throw Error();
+    const doc=await response.json();if(doc.schema!=='traderhome-ict2-v1'||!Array.isArray(doc.trades)||!Array.isArray(doc.reports)||!doc.metrics)throw Error();
+    ict2=doc;
+  }catch{}
+  ict2State='done';if(tab==='comparison')renderPanel();
+}
 function renderReviews(){return renderReviewCards(data,{dt,badge,empty});}
 
 async function loadHistory(){
@@ -136,7 +145,7 @@ function renderJournal(){
 }
 function renderPanel(){
   document.querySelectorAll('[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===tab);b.setAttribute('aria-current',b.dataset.tab===tab?'page':'false');});
-  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='comparison'?renderComparison(data.comparison,{E,fmt,cash,dt,badge,empty,candles}):tab==='performance'?renderPerformance(data,{fmt,cash,dt,badge}):tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
+  $('panel').innerHTML=tab==='plans'?renderPlans():tab==='positions'?renderPositions():tab==='closed'?renderClosed():tab==='reviews'?renderReviews():tab==='comparison'?(ict2State||void loadIct2(),renderComparison(data.comparison,{E,fmt,cash,dt,badge,empty,candles},ict2)):tab==='performance'?renderPerformance(data,{fmt,cash,dt,badge}):tab==='flow'?renderFlow(data.cryptoOrderFlow,{E,fmt,dt,badge,empty,lineChart}):renderJournal();
 }
 function singleDetail(r){
   const p=r.plan,h=r.horizon??'10M',current=data.reports.some(x=>x.id===r.id);
@@ -211,7 +220,7 @@ async function refresh(manual=false){
     if(next.publishedAt<version.publishedAt)throw Error('部署缓存尚未同步');
     if(data&&next.publishedAt<data.publishedAt)throw Error('缓存版本落后于当前页面');
     const changed=!data||next.publishedAt!==data.publishedAt;
-    data=next;if(changed){history=null;historyError='';render();}else renderStatus();
+    data=next;if(changed){history=null;historyError='';ict2State='';render();}else renderStatus();
     if(manual&&!changed){$('connection').textContent+=' · 已检查，目前没有更新的公开快照。';}
   }catch{
     $('connection').className='ms-notice bad';$('connection').textContent=data?'本次同步未成功，保留上次完整账本；页面不会补造行情或订单。':'公开数据尚未读取成功，请稍后更新页面；无需登录。';
