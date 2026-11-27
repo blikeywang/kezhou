@@ -77,6 +77,25 @@ jobs:
           MARKET_SIMULATION_SITE_TOKEN: ${{ secrets.MARKET_SIMULATION_SITE_TOKEN }}
           PAPER_CYCLE_OUTCOME: ${{ steps.paper_cycle.outcome }}
         run: python tools/market_simulation/export_public.py --output _site/market-simulation/data
+      # ICT-2: independent forward paper book (order block + Kill Zone + HTF bias +
+      # OKX order flow), computed here from the public bars just exported. State is
+      # the newer of the published ict2.json and this cache; a failed read never resets it.
+      - name: Restore ICT-2 paper state
+        uses: actions/cache/restore@v4
+        with:
+          path: .ict2-state
+          key: ict2-state-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: ict2-state-
+      - name: Step ICT-2 paper book
+        id: ict2
+        continue-on-error: true
+        run: python tools/market_simulation/ict2.py --latest _site/market-simulation/data/latest.json --cache .ict2-state/ict2.json --output _site/market-simulation/data/ict2.json
+      - name: Save ICT-2 paper state
+        if: steps.ict2.outcome == 'success'
+        uses: actions/cache/save@v4
+        with:
+          path: .ict2-state
+          key: ict2-state-${{ github.run_id }}-${{ github.run_attempt }}
       - uses: actions/upload-pages-artifact@v5
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}

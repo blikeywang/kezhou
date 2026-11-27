@@ -101,3 +101,18 @@ nearest known targets and costs. All execution is prospective; no old fills
 are regenerated. Empty samples stay unranked. The hourly context includes
 both books and asks for per-asset `ictView` analysis; exact 5M submission
 references are now separate from 10M report prices. No extra schedule was made.
+
+## ICT-2 forward book (2026-11-27)
+
+`ict2.py` runs in the Pages publisher right after the export. It reads only the
+public `latest.json` it just wrote (5M execution, 1H context, daily bars and the
+OKX BTC/ETH flow) and keeps a third independent paper book, published as
+`market-simulation/data/ict2.json`. Rules: existing sweep → MSS → FVG, plus a
+merged order block (≤1.5 ATR), D1/H4 structure bias with H4 premium/discount,
+per-instrument New York Kill Zones, OKX taker-imbalance/OI checks (BTC/ETH only;
+others are marked unavailable, never passed) and ≥2R net. Thresholds are initial
+experiment guesses. A confirmation already seen by an earlier run is never
+back-filled; fills use the newest closed price. State is the newer of the
+published file and an Actions cache; if neither can be read because of an error,
+the step fails instead of publishing a reset ledger. The external engine, main
+ledger and the ICT/TPO cohorts are untouched.
