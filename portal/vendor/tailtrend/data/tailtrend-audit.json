@@ -6,8 +6,8 @@
   "epochs": [
     {
       "epochId": "0.3.1:52ba29622d20:51eef8b09613",
-      "entries": 60,
-      "daysCollected": 2
+      "entries": 90,
+      "daysCollected": 3
     },
     {
       "epochId": "0.3.0:5559412e60c1:2c7080ac7409",
@@ -27,9 +27,2838 @@
     10
   ],
   "retentionPolicy": "APPEND_BY_TRADING_DAY_NO_TRUNCATION",
-  "updatedAt": "2026-11-20T22:40:13.648Z",
-  "daysCollected": 2,
+  "updatedAt": "2026-11-27T18:42:03.026Z",
+  "daysCollected": 3,
   "entries": [
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:AAPL.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "AAPL.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 350.594–360.83"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "UPPER_TAIL_REJECTED",
+        "to": "UPPER_TAIL_DECISION",
+        "changed": true,
+        "reason": "收盘位于上尾决策区 350.594–360.83"
+      },
+      "prevState": "UPPER_TAIL_REJECTED",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于上尾决策区 350.594–360.83"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 362.847；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.5
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "UPPER_TAIL_DECISION",
+        "atr": "UPPER_TAIL_DECISION"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 358.85,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:AMD.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "AMD.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 453.384 并出现反转确认",
+        "distanceAtr": 0.68
+      },
+      "locked": {
+        "lowerBoundary": 453.384,
+        "upperBoundary": null,
+        "atrAtLock": 41.588,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 453.384,
+        "structuralLow": 402.1,
+        "atrAtLock": 41.588,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 424.54,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:AMZN.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "AMZN.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "RANGE_MIDDLE",
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+      },
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于下尾上界 238.558 与上尾下界 266.145 之间"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "上沿决策区",
+        "condition": "距上尾下界 1.21 ATR",
+        "distanceAtr": 1.21
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 254.31,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:AVGO.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "AVGO.US",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "冻结下沿 307.982；结构稳定 1/5 日"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "冻结下沿 307.982；结构稳定 1/5 日"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "冻结下沿 307.982；结构稳定 1/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 307.982 并出现反转确认",
+        "distanceAtr": 0.24
+      },
+      "locked": {
+        "lowerBoundary": 307.982,
+        "upperBoundary": null,
+        "atrAtLock": 18.255,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 307.982,
+        "structuralLow": 289.767,
+        "atrAtLock": 18.255,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_RECLAIMED"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 312.34,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:BAC.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "BAC.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 50.27 并出现反转确认",
+        "distanceAtr": 0.93
+      },
+      "locked": {
+        "lowerBoundary": 50.27,
+        "upperBoundary": null,
+        "atrAtLock": 1.202,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 5
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 50.27,
+        "structuralLow": 46.88,
+        "atrAtLock": 1.202,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 49.13,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:COST.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "COST.US",
+      "state": "TREND_ACCEPTED",
+      "bucket": "TREND_ACCEPTED_WATCH",
+      "priority": 68,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "2/2 个确认收盘留在冻结缓冲线 997.568 外"
+      ],
+      "blockers": [
+        "距旧边界超过 1 ATR，等待回踩或新平衡"
+      ],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "TREND_ACCEPTED",
+        "to": "TREND_ACCEPTED",
+        "changed": false,
+        "reason": "2/2 个确认收盘留在冻结缓冲线 997.568 外"
+      },
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "2/2 个确认收盘留在冻结缓冲线 997.568 外"
+      ],
+      "nextCondition": {
+        "targetState": "TRAILING_EXIT",
+        "label": "趋势退出线",
+        "condition": "日线收盘跌破 10 日低点 1053.58",
+        "distanceAtr": 2.45
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "UPPER",
+        "boundary": 993.428,
+        "threshold": 997.568,
+        "atrAtLock": 16.562,
+        "lockedAt": "2026-11-02",
+        "reasonCode": "TREND_PERSISTS"
+      },
+      "comparisonStates": {
+        "pct": "TREND_ACCEPTED",
+        "atr": "TREND_ACCEPTED"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 1097.81,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:CRM.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "CRM.US",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "冻结下沿 199.565；结构稳定 4/5 日"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "冻结下沿 199.565；结构稳定 4/5 日"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "冻结下沿 199.565；结构稳定 4/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 199.565 并出现反转确认",
+        "distanceAtr": 0.13
+      },
+      "locked": {
+        "lowerBoundary": 199.565,
+        "upperBoundary": null,
+        "atrAtLock": 9.044,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 4
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 199.565,
+        "structuralLow": 182.51,
+        "atrAtLock": 9.044,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 4,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 198.425,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:CVX.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "CVX.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 206.215 与上尾下界 227.46 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "RANGE_MIDDLE",
+        "to": "RANGE_MIDDLE",
+        "changed": false,
+        "reason": "收盘位于下尾上界 206.215 与上尾下界 227.46 之间"
+      },
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于下尾上界 206.215 与上尾下界 227.46 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.37 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.37
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 212.65,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:DIA.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "DIA.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 46,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 490.722",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "blockers": [
+        "下沿收复已到达中轴或上尾管理区，仅管理已有仓位，不新增尾部核心仓"
+      ],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 490.722；结构低点已稳定 5 个交易日；收盘高于开盘"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 490.722",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "REASSESS",
+        "label": "等待新结构",
+        "condition": "保留本次收复证据；等待新的边缘结构或独立的突破接受，不沿用已越过的第一目标追入",
+        "distanceAtr": null
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 490.722,
+        "structuralLow": 479.4,
+        "atrAtLock": 7.566,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 507.75,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:GOOGL.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "GOOGL.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 284.21 并出现反转确认",
+        "distanceAtr": 0.83
+      },
+      "locked": {
+        "lowerBoundary": 284.21,
+        "upperBoundary": null,
+        "atrAtLock": 10.817,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 284.21,
+        "structuralLow": 264.22,
+        "atrAtLock": 10.817,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 274.92,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:GS.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "GS.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 838.096 并出现反转确认",
+        "distanceAtr": 0.84
+      },
+      "locked": {
+        "lowerBoundary": 838.096,
+        "upperBoundary": null,
+        "atrAtLock": 29.32,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 838.096,
+        "structuralLow": 786.66,
+        "atrAtLock": 29.32,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 813.2,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:HD.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "HD.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 346.35–363.65"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "UPPER_TAIL_REJECTED",
+        "to": "UPPER_TAIL_DECISION",
+        "changed": true,
+        "reason": "收盘位于上尾决策区 346.35–363.65"
+      },
+      "prevState": "UPPER_TAIL_REJECTED",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于上尾决策区 346.35–363.65"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 365.871；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 0.38
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "UPPER_TAIL_DECISION",
+        "atr": "UPPER_TAIL_DECISION"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 362.46,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:IWM.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "IWM.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 46,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 264.978",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 264.978；结构低点已稳定 5 个交易日；收盘高于开盘"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 264.978",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 277.964，再看上尾决策区",
+        "distanceAtr": 0.8
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 264.978,
+        "structuralLow": 256.32,
+        "atrAtLock": 5.078,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 273.61,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:JPM.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "JPM.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 46,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 319.553",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 319.553；结构低点已稳定 5 个交易日；收盘高于开盘"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 319.553",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 335.113，再看上尾决策区",
+        "distanceAtr": 1.52
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 319.553,
+        "structuralLow": 309.18,
+        "atrAtLock": 7.605,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 323.31,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:LLY.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "LLY.US",
+      "state": "TREND_ACCEPTED",
+      "bucket": "TREND_ACCEPTED_WATCH",
+      "priority": 68,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "2/2 个确认收盘留在冻结缓冲线 1329.688 外"
+      ],
+      "blockers": [
+        "距旧边界超过 1 ATR，等待回踩或新平衡"
+      ],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "TREND_ACCEPTED",
+        "to": "TREND_ACCEPTED",
+        "changed": false,
+        "reason": "2/2 个确认收盘留在冻结缓冲线 1329.688 外"
+      },
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "2/2 个确认收盘留在冻结缓冲线 1329.688 外"
+      ],
+      "nextCondition": {
+        "targetState": "TRAILING_EXIT",
+        "label": "趋势退出线",
+        "condition": "日线收盘跌破 10 日低点 1341.46",
+        "distanceAtr": 1.31
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "UPPER",
+        "boundary": 1319.625,
+        "threshold": 1329.688,
+        "atrAtLock": 40.252,
+        "lockedAt": "2026-10-29",
+        "reasonCode": "TREND_PERSISTS"
+      },
+      "comparisonStates": {
+        "pct": "TREND_ACCEPTED",
+        "atr": "TREND_ACCEPTED"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 1395.14,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:MA.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "MA.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 654.509–681.99"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "RANGE_MIDDLE",
+        "to": "UPPER_TAIL_DECISION",
+        "changed": true,
+        "reason": "收盘位于上尾决策区 654.509–681.99"
+      },
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于上尾决策区 654.509–681.99"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 685.469；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.32
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "UPPER_TAIL_DECISION",
+        "atr": "UPPER_TAIL_DECISION"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 667.08,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:META.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "META.US",
+      "state": "RANGE_MIDDLE",
+      "bucket": "NO_TRADE_MIDDLE",
+      "priority": 0,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于下尾上界 602.908 与上尾下界 735.591 之间"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "RANGE_MIDDLE",
+        "changed": true,
+        "reason": "收盘位于下尾上界 602.908 与上尾下界 735.591 之间"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于下尾上界 602.908 与上尾下界 735.591 之间"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿观察区",
+        "condition": "距下尾上界 1.09 ATR；触及后仍需收盘收复",
+        "distanceAtr": 1.09
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "RANGE_MIDDLE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 630.02,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:MSFT.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "MSFT.US",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "冻结下沿 499.679；结构稳定 1/5 日"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "冻结下沿 499.679；结构稳定 1/5 日"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "冻结下沿 499.679；结构稳定 1/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 499.679 并出现反转确认",
+        "distanceAtr": 0.43
+      },
+      "locked": {
+        "lowerBoundary": 499.679,
+        "upperBoundary": null,
+        "atrAtLock": 15.104,
+        "lockedAt": "2026-11-19",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 499.679,
+        "structuralLow": 485.077,
+        "atrAtLock": 15.104,
+        "lockedAt": "2026-11-19",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 492.85,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:MU.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "MU.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_BREAKDOWN",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_BREAKDOWN",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 741.7 并出现反转确认",
+        "distanceAtr": 1.47
+      },
+      "locked": {
+        "lowerBoundary": 741.7,
+        "upperBoundary": null,
+        "atrAtLock": 57.417,
+        "lockedAt": "2026-11-16",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 741.7,
+        "structuralLow": 650,
+        "atrAtLock": 57.417,
+        "lockedAt": "2026-11-16",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_RECLAIMED"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 646.95,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:NFLX.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "NFLX.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 61.968 并出现反转确认",
+        "distanceAtr": 0.52
+      },
+      "locked": {
+        "lowerBoundary": 61.968,
+        "upperBoundary": null,
+        "atrAtLock": 1.986,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 5
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 61.968,
+        "structuralLow": 56.56,
+        "atrAtLock": 1.986,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 60.93,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:NVDA.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "NVDA.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 46,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 148.274",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于前收盘 149.3"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 148.274；结构低点已稳定 5 个交易日；收盘高于前收盘 149.3"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 148.274",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于前收盘 149.3"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 183.935，再看上尾决策区",
+        "distanceAtr": 2.89
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 148.274,
+        "structuralLow": 124.5,
+        "atrAtLock": 9.743,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 150.49,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:ORCL.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "ORCL.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 114.214 并出现反转确认",
+        "distanceAtr": 0.85
+      },
+      "locked": {
+        "lowerBoundary": 114.214,
+        "upperBoundary": null,
+        "atrAtLock": 7.825,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "STRUCTURE_RESET",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 114.214,
+        "structuralLow": 100.251,
+        "atrAtLock": 7.825,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 107.41,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:QQQ.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "QQQ.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 46,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 637.555",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 637.555；结构低点已稳定 5 个交易日；收盘高于开盘"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 637.555",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 684.544，再看上尾决策区",
+        "distanceAtr": 1.75
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 637.555,
+        "structuralLow": 606.229,
+        "atrAtLock": 17.123,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 650.82,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:SPXC.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "SPXC.US",
+      "state": "DOWNTREND_COVER_ZONE",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "DOWNTREND_COVER_ZONE",
+        "changed": true,
+        "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "日线收盘重新站上 152.594 并出现反转确认",
+        "distanceAtr": 1.02
+      },
+      "locked": {
+        "lowerBoundary": 152.594,
+        "upperBoundary": null,
+        "atrAtLock": 7.099,
+        "lockedAt": "2026-11-16",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 1
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 152.594,
+        "structuralLow": 137.86,
+        "atrAtLock": 7.099,
+        "lockedAt": "2026-11-16",
+        "stableSessions": 1,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "DOWNTREND_COVER_ZONE",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 145.16,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:SPY.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "SPY.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 46,
+      "direction": "LONG",
+      "newPositionAllowed": true,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 705.724",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 705.724；结构低点已稳定 5 个交易日；收盘高于开盘"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 705.724",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "UPPER_TAIL_DECISION",
+        "label": "第一管理区",
+        "condition": "先观察中轴 734.185，再看上尾决策区",
+        "distanceAtr": 0.4
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 705.724,
+        "structuralLow": 686.75,
+        "atrAtLock": 12.18,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 0.5,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 728.68,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:TSLA.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "TSLA.US",
+      "state": "LOWER_TAIL_RECLAIMED",
+      "bucket": "TAIL_RECLAIM_WATCH",
+      "priority": 62,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 353.366",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "blockers": [
+        "下沿收复已到达中轴或上尾管理区，仅管理已有仓位，不新增尾部核心仓"
+      ],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_RECLAIMED",
+        "changed": true,
+        "reason": "盘中触及下尾后，收盘重新站上冻结边界 353.366；结构低点已稳定 5 个交易日；收盘高于开盘"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "盘中触及下尾后，收盘重新站上冻结边界 353.366",
+        "结构低点已稳定 5 个交易日",
+        "收盘高于开盘"
+      ],
+      "nextCondition": {
+        "targetState": "REASSESS",
+        "label": "等待新结构",
+        "condition": "保留本次收复证据；等待新的边缘结构或独立的突破接受，不沿用已越过的第一目标追入",
+        "distanceAtr": null
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 353.366,
+        "structuralLow": 338.15,
+        "atrAtLock": 16.352,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 5,
+        "reasonCode": "LOCKED_LOWER_RECLAIMED"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_RECLAIMED",
+        "atr": "UPPER_TAIL_DECISION"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 400,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:UNH.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "UNH.US",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 25,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "冻结下沿 345.046；结构稳定 3/5 日"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "DOWNTREND_COVER_ZONE",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": true,
+        "reason": "冻结下沿 345.046；结构稳定 3/5 日"
+      },
+      "prevState": "DOWNTREND_COVER_ZONE",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "冻结下沿 345.046；结构稳定 3/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 345.046 并出现反转确认",
+        "distanceAtr": 0.5
+      },
+      "locked": {
+        "lowerBoundary": 345.046,
+        "upperBoundary": null,
+        "atrAtLock": 14.142,
+        "lockedAt": "2026-11-20",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 3
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 345.046,
+        "structuralLow": 324.67,
+        "atrAtLock": 14.142,
+        "lockedAt": "2026-11-20",
+        "stableSessions": 3,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "RANGE_MIDDLE"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.5,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.5,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 352.2,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:V.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "V.US",
+      "state": "UPPER_TAIL_DECISION",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "收盘位于上尾决策区 424.365–441.429"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "RANGE_MIDDLE",
+        "to": "UPPER_TAIL_DECISION",
+        "changed": true,
+        "reason": "收盘位于上尾决策区 424.365–441.429"
+      },
+      "prevState": "RANGE_MIDDLE",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "收盘位于上尾决策区 424.365–441.429"
+      ],
+      "nextCondition": {
+        "targetState": "BREAKOUT_CANDIDATE",
+        "label": "突破候选",
+        "condition": "收盘越过 443.652；若收盘退回上尾下方则转为拒绝",
+        "distanceAtr": 1.54
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": null,
+      "comparisonStates": {
+        "pct": "UPPER_TAIL_DECISION",
+        "atr": "UPPER_TAIL_DECISION"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 430,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:WMT.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "WMT.US",
+      "state": "TREND_ACCEPTED",
+      "bucket": "TREND_ACCEPTED_WATCH",
+      "priority": 68,
+      "direction": "LONG",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "2/2 个确认收盘留在冻结缓冲线 117.204 外"
+      ],
+      "blockers": [
+        "距旧边界超过 1 ATR，等待回踩或新平衡"
+      ],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "TREND_ACCEPTED",
+        "to": "TREND_ACCEPTED",
+        "changed": false,
+        "reason": "2/2 个确认收盘留在冻结缓冲线 117.204 外"
+      },
+      "prevState": "TREND_ACCEPTED",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "2/2 个确认收盘留在冻结缓冲线 117.204 外"
+      ],
+      "nextCondition": {
+        "targetState": "TRAILING_EXIT",
+        "label": "趋势退出线",
+        "condition": "日线收盘跌破 10 日低点 123.27",
+        "distanceAtr": 3.58
+      },
+      "locked": {
+        "lowerBoundary": null,
+        "upperBoundary": null,
+        "atrAtLock": null,
+        "lockedAt": null,
+        "lockedBy": null,
+        "lowerStableSessions": null
+      },
+      "signalBoundary": {
+        "side": "UPPER",
+        "boundary": 116.59,
+        "threshold": 117.204,
+        "atrAtLock": 2.457,
+        "lockedAt": "2026-10-15",
+        "reasonCode": "TREND_PERSISTS"
+      },
+      "comparisonStates": {
+        "pct": "TREND_ACCEPTED",
+        "atr": "TREND_ACCEPTED"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 1,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 1,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 133.15,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
+    {
+      "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-27:XOM.US",
+      "epochId": "0.3.1:52ba29622d20:51eef8b09613",
+      "originDate": "2026-11-27",
+      "symbol": "XOM.US",
+      "state": "LOWER_TAIL_FALLING",
+      "bucket": "EDGE_OBSERVE",
+      "priority": 35,
+      "direction": "OBSERVE",
+      "newPositionAllowed": false,
+      "dataStatus": "FRESH",
+      "stateReason": [
+        "冻结下沿 160.935；结构稳定 7/5 日"
+      ],
+      "blockers": [],
+      "transition": {
+        "comparisonDate": "2026-11-20",
+        "from": "LOWER_TAIL_FALLING",
+        "to": "LOWER_TAIL_FALLING",
+        "changed": false,
+        "reason": "冻结下沿 160.935；结构稳定 7/5 日"
+      },
+      "prevState": "LOWER_TAIL_FALLING",
+      "previousObservationDate": "2026-11-20",
+      "transitionReason": [
+        "冻结下沿 160.935；结构稳定 7/5 日"
+      ],
+      "nextCondition": {
+        "targetState": "LOWER_TAIL_RECLAIMED",
+        "label": "下沿收复",
+        "condition": "结构低点稳定满 5 日后，收盘站回冻结边界 160.935 并出现反转确认",
+        "distanceAtr": 0.13
+      },
+      "locked": {
+        "lowerBoundary": 160.935,
+        "upperBoundary": null,
+        "atrAtLock": 4.25,
+        "lockedAt": "2026-11-18",
+        "lockedBy": "LOWER_TAIL_FALLING",
+        "lowerStableSessions": 7
+      },
+      "signalBoundary": {
+        "side": "LOWER",
+        "boundary": 160.935,
+        "structuralLow": 154.341,
+        "atrAtLock": 4.25,
+        "lockedAt": "2026-11-18",
+        "stableSessions": 7,
+        "reasonCode": "LOWER_LOCK_PENDING"
+      },
+      "comparisonStates": {
+        "pct": "LOWER_TAIL_FALLING",
+        "atr": "LOWER_TAIL_FALLING"
+      },
+      "riskFactors": {
+        "mDrawdown": null,
+        "mHv": 0.75,
+        "mWeekly": 1,
+        "groupAWithoutAccount": 0.75,
+        "headroomPortfolioPct": null,
+        "headroomClusterPct": null,
+        "headroomLiquidityPct": null,
+        "circuitBreaker": null,
+        "finalRiskPct": null,
+        "bindingConstraint": "ACCOUNT_INPUT_REQUIRED"
+      },
+      "execution": {
+        "alertReference": 160.421,
+        "nextTradableReference": null,
+        "slippagePct": null,
+        "referenceDate": null
+      },
+      "forward": {
+        "sessions": 0,
+        "lastObservedDate": null,
+        "running": {
+          "mfePct": null,
+          "maePct": null,
+          "maxUpPct": null,
+          "maxDownPct": null
+        },
+        "horizons": {
+          "1": null,
+          "3": null,
+          "5": null,
+          "10": null
+        }
+      },
+      "gates": {
+        "eventOrGap": false,
+        "shortQualification": null,
+        "cluster": null
+      },
+      "manualOverride": null
+    },
     {
       "id": "0.3.1:52ba29622d20:51eef8b09613:2026-11-20:AAPL.US",
       "epochId": "0.3.1:52ba29622d20:51eef8b09613",
@@ -92,22 +2921,34 @@
       },
       "execution": {
         "alertReference": 342.56,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 347.87,
+        "slippagePct": -1.55,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": null,
-          "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "mfePct": 0,
+          "maePct": -4.945,
+          "maxUpPct": 4.945,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": 0,
+            "maePct": -2.931,
+            "maxUpPct": 2.931,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": 0,
+            "maePct": -4.142,
+            "maxUpPct": 4.142,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -187,22 +3028,34 @@
       },
       "execution": {
         "alertReference": 424.39,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 476.915,
+        "slippagePct": 12.377,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 12.573,
+          "maxDownPct": -12.722
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 12.573,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 12.573,
+            "maxDownPct": -12.722
+          },
           "5": null,
           "10": null
         }
@@ -274,22 +3127,34 @@
       },
       "execution": {
         "alertReference": 246.82,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 260.26,
+        "slippagePct": 5.445,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 6.345,
+          "maxDownPct": -4.4
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 6.345,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 6.345,
+            "maxDownPct": -4.4
+          },
           "5": null,
           "10": null
         }
@@ -369,22 +3234,34 @@
       },
       "execution": {
         "alertReference": 304.41,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 320.86,
+        "slippagePct": 5.404,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 6.587,
+          "maxDownPct": -8.676
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 6.587,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 6.587,
+            "maxDownPct": -8.676
+          },
           "5": null,
           "10": null
         }
@@ -464,22 +3341,34 @@
       },
       "execution": {
         "alertReference": 47.04,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 48.28,
+        "slippagePct": 2.636,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 4.9,
+          "maxDownPct": -0.213
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.295,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.933,
+            "maxDownPct": -0.213
+          },
           "5": null,
           "10": null
         }
@@ -560,22 +3449,34 @@
       },
       "execution": {
         "alertReference": 1102.15,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 1060.379,
+        "slippagePct": -3.79,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": null,
-          "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "mfePct": 0,
+          "maePct": -4.24,
+          "maxUpPct": 0,
+          "maxDownPct": -4.24
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": 0,
+            "maePct": -4.24,
+            "maxUpPct": 0,
+            "maxDownPct": -4.24
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": 0,
+            "maePct": -4.24,
+            "maxUpPct": 0,
+            "maxDownPct": -4.24
+          },
           "5": null,
           "10": null
         }
@@ -655,22 +3556,34 @@
       },
       "execution": {
         "alertReference": 180.62,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 183.31,
+        "slippagePct": 1.489,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 10.921,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.885,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 10.525,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -742,22 +3655,34 @@
       },
       "execution": {
         "alertReference": 208.37,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 206,
+        "slippagePct": -1.137,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 3.143,
+          "maxDownPct": -1.454
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0.358,
+            "maxDownPct": -1.454
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 1.704,
+            "maxDownPct": -1.454
+          },
           "5": null,
           "10": null
         }
@@ -837,22 +3762,34 @@
       },
       "execution": {
         "alertReference": 481.08,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 494.22,
+        "slippagePct": 2.731,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 5.556,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.424,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 4.637,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -932,22 +3869,34 @@
       },
       "execution": {
         "alertReference": 265.29,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 284.275,
+        "slippagePct": 7.156,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 7.48,
+          "maxDownPct": -0.965
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 7.48,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 7.48,
+            "maxDownPct": -0.965
+          },
           "5": null,
           "10": null
         }
@@ -1027,22 +3976,34 @@
       },
       "execution": {
         "alertReference": 790.69,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 831.01,
+        "slippagePct": 5.099,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 5.546,
+          "maxDownPct": -2.27
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.546,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.546,
+            "maxDownPct": -2.27
+          },
           "5": null,
           "10": null
         }
@@ -1116,22 +4077,34 @@
       },
       "execution": {
         "alertReference": 339.04,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 342.48,
+        "slippagePct": -1.015,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": null,
-          "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "mfePct": 0,
+          "maePct": -7.259,
+          "maxUpPct": 7.259,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": 0,
+            "maePct": -2.678,
+            "maxUpPct": 2.678,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": 0,
+            "maePct": -7.259,
+            "maxUpPct": 7.259,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -1211,22 +4184,34 @@
       },
       "execution": {
         "alertReference": 256.61,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 266.035,
+        "slippagePct": 3.673,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 6.746,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.69,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.128,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -1306,22 +4291,34 @@
       },
       "execution": {
         "alertReference": 310.53,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 319.19,
+        "slippagePct": 2.789,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 4.657,
+          "maxDownPct": -0.335
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.569,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.569,
+            "maxDownPct": -0.335
+          },
           "5": null,
           "10": null
         }
@@ -1400,22 +4397,34 @@
       },
       "execution": {
         "alertReference": 1347.11,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 1345.11,
+        "slippagePct": -0.148,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": null,
-          "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "mfePct": 5.04,
+          "maePct": -0.231,
+          "maxUpPct": 5.04,
+          "maxDownPct": -0.231
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": 2.564,
+            "maePct": -0.231,
+            "maxUpPct": 2.564,
+            "maxDownPct": -0.231
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": 5.04,
+            "maePct": -0.231,
+            "maxUpPct": 5.04,
+            "maxDownPct": -0.231
+          },
           "5": null,
           "10": null
         }
@@ -1487,22 +4496,34 @@
       },
       "execution": {
         "alertReference": 625.59,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 631.3,
+        "slippagePct": 0.913,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 6.981,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.091,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.991,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -1582,22 +4603,34 @@
       },
       "execution": {
         "alertReference": 560.84,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 591.715,
+        "slippagePct": 5.505,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 13.512,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 7.421,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 8.954,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -1677,22 +4710,34 @@
       },
       "execution": {
         "alertReference": 484.52,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 506.055,
+        "slippagePct": 4.445,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 5.083,
+          "maxDownPct": -1.472
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.083,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.083,
+            "maxDownPct": -1.472
+          },
           "5": null,
           "10": null
         }
@@ -1774,22 +4819,34 @@
       },
       "execution": {
         "alertReference": 594.51,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 690.72,
+        "slippagePct": -16.183,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": null,
-          "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "mfePct": 7.801,
+          "maePct": -21.224,
+          "maxUpPct": 21.224,
+          "maxDownPct": -7.801
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": 0,
+            "maePct": -21.224,
+            "maxUpPct": 21.224,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": 7.801,
+            "maePct": -21.224,
+            "maxUpPct": 21.224,
+            "maxDownPct": -7.801
+          },
           "5": null,
           "10": null
         }
@@ -1869,22 +4926,34 @@
       },
       "execution": {
         "alertReference": 56.73,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 58.55,
+        "slippagePct": 3.208,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 7.545,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.314,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.271,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -1964,22 +5033,34 @@
       },
       "execution": {
         "alertReference": 125.53,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 167.035,
+        "slippagePct": 33.064,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 36.621,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 36.621,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 36.621,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -2059,22 +5140,34 @@
       },
       "execution": {
         "alertReference": 101.19,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 116.444,
+        "slippagePct": 15.075,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 17.304,
+          "maxDownPct": -1.828
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 17.304,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 17.304,
+            "maxDownPct": -1.828
+          },
           "5": null,
           "10": null
         }
@@ -2154,22 +5247,34 @@
       },
       "execution": {
         "alertReference": 608.45,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 655.98,
+        "slippagePct": 7.812,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 8.066,
+          "maxDownPct": -0.117
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 8.066,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 8.066,
+            "maxDownPct": -0.117
+          },
           "5": null,
           "10": null
         }
@@ -2249,22 +5354,34 @@
       },
       "execution": {
         "alertReference": 136.29,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 147.16,
+        "slippagePct": 7.976,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 9.465,
+          "maxDownPct": -0.543
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 9.465,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 9.465,
+            "maxDownPct": -0.543
+          },
           "5": null,
           "10": null
         }
@@ -2344,22 +5461,34 @@
       },
       "execution": {
         "alertReference": 689.81,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 724.33,
+        "slippagePct": 5.004,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 5.703,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.533,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.533,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -2439,22 +5568,34 @@
       },
       "execution": {
         "alertReference": 345.82,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 374.735,
+        "slippagePct": 8.361,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 16.008,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 13.883,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 13.883,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -2534,22 +5675,34 @@
       },
       "execution": {
         "alertReference": 339.85,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 322.3,
+        "slippagePct": -5.164,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 4.034,
+          "maxDownPct": -6.097
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0,
+            "maxDownPct": -6.097
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.41,
+            "maxDownPct": -6.097
+          },
           "5": null,
           "10": null
         }
@@ -2621,22 +5774,34 @@
       },
       "execution": {
         "alertReference": 401.87,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 404.01,
+        "slippagePct": 0.533,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 7.497,
+          "maxDownPct": 0
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.374,
+            "maxDownPct": 0
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 6.171,
+            "maxDownPct": 0
+          },
           "5": null,
           "10": null
         }
@@ -2717,22 +5882,34 @@
       },
       "execution": {
         "alertReference": 127.95,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 126.635,
+        "slippagePct": -1.028,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": null,
-          "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "mfePct": 4.095,
+          "maePct": -1.65,
+          "maxUpPct": 4.095,
+          "maxDownPct": -1.65
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": 1.602,
+            "maePct": -1.65,
+            "maxUpPct": 1.602,
+            "maxDownPct": -1.65
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": 4.095,
+            "maePct": -1.65,
+            "maxUpPct": 4.095,
+            "maxDownPct": -1.65
+          },
           "5": null,
           "10": null
         }
@@ -2812,22 +5989,34 @@
       },
       "execution": {
         "alertReference": 159.99,
-        "nextTradableReference": null,
-        "slippagePct": null,
-        "referenceDate": null
+        "nextTradableReference": 157.94,
+        "slippagePct": -1.281,
+        "referenceDate": "2026-11-23"
       },
       "forward": {
-        "sessions": 0,
-        "lastObservedDate": null,
+        "sessions": 4,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": null,
-          "maxDownPct": null
+          "maxUpPct": 0.784,
+          "maxDownPct": -2.075
         },
         "horizons": {
-          "1": null,
-          "3": null,
+          "1": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0,
+            "maxDownPct": -2.075
+          },
+          "3": {
+            "asOf": "2026-11-25",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0,
+            "maxDownPct": -2.075
+          },
           "5": null,
           "10": null
         }
@@ -2904,12 +6093,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": 0.24,
+          "maxUpPct": 0.907,
           "maxDownPct": -4.41
         },
         "horizons": {
@@ -3009,13 +6198,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 3.923,
-          "maxDownPct": -21.589
+          "maxDownPct": -30.644
         },
         "horizons": {
           "1": {
@@ -3114,13 +6303,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 2.753,
-          "maxDownPct": -8.006
+          "maxDownPct": -11.513
         },
         "horizons": {
           "1": {
@@ -3227,13 +6416,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 6.412,
-          "maxDownPct": -13.253
+          "maxDownPct": -19.887
         },
         "horizons": {
           "1": {
@@ -3340,8 +6529,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -3454,13 +6643,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 1.578,
-          "maePct": -2.085,
+          "maePct": -4.592,
           "maxUpPct": 1.578,
-          "maxDownPct": -2.085
+          "maxDownPct": -4.592
         },
         "horizons": {
           "1": {
@@ -3559,8 +6748,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -3664,13 +6853,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -6.511
+          "maxDownPct": -6.617
         },
         "horizons": {
           "1": {
@@ -3769,8 +6958,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -3874,13 +7063,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -10.667
+          "maxDownPct": -11.171
         },
         "horizons": {
           "1": {
@@ -3979,13 +7168,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -14.173
+          "maxDownPct": -15.691
         },
         "horizons": {
           "1": {
@@ -4084,12 +7273,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": 0.298,
+          "maxUpPct": 4.29,
           "maxDownPct": -5.271
         },
         "horizons": {
@@ -4189,8 +7378,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -4294,8 +7483,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -4408,8 +7597,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 2.2,
           "maePct": -7.069,
@@ -4522,12 +7711,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 1.077,
+          "mfePct": 1.221,
           "maePct": -5.608,
-          "maxUpPct": 1.077,
+          "maxUpPct": 1.221,
           "maxDownPct": -5.608
         },
         "horizons": {
@@ -4627,8 +7816,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -4732,13 +7921,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0.585,
-          "maxDownPct": -8.179
+          "maxDownPct": -8.874
         },
         "horizons": {
           "1": {
@@ -4837,13 +8026,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -24.805
+          "maxDownPct": -29.574
         },
         "horizons": {
           "1": {
@@ -4950,8 +8139,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -5063,12 +8252,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": 0.215,
+          "maxUpPct": 5.312,
           "maxDownPct": -23.549
         },
         "horizons": {
@@ -5176,13 +8365,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -20.023
+          "maxDownPct": -20.75
         },
         "horizons": {
           "1": {
@@ -5281,8 +8470,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -5398,13 +8587,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0.168,
-          "maePct": -12.291,
+          "maePct": -12.452,
           "maxUpPct": 0.168,
-          "maxDownPct": -12.291
+          "maxDownPct": -12.452
         },
         "horizons": {
           "1": {
@@ -5503,8 +8692,8 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -5610,12 +8799,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 11.76,
-          "maePct": -0.866,
-          "maxUpPct": 0.866,
+          "maePct": -2.809,
+          "maxUpPct": 2.809,
           "maxDownPct": -11.76
         },
         "horizons": {
@@ -5715,13 +8904,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 1.897,
-          "maxDownPct": -20.319
+          "maxDownPct": -21.678
         },
         "horizons": {
           "1": {
@@ -5829,12 +9018,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 1.228,
+          "mfePct": 1.466,
           "maePct": -5.878,
-          "maxUpPct": 1.228,
+          "maxUpPct": 1.466,
           "maxDownPct": -5.878
         },
         "horizons": {
@@ -5943,12 +9132,12 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 1.897,
+          "mfePct": 3.982,
           "maePct": -3.763,
-          "maxUpPct": 1.897,
+          "maxUpPct": 3.982,
           "maxDownPct": -3.763
         },
         "horizons": {
@@ -6048,13 +9237,13 @@
         "referenceDate": "2026-11-16"
       },
       "forward": {
-        "sessions": 5,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 9,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -7.029
+          "maxDownPct": -8.16
         },
         "horizons": {
           "1": {
@@ -6153,8 +9342,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -6183,7 +9372,13 @@
             "maxUpPct": 2.891,
             "maxDownPct": -1.285
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.891,
+            "maxDownPct": -2.889
+          }
         }
       },
       "gates": {
@@ -6266,13 +9461,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 16.796,
-          "maxDownPct": -17.661
+          "maxDownPct": -27.17
         },
         "horizons": {
           "1": {
@@ -6296,7 +9491,13 @@
             "maxUpPct": 16.796,
             "maxDownPct": -2.67
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 16.796,
+            "maxDownPct": -17.661
+          }
         }
       },
       "gates": {
@@ -6383,13 +9584,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 2.975,
-          "maePct": -8.1,
+          "maePct": -11.602,
           "maxUpPct": 2.975,
-          "maxDownPct": -8.1
+          "maxDownPct": -11.602
         },
         "horizons": {
           "1": {
@@ -6413,7 +9614,13 @@
             "maxUpPct": 2.975,
             "maxDownPct": -3.84
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": 2.975,
+            "maePct": -8.1,
+            "maxUpPct": 2.975,
+            "maxDownPct": -8.1
+          }
         }
       },
       "gates": {
@@ -6496,13 +9703,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 15.757,
-          "maxDownPct": -5.778
+          "maxDownPct": -12.984
         },
         "horizons": {
           "1": {
@@ -6526,7 +9733,13 @@
             "maxUpPct": 15.757,
             "maxDownPct": -0.873
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 15.757,
+            "maxDownPct": -5.778
+          }
         }
       },
       "gates": {
@@ -6609,8 +9822,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -6639,7 +9852,13 @@
             "maxUpPct": 1.029,
             "maxDownPct": -1.83
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 1.029,
+            "maxDownPct": -7.26
+          }
         }
       },
       "gates": {
@@ -6723,13 +9942,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 5.392,
-          "maePct": -0.825,
+          "maePct": -1.009,
           "maxUpPct": 5.392,
-          "maxDownPct": -0.825
+          "maxDownPct": -1.009
         },
         "horizons": {
           "1": {
@@ -6753,7 +9972,13 @@
             "maxUpPct": 4.767,
             "maxDownPct": -0.825
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": 5.392,
+            "maePct": -1.009,
+            "maxUpPct": 5.392,
+            "maxDownPct": -1.009
+          }
         }
       },
       "gates": {
@@ -6828,8 +10053,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -6858,7 +10083,13 @@
             "maxUpPct": 2.354,
             "maxDownPct": -2.819
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.354,
+            "maxDownPct": -16.295
+          }
         }
       },
       "gates": {
@@ -6933,13 +10164,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 4.332,
-          "maxDownPct": -2.471
+          "maxDownPct": -2.581
         },
         "horizons": {
           "1": {
@@ -6963,7 +10194,13 @@
             "maxUpPct": 4.332,
             "maxDownPct": -2.263
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 4.332,
+            "maxDownPct": -2.581
+          }
         }
       },
       "gates": {
@@ -7038,8 +10275,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -7068,7 +10305,13 @@
             "maxUpPct": 0.711,
             "maxDownPct": -1.757
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0.711,
+            "maxDownPct": -8.394
+          }
         }
       },
       "gates": {
@@ -7151,13 +10394,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 5.837,
-          "maxDownPct": -8.305
+          "maxDownPct": -8.822
         },
         "horizons": {
           "1": {
@@ -7181,7 +10424,13 @@
             "maxUpPct": 5.837,
             "maxDownPct": -1.801
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 5.837,
+            "maxDownPct": -8.305
+          }
         }
       },
       "gates": {
@@ -7264,13 +10513,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 2.898,
-          "maxDownPct": -13.193
+          "maxDownPct": -14.729
         },
         "horizons": {
           "1": {
@@ -7294,7 +10543,13 @@
             "maxUpPct": 2.898,
             "maxDownPct": -2.481
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.898,
+            "maxDownPct": -13.193
+          }
         }
       },
       "gates": {
@@ -7369,12 +10624,12 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
-          "maxUpPct": 0.86,
+          "maxUpPct": 2.895,
           "maxDownPct": -6.538
         },
         "horizons": {
@@ -7399,7 +10654,13 @@
             "maxUpPct": 0.86,
             "maxDownPct": -2.875
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0.86,
+            "maxDownPct": -6.538
+          }
         }
       },
       "gates": {
@@ -7482,8 +10743,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -7512,7 +10773,13 @@
             "maxUpPct": 0.428,
             "maxDownPct": -3.731
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0.428,
+            "maxDownPct": -9.27
+          }
         }
       },
       "gates": {
@@ -7587,8 +10854,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -7617,7 +10884,13 @@
             "maxUpPct": 1.497,
             "maxDownPct": -1.582
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 1.497,
+            "maxDownPct": -9.618
+          }
         }
       },
       "gates": {
@@ -7701,8 +10974,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 4.483,
           "maePct": -4.992,
@@ -7731,7 +11004,13 @@
             "maxUpPct": 4.483,
             "maxDownPct": -0.965
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": 4.483,
+            "maePct": -4.992,
+            "maxUpPct": 4.483,
+            "maxDownPct": -4.992
+          }
         }
       },
       "gates": {
@@ -7815,12 +11094,12 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 1.906,
+          "mfePct": 2.051,
           "maePct": -4.834,
-          "maxUpPct": 1.906,
+          "maxUpPct": 2.051,
           "maxDownPct": -4.834
         },
         "horizons": {
@@ -7845,7 +11124,13 @@
             "maxUpPct": 1.906,
             "maxDownPct": -1.456
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": 1.906,
+            "maePct": -4.834,
+            "maxUpPct": 1.906,
+            "maxDownPct": -4.834
+          }
         }
       },
       "gates": {
@@ -7920,8 +11205,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -7950,7 +11235,13 @@
             "maxUpPct": 1.104,
             "maxDownPct": -3.5
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 1.104,
+            "maxDownPct": -12.893
+          }
         }
       },
       "gates": {
@@ -8025,13 +11316,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -11.767
+          "maxDownPct": -12.434
         },
         "horizons": {
           "1": {
@@ -8055,7 +11346,13 @@
             "maxUpPct": 0,
             "maxDownPct": -5.752
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0,
+            "maxDownPct": -11.767
+          }
         }
       },
       "gates": {
@@ -8138,13 +11435,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 12.88,
-          "maxDownPct": -20.173
+          "maxDownPct": -25.236
         },
         "horizons": {
           "1": {
@@ -8168,7 +11465,13 @@
             "maxUpPct": 12.88,
             "maxDownPct": -4.572
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 12.88,
+            "maxDownPct": -20.173
+          }
         }
       },
       "gates": {
@@ -8251,8 +11554,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -8281,7 +11584,13 @@
             "maxUpPct": 0.954,
             "maxDownPct": -5.426
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0.954,
+            "maxDownPct": -11.556
+          }
         }
       },
       "gates": {
@@ -8368,8 +11677,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -8398,7 +11707,13 @@
             "maxUpPct": 0,
             "maxDownPct": -16.718
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 0,
+            "maxDownPct": -30.318
+          }
         }
       },
       "gates": {
@@ -8481,13 +11796,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 9.166,
-          "maxDownPct": -16.311
+          "maxDownPct": -17.072
         },
         "horizons": {
           "1": {
@@ -8511,7 +11826,13 @@
             "maxUpPct": 9.166,
             "maxDownPct": -3.581
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 9.166,
+            "maxDownPct": -16.311
+          }
         }
       },
       "gates": {
@@ -8594,8 +11915,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -8624,7 +11945,13 @@
             "maxUpPct": 2.388,
             "maxDownPct": -2.778
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 2.388,
+            "maxDownPct": -10.763
+          }
         }
       },
       "gates": {
@@ -8707,13 +12034,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 3.724,
-          "maxDownPct": -10.019
+          "maxDownPct": -10.184
         },
         "horizons": {
           "1": {
@@ -8737,7 +12064,13 @@
             "maxUpPct": 3.724,
             "maxDownPct": -3.439
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 3.724,
+            "maxDownPct": -10.019
+          }
         }
       },
       "gates": {
@@ -8820,8 +12153,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -8850,7 +12183,13 @@
             "maxUpPct": 1.375,
             "maxDownPct": -1.942
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 1.375,
+            "maxDownPct": -8.761
+          }
         }
       },
       "gates": {
@@ -8925,8 +12264,8 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -8955,7 +12294,13 @@
             "maxUpPct": 6.97,
             "maxDownPct": -2.024
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 6.97,
+            "maxDownPct": -8.919
+          }
         }
       },
       "gates": {
@@ -9030,13 +12375,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 4.419,
-          "maxDownPct": -18.347
+          "maxDownPct": -19.74
         },
         "horizons": {
           "1": {
@@ -9060,7 +12405,13 @@
             "maxUpPct": 4.419,
             "maxDownPct": -0.179
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 4.419,
+            "maxDownPct": -19.74
+          }
         }
       },
       "gates": {
@@ -9144,12 +12495,12 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 2.092,
+          "mfePct": 2.331,
           "maePct": -5.075,
-          "maxUpPct": 2.092,
+          "maxUpPct": 2.331,
           "maxDownPct": -5.075
         },
         "horizons": {
@@ -9174,7 +12525,13 @@
             "maxUpPct": 2.092,
             "maxDownPct": -1.357
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": 2.092,
+            "maePct": -5.075,
+            "maxUpPct": 2.092,
+            "maxDownPct": -5.075
+          }
         }
       },
       "gates": {
@@ -9258,12 +12615,12 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 3.868,
+          "mfePct": 5.992,
           "maePct": -1.902,
-          "maxUpPct": 3.868,
+          "maxUpPct": 5.992,
           "maxDownPct": -1.902
         },
         "horizons": {
@@ -9288,7 +12645,13 @@
             "maxUpPct": 3.334,
             "maxDownPct": -1.456
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": 3.868,
+            "maePct": -1.902,
+            "maxUpPct": 3.868,
+            "maxDownPct": -1.902
+          }
         }
       },
       "gates": {
@@ -9363,13 +12726,13 @@
         "referenceDate": "2026-11-10"
       },
       "forward": {
-        "sessions": 9,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 13,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 4.237,
-          "maxDownPct": -3.721
+          "maxDownPct": -4.893
         },
         "horizons": {
           "1": {
@@ -9393,7 +12756,13 @@
             "maxUpPct": 4.237,
             "maxDownPct": -2.805
           },
-          "10": null
+          "10": {
+            "asOf": "2026-11-23",
+            "mfePct": null,
+            "maePct": null,
+            "maxUpPct": 4.237,
+            "maxDownPct": -4.893
+          }
         }
       },
       "gates": {
@@ -9437,8 +12806,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -9549,8 +12918,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -9629,13 +12998,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 25.525,
-          "maxDownPct": -16.737
+          "maxDownPct": -23.302
         },
         "horizons": {
           "1": {
@@ -9741,13 +13110,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 25.525,
-          "maxDownPct": -16.737
+          "maxDownPct": -23.302
         },
         "horizons": {
           "1": {
@@ -9821,8 +13190,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -9933,8 +13302,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -10013,13 +13382,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -30.353
+          "maxDownPct": -33.181
         },
         "horizons": {
           "1": {
@@ -10125,13 +13494,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -30.353
+          "maxDownPct": -33.181
         },
         "horizons": {
           "1": {
@@ -10208,8 +13577,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0,
           "maePct": -27.665,
@@ -10329,8 +13698,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0,
           "maePct": -27.665,
@@ -10410,8 +13779,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 18.334,
           "maePct": 0,
@@ -10534,8 +13903,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 18.334,
           "maePct": 0,
@@ -10614,8 +13983,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -10726,8 +14095,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -10806,8 +14175,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -10918,8 +14287,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -10998,8 +14367,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -11117,8 +14486,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0,
           "maePct": -10.751,
@@ -11197,13 +14566,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 4.617,
-          "maxDownPct": -23.089
+          "maxDownPct": -23.523
         },
         "horizons": {
           "1": {
@@ -11309,13 +14678,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 4.617,
-          "maxDownPct": -23.089
+          "maxDownPct": -23.523
         },
         "horizons": {
           "1": {
@@ -11389,13 +14758,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -24.156
+          "maxDownPct": -25.498
         },
         "horizons": {
           "1": {
@@ -11501,13 +14870,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -24.156
+          "maxDownPct": -25.498
         },
         "horizons": {
           "1": {
@@ -11583,12 +14952,12 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 15.683,
-          "maePct": -5.535,
-          "maxUpPct": 5.535,
+          "maePct": -5.888,
+          "maxUpPct": 5.888,
           "maxDownPct": -15.683
         },
         "horizons": {
@@ -11697,12 +15066,12 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 15.683,
-          "maePct": -5.535,
-          "maxUpPct": 5.535,
+          "maePct": -5.888,
+          "maxUpPct": 5.888,
           "maxDownPct": -15.683
         },
         "horizons": {
@@ -11777,8 +15146,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -11889,8 +15258,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -11972,8 +15341,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0,
           "maePct": -15.335,
@@ -12093,8 +15462,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0,
           "maePct": -15.335,
@@ -12173,8 +15542,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -12285,8 +15654,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -12365,8 +15734,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -12486,8 +15855,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 21.843,
           "maePct": 0,
@@ -12566,8 +15935,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -12678,8 +16047,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -12758,13 +16127,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 13.549,
-          "maxDownPct": -2.315
+          "maxDownPct": -3.054
         },
         "horizons": {
           "1": {
@@ -12879,13 +16248,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 13.549,
-          "maePct": -2.315,
+          "maePct": -3.054,
           "maxUpPct": 13.549,
-          "maxDownPct": -2.315
+          "maxDownPct": -3.054
         },
         "horizons": {
           "1": {
@@ -12959,13 +16328,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 8.637,
-          "maxDownPct": -35.778
+          "maxDownPct": -39.851
         },
         "horizons": {
           "1": {
@@ -13071,13 +16440,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 8.637,
-          "maxDownPct": -35.778
+          "maxDownPct": -39.851
         },
         "horizons": {
           "1": {
@@ -13151,8 +16520,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -13263,8 +16632,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -13343,8 +16712,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -13455,8 +16824,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -13535,13 +16904,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -34.596
+          "maxDownPct": -35.191
         },
         "horizons": {
           "1": {
@@ -13647,13 +17016,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -34.596
+          "maxDownPct": -35.191
         },
         "horizons": {
           "1": {
@@ -13727,8 +17096,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -13839,8 +17208,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -13919,13 +17288,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -37.758
+          "maxDownPct": -37.872
         },
         "horizons": {
           "1": {
@@ -14031,13 +17400,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 0,
-          "maxDownPct": -37.758
+          "maxDownPct": -37.872
         },
         "horizons": {
           "1": {
@@ -14111,8 +17480,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -14232,8 +17601,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0.81,
           "maePct": -11.099,
@@ -14312,8 +17681,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -14432,8 +17801,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
@@ -14512,13 +17881,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 5.168,
-          "maxDownPct": -19.951
+          "maxDownPct": -21.317
         },
         "horizons": {
           "1": {
@@ -14624,13 +17993,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 5.168,
-          "maxDownPct": -19.951
+          "maxDownPct": -21.317
         },
         "horizons": {
           "1": {
@@ -14706,8 +18075,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 0,
           "maePct": -23.039,
@@ -14827,8 +18196,8 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": 23.039,
           "maePct": 0,
@@ -14908,12 +18277,12 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 13.628,
+          "mfePct": 14.809,
           "maePct": -3.276,
-          "maxUpPct": 13.628,
+          "maxUpPct": 14.809,
           "maxDownPct": -3.276
         },
         "horizons": {
@@ -15030,12 +18399,12 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
-          "mfePct": 13.628,
+          "mfePct": 14.809,
           "maePct": -3.276,
-          "maxUpPct": 13.628,
+          "maxUpPct": 14.809,
           "maxDownPct": -3.276
         },
         "horizons": {
@@ -15110,13 +18479,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 17.997,
-          "maxDownPct": -0.72
+          "maxDownPct": -1.928
         },
         "horizons": {
           "1": {
@@ -15222,13 +18591,13 @@
         "referenceDate": "2026-10-13"
       },
       "forward": {
-        "sessions": 29,
-        "lastObservedDate": "2026-11-20",
+        "sessions": 33,
+        "lastObservedDate": "2026-11-27",
         "running": {
           "mfePct": null,
           "maePct": null,
           "maxUpPct": 17.997,
-          "maxDownPct": -0.72
+          "maxDownPct": -1.928
         },
         "horizons": {
           "1": {

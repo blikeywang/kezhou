@@ -1,10 +1,13 @@
 {
   "schema": "traderhome_tailtrend_snapshot_index_v1",
   "version": 1,
-  "updatedAt": "2026-11-20T22:40:13.648Z",
-  "latestDataAsOf": "2026-11-20",
-  "latestCompleteDataAsOf": "2026-11-20",
+  "updatedAt": "2026-11-27T18:42:03.026Z",
+  "latestDataAsOf": "2026-11-27",
+  "latestCompleteDataAsOf": "2026-11-27",
   "notScheduledDates": [
+    "2026-11-25",
+    "2026-11-24",
+    "2026-11-23",
     "2026-11-19",
     "2026-11-18",
     "2026-11-17",
@@ -77,6 +80,302 @@
     "2026-08-13"
   ],
   "entries": [
+    {
+      "dataAsOf": "2026-11-27",
+      "status": "COMPLETE",
+      "file": "snapshots/2026-11-27.json",
+      "runAt": "2026-11-27T18:42:03.026Z",
+      "engineVersion": "8f586cac4f0219aa0367bb369f959dccd6ebbd15",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 30,
+        "actionable": 5,
+        "blocked": 5,
+        "bucketCounts": {
+          "TAIL_RECLAIM_WATCH": 7,
+          "TREND_ACCEPTED_WATCH": 3,
+          "EDGE_OBSERVE": 17,
+          "NO_TRADE_MIDDLE": 3
+        },
+        "stateCounts": {
+          "LOWER_TAIL_RECLAIMED": 7,
+          "TREND_ACCEPTED": 3,
+          "UPPER_TAIL_DECISION": 4,
+          "LOWER_TAIL_FALLING": 5,
+          "DOWNTREND_COVER_ZONE": 8,
+          "RANGE_MIDDLE": 3
+        }
+      },
+      "health": {
+        "fresh": 30,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [
+        {
+          "symbol": "TSLA.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 353.366；结构低点已稳定 5 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "DIA.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 490.722；结构低点已稳定 5 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "IWM.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 264.978；结构低点已稳定 5 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "JPM.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 319.553；结构低点已稳定 5 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "NVDA.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 148.274；结构低点已稳定 5 个交易日；收盘高于前收盘 149.3"
+        },
+        {
+          "symbol": "QQQ.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 637.555；结构低点已稳定 5 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "SPY.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "LOWER_TAIL_RECLAIMED",
+          "at": "2026-11-27",
+          "reason": "盘中触及下尾后，收盘重新站上冻结边界 705.724；结构低点已稳定 5 个交易日；收盘高于开盘"
+        },
+        {
+          "symbol": "AAPL.US",
+          "from": "UPPER_TAIL_REJECTED",
+          "to": "UPPER_TAIL_DECISION",
+          "at": "2026-11-27",
+          "reason": "收盘位于上尾决策区 350.594–360.83"
+        },
+        {
+          "symbol": "GOOGL.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "MA.US",
+          "from": "RANGE_MIDDLE",
+          "to": "UPPER_TAIL_DECISION",
+          "at": "2026-11-27",
+          "reason": "收盘位于上尾决策区 654.509–681.99"
+        },
+        {
+          "symbol": "NFLX.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "V.US",
+          "from": "RANGE_MIDDLE",
+          "to": "UPPER_TAIL_DECISION",
+          "at": "2026-11-27",
+          "reason": "收盘位于上尾决策区 424.365–441.429"
+        },
+        {
+          "symbol": "AMD.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "BAC.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "GS.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "HD.US",
+          "from": "UPPER_TAIL_REJECTED",
+          "to": "UPPER_TAIL_DECISION",
+          "at": "2026-11-27",
+          "reason": "收盘位于上尾决策区 346.35–363.65"
+        },
+        {
+          "symbol": "MU.US",
+          "from": "LOWER_TAIL_BREAKDOWN",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "ORCL.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "SPXC.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "DOWNTREND_COVER_ZONE",
+          "at": "2026-11-27",
+          "reason": "此前发生下沿破位，当前回到下尾附近并较前收盘改善"
+        },
+        {
+          "symbol": "UNH.US",
+          "from": "DOWNTREND_COVER_ZONE",
+          "to": "LOWER_TAIL_FALLING",
+          "at": "2026-11-27",
+          "reason": "冻结下沿 345.046；结构稳定 3/5 日"
+        },
+        {
+          "symbol": "META.US",
+          "from": "LOWER_TAIL_FALLING",
+          "to": "RANGE_MIDDLE",
+          "at": "2026-11-27",
+          "reason": "收盘位于下尾上界 602.908 与上尾下界 735.591 之间"
+        }
+      ],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-25",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-25.json",
+      "runAt": "2026-11-27T18:42:03.026Z",
+      "engineVersion": "8f586cac4f0219aa0367bb369f959dccd6ebbd15",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-24",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-24.json",
+      "runAt": "2026-11-27T18:42:03.026Z",
+      "engineVersion": "8f586cac4f0219aa0367bb369f959dccd6ebbd15",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
+    {
+      "dataAsOf": "2026-11-23",
+      "status": "NOT_SCHEDULED",
+      "file": "snapshots/2026-11-23.json",
+      "runAt": "2026-11-27T18:42:03.026Z",
+      "engineVersion": "8f586cac4f0219aa0367bb369f959dccd6ebbd15",
+      "engineSourceHash": "52ba29622d20f10b502e5c455c91fb4401e6c5cfe7d9cb3a0db4e1287b2240e8",
+      "paramsHash": "51eef8b0961306a43386dd29a282ff25392becab2c32cf42fab32a587d848228",
+      "summary": {
+        "records": 0,
+        "actionable": 0,
+        "blocked": 0,
+        "bucketCounts": {},
+        "stateCounts": {}
+      },
+      "health": {
+        "fresh": 0,
+        "cached": 0,
+        "stale": 0,
+        "error": 0,
+        "missing": [],
+        "errors": []
+      },
+      "transitions": [],
+      "schedule": {
+        "version": "weekly-close-v1",
+        "effectiveFrom": "2026-11-10",
+        "frequency": "weekly",
+        "timezone": "America/New_York",
+        "sampleUnit": "signal_observation",
+        "forwardUnit": "trading_session"
+      },
+      "missingReason": null
+    },
     {
       "dataAsOf": "2026-11-20",
       "status": "COMPLETE",
