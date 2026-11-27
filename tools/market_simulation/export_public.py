@@ -35,7 +35,13 @@ SETUP = {**fields("stage name reason eventId side boundary triggeredAt confirmed
 PLAN = fields("entry stop target side notBefore expires riskFraction maxHoldMs") | {"entryZone": [True]}
 VALUE_AREA = fields("poc val vah")
 ICT = {**fields("version stage reason side eventId reaction stop target targetLabel netRR session premiumDiscount"),
-       "sweep": fields("time level extreme"), "shift": fields("time level"), "gap": fields("from through low high mid")}
+       "sweep": fields("time level extreme"), "shift": fields("time level"), "gap": fields("from through low high mid"),
+       # ICT-2 book (see the ICT-2 rule spec); absent keys stay absent.
+       **fields("variant grade valueEdge"),
+       "bias": fields("d1 h4 side rangeHigh rangeLow eq"),
+       "killZone": fields("name start end active"),
+       "ob": fields("from through low high mean mitigated"),
+       "flow": fields("status sweepImb dispImb retestImb sweepOiPct dispOiPct oiScore verdict")}
 AUCTION_PROFILE = {**fields("valid reason from through complete blocks expectedBlocks blockMinutes rowSize vwap"),
                    "tpo": VALUE_AREA, "vp": VALUE_AREA,
                    "rows": [fields("price count volume")], "singlePrints": [fields("low high")]}

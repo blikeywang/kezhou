@@ -44,6 +44,25 @@ class PublicExportTests(unittest.TestCase):
         self.assertEqual(book['reports'][0]['modelReview']['ictView'],'Wait for confirmation')
         self.assertNotIn('PRIVATE',json.dumps(public))
 
+    def test_ict2_fields_pass_through_and_absent_fields_stay_absent(self):
+        raw=sample()
+        ict={'variant':'ICT-2','grade':'A','valueEdge':True,'stage':'outside_kz',
+             'bias':{'d1':'bull','h4':'bull','side':'long','rangeHigh':110,'rangeLow':90,'eq':100,'secret':'PRIVATE'},
+             'killZone':{'name':'NY AM','start':NOW,'end':NOW+1,'active':False,'secret':'PRIVATE'},
+             'ob':{'from':NOW,'through':NOW,'low':95,'high':97,'mean':96,'mitigated':False},
+             'flow':{'status':'ok','dispImb':0.2,'oiScore':1,'verdict':'pass','secret':'PRIVATE'}}
+        raw['comparison']={'books':[{'key':'ICT-2','account':raw['account'],'metrics':{},
+            'reports':[{'id':'new','ict':ict},{'id':'old','ict':{'stage':'waiting'}}]}]}
+        public,_=prepare(raw,NOW);reports=public['comparison']['books'][0]['reports']
+        e=reports[0]['ict']
+        self.assertEqual((e['variant'],e['grade'],e['valueEdge']),('ICT-2','A',True))
+        self.assertEqual(e['bias']['side'],'long')
+        self.assertFalse(e['killZone']['active'])
+        self.assertFalse(e['ob']['mitigated'])
+        self.assertEqual(e['flow']['verdict'],'pass')
+        self.assertNotIn('ob',reports[1]['ict'])
+        self.assertNotIn('PRIVATE',json.dumps(public))
+
     def test_flow_summary_preserves_cross_day_pivot_values_and_evidence(self):
         old={"time":100,"cvd":-3,"cvdAnchor":50,"oi":12}
         pairs=[{"a":old,"b":{"time":i+10000,"cvdAnchor":50}} for i in range(20)]

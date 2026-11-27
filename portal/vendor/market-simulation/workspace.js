@@ -1,6 +1,6 @@
 import {renderReviewCards} from './reviews.mjs?v=1';
 import {renderPerformance} from './performance.mjs?v=2';
-import {renderComparison} from './comparison.mjs?v=1';
+import {renderComparison} from './comparison.mjs?v=2';
 import {pipelineHealth,pipelineNotice} from './health.mjs?v=1';
 import {renderFlow,updateFlowChoice} from './flow.mjs?v=2';
 import {SYMBOLS,HORIZONS,INSTRUMENTS,PAIRS,finite,escape as E,validSnapshot,quote,chartBars,currentGate,lastCheck,planState,legTargets,conditionalPrices,estimatedNet,tradeHorizonOf} from './model.mjs?v=2';
