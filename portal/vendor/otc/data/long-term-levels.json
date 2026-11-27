@@ -366,6 +366,132 @@
           }
         }
       ]
+    },
+    {
+      "date": "2026-11-26",
+      "source": "https://serious-club-96d.notion.site/424019fe17e0805db22df9a1fa497f7b",
+      "knownAt": "2026-11-27T14:35:55+08:00",
+      "sourceEditedAt": "2026-11-26T14:31:25.540Z",
+      "horizon": "超过一年",
+      "levels": [
+        {
+          "id": "黄金Xau",
+          "label": "黄金",
+          "value": 2910,
+          "since": "2026-11-23",
+          "priceRef": null
+        },
+        {
+          "id": "白银Xag",
+          "label": "白银",
+          "value": 27,
+          "since": "2026-11-23",
+          "priceRef": null
+        },
+        {
+          "id": "美股纳指OTC",
+          "label": "纳斯达克指数",
+          "value": 20950,
+          "since": "2026-11-23",
+          "priceRef": null
+        },
+        {
+          "id": "BTC",
+          "label": "BTC",
+          "value": 45600,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "binance",
+            "symbol": "BTCUSDT",
+            "currency": "USDT",
+            "zone": "UTC"
+          }
+        },
+        {
+          "id": "ETH",
+          "label": "ETH",
+          "value": 1017,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "binance",
+            "symbol": "ETHUSDT",
+            "currency": "USDT",
+            "zone": "UTC"
+          }
+        },
+        {
+          "id": "zec",
+          "label": "ZEC",
+          "value": 391,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "binance",
+            "symbol": "ZECUSDT",
+            "currency": "USDT",
+            "zone": "UTC"
+          }
+        },
+        {
+          "id": "hype",
+          "label": "HYPE",
+          "value": 49,
+          "since": "2026-11-24",
+          "priceRef": {
+            "provider": "binance",
+            "symbol": "HYPEUSDT",
+            "currency": "USDT",
+            "zone": "UTC"
+          }
+        },
+        {
+          "id": "Axti",
+          "label": "AXTI",
+          "value": 12.7,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "yahoo",
+            "symbol": "AXTI",
+            "currency": "USD",
+            "zone": "America/New_York"
+          }
+        },
+        {
+          "id": "Mu",
+          "label": "MU",
+          "value": 315,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "yahoo",
+            "symbol": "MU",
+            "currency": "USD",
+            "zone": "America/New_York"
+          }
+        },
+        {
+          "id": "hood",
+          "label": "HOOD",
+          "value": 44.3,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "yahoo",
+            "symbol": "HOOD",
+            "currency": "USD",
+            "zone": "America/New_York"
+          }
+        },
+        {
+          "id": "TSM",
+          "label": "TSM",
+          "value": 259.5,
+          "since": "2026-11-23",
+          "priceRef": {
+            "provider": "yahoo",
+            "symbol": "TSM",
+            "currency": "USD",
+            "zone": "America/New_York"
+          }
+        }
+      ]
     }
   ],
   "rules": [
